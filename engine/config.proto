@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+message ShaderConfig {
+  string name = 1;
+  string vs_path = 2;
+  string fs_path = 3;
+}
+
+enum TextureType {
+  Texture2D = 0;
+  CubeMap = 1;
+}
+
+message TextureConfig {
+  string name = 1;
+  string path = 2;
+  TextureType texture_type = 3;
+}
+
+message Config {
+  repeated ShaderConfig shader_config = 2;
+  repeated TextureConfig texture_config = 3;
+}

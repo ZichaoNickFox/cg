@@ -1,0 +1,17 @@
+shader_config {
+  name : "triangle";
+  vs_path : "playground/resource/shader/triangle.vs.glsl";
+  fs_path : "playground/resource/shader/triangle.fs.glsl";
+}
+
+texture_config {
+  name : "opengl0";
+  path : "playground/resource/texture/opengl0.jpeg";
+  texture_type : Texture2D;
+}
+
+texture_config {
+  name : "opengl1";
+  path : "playground/resource/texture/opengl1.jpeg";
+  texture_type : Texture2D;
+}

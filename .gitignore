@@ -1,4 +1,9 @@
+.vscode
 examples
 bazel-*
-
 docs
+~imgui/BUILD
+thirdparty/*
+.DS_Store
+settings.json
+imgui.ini

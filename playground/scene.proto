@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+enum SceneType {
+  Gallery = 0;
+  Test = 1;
+  ImGuiDemo = 2;
+  Triangle = 3;
+}
