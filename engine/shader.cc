@@ -1,18 +1,20 @@
 #include "shader.h"
 
+#include "glm/gtc/type_ptr.hpp"
 #include <glog/logging.h>
 
 namespace engine {
 
 Shader& Shader::operator=(const Shader& other) {
   id_ = other.id_;
+  name_ = other.name_;
   return *this;
 }
 
-Shader::Shader(const std::string& vs, const std::string& fs)
-{
-  unsigned int vertex, fragment;
+Shader::Shader(const std::string& name, const std::string& vs, const std::string& fs) {
+  name_ = name;
 
+  unsigned int vertex, fragment;
   // vertex shader
   vertex = glCreateShader(GL_VERTEX_SHADER);
   const char* vs_code = vs.data();
@@ -40,23 +42,35 @@ void Shader::Use() {
   glUseProgram(id_);
 }
 
-void Shader::SetBool(const std::string &name, bool value) const
-{
-  glUniform1i(glGetUniformLocation(id_, name.c_str()), (int)value);
+void Shader::SetBool(const std::string &location_name, bool value) const {
+  GLint location = GetUniformLocation(location_name);
+  glUniform1i(location, (int)value);
 }
 
-void Shader::SetInt(const std::string &name, int value) const
-{
-  glUniform1i(glGetUniformLocation(id_, name.c_str()), value);
+void Shader::SetInt(const std::string &location_name, int value) const {
+  GLint location = GetUniformLocation(location_name);
+  glUniform1i(location, value);
 }
 
-void Shader::SetFloat(const std::string &name, float value) const
-{
-  glUniform1f(glGetUniformLocation(id_, name.c_str()), value);
+void Shader::SetFloat(const std::string &location_name, float value) const {
+  GLint location = GetUniformLocation(location_name);
+  glUniform1f(location, value);
 }
 
-void Shader::CheckCompileErrors(unsigned int shader, const std::string& type)
-{
+void Shader::SetMat4(const std::string &location_name, const glm::mat4& value) const {
+  GLint location = GetUniformLocation(location_name);
+  glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+}
+
+GLint Shader::GetUniformLocation(const std::string& location_name) const {
+  GLint res = glGetUniformLocation(id_, location_name.c_str());
+  if (res == -1 || res == GL_INVALID_VALUE || res == GL_INVALID_OPERATION) {
+    CHECK(false) << "Cannot find uniform location '" << location_name << "' in shader '" << name_ << "'";
+  }
+  return res;
+}
+
+void Shader::CheckCompileErrors(unsigned int shader, const std::string& type) {
   int success;
   char info_log[1024];
   if (type != "program")

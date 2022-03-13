@@ -4,6 +4,12 @@ shader_config {
   fs_path : "playground/resource/shader/triangle.fs.glsl";
 }
 
+shader_config {
+  name : "cube";
+  vs_path : "playground/resource/shader/cube.vs.glsl";
+  fs_path : "playground/resource/shader/cube.fs.glsl";
+}
+
 texture_config {
   name : "opengl0";
   path : "playground/resource/texture/opengl0.jpeg";
@@ -13,5 +19,17 @@ texture_config {
 texture_config {
   name : "opengl1";
   path : "playground/resource/texture/opengl1.jpeg";
+  texture_type : Texture2D;
+}
+
+texture_config {
+  name : "cube_texture";
+  path : "playground/resource/texture/cube_texture.png";
+  texture_type : Texture2D;
+}
+
+texture_config {
+  name : "cube_specular";
+  path : "playground/resource/texture/cube_specular.png";
   texture_type : Texture2D;
 }

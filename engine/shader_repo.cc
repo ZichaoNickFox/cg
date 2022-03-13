@@ -15,7 +15,7 @@ void ShaderRepo::Init(const Config& config) {
     file_util::ReadFileToString(shader_config.vs_path(), &vs); 
     file_util::ReadFileToString(shader_config.fs_path(), &fs); 
     LOG(ERROR) << "Compiling shader " << name;
-    shaders_.insert(std::make_pair(name, Shader(vs, fs)));
+    shaders_.insert(std::make_pair(name, Shader(name, vs, fs)));
   }
 }
 

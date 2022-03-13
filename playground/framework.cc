@@ -8,6 +8,11 @@
 #include "playground/scene/gallery_scene.h"
 #include "playground/scene/test_scene.h"
 #include "playground/scene/triangle_scene.h"
+#include "playground/scene/cube_world_scene.h"
+
+namespace {
+const SceneType kDefaultSceneType = SceneType::CubeWorld;
+}
 
 void Framework::Init(const std::string& config_path) {
   InitScene();
@@ -22,7 +27,7 @@ void Framework::InitContext(const std::string& config_path) {
   engine::proto_util::ParseFromString(content, &config);
   context_.Init(config);
 
-  SwitchScene(SceneType::Triangle, true);
+  SwitchScene(kDefaultSceneType, true);
 }
 
 void Framework::InitScene() {
@@ -30,10 +35,19 @@ void Framework::InitScene() {
   scene_map_.insert(std::make_pair(Test, std::make_unique<TestScene>()));
   scene_map_.insert(std::make_pair(ImGuiDemo, std::make_unique<ImGuiDemoScene>()));
   scene_map_.insert(std::make_pair(Triangle, std::make_unique<TriangleScene>()));
+  scene_map_.insert(std::make_pair(CubeWorld, std::make_unique<CubeWorldScene>()));
 
   if (SceneType_ARRAYSIZE != scene_map_.size()) {
     CHECK(false) << "Add scene here";
   }
+}
+
+void Framework::BeginFrame(const IoInput& io_input) {
+  for (const std::string& key_input : io_input.key_input) {
+    context_.mutable_io()->FeedKeyInput(key_input);
+  }
+  context_.mutable_io()->FeedCursorPos(io_input.cursor_x, io_input.cursor_y);
+  context_.mutable_io()->FeedButtonInput(io_input.left_button_pressed, io_input.right_button_pressed);
 }
 
 void Framework::Update() {
@@ -51,6 +65,10 @@ void Framework::Render() {
   const std::unique_ptr<Scene>& scene = scene_map_[context_.current_scene_type()];
   scene->OnUpdate(&context_);
   scene->OnRender(&context_);
+}
+
+void Framework::EndFrame() {
+  context_.mutable_io()->ClearKeyInput();
 }
 
 void Framework::SwitchScene(SceneType scene_type, bool ignore_current_scene) {

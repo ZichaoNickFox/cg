@@ -24,6 +24,13 @@ cc_binary(
 )
 
 cc_library(
+  name = "io_input",
+  srcs = [
+    "io_input.h",
+  ],
+)
+
+cc_library(
   name = "framework",
   srcs = [
     "framework.h",
@@ -32,6 +39,7 @@ cc_library(
   deps = [
     "//engine:engine",
     "//playground:cc_scene_proto",
+    "//playground:io_input",
     "//playground:scene",
     "//playground/scene:scenes",
   ],

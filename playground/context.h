@@ -1,6 +1,7 @@
 #pragma once
 
 #include "engine/config.pb.h"
+#include "engine/io.h"
 #include "engine/shader_repo.h"
 #include "engine/texture_repo.h"
 #include "playground/scene.pb.h"
@@ -20,10 +21,15 @@ class Context {
   engine::ShaderRepo* mutable_shader_repo() { return &shader_repo_; }
   engine::TextureRepo* mutable_texture_repo() { return &texture_repo_; }
 
+  const engine::Io& io() { return io_; }
+  engine::Io* mutable_io() { return &io_; }
+
  private:
   SceneType current_scene_type_;
   SceneType next_scene_type_;
   
   engine::ShaderRepo shader_repo_;
   engine::TextureRepo texture_repo_;
+
+  engine::Io io_;
 };

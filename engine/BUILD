@@ -4,8 +4,12 @@ load("@rules_cc//cc:defs.bzl", "cc_binary")
 cc_library(
   name = "engine",
   srcs = [
+    "camera.h",
+    "camera.cc",
     "file_util.h",
     "file_util.cc",
+    "io.h",
+    "io.cc",
     "proto_util.h",
     "shader.h",
     "shader.cc",

@@ -6,6 +6,8 @@ cc_library(
   srcs = [
     "common.h",
     "common.cc",
+    "cube_world_scene.h",
+    "cube_world_scene.cc",
     "imgui_demo_scene.h",
     "imgui_demo_scene.cc",
     "gallery_scene.h",

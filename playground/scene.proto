@@ -5,4 +5,5 @@ enum SceneType {
   Test = 1;
   ImGuiDemo = 2;
   Triangle = 3;
+  CubeWorld = 4;
 }
