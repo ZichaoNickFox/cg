@@ -6,4 +6,5 @@ enum SceneType {
   ImGuiDemo = 2;
   Triangle = 3;
   CubeWorld = 4;
+  Phong = 5;
 }

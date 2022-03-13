@@ -1,5 +1,6 @@
 #pragma once
 
+#include "engine/camera.h"
 #include "engine/config.pb.h"
 #include "engine/io.h"
 #include "engine/shader_repo.h"
@@ -24,6 +25,9 @@ class Context {
   const engine::Io& io() { return io_; }
   engine::Io* mutable_io() { return &io_; }
 
+  const engine::Camera& camera() { return main_camera_; }
+  engine::Camera* mutable_camera() { return &main_camera_; }
+
  private:
   SceneType current_scene_type_;
   SceneType next_scene_type_;
@@ -32,4 +36,6 @@ class Context {
   engine::TextureRepo texture_repo_;
 
   engine::Io io_;
+
+  engine::Camera main_camera_;
 };

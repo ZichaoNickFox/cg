@@ -12,11 +12,10 @@ namespace engine {
 class Shader
 {
 public:
-  Shader() {}
   Shader(const std::string& name, const std::string& vs, const std::string& fs);
   Shader& operator=(const Shader& other);
 
-  void Use();
+  void Use() const;
   void SetBool(const std::string &location_name, bool value) const;
   void SetInt(const std::string &location_name, int value) const;
   void SetFloat(const std::string &location_name, float value) const;

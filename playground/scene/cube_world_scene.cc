@@ -81,43 +81,44 @@ void CubeWorldScene::OnEnter(Context *context)
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
 
-  texture0_ = context->mutable_texture_repo()->GetTexture("cube_texture");
+  texture0_ = context->mutable_texture_repo()->GetOrLoadTexture("cube_texture");
 
   shader_ = context->shader_repo().GetShader("cube");
-  shader_.Use();
+  shader_->Use();
   // Set sampler to 0# texture unit
-  shader_.SetInt("texture0", 0);
+  shader_->SetInt("texture0", 0);
 
   // Activate texture unit GL_TEXTURE0. Then bind GL_TEXTURE_2D
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, texture0_.id());
+  glBindTexture(GL_TEXTURE_2D, texture0_->id());
 
   glEnable(GL_DEPTH_TEST);
 
-  camera_.SetPosition(glm::vec3(0, 0, 0));
-  camera_.SetFront(glm::vec3(0, 0, -1));
+  engine::Camera* camera = context->mutable_camera();
+  camera->SetPosition(glm::vec3(0, 0, 0));
+  camera->SetFront(glm::vec3(0, 0, -1));
 }
 
 void CubeWorldScene::OnUpdate(Context *context)
 {
+  engine::Camera* camera = context->mutable_camera();
   const float kMoveSpeed = 0.1;
-  glm::vec3 pos = camera_.position();
   if (context->io().HadKeyInput("w")) {
-    camera_.MoveForward(kMoveSpeed);
+    camera->MoveForward(kMoveSpeed);
   } else if (context->io().HadKeyInput("s")) {
-    camera_.MoveForward(-kMoveSpeed);
+    camera->MoveForward(-kMoveSpeed);
   } else if (context->io().HadKeyInput("a")) {
-    camera_.MoveRight(-kMoveSpeed);
+    camera->MoveRight(-kMoveSpeed);
   } else if (context->io().HadKeyInput("d")) {
-    camera_.MoveRight(kMoveSpeed);
+    camera->MoveRight(kMoveSpeed);
   }
 
-  if (context->io().right_button_pressed()) {
+  if (context->io().left_button_pressed()) {
     const float kRotateSpeedFator = 0.001;
     double cursor_delta_x = context->io().GetCursorDeltaX() * kRotateSpeedFator;
     double cursor_delta_y = context->io().GetCursorDeltaY() * kRotateSpeedFator;
-    camera_.RotateHorizontal(cursor_delta_x);
-    camera_.RotateVerticle(cursor_delta_y);
+    camera->RotateHorizontal(cursor_delta_x);
+    camera->RotateVerticle(cursor_delta_y);
   }
 }
 
@@ -128,13 +129,14 @@ void CubeWorldScene::OnGui(Context *context)
 
 void CubeWorldScene::OnRender(Context *context)
 {
-  shader_.Use();
+  shader_->Use();
   glBindVertexArray(vao_);
 
-  glm::mat4 project = camera_.GetProjectMatrix();
-  glm::mat4 view = camera_.GetViewMatrix();
-  shader_.SetMat4("project", project);
-  shader_.SetMat4("view", view);
+  engine::Camera* camera = context->mutable_camera();
+  glm::mat4 project = camera->GetProjectMatrix();
+  glm::mat4 view = camera->GetViewMatrix();
+  shader_->SetMat4("project", project);
+  shader_->SetMat4("view", view);
   for (int i = 0; i < 10; ++i) {
     const glm::vec3& position = cube_positions_[i];
     // model
@@ -142,7 +144,7 @@ void CubeWorldScene::OnRender(Context *context)
     model = glm::translate(model, position);
     float angle = 20.f * i;
     model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-    shader_.SetMat4("model", model);
+    shader_->SetMat4("model", model);
 
     glDrawArrays(GL_TRIANGLES, 0, 36);
   }

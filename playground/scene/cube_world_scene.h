@@ -17,10 +17,9 @@ class CubeWorldScene : public Scene {
  private:
   GLuint vao_;
   GLuint vbo_;
-  engine::Texture texture0_;
-  engine::Texture texture1_;
-  engine::Shader shader_;
+  std::shared_ptr<engine::Texture> texture0_;
+  std::shared_ptr<engine::Texture> texture1_;
+  std::shared_ptr<engine::Shader> shader_;
 
   glm::vec3 cube_positions_[10];
-  engine::Camera camera_;
 };

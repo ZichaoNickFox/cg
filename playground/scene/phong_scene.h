@@ -1,11 +1,13 @@
 #pragma once
 
+#include "engine/camera.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
+#include "playground/object/cube.h"
 #include "playground/scene.h"
 
-class TestScene : public Scene {
+class PhongScene : public Scene {
  public:
   void OnEnter(Context* context);
   void OnUpdate(Context* context);
@@ -14,9 +16,6 @@ class TestScene : public Scene {
   void OnExit(Context* context);
 
  private:
-  GLuint vao_;
-  GLuint vbo_;
-  std::shared_ptr<engine::Texture> texture0_;
-  std::shared_ptr<engine::Texture> texture1_;
-  std::shared_ptr<engine::Shader> shader_ = nullptr;
+  Cube cube_;
+  Cube point_light_;
 };

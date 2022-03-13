@@ -37,8 +37,8 @@ class Camera {
   void RotateHorizontal(float delta);
   void RotateVerticle(float delta);
 
-  glm::mat4 GetProjectMatrix();
-  glm::mat4 GetViewMatrix();
+  glm::mat4 GetProjectMatrix() const;
+  glm::mat4 GetViewMatrix() const;
 
 private:
   float fov_ = 30.0;

@@ -10,6 +10,8 @@ cc_library(
     "file_util.cc",
     "io.h",
     "io.cc",
+    "material.h",
+    "material.cc",
     "proto_util.h",
     "shader.h",
     "shader.cc",

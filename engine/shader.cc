@@ -38,7 +38,7 @@ Shader::Shader(const std::string& name, const std::string& vs, const std::string
   glDeleteShader(fragment);
 }
 
-void Shader::Use() {
+void Shader::Use() const {
   glUseProgram(id_);
 }
 

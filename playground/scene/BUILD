@@ -12,6 +12,8 @@ cc_library(
     "imgui_demo_scene.cc",
     "gallery_scene.h",
     "gallery_scene.cc",
+    "phong_scene.h",
+    "phong_scene.cc",
     "test_scene.h",
     "test_scene.cc",
     "triangle_scene.h",
@@ -20,6 +22,7 @@ cc_library(
   deps = [
     "//playground:context",
     "//playground:scene",
+    "//playground/object:object",
     "@imgui//:imgui",
   ],
   linkopts = [

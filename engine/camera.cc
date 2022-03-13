@@ -6,11 +6,11 @@
 
 namespace engine {
 
-glm::mat4 Camera::GetProjectMatrix() {
+glm::mat4 Camera::GetProjectMatrix() const {
   return glm::perspective(glm::radians(fov_), aspect_, near_clip_, far_clip_);
 }
 
-glm::mat4 Camera::GetViewMatrix() {
+glm::mat4 Camera::GetViewMatrix() const {
   return glm::lookAt(position_, position_ + front_, world_up_);
 }
 

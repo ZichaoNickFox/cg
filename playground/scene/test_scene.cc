@@ -28,19 +28,19 @@ void TestScene::OnEnter(Context* context) {
   int texcoord_offset = 3 * sizeof(float);
   int color_offset = 5 * sizeof(float);
   int vertex_size = 8 * sizeof(float);
-  glVertexAttribPointer(kPosLayout, 3, GL_FLOAT, GL_FALSE, vertex_size, (void*)pos_offset);
-  glVertexAttribPointer(kTexcoordLayout, 2, GL_FLOAT, GL_FALSE, vertex_size, (void*)texcoord_offset);
-  glVertexAttribPointer(kColorLayout, 3, GL_FLOAT, GL_FALSE, vertex_size, (void*)color_offset);
+  glVertexAttribPointer(kPosLayout, 3, GL_FLOAT, GL_FALSE, vertex_size, (void*)(pos_offset));
+  glVertexAttribPointer(kTexcoordLayout, 2, GL_FLOAT, GL_FALSE, vertex_size, (void*)(texcoord_offset));
+  glVertexAttribPointer(kColorLayout, 3, GL_FLOAT, GL_FALSE, vertex_size, (void*)(color_offset));
 
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
 
-  texture0_ = context->mutable_texture_repo()->GetTexture("opengl0");
-  texture1_ = context->mutable_texture_repo()->GetTexture("opengl1");
+  texture0_ = context->mutable_texture_repo()->GetOrLoadTexture("opengl0");
+  texture1_ = context->mutable_texture_repo()->GetOrLoadTexture("opengl1");
 
   shader_ = context->shader_repo().GetShader("triangle");
-  shader_.SetInt("texture0", texture0_.id());
-  shader_.SetInt("texture1", texture1_.id());
+  shader_->SetInt("texture0", texture0_->id());
+  shader_->SetInt("texture1", texture1_->id());
 }
 
 void TestScene::OnUpdate(Context* context) {
@@ -57,7 +57,7 @@ void TestScene::OnRender(Context* context) {
   // glActiveTexture(GL_TEXTURE1);
   // glBindTexture(GL_TEXTURE1, texture1_.id());
 
-  shader_.Use();
+  shader_->Use();
   glBindVertexArray(vao_);
   glDrawArrays(GL_TRIANGLES, 0, 3);
 }

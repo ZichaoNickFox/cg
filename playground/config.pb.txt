@@ -10,6 +10,18 @@ shader_config {
   fs_path : "playground/resource/shader/cube.fs.glsl";
 }
 
+shader_config {
+  name : "phong_cube";
+  vs_path : "playground/resource/shader/phong_cube.vs.glsl";
+  fs_path : "playground/resource/shader/phong_cube.fs.glsl";
+}
+
+shader_config {
+  name : "phong_light";
+  vs_path : "playground/resource/shader/phong_light.vs.glsl";
+  fs_path : "playground/resource/shader/phong_light.fs.glsl";
+}
+
 texture_config {
   name : "opengl0";
   path : "playground/resource/texture/opengl0.jpeg";

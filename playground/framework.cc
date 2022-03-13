@@ -9,9 +9,10 @@
 #include "playground/scene/test_scene.h"
 #include "playground/scene/triangle_scene.h"
 #include "playground/scene/cube_world_scene.h"
+#include "playground/scene/phong_scene.h"
 
 namespace {
-const SceneType kDefaultSceneType = SceneType::CubeWorld;
+const SceneType kDefaultSceneType = SceneType::Phong;
 }
 
 void Framework::Init(const std::string& config_path) {
@@ -36,6 +37,7 @@ void Framework::InitScene() {
   scene_map_.insert(std::make_pair(ImGuiDemo, std::make_unique<ImGuiDemoScene>()));
   scene_map_.insert(std::make_pair(Triangle, std::make_unique<TriangleScene>()));
   scene_map_.insert(std::make_pair(CubeWorld, std::make_unique<CubeWorldScene>()));
+  scene_map_.insert(std::make_pair(Phong, std::make_unique<PhongScene>()));
 
   if (SceneType_ARRAYSIZE != scene_map_.size()) {
     CHECK(false) << "Add scene here";

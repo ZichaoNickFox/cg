@@ -21,7 +21,7 @@ void TextureRepo::Init(const Config& config) {
   }
 }
 
-Texture TextureRepo::GetTexture(const std::string& name) {
+std::shared_ptr<Texture> TextureRepo::GetOrLoadTexture(const std::string& name) {
   CHECK(textures_.count(name) > 0) << "Cannot find texture : " << name;
   State* state = &textures_[name];
   if (!state->loaded) {
@@ -31,7 +31,7 @@ Texture TextureRepo::GetTexture(const std::string& name) {
   return state->texture;
 }
 
-Texture TextureRepo::LoadFromFile(const std::string& path_with_ext, bool useMipmap){
+std::shared_ptr<Texture> TextureRepo::LoadFromFile(const std::string& path_with_ext, bool useMipmap){
   GLuint ret;
   glGenTextures(1, &ret);
 
@@ -58,7 +58,7 @@ Texture TextureRepo::LoadFromFile(const std::string& path_with_ext, bool useMipm
   }
   glBindTexture(GL_TEXTURE_2D, 0);
   SOIL_free_image_data(image);
-  return Texture(ret, Texture::Texture2D);
+  return std::make_shared<Texture>(ret, Texture::Texture2D);
 }
 
 Texture TextureRepo::CreateFromData( GLubyte* data, int width, int height, bool useMipmap) {

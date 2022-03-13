@@ -10,11 +10,11 @@ class TextureRepo {
  public:
   void Init(const Config& config);
 
-  Texture GetTexture(const std::string& name);
+  std::shared_ptr<Texture> GetOrLoadTexture(const std::string& name);
   bool SaveToFile(const std::string& fullPath, GLuint tex);
 
  private:
-  Texture LoadFromFile(const std::string& fileName, bool useMipmap = false);
+  std::shared_ptr<Texture> LoadFromFile(const std::string& fileName, bool useMipmap = false);
   bool SaveToFile( const std::string& fullPath, int width, int height, int channels, const unsigned char *const data);
   
   Texture LoadCubeMap(const std::vector<std::string>& path);
@@ -31,7 +31,7 @@ class TextureRepo {
   Texture Copy(GLuint source);
 
   struct State {
-    Texture texture;
+    std::shared_ptr<Texture> texture;
     bool loaded = false;
     std::string path;
   };
