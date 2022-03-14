@@ -11,15 +11,17 @@ glm::mat4 Camera::GetProjectMatrix() const {
 }
 
 glm::mat4 Camera::GetViewMatrix() const {
-  return glm::lookAt(position_, position_ + front_, world_up_);
+  return glm::lookAt(transform_.translation(), transform_.translation() + front_, world_up_);
 }
 
 void Camera::MoveForward(float delta) {
-  position_ += delta * front_;
+  glm::vec3 translation = transform_.translation() + delta * front_;
+  transform_.SetTranslation(translation);
 }
 
 void Camera::MoveRight(float delta) {
-  position_ += delta * right_;
+  glm::vec3 translation = transform_.translation() + delta * right_;
+  transform_.SetTranslation(translation);
 }
 
 void Camera::RotateHorizontal(float delta) {

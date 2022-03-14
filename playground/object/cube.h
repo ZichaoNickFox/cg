@@ -4,23 +4,24 @@
 #include "engine/material.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
+#include "engine/transform.h"
 #include "playground/context.h"
 
 class Cube {
  public:
-  struct Option {
-    engine::Material material;
-    glm::vec3 position = glm::vec3(0, 0, 0);
-    glm::vec3 scale = glm::vec3(1, 1, 1);
-  };
-  void Init(const Option& option, Context *context);
+  Cube();
   void OnUpdate(Context *context);
   void OnRender(Context *context);
   void OnDestory(Context *context);
+
+  void SetMaterial(const engine::Material& material) { material_ = material; }
+  void SetTransform(const engine::Transform& transform) { transform_ = transform; }
+  engine::Material* mutable_material() { return &material_; }
 
  private: 
   GLuint vao_;
   GLuint vbo_;
 
-  Option option_;
+  engine::Material material_;
+  engine::Transform transform_;
 };

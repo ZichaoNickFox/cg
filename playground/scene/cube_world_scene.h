@@ -3,7 +3,9 @@
 #include "engine/camera.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
+#include "engine/transform.h"
 #include "playground/context.h"
+#include "playground/object/cube.h"
 #include "playground/scene.h"
 
 class CubeWorldScene : public Scene {
@@ -15,11 +17,8 @@ class CubeWorldScene : public Scene {
   void OnExit(Context* context);
 
  private:
-  GLuint vao_;
-  GLuint vbo_;
-  std::shared_ptr<engine::Texture> texture0_;
-  std::shared_ptr<engine::Texture> texture1_;
-  std::shared_ptr<engine::Shader> shader_;
+  static constexpr int kCubeNum = 10; 
+  glm::vec3 cube_positions_[kCubeNum];
 
-  glm::vec3 cube_positions_[10];
+  std::vector<std::unique_ptr<Cube>> cubes_;
 };

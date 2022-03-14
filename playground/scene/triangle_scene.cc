@@ -37,7 +37,7 @@ void TriangleScene::OnEnter(Context* context) {
   texture0_ = context->mutable_texture_repo()->GetOrLoadTexture("opengl0");
   texture1_ = context->mutable_texture_repo()->GetOrLoadTexture("opengl1");
 
-  shader_ = context->shader_repo().GetShader("triangle");
+  shader_ = context->mutable_shader_repo()->GetOrLoadShader("triangle");
   shader_->Use();
   // Set sampler to 0# texture unit
   shader_->SetInt("texture0", 0);

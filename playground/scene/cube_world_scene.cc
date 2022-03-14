@@ -3,54 +3,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include "glog/logging.h"
+#include <memory>
 
 #include "playground/scene/common.h"
 
 void CubeWorldScene::OnEnter(Context *context)
 {
-  float vertices[] = {
-    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-    0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-    -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-
-    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-    0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-    0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-    0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-    -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
-    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-
-    -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-    -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-    -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-
-    0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-    0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-    0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-    0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-    0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-
-    -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-    0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
-    0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-    0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-
-    -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-    0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-    0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
-    -0.5f, 0.5f, -0.5f, 0.0f, 1.0f
-  };
   cube_positions_[0] = glm::vec3(0.0f, 0.0f, 0.0f);
   cube_positions_[1] = glm::vec3(2.0f, 5.0f, -15.0f);
   cube_positions_[2] = glm::vec3(-1.5f, -2.2f, -2.5f);
@@ -62,64 +20,28 @@ void CubeWorldScene::OnEnter(Context *context)
   cube_positions_[8] = glm::vec3(1.5f, 0.2f, -1.5f);
   cube_positions_[9] = glm::vec3(-1.3f, 1.0f, -1.5f);
 
-  glGenBuffers(1, &vbo_);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-  const int kPosLayout = 0;
-  const int kTexcoordLayout = 1;
-  glGenVertexArrays(1, &vao_);
-  glBindVertexArray(vao_);
-  glEnableVertexAttribArray(kPosLayout);
-  glEnableVertexAttribArray(kTexcoordLayout);
-
-  // Stride param must assign to vertex size 8 * sizeof(float)
-  // Offset param means offset in a vertex
-  glVertexAttribPointer(kPosLayout, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
-  glVertexAttribPointer(kTexcoordLayout, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
-
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindVertexArray(0);
-
-  texture0_ = context->mutable_texture_repo()->GetOrLoadTexture("cube_texture");
-
-  shader_ = context->shader_repo().GetShader("cube");
-  shader_->Use();
-  // Set sampler to 0# texture unit
-  shader_->SetInt("texture0", 0);
-
-  // Activate texture unit GL_TEXTURE0. Then bind GL_TEXTURE_2D
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, texture0_->id());
+  for (int i = 0; i < kCubeNum; ++i) {
+    std::unique_ptr<Cube> cube = std::make_unique<Cube>();
+    engine::Transform cube_transform(cube_positions_[i], glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
+    cube->SetTransform(cube_transform);
+    engine::Material material;
+    material.SetLocationValue("texture0", 0, context->mutable_texture_repo()->GetOrLoadTexture("cube_texture"));
+    material.SetShader(context->mutable_shader_repo()->GetOrLoadShader("cube"));
+    cube->SetMaterial(material);
+    cubes_.push_back(std::move(cube));
+  }
 
   glEnable(GL_DEPTH_TEST);
 
   engine::Camera* camera = context->mutable_camera();
-  camera->SetPosition(glm::vec3(0, 0, 0));
+  engine::Transform camera_transform(glm::vec3(0, 0, 10), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
+  camera->SetTransform(camera_transform);
   camera->SetFront(glm::vec3(0, 0, -1));
 }
 
 void CubeWorldScene::OnUpdate(Context *context)
 {
-  engine::Camera* camera = context->mutable_camera();
-  const float kMoveSpeed = 0.1;
-  if (context->io().HadKeyInput("w")) {
-    camera->MoveForward(kMoveSpeed);
-  } else if (context->io().HadKeyInput("s")) {
-    camera->MoveForward(-kMoveSpeed);
-  } else if (context->io().HadKeyInput("a")) {
-    camera->MoveRight(-kMoveSpeed);
-  } else if (context->io().HadKeyInput("d")) {
-    camera->MoveRight(kMoveSpeed);
-  }
-
-  if (context->io().left_button_pressed()) {
-    const float kRotateSpeedFator = 0.001;
-    double cursor_delta_x = context->io().GetCursorDeltaX() * kRotateSpeedFator;
-    double cursor_delta_y = context->io().GetCursorDeltaY() * kRotateSpeedFator;
-    camera->RotateHorizontal(cursor_delta_x);
-    camera->RotateVerticle(cursor_delta_y);
-  }
+  MoveCameraByIo(context);
 }
 
 void CubeWorldScene::OnGui(Context *context)
@@ -129,29 +51,11 @@ void CubeWorldScene::OnGui(Context *context)
 
 void CubeWorldScene::OnRender(Context *context)
 {
-  shader_->Use();
-  glBindVertexArray(vao_);
-
-  engine::Camera* camera = context->mutable_camera();
-  glm::mat4 project = camera->GetProjectMatrix();
-  glm::mat4 view = camera->GetViewMatrix();
-  shader_->SetMat4("project", project);
-  shader_->SetMat4("view", view);
-  for (int i = 0; i < 10; ++i) {
-    const glm::vec3& position = cube_positions_[i];
-    // model
-    glm::mat4 model(1);
-    model = glm::translate(model, position);
-    float angle = 20.f * i;
-    model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-    shader_->SetMat4("model", model);
-
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+  for (const std::unique_ptr<Cube>& cube : cubes_) {
+    cube->OnRender(context);
   }
 }
 
 void CubeWorldScene::OnExit(Context *context)
 {
-  glDeleteBuffers(1, &vbo_);
-  glDeleteVertexArrays(1, &vao_);
 }

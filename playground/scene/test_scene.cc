@@ -38,7 +38,7 @@ void TestScene::OnEnter(Context* context) {
   texture0_ = context->mutable_texture_repo()->GetOrLoadTexture("opengl0");
   texture1_ = context->mutable_texture_repo()->GetOrLoadTexture("opengl1");
 
-  shader_ = context->shader_repo().GetShader("triangle");
+  shader_ = context->mutable_shader_repo()->GetOrLoadShader("triangle");
   shader_->SetInt("texture0", texture0_->id());
   shader_->SetInt("texture1", texture1_->id());
 }

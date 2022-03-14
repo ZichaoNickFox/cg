@@ -9,9 +9,16 @@ namespace engine {
 class ShaderRepo {
  public:
   void Init(const Config& config);
-  std::shared_ptr<Shader> GetShader(const std::string& name) const;
+  std::shared_ptr<Shader> GetOrLoadShader(const std::string& name);
 
  private:
-  std::unordered_map<std::string, std::shared_ptr<Shader>> shaders_;
+  struct ShaderData {
+    ShaderData() {}
+    ShaderData(const ShaderConfig& in_config) { config = in_config; }
+    bool loaded = false;
+    std::shared_ptr<Shader> shader;
+    ShaderConfig config;
+  };
+  std::unordered_map<std::string, ShaderData> shaders_;
 };
 }

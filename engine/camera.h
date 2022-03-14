@@ -5,6 +5,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "engine/transform.h"
+
 namespace engine
 {
 
@@ -25,8 +27,8 @@ class Camera {
   void SetType(Type in) { type_ = in; }
   Type type() const { return type_; }
 
-  void SetPosition(const glm::vec3& position) { position_ = position; }
-  const glm::vec3& position() const { return position_; }
+  void SetTransform(const Transform& transform) { transform_ = transform; }
+  const Transform& transform() const { return transform_; }
   void SetFront(const glm::vec3& front);
   const glm::vec3& front() const { return front_; }
   void SetRight(const glm::vec3& right);
@@ -47,7 +49,7 @@ private:
   float far_clip_ = 100;
   Type type_ = Type::Perspective;
 
-  glm::vec3 position_ = glm::vec3(0, 0, 0);
+  Transform transform_;
   glm::vec3 front_ = glm::vec3(0 ,0, -1);
   glm::vec3 right_ = glm::vec3(1, 0, 0);
   glm::vec3 world_up_ = glm::vec3(0, 1, 0);

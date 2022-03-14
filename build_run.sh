@@ -6,6 +6,7 @@ bazel build \
   --cxxopt="-Wnonportable-include-path" \
   --cxxopt="-Wunused-private-field" \
   --cxxopt="-Wdelete-non-abstract-non-virtual-dtor" \
+  --cxxopt="-Wunused-variable" \
   //playground:playground
 
 # run

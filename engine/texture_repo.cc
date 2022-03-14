@@ -27,6 +27,7 @@ std::shared_ptr<Texture> TextureRepo::GetOrLoadTexture(const std::string& name) 
   if (!state->loaded) {
     state->texture = LoadFromFile(state->path, true);
     state->loaded = true;
+    LOG(ERROR) << "Loaded Texture : " << state->texture->id() << " " << name;
   }
   return state->texture;
 }

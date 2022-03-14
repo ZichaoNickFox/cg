@@ -23,6 +23,8 @@ cc_library(
     "texture.cc",
     "texture_repo.h",
     "texture_repo.cc",
+    "transform.h",
+    "transform.cc",
   ],
   deps = [
     "//engine:cc_config_proto",

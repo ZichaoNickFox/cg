@@ -95,6 +95,7 @@ int main(int argc, char **argv)
 
     IoInput io_input;
     FillIoInput(window, &io_input);
+    glfwSetInputMode(window, GLFW_CURSOR, io_input.left_button_pressed ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
     framework.BeginFrame(io_input);
 
     framework.Update();
