@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include "glog/logging.h"
+#include "imgui.h"
 #include <memory>
 
 #include "engine/transform.h"
@@ -35,24 +36,33 @@ void PhongScene::OnEnter(Context *context)
   cube_.SetMaterial(cube_material);
 
   engine::Camera* camera = context->mutable_camera();
-  engine::Transform transform(glm::vec3(glm::vec3(0, 0, 10)), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
-  camera->SetTransform(transform);
-  camera->SetFront(glm::vec3(0, 0, -1));
+  camera->mutable_transform()->SetTranslation(glm::vec3(-1.0, 1.5, 1.1));
+  camera->SetFront(glm::vec3(0.7, -0.4, -0.4));
 
   glEnable(GL_DEPTH_TEST);
 }
 
 void PhongScene::OnUpdate(Context *context)
 {
-  MoveCameraByIo(context);
+  ControlCameraByIo(context);
   cube_.OnUpdate(context);
   light_.OnUpdate(context);
+
+  light_.mutable_transform()->SetScale(light_scale_);
+  light_.mutable_material()->SetLocationValue("light_color", light_color_);
 }
 
 void PhongScene::OnGui(Context *context)
 {
   RenderGoToGallery(context);
-  // TODO : Add GUIs (scale, light_color, etc.)
+  bool open = true;
+  ImGui::Begin("PhongScene", &open, ImGuiWindowFlags_AlwaysAutoResize);
+  ImGui::SliderFloat3("light_scale", (float*)&light_scale_, 0, 2);
+  ImGui::ColorEdit3("light_color", (float*)&light_color_);
+  ImGui::Separator();
+  ImGui::Text("camera_location %s", glm::to_string(context->camera().transform().translation()).c_str());
+  ImGui::Text("camera_front %s", glm::to_string(context->camera().front()).c_str());
+  ImGui::End();
 }
 
 void PhongScene::OnRender(Context *context)

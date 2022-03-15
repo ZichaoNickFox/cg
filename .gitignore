@@ -7,3 +7,4 @@ thirdparty/*
 .DS_Store
 settings.json
 imgui.ini
+/imgui.ini

@@ -16,6 +16,10 @@ class Transform {
   // TODO : Rotate
   const glm::vec3& scale() const { return scale_; }
 
+  glm::vec3* mutable_translation() { return &translation_; }
+  glm::vec3* mutable_rotation() { return &rotation_; }
+  glm::vec3* mutable_scale() { return &scale_; }
+
  private:
   glm::vec3 translation_ = glm::vec3(0, 0, 0);
   glm::vec3 rotation_ = glm::vec3(0, 0, 0);

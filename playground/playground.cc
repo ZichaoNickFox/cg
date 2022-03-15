@@ -11,7 +11,6 @@
 #include <glog/logging.h>
 
 #include "playground/framework.h"
-#include "playground/io_input.h"
 
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
 
@@ -32,21 +31,25 @@ void handler(int sig)
   exit(1);
 }
 
-void FillIoInput(GLFWwindow* window, IoInput* io_input) {
+void FillIoInput(GLFWwindow* window, ImGuiIO* imgui_io, engine::Io* io) {
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    io_input->key_input.insert("w");
+    io->FeedKeyInput("w");
   if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    io_input->key_input.insert("s");
+    io->FeedKeyInput("s");
   if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    io_input->key_input.insert("a");
+    io->FeedKeyInput("a");
   if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-    io_input->key_input.insert("d");
+    io->FeedKeyInput("d");
   
-  glfwGetCursorPos(window, &io_input->cursor_x, &io_input->cursor_y);
+  double xpos, ypos; 
+  glfwGetCursorPos(window, &xpos, &ypos);
+  io->FeedCursorPos(xpos, ypos);
+
   int left_button_state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1);
   int right_button_state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2);
-  io_input->left_button_pressed = left_button_state == GLFW_PRESS;
-  io_input->right_button_pressed = right_button_state == GLFW_PRESS;
+  io->FeedButtonInput(left_button_state == GLFW_PRESS, right_button_state == GLFW_PRESS);
+
+  io->SetGuiCapturedMouse(imgui_io->WantCaptureMouse);
 }
 
 int main(int argc, char **argv)
@@ -72,6 +75,7 @@ int main(int argc, char **argv)
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   ImGui::StyleColorsDark();
+  ImGuiIO& imgui_io = ImGui::GetIO();
 
   ImGui_ImplGlfw_InitForOpenGL(window, true);
   ImGui_ImplOpenGL3_Init(glsl_version);
@@ -93,18 +97,24 @@ int main(int argc, char **argv)
 
     glfwPollEvents();
 
-    IoInput io_input;
-    FillIoInput(window, &io_input);
-    glfwSetInputMode(window, GLFW_CURSOR, io_input.left_button_pressed ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
-    framework.BeginFrame(io_input);
-
-    framework.Update();
-    framework.Render();
-
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+
+    const engine::Io& io = framework.io();
+    engine::Io* mutable_io = framework.mutable_io();
+    FillIoInput(window, &imgui_io, mutable_io);
+
+    framework.BeginFrame();
     framework.Gui();
+    if (io.gui_captured_mouse()) {
+      glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    } else {
+      glfwSetInputMode(window, GLFW_CURSOR, io.left_button_pressed() ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+    }
+    framework.Update();
+    framework.Render();
+
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

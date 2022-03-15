@@ -16,7 +16,8 @@ class PhongScene : public Scene {
   void OnExit(Context* context);
 
  private:
-  glm::vec3 light_scale_ = glm::vec3(1.0, 1.0, 1.0);
+  glm::vec3 light_scale_ = glm::vec3(.2, .2, .2);
+  glm::vec3 light_color_ = glm::vec3(1, 1, 1);
 
   Cube cube_;
   Cube light_;

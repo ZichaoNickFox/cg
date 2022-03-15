@@ -28,6 +28,7 @@ class Camera {
   Type type() const { return type_; }
 
   void SetTransform(const Transform& transform) { transform_ = transform; }
+  engine::Transform* mutable_transform() { return &transform_; }
   const Transform& transform() const { return transform_; }
   void SetFront(const glm::vec3& front);
   const glm::vec3& front() const { return front_; }

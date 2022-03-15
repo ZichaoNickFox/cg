@@ -1,6 +1,7 @@
 #include "playground/scene/common.h"
 
 #include "imgui.h"
+#include <glog/logging.h>
 
 void RenderGoToGallery(Context* context) {
   ImGui::SetNextWindowPos(ImVec2(0, 0));
@@ -13,7 +14,10 @@ void RenderGoToGallery(Context* context) {
   ImGui::End();
 }
 
-void MoveCameraByIo(Context* context) {
+void ControlCameraByIo(Context* context) {
+  if (context->io().gui_captured_mouse()) {
+    return;
+  }
   engine::Camera* camera = context->mutable_camera();
   const float kMoveSpeed = 0.1;
   if (context->io().HadKeyInput("w")) {

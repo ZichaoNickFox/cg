@@ -41,7 +41,7 @@ void CubeWorldScene::OnEnter(Context *context)
 
 void CubeWorldScene::OnUpdate(Context *context)
 {
-  MoveCameraByIo(context);
+  ControlCameraByIo(context);
 }
 
 void CubeWorldScene::OnGui(Context *context)

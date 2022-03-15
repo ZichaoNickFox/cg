@@ -44,12 +44,7 @@ void Framework::InitScene() {
   }
 }
 
-void Framework::BeginFrame(const IoInput& io_input) {
-  for (const std::string& key_input : io_input.key_input) {
-    context_.mutable_io()->FeedKeyInput(key_input);
-  }
-  context_.mutable_io()->FeedCursorPos(io_input.cursor_x, io_input.cursor_y);
-  context_.mutable_io()->FeedButtonInput(io_input.left_button_pressed, io_input.right_button_pressed);
+void Framework::BeginFrame() {
 }
 
 void Framework::Update() {

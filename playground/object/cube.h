@@ -17,6 +17,7 @@ class Cube {
   void SetMaterial(const engine::Material& material) { material_ = material; }
   void SetTransform(const engine::Transform& transform) { transform_ = transform; }
   engine::Material* mutable_material() { return &material_; }
+  engine::Transform* mutable_transform() { return &transform_; }
 
  private: 
   GLuint vao_;
