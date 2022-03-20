@@ -5,6 +5,7 @@
 #include "glog/logging.h"
 #include <memory>
 
+#include "engine/util.h"
 #include "playground/scene/common.h"
 
 void CubeWorldScene::OnEnter(Context *context)
@@ -25,7 +26,7 @@ void CubeWorldScene::OnEnter(Context *context)
     engine::Transform cube_transform(cube_positions_[i], glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
     cube->SetTransform(cube_transform);
     engine::Material material;
-    material.SetLocationValue("texture0", 0, context->mutable_texture_repo()->GetOrLoadTexture("cube_texture"));
+    material.SetTexture("texture0", context->mutable_texture_repo()->GetOrLoadTexture("cube_texture"));
     material.SetShader(context->mutable_shader_repo()->GetOrLoadShader("cube"));
     cube->SetMaterial(material);
     cubes_.push_back(std::move(cube));

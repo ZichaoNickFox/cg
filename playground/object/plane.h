@@ -7,9 +7,9 @@
 #include "engine/transform.h"
 #include "playground/context.h"
 
-class Cube {
+class Plane {
  public:
-  Cube();
+  Plane();
   void OnUpdate(Context *context);
   void OnRender(Context *context);
   void OnDestory(Context *context);

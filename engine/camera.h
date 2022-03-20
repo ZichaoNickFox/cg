@@ -47,7 +47,7 @@ private:
   float fov_ = 30.0;
   float aspect_ = 1920.0f / 1080.0f;
   float near_clip_ = 0.1;
-  float far_clip_ = 100;
+  float far_clip_ = 250;
   Type type_ = Type::Perspective;
 
   Transform transform_;

@@ -11,13 +11,13 @@ class TextureRepo {
   void Init(const Config& config);
 
   std::shared_ptr<Texture> GetOrLoadTexture(const std::string& name);
-  bool SaveToFile(const std::string& fullPath, GLuint tex);
+  bool SaveTexture2D(const std::string& fullPath, GLuint tex);
 
  private:
-  std::shared_ptr<Texture> LoadFromFile(const std::string& fileName, bool useMipmap = false);
-  bool SaveToFile( const std::string& fullPath, int width, int height, int channels, const unsigned char *const data);
+  std::shared_ptr<Texture> LoadTexture2D(const std::string& fileName, bool useMipmap = false);
+  bool SaveTexture2D( const std::string& fullPath, int width, int height, int channels, const unsigned char *const data);
   
-  Texture LoadCubeMap(const std::vector<std::string>& path);
+  std::shared_ptr<Texture> LoadCubeMap(const std::vector<std::string>& path);
   int SaveCubeMap( const std::vector<std::string>& fullPaths, GLuint tex);
 
   void ParseImageFormat(const std::string& fileName, int* SOILfmt, GLint* internalFormat);
@@ -26,14 +26,14 @@ class TextureRepo {
   Texture CreateFromData( GLubyte* data, int width, int height, bool useMipmap = false);
 
   int GetInternalFormatSize(int internalFormat);
-  void ParseImageFormat(const std::string& fileName, int& SOILfmt, GLint& internalFormat);
 
   Texture Copy(GLuint source);
 
   struct State {
     std::shared_ptr<Texture> texture;
     bool loaded = false;
-    std::string path;
+    std::vector<std::string> paths;
+    Texture::Type texture_type;
   };
   std::unordered_map<std::string, State> textures_;
 };

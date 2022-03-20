@@ -28,9 +28,9 @@ void TestScene::OnEnter(Context* context) {
   int texcoord_offset = 3 * sizeof(float);
   int color_offset = 5 * sizeof(float);
   int vertex_size = 8 * sizeof(float);
-  glVertexAttribPointer(kPosLayout, 3, GL_FLOAT, GL_FALSE, vertex_size, (void*)(pos_offset));
-  glVertexAttribPointer(kTexcoordLayout, 2, GL_FLOAT, GL_FALSE, vertex_size, (void*)(texcoord_offset));
-  glVertexAttribPointer(kColorLayout, 3, GL_FLOAT, GL_FALSE, vertex_size, (void*)(color_offset));
+  glVertexAttribPointer(kPosLayout, 3, GL_FLOAT, GL_FALSE, vertex_size, reinterpret_cast<void*>(pos_offset));
+  glVertexAttribPointer(kTexcoordLayout, 2, GL_FLOAT, GL_FALSE, vertex_size, reinterpret_cast<void*>(texcoord_offset));
+  glVertexAttribPointer(kColorLayout, 3, GL_FLOAT, GL_FALSE, vertex_size, reinterpret_cast<void*>(color_offset));
 
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);

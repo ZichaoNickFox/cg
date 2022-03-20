@@ -8,8 +8,8 @@ namespace engine {
 class Texture {
  public:
   enum Type{
-    Texture2D,
-    CubeMap
+    Texture2D = 0,
+    CubeMap = 1
   };
 
   Texture() {}

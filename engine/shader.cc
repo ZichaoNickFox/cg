@@ -11,31 +11,67 @@ Shader& Shader::operator=(const Shader& other) {
   return *this;
 }
 
-Shader::Shader(const std::string& name, const std::string& vs, const std::string& fs) {
+Shader::Shader(const std::string& name, const std::string& vs, const std::string& fs,
+               const std::string& gs, const std::string& ts) {
+  bool have_gs = gs != "";
+  bool have_ts = ts != "";
   name_ = name;
 
-  unsigned int vertex, fragment;
-  // vertex shader
-  vertex = glCreateShader(GL_VERTEX_SHADER);
+  unsigned int vertex, fragment, geometry, tessellation;
   const char* vs_code = vs.data();
   const char* fs_code = fs.data();
+  const char* gs_code = gs.data();
+  const char* ts_code = ts.data();
+
+  // vertex shader
+  vertex = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(vertex, 1, &vs_code, NULL);
   glCompileShader(vertex);
   CheckCompileErrors(vertex, "vertex");
-  // fragment Shader
+
+  // geometry shader
+  if (have_gs) {
+    geometry = glCreateShader(GL_GEOMETRY_SHADER);
+    glShaderSource(geometry, 1, &gs_code, NULL);
+    glCompileShader(geometry);
+    CheckCompileErrors(geometry, "geometry");
+  }
+
+  // fragment shader
   fragment = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(fragment, 1, &fs_code, NULL);
   glCompileShader(fragment);
   CheckCompileErrors(fragment, "fragment");
+
+  // tessellation shader
+  if (have_ts) {
+    tessellation = glCreateShader(GL_TESS_CONTROL_SHADER);
+    glShaderSource(tessellation, 1, &ts_code, NULL);
+    glCompileShader(tessellation);
+    CheckCompileErrors(tessellation, "tellsellation");
+  }
+  
   // shader Program
   id_ = glCreateProgram();
   glAttachShader(id_, vertex);
+  if (have_gs) {
+    glAttachShader(id_, geometry);
+  }
+  if (have_ts) {
+    glAttachShader(id_, tessellation);
+  }
   glAttachShader(id_, fragment);
   glLinkProgram(id_);
   CheckCompileErrors(id_, "program");
   // delete the shaders as they're linked into our program now and no longer necessary
   glDeleteShader(vertex);
   glDeleteShader(fragment);
+  if (have_gs) {
+    glDeleteShader(geometry);
+  }
+  if (have_ts) {
+    glDeleteShader(tessellation);
+  }
 }
 
 void Shader::Use() const {

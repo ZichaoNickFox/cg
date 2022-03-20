@@ -7,6 +7,7 @@ bazel build \
   --cxxopt="-Wunused-private-field" \
   --cxxopt="-Wdelete-non-abstract-non-virtual-dtor" \
   --cxxopt="-Wunused-variable" \
+  --cxxopt="-Wint-to-void-pointer-cast" \
   //playground:playground
 
 # run

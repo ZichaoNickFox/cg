@@ -7,4 +7,7 @@ enum SceneType {
   Triangle = 3;
   CubeWorld = 4;
   Phong = 5;
+  Shadow = 6;
+  Skybox = 7;
+  ShadowMap = 8;
 }

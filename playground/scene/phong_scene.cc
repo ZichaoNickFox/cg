@@ -17,8 +17,8 @@ void PhongScene::OnEnter(Context *context)
   engine::Transform light_transform(kLightPos, {0, 0, 0}, kLightScale);
   light_.SetTransform(light_transform);
   engine::Material material;
-  material.SetShader(context->mutable_shader_repo()->GetOrLoadShader("phong_light"));
-  material.SetLocationValue("light_color", kLightColor);
+  material.SetShader(context->mutable_shader_repo()->GetOrLoadShader("point_light"));
+  material.SetVec3("light_color", kLightColor);
   light_.SetMaterial(material);
 
   // http://www.barradeau.com/nicoptere/dump/materials.html
@@ -26,13 +26,9 @@ void PhongScene::OnEnter(Context *context)
   engine::Transform cube_transform;
   cube_transform.SetTranslation(kCubePosition);
   engine::Material cube_material;
-  cube_material.SetShader(context->mutable_shader_repo()->GetOrLoadShader("phong_cube"));
-  cube_material.SetLocationValue("material.ambient", glm::vec3(0.24725, 0.1995, 0.0745));
-  cube_material.SetLocationValue("material.diffuse", glm::vec3(0.75164, 0.60648, 0.22648));
-  cube_material.SetLocationValue("material.specular", glm::vec3(0.628281, 0.555802, 0.366065));
-  cube_material.SetLocationValue("material.shininess", 51.2);
-  cube_material.SetLocationValue("light_color", kLightColor);
-  cube_material.SetLocationValue("light_pos", kLightPos);
+  cube_material.SetShader(context->mutable_shader_repo()->GetOrLoadShader("phong"));
+  cube_material.SetVec3("light_color", kLightColor);
+  cube_material.SetVec3("light_pos", kLightPos);
   cube_.SetMaterial(cube_material);
 
   engine::Camera* camera = context->mutable_camera();
@@ -49,25 +45,46 @@ void PhongScene::OnUpdate(Context *context)
   light_.OnUpdate(context);
 
   light_.mutable_transform()->SetScale(light_scale_);
-  light_.mutable_material()->SetLocationValue("light_color", light_color_);
+  light_.mutable_material()->SetVec3("light_color", light_color_);
+  cube_.mutable_material()->SetVec3("light_color", light_color_);
 }
 
 void PhongScene::OnGui(Context *context)
 {
-  RenderGoToGallery(context);
   bool open = true;
   ImGui::Begin("PhongScene", &open, ImGuiWindowFlags_AlwaysAutoResize);
+  RenderGoToGallery(context);
+
+  ImGui::Separator();
+
   ImGui::SliderFloat3("light_scale", (float*)&light_scale_, 0, 2);
   ImGui::ColorEdit3("light_color", (float*)&light_color_);
+
   ImGui::Separator();
+
   ImGui::Text("camera_location %s", glm::to_string(context->camera().transform().translation()).c_str());
   ImGui::Text("camera_front %s", glm::to_string(context->camera().front()).c_str());
+
+  if (ImGui::Button("gold")) {
+    material_property_ = gold_;
+  } else if (ImGui::Button("silver")) {
+    material_property_ = silver_;
+  } else if (ImGui::Button("jade")) {
+    material_property_ = jade_;
+  } else if (ImGui::Button("rube")) {
+    material_property_ = ruby_;
+  }
+  cube_.mutable_material()->SetVec3("material.ambient", material_property_.ambient);
+  cube_.mutable_material()->SetVec3("material.diffuse", material_property_.diffuse);
+  cube_.mutable_material()->SetVec3("material.specular", material_property_.specular);
+  cube_.mutable_material()->SetFloat("material.shininess", material_property_.shininess);
+
   ImGui::End();
 }
 
 void PhongScene::OnRender(Context *context)
 {
-  cube_.mutable_material()->SetLocationValue("view_pos", context->camera().transform().translation());
+  cube_.mutable_material()->SetVec3("view_pos", context->camera().transform().translation());
   cube_.OnRender(context);
   light_.OnRender(context);
 }

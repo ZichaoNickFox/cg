@@ -5,11 +5,15 @@ cc_library(
   name = "object",
   srcs = [
     "cube.h",
-    "cube.cc"
+    "cube.cc",
+    "plane.h",
+    "plane.cc",
+    "lines.h",
+    "lines.cc"
   ],
   deps = [
     "//engine:engine",
-    "//playground:context"
+    "//playground:context",
   ],
   linkopts = [
     "-lfmt",

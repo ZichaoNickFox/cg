@@ -1,11 +1,11 @@
-#include "engine/file_util.h"
+#include "engine/util.h"
 
 #include <fstream>
 #include <glog/logging.h>
 #include <string>
 
 namespace engine {
-namespace file_util {
+namespace util {
 
 void ReadFileToString(const std::string& path, std::string* content) {
   CHECK(content);
@@ -22,5 +22,12 @@ std::string GetFileExt(const std::string& file_name) {
   return file_name.substr(pos + 1);
 }
 
+bool EndsWith(const std::string& str, const std::string& ending) {
+  if (str.length() >= ending.length()) {
+    return (0 == str.compare (str.length() - ending.length(), ending.length(), ending));
+  } else {
+    return false;
+  }
+}
 }
 }

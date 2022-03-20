@@ -4,6 +4,8 @@ message ShaderConfig {
   string name = 1;
   string vs_path = 2;
   string fs_path = 3;
+  optional string gs_path = 4;
+  optional string ts_path = 5;
 }
 
 enum TextureType {
@@ -13,11 +15,11 @@ enum TextureType {
 
 message TextureConfig {
   string name = 1;
-  string path = 2;
+  repeated string paths = 2;
   TextureType texture_type = 3;
 }
 
 message Config {
-  repeated ShaderConfig shader_config = 2;
-  repeated TextureConfig texture_config = 3;
+  repeated ShaderConfig shader_config = 1;
+  repeated TextureConfig texture_config = 2;
 }

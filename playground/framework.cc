@@ -2,17 +2,19 @@
 
 #include "imgui.h"
 
-#include "engine/file_util.h"
-#include "engine/proto_util.h"
+#include "engine/util.h"
 #include "playground/scene/imgui_demo_scene.h"
 #include "playground/scene/gallery_scene.h"
 #include "playground/scene/test_scene.h"
 #include "playground/scene/triangle_scene.h"
 #include "playground/scene/cube_world_scene.h"
 #include "playground/scene/phong_scene.h"
+#include "playground/scene/shadow_scene.h"
+#include "playground/scene/skybox_scene.h"
+#include "playground/scene/shadow_map_scene.h"
 
 namespace {
-const SceneType kDefaultSceneType = SceneType::Phong;
+const SceneType kDefaultSceneType = SceneType::ShadowMap;
 }
 
 void Framework::Init(const std::string& config_path) {
@@ -22,10 +24,10 @@ void Framework::Init(const std::string& config_path) {
 
 void Framework::InitContext(const std::string& config_path) {
   std::string content;
-  engine::file_util::ReadFileToString(config_path, &content);
+  engine::util::ReadFileToString(config_path, &content);
 
   Config config;
-  engine::proto_util::ParseFromString(content, &config);
+  engine::util::ParseFromString(content, &config);
   context_.Init(config);
 
   SwitchScene(kDefaultSceneType, true);
@@ -38,6 +40,9 @@ void Framework::InitScene() {
   scene_map_.insert(std::make_pair(Triangle, std::make_unique<TriangleScene>()));
   scene_map_.insert(std::make_pair(CubeWorld, std::make_unique<CubeWorldScene>()));
   scene_map_.insert(std::make_pair(Phong, std::make_unique<PhongScene>()));
+  scene_map_.insert(std::make_pair(Shadow, std::make_unique<ShadowScene>()));
+  scene_map_.insert(std::make_pair(Skybox, std::make_unique<SkyboxScene>()));
+  scene_map_.insert(std::make_pair(ShadowMap, std::make_unique<ShadowMapScene>()));
 
   if (SceneType_ARRAYSIZE != scene_map_.size()) {
     CHECK(false) << "Add scene here";

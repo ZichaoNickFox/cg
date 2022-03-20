@@ -17,11 +17,12 @@ class Material {
   void SetShader(std::shared_ptr<Shader> shader) { shader_ = shader; }
   std::shared_ptr<Shader> shader() const { return CHECK_NOTNULL(shader_); }
 
-  void SetLocationValue(const std::string& location, float value);
-  void SetLocationValue(const std::string& location, const glm::mat4& value);
-  void SetLocationValue(const std::string& location, int texture_unit, std::shared_ptr<Texture> value);
-  void SetLocationValue(const std::string& location, const glm::vec4& value);
-  void SetLocationValue(const std::string& location, const glm::vec3& value);
+  void SetFloat(const std::string& location, float value);
+  void SetMat4(const std::string& location, const glm::mat4& value);
+  // return texture unit
+  int SetTexture(const std::string& location, std::shared_ptr<Texture> value);
+  void SetVec4(const std::string& location, const glm::vec4& value);
+  void SetVec3(const std::string& location, const glm::vec3& value);
 
   void PrepareShader();
 
