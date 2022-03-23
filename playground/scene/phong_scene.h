@@ -49,4 +49,5 @@ class PhongScene : public Scene {
 
   Cube cube_;
   Cube light_;
+  std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
 };

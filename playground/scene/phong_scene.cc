@@ -14,7 +14,7 @@ void PhongScene::OnEnter(Context *context)
   const glm::vec3 kLightColor = glm::vec3(0.0, 1.0, 0.0);
   const glm::vec3 kLightPos = glm::vec3(1, 1, 0);
   const glm::vec3 kLightScale = glm::vec3(0.4, 0.4, 0.4);
-  engine::Transform light_transform(kLightPos, {0, 0, 0}, kLightScale);
+  engine::Transform light_transform(kLightPos, glm::quat(glm::vec3(0, 0, 0)), kLightScale);
   light_.SetTransform(light_transform);
   engine::Material material;
   material.SetShader(context->mutable_shader_repo()->GetOrLoadShader("point_light"));
@@ -31,9 +31,9 @@ void PhongScene::OnEnter(Context *context)
   cube_material.SetVec3("light_pos", kLightPos);
   cube_.SetMaterial(cube_material);
 
-  engine::Camera* camera = context->mutable_camera();
-  camera->mutable_transform()->SetTranslation(glm::vec3(-1.0, 1.5, 1.1));
-  camera->SetFront(glm::vec3(0.7, -0.4, -0.4));
+  camera_->mutable_transform()->SetTranslation(glm::vec3(-1.0, 1.5, 1.1));
+  // camera_->SetFront(glm::vec3(0.7, -0.4, -0.4));
+  context->PushCamera(camera_);
 
   glEnable(GL_DEPTH_TEST);
 }
@@ -93,4 +93,5 @@ void PhongScene::OnExit(Context *context)
 {
   cube_.OnDestory(context);
   light_.OnDestory(context);
+  context->PopCamera();
 }

@@ -8,6 +8,7 @@ bazel build \
   --cxxopt="-Wdelete-non-abstract-non-virtual-dtor" \
   --cxxopt="-Wunused-variable" \
   --cxxopt="-Wint-to-void-pointer-cast" \
+  --cxxopt="-Wreturn-stack-address" \
   //playground:playground
 
 # run

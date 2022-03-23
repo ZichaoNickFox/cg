@@ -6,8 +6,10 @@
 #include "engine/texture.h"
 #include "engine/transform.h"
 #include "playground/context.h"
+#include "playground/object/lines.h"
+#include "playground/object/object.h"
 
-class Cube {
+class Cube : public Object {
  public:
   Cube();
   void OnUpdate(Context *context);
@@ -15,16 +17,11 @@ class Cube {
   void OnDestory(Context *context);
 
   void SetMaterial(const engine::Material& material) { material_ = material; }
-  void SetTransform(const engine::Transform& transform) { transform_ = transform; }
   engine::Material* mutable_material() { return &material_; }
-  engine::Transform* mutable_transform() { return &transform_; }
 
  private: 
   GLuint vao_;
   GLuint vbo_;
 
   engine::Material material_;
-  engine::Transform transform_;
-
-  std::string name_;
 };

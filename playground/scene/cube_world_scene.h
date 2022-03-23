@@ -20,5 +20,6 @@ class CubeWorldScene : public Scene {
   static constexpr int kCubeNum = 10; 
   glm::vec3 cube_positions_[kCubeNum];
 
+  std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
   std::vector<std::unique_ptr<Cube>> cubes_;
 };

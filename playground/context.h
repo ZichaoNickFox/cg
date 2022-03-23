@@ -1,5 +1,9 @@
 #pragma once
 
+#include <stack>
+
+#include <glog/logging.h>
+
 #include "engine/camera.h"
 #include "engine/config.pb.h"
 #include "engine/io.h"
@@ -25,8 +29,10 @@ class Context {
   const engine::Io& io() { return io_; }
   engine::Io* mutable_io() { return &io_; }
 
-  const engine::Camera& camera() { return main_camera_; }
-  engine::Camera* mutable_camera() { return &main_camera_; }
+  void PushCamera(std::shared_ptr<engine::Camera> camera) { cameras_.push(camera); }
+  void PopCamera() { cameras_.pop(); }
+  const engine::Camera& camera();
+  engine::Camera* mutable_camera();
 
  private:
   SceneType current_scene_type_;
@@ -37,5 +43,5 @@ class Context {
 
   engine::Io io_;
 
-  engine::Camera main_camera_;
+  std::stack<std::weak_ptr<engine::Camera>> cameras_;
 };

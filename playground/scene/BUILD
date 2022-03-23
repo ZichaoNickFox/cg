@@ -26,6 +26,7 @@ cc_library(
     "triangle_scene.cc",
   ],
   deps = [
+    "//engine/frame_buffer:frame_buffer",
     "//playground:context",
     "//playground:scene",
     "//playground/object:object",

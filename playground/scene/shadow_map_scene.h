@@ -1,10 +1,12 @@
 #pragma once
 
 #include "engine/camera.h"
+#include "engine/frame_buffer/depth_frame_buffer.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
 #include "playground/object/cube.h"
+#include "playground/object/directional_light.h"
 #include "playground/object/lines.h"
 #include "playground/object/plane.h"
 #include "playground/scene.h"
@@ -18,6 +20,8 @@ class ShadowMapScene : public Scene {
   void OnExit(Context* context);
 
  private:
+  void RenderOnce(Context* context);
+
   struct MaterialProperty {
     glm::vec3 ambient;
     glm::vec3 diffuse;
@@ -34,14 +38,14 @@ class ShadowMapScene : public Scene {
   glm::vec3 light_scale_ = glm::vec3(.2, .2, .2);
   glm::vec3 light_color_ = glm::vec3(1, 1, 1);
 
-  glm::vec3 cube0_pos_ = glm::vec3(0, 0, 0);
-
   std::vector<Cube> cubes_;
   std::vector<engine::Transform> cube_transforms_;
 
   Cube light_;
   Lines coord_;
   Plane plane_;
+  DirectionalLight directional_light_;
+  std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
 };
 #pragma once
 

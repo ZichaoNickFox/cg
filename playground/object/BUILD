@@ -6,6 +6,9 @@ cc_library(
   srcs = [
     "cube.h",
     "cube.cc",
+    "directional_light.h",
+    "directional_light.cc",
+    "object.h",
     "plane.h",
     "plane.cc",
     "lines.h",
@@ -13,6 +16,7 @@ cc_library(
   ],
   deps = [
     "//engine:engine",
+    "//engine/frame_buffer:frame_buffer",
     "//playground:context",
   ],
   linkopts = [

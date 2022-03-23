@@ -5,10 +5,10 @@
 #include "engine/shader.h"
 #include "engine/shader_repo.h"
 #include "engine/texture.h"
-#include "engine/transform.h"
 #include "playground/context.h"
+#include "playground/object/object.h"
 
-class Lines {
+class Lines : public Object {
  public:
   struct Data {
     std::vector<glm::vec3> points;

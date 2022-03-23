@@ -34,10 +34,10 @@ void CubeWorldScene::OnEnter(Context *context)
 
   glEnable(GL_DEPTH_TEST);
 
-  engine::Camera* camera = context->mutable_camera();
   engine::Transform camera_transform(glm::vec3(0, 0, 10), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
-  camera->SetTransform(camera_transform);
-  camera->SetFront(glm::vec3(0, 0, -1));
+  camera_->SetTransform(camera_transform);
+  // camera_->SetFront(glm::vec3(0, 0, -1));
+  context->PushCamera(camera_);
 }
 
 void CubeWorldScene::OnUpdate(Context *context)
@@ -59,4 +59,5 @@ void CubeWorldScene::OnRender(Context *context)
 
 void CubeWorldScene::OnExit(Context *context)
 {
+  context->PopCamera();
 }

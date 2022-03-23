@@ -4,14 +4,10 @@
 #include <glog/logging.h>
 
 void RenderGoToGallery(Context* context) {
-  ImGui::SetNextWindowPos(ImVec2(0, 0));
-  bool open = true;
-  ImGui::Begin("GoToGalleryWidown", &open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize);
   ImGui::Text("Scene : %s", SceneType_Name(context->current_scene_type()).c_str());
   if (ImGui::Button("Go To Gallery")) {
     context->SetNextSceneType(SceneType::Gallery);
   }
-  ImGui::End();
 }
 
 void ControlCameraByIo(Context* context) {

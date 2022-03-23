@@ -39,6 +39,7 @@ class ShadowScene : public Scene {
   Cube light_;
   Lines coord_;
   Plane plane_;
+  std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
 };
 #pragma once
 

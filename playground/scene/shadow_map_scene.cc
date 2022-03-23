@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <glm/gtx/transform.hpp>
 #include "glog/logging.h"
 #include "imgui.h"
 #include <memory>
@@ -11,7 +12,7 @@
 
 void ShadowMapScene::OnEnter(Context *context)
 {
-  engine::Transform light_transform(light_pos_, {0, 0, 0}, light_scale_);
+  engine::Transform light_transform(light_pos_, glm::quat(glm::vec3(0, 0, 0)), light_scale_);
   light_.SetTransform(light_transform);
   engine::Material light_material;
   light_material.SetShader(context->mutable_shader_repo()->GetOrLoadShader("point_light"));
@@ -31,9 +32,9 @@ void ShadowMapScene::OnEnter(Context *context)
     cube->SetMaterial(cube_material);
   }
 
-  engine::Camera* camera = context->mutable_camera();
-  camera->mutable_transform()->SetTranslation(glm::vec3(-1.0, 1.5, 1.1));
-  camera->SetFront(glm::vec3(0.7, -0.4, -0.4));
+  camera_->mutable_transform()->SetTranslation(glm::vec3(5.3, 4.3, -3.5));
+  camera_->mutable_transform()->SetRotation(glm::quat(glm::vec3(2.7, 0.75, -3.1)));
+  context->PushCamera(camera_);
 
   std::vector<glm::vec3> positions{glm::vec3(0, 0, 0), glm::vec3(2, 0, 0), glm::vec3(0, 0, 0), glm::vec3(0, 2, 0),
                                    glm::vec3(0, 0, 0), glm::vec3(0, 0, 2)};
@@ -52,6 +53,7 @@ void ShadowMapScene::OnEnter(Context *context)
   plane_transform.SetTranslation(glm::vec3(0, -1, 0));
   plane_transform.SetScale(glm::vec3(10, 0, 10));
   plane_.SetTransform(plane_transform);
+
 
   glEnable(GL_DEPTH_TEST);
 }
@@ -89,12 +91,14 @@ void ShadowMapScene::OnGui(Context *context)
   ImGui::Text("camera_location %s", glm::to_string(context->camera().transform().translation()).c_str());
   ImGui::Text("camera_front %s", glm::to_string(context->camera().front()).c_str());
 
-  ImGui::SliderFloat3("cube0_pos", (float*)&cube0_pos_, -20, 0);
+  ImGui::SliderFloat3("cube0_location", (float*)cubes_[0].mutable_transform()->mutable_translation(), -20, 0);
+  glm::vec3 euler = glm::eulerAngles(camera_->transform().rotation());
+  ImGui::SliderFloat3("cube0_rotate", (float*)&euler, -5, 5);
+  ImGui::SliderFloat3("cube0_scale", (float*)cubes_[0].mutable_transform()->mutable_scale(), -2, 2);
 
   light_.mutable_material()->SetVec3("light_color", light_color_);
   light_.mutable_transform()->SetTranslation(light_pos_);
 
-  cubes_[0].mutable_transform()->SetTranslation(cube0_pos_);
 
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
@@ -108,11 +112,33 @@ void ShadowMapScene::OnGui(Context *context)
   plane_.mutable_material()->SetVec3("light_pos", light_pos_);
   plane_.mutable_material()->SetVec3("light_color", light_color_);
 
+  ImGui::Separator();
+
+  ImGui::Text("Camera Type");
+  ImGui::SameLine();
+  if (ImGui::Button("Perceptive")) {
+    camera_->SetType(engine::Camera::Perspective);
+  }
+  ImGui::SameLine();
+  if (ImGui::Button("Orthographic")) {
+    camera_->SetType(engine::Camera::Orthographic);
+  }
+
   ImGui::End();
 }
 
 void ShadowMapScene::OnRender(Context *context)
 {
+  // directional_light_.ShadowMapRenderBegin(context);
+  // RenderOnce(context);
+  // directional_light_.ShadowMapRenderEnd(context);
+  // std::shared_ptr<engine::Texture> texture = directional_light_.GetShadowMap();
+  // engine::texture::SaveTexture2D("aaa", texture->id());
+
+  RenderOnce(context);
+}
+
+void ShadowMapScene::RenderOnce(Context* context) {
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
     cube->mutable_material()->SetVec3("view_pos", context->camera().transform().translation());
@@ -133,4 +159,6 @@ void ShadowMapScene::OnExit(Context *context)
   light_.OnDestory(context);
   coord_.OnDestory(context);
   plane_.OnDestory(context);
+
+  context->PopCamera();
 }

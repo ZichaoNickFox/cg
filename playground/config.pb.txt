@@ -34,6 +34,18 @@ shader_config {
   fs_path : "playground/resource/shader/skybox.fs.glsl";
 }
 
+shader_config {
+  name : "color_frame_buffer";
+  vs_path : "engine/frame_buffer/shader/frame_buffer.vs.glsl";
+  fs_path : "engine/frame_buffer/shader/color_frame_buffer.fs.glsl";
+}
+
+shader_config {
+  name : "depth_frame_buffer";
+  vs_path : "engine/frame_buffer/shader/frame_buffer.vs.glsl";
+  fs_path : "engine/frame_buffer/shader/depth_frame_buffer.fs.glsl";
+}
+
 texture_config {
   name : "opengl0";
   paths : "playground/resource/texture/opengl0.jpeg";

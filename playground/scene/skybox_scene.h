@@ -38,6 +38,7 @@ class SkyboxScene : public Scene {
   Cube light_;
   Lines coord_;
   Cube skybox_;
+  std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
 };
 #pragma once
 
