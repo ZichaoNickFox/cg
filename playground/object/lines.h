@@ -3,10 +3,10 @@
 #include "engine/camera.h"
 #include "engine/material.h"
 #include "engine/shader.h"
-#include "engine/shader_repo.h"
 #include "engine/texture.h"
 #include "playground/context.h"
 #include "playground/object/object.h"
+#include "playground/shader_repo.h"
 
 class Lines : public Object {
  public:

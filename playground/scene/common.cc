@@ -4,10 +4,6 @@
 #include <glog/logging.h>
 
 void RenderGoToGallery(Context* context) {
-  ImGui::Text("Scene : %s", SceneType_Name(context->current_scene_type()).c_str());
-  if (ImGui::Button("Go To Gallery")) {
-    context->SetNextSceneType(SceneType::Gallery);
-  }
 }
 
 void ControlCameraByIo(Context* context) {

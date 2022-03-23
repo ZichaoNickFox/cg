@@ -12,6 +12,7 @@ namespace engine {
 class Shader
 {
 public:
+  Shader() {}
   Shader(const std::string& name, const std::string& vs, const std::string& fs,
          const std::string& gs = "", const std::string& ts = "");
   Shader& operator=(const Shader& other);

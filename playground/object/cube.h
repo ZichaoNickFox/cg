@@ -12,9 +12,9 @@
 class Cube : public Object {
  public:
   Cube();
-  void OnUpdate(Context *context);
-  void OnRender(Context *context);
-  void OnDestory(Context *context);
+  void OnUpdate(Context *context) override;
+  void OnRender(Context *context) override;
+  void OnDestory(Context *context) override;
 
   void SetMaterial(const engine::Material& material) { material_ = material; }
   engine::Material* mutable_material() { return &material_; }

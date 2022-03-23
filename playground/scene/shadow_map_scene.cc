@@ -54,7 +54,6 @@ void ShadowMapScene::OnEnter(Context *context)
   plane_transform.SetScale(glm::vec3(10, 0, 10));
   plane_.SetTransform(plane_transform);
 
-
   glEnable(GL_DEPTH_TEST);
 }
 
@@ -92,8 +91,16 @@ void ShadowMapScene::OnGui(Context *context)
   ImGui::Text("camera_front %s", glm::to_string(context->camera().front()).c_str());
 
   ImGui::SliderFloat3("cube0_location", (float*)cubes_[0].mutable_transform()->mutable_translation(), -20, 0);
-  glm::vec3 euler = glm::eulerAngles(camera_->transform().rotation());
-  ImGui::SliderFloat3("cube0_rotate", (float*)&euler, -5, 5);
+
+  glm::vec3 axis_x = cubes_[0].transform().rotation() * glm::vec3(1, 0, 0);
+  glm::vec3 axis_y = cubes_[0].transform().rotation() * glm::vec3(0, 1, 0);
+  glm::vec3 axis_z = cubes_[0].transform().rotation() * glm::vec3(0, 0, 1);
+  float angle_xyz[3] = {0};
+  ImGui::SliderFloat3("cube0_rotate_x", angle_xyz, -5, 5);
+  cubes_[0].mutable_transform()->Rotate(glm::angleAxis(angle_xyz[0], axis_x));
+  cubes_[0].mutable_transform()->Rotate(glm::angleAxis(angle_xyz[1], axis_y));
+  cubes_[0].mutable_transform()->Rotate(glm::angleAxis(angle_xyz[2], axis_z));
+
   ImGui::SliderFloat3("cube0_scale", (float*)cubes_[0].mutable_transform()->mutable_scale(), -2, 2);
 
   light_.mutable_material()->SetVec3("light_color", light_color_);
@@ -132,7 +139,7 @@ void ShadowMapScene::OnRender(Context *context)
   // directional_light_.ShadowMapRenderBegin(context);
   // RenderOnce(context);
   // directional_light_.ShadowMapRenderEnd(context);
-  // std::shared_ptr<engine::Texture> texture = directional_light_.GetShadowMap();
+  // engine::Texture texture = directional_light_.GetShadowMap();
   // engine::texture::SaveTexture2D("aaa", texture->id());
 
   RenderOnce(context);

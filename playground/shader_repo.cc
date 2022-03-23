@@ -1,10 +1,11 @@
-#include "engine/shader_repo.h"
+#include "playground/shader_repo.h"
 
 #include <glog/logging.h>
 
-#include "engine/util.h"
+#include "playground/util.h"
 
-namespace engine {
+using engine::Shader;
+
 void ShaderRepo::Init(const Config& config) {
   std::string content;
   for (const ShaderConfig& shader_config : config.shader_config()) {
@@ -14,7 +15,7 @@ void ShaderRepo::Init(const Config& config) {
   }
 }
 
-std::shared_ptr<Shader> ShaderRepo::GetOrLoadShader(const std::string& name) {
+Shader ShaderRepo::GetOrLoadShader(const std::string& name) {
   CHECK(shaders_.count(name) > 0) << "No shader name : " << name;
   ShaderData* shader_data = &shaders_[name];
   if (shader_data->loaded == false) {
@@ -42,8 +43,7 @@ std::shared_ptr<Shader> ShaderRepo::GetOrLoadShader(const std::string& name) {
     }
     LOG(ERROR) << "Compiling shader " << name;
     shader_data->loaded = true;
-    shader_data->shader = std::make_shared<Shader>(name, vs, fs, gs, ts);
+    shader_data->shader = Shader(name, vs, fs, gs, ts);
   }
   return shader_data->shader;
-}
 }

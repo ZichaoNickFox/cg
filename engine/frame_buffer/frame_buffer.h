@@ -14,7 +14,7 @@ public:
   void Unbind();
   virtual void Clear() = 0;
 
-  std::shared_ptr<Texture> texture(){ return std::make_shared<Texture>(texture_, Texture::Texture2D); }
+  Texture texture() const { return Texture(texture_, Texture::Texture2D); }
   std::shared_ptr<GLubyte> GetTextureData();
   int width() { return width_; }
   int height() { return height_; }

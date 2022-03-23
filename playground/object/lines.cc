@@ -1,11 +1,10 @@
 #include "playground/object/lines.h"
 
-#include "engine/util.h"
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include "glog/logging.h"
 
-using engine::util::VectorByteSize;
+#include "playground/util.h"
 
 void Lines::SetData(Context *context, const Data& data) {
   OnDestory(context);
@@ -21,9 +20,9 @@ void Lines::OnInit(Context *context, const Data& data) {
   std::vector<glm::vec3> buffer(data.points.size() + data.colors.size(), glm::vec3());
   glGenBuffers(1, &vbo_);
   glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-  glBufferData(GL_ARRAY_BUFFER, VectorByteSize(buffer), buffer.data(), GL_STATIC_DRAW);
-  glBufferSubData(GL_ARRAY_BUFFER, 0, VectorByteSize(data.points), data.points.data());
-  glBufferSubData(GL_ARRAY_BUFFER, VectorByteSize(data.points), VectorByteSize(data.colors), data.colors.data());
+  glBufferData(GL_ARRAY_BUFFER, util::VectorByteSize(buffer), buffer.data(), GL_STATIC_DRAW);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, util::VectorByteSize(data.points), data.points.data());
+  glBufferSubData(GL_ARRAY_BUFFER, util::VectorByteSize(data.points), util::VectorByteSize(data.colors), data.colors.data());
 
   const int kPosLayout = 0;
   const int kColorLayout = 1;
@@ -35,7 +34,7 @@ void Lines::OnInit(Context *context, const Data& data) {
   // Stride param must assign to vertex size 8 * sizeof(float)
   // Offset param means offset in a vertex
   glVertexAttribPointer(kPosLayout, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-  glVertexAttribPointer(kColorLayout, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), reinterpret_cast<void *>(VectorByteSize(data.points)));
+  glVertexAttribPointer(kColorLayout, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), reinterpret_cast<void *>(util::VectorByteSize(data.points)));
 
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);

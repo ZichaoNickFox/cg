@@ -1,6 +1,5 @@
-#include "engine/io.h"
+#include "playground/io.h"
 
-namespace engine {
 void Io::FeedCursorPos(double x, double y) {
   last_cursor_pos_x_ = cursor_pos_x_;
   last_cursor_pos_y_ = cursor_pos_y_;
@@ -15,5 +14,4 @@ void Io::FeedKeyInput(const std::string& key) {
 void Io::FeedButtonInput(bool left, bool right) {
   left_button_pressed_ = left;
   right_button_pressed_ = right;
-}
 }

@@ -4,6 +4,8 @@ load("@rules_proto//proto:defs.bzl", "proto_library")
 cc_library(
   name = "object",
   srcs = [
+    "billboard.h",
+    "billboard.cc",
     "cube.h",
     "cube.cc",
     "directional_light.h",

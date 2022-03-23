@@ -58,7 +58,6 @@ private:
   Type type_ = Type::Perspective;
 
   Transform transform_;
-  glm::vec3 right_ = glm::vec3(1, 0, 0);
   glm::vec3 world_up_ = glm::vec3(0, 1, 0);
 };
 

@@ -14,8 +14,8 @@ void DepthFrameBuffer::Init(int width, int height) {
   glGenFramebuffers(1, &fbo_);
   glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
 
-  std::shared_ptr<Texture> texture = texture::CreateTexture2D(width, height, GL_DEPTH_COMPONENT);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texture->id(), 0);
+  Texture texture = texture::CreateTexture2D(width, height, GL_DEPTH_COMPONENT);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texture.id(), 0);
   glDrawBuffer(GL_NONE);
   glReadBuffer(GL_NONE);
   glBindTexture(GL_TEXTURE_2D, 0);

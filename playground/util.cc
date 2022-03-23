@@ -1,10 +1,9 @@
-#include "engine/util.h"
+#include "playground/util.h"
 
 #include <fstream>
 #include <glog/logging.h>
 #include <string>
 
-namespace engine {
 namespace util {
 
 void ReadFileToString(const std::string& path, std::string* content) {
@@ -28,6 +27,5 @@ bool EndsWith(const std::string& str, const std::string& ending) {
   } else {
     return false;
   }
-}
 }
 }

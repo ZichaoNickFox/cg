@@ -6,7 +6,6 @@
 #include <google/protobuf/text_format.h>
 #include <glog/logging.h>
 
-namespace engine {
 namespace util {
 // file
 void ReadFileToString(const std::string& path, std::string* content);
@@ -33,6 +32,5 @@ std::vector<ElemType> ProtoRepeatedToVector(const google::protobuf::RepeatedPtrF
 template<typename ElemType>
 int VectorByteSize(const std::vector<ElemType>& v) {
   return sizeof(ElemType) * v.size();
-}
 }
 }

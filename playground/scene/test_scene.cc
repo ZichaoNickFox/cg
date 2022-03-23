@@ -39,8 +39,8 @@ void TestScene::OnEnter(Context* context) {
   texture1_ = context->mutable_texture_repo()->GetOrLoadTexture("opengl1");
 
   shader_ = context->mutable_shader_repo()->GetOrLoadShader("triangle");
-  shader_->SetInt("texture0", texture0_->id());
-  shader_->SetInt("texture1", texture1_->id());
+  shader_.SetInt("texture0", texture0_.id());
+  shader_.SetInt("texture1", texture1_.id());
 }
 
 void TestScene::OnUpdate(Context* context) {
@@ -57,7 +57,7 @@ void TestScene::OnRender(Context* context) {
   // glActiveTexture(GL_TEXTURE1);
   // glBindTexture(GL_TEXTURE1, texture1_.id());
 
-  shader_->Use();
+  shader_.Use();
   glBindVertexArray(vao_);
   glDrawArrays(GL_TRIANGLES, 0, 3);
 }

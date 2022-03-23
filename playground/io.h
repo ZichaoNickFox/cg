@@ -3,7 +3,6 @@
 #include <set>
 #include <string>
 
-namespace engine {
 class Io {
  public:
   void FeedCursorPos(double x, double y);
@@ -30,4 +29,3 @@ class Io {
   bool right_button_pressed_ = false;
   bool gui_captured_mouse_ = false;
 };
-}

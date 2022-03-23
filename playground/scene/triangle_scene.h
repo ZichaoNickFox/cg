@@ -16,7 +16,7 @@ class TriangleScene : public Scene {
  private:
   GLuint vao_;
   GLuint vbo_;
-  std::shared_ptr<engine::Texture> texture0_;
-  std::shared_ptr<engine::Texture> texture1_;
-  std::shared_ptr<engine::Shader> shader_;
+  engine::Texture texture0_;
+  engine::Texture texture1_;
+  engine::Shader shader_;
 };

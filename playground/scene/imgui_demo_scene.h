@@ -1,7 +1,6 @@
 #pragma once
 
 #include "playground/context.h"
-#include "playground/scene.pb.h"
 #include "playground/scene.h"
 
 class ImGuiDemoScene : public Scene {

@@ -1,134 +1,83 @@
-#include <stdio.h>
-#include <execinfo.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include "playground/playground.h"
 
 #include "imgui.h"
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
-#include <glog/logging.h>
 
-#include "playground/framework.h"
+#include "playground/scene/imgui_demo_scene.h"
+#include "playground/scene/gallery_scene.h"
+#include "playground/scene/test_scene.h"
+#include "playground/scene/triangle_scene.h"
+#include "playground/scene/cube_world_scene.h"
+#include "playground/scene/phong_scene.h"
+#include "playground/scene/shadow_scene.h"
+#include "playground/scene/skybox_scene.h"
+#include "playground/scene/shadow_map_scene.h"
+#include "playground/util.h"
 
-#include <GLFW/glfw3.h> // Will drag system OpenGL headers
-
-static void glfw_error_callback(int error, const char *description)
-{
-  fprintf(stderr, "Glfw Error %d: %s\n", error, description);
+namespace {
+const std::string kDefaultScene = "ShadowMapScene";
 }
 
-void handler(int sig)
-{
-  void *array[10];
-  size_t size;
-
-  size = backtrace(array, 10);
-
-  fprintf(stderr, "Error: signal %d:\n", sig);
-  backtrace_symbols_fd(array, size, STDERR_FILENO);
-  exit(1);
+void Playground::Init(const std::string& config_path) {
+  InitScene();
+  InitContext(config_path);
 }
 
-void FillIoInput(GLFWwindow* window, ImGuiIO* imgui_io, engine::Io* io) {
-  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    io->FeedKeyInput("w");
-  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    io->FeedKeyInput("s");
-  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    io->FeedKeyInput("a");
-  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-    io->FeedKeyInput("d");
-  
-  double xpos, ypos; 
-  glfwGetCursorPos(window, &xpos, &ypos);
-  io->FeedCursorPos(xpos, ypos);
+void Playground::InitContext(const std::string& config_path) {
+  std::string content;
+  util::ReadFileToString(config_path, &content);
 
-  int left_button_state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1);
-  int right_button_state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2);
-  io->FeedButtonInput(left_button_state == GLFW_PRESS, right_button_state == GLFW_PRESS);
+  Config config;
+  util::ParseFromString(content, &config);
+  context_.Init(config);
 
-  io->SetGuiCapturedMouse(imgui_io->WantCaptureMouse);
+  SwitchScene(kDefaultScene, true);
 }
 
-int main(int argc, char **argv)
-{
-  signal(SIGSEGV, handler); // install our handler
-  signal(SIGABRT, handler); // install our handler
+void Playground::InitScene() {
+  scene_map_.insert(std::make_pair("GalleryScene", std::make_unique<GalleryScene>()));
+  scene_map_.insert(std::make_pair("TestScene", std::make_unique<TestScene>()));
+  scene_map_.insert(std::make_pair("ImGuiDemoScene", std::make_unique<ImGuiDemoScene>()));
+  scene_map_.insert(std::make_pair("TriangleScene", std::make_unique<TriangleScene>()));
+  scene_map_.insert(std::make_pair("CubeWorldScene", std::make_unique<CubeWorldScene>()));
+  scene_map_.insert(std::make_pair("PhongScene", std::make_unique<PhongScene>()));
+  scene_map_.insert(std::make_pair("ShadowScene", std::make_unique<ShadowScene>()));
+  scene_map_.insert(std::make_pair("SkyboxScene", std::make_unique<SkyboxScene>()));
+  scene_map_.insert(std::make_pair("ShadowMapScene", std::make_unique<ShadowMapScene>()));
+}
 
-  glfwSetErrorCallback(glfw_error_callback);
-  CHECK(glfwInit()) << "glfw Init Failed";
+void Playground::BeginFrame() {
+}
 
-  const char *glsl_version = "#version 150";
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // 3.2+ only
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);           // Required on Mac
+void Playground::Update() {
+  if (context_.current_scene() != context_.next_scene()) {
+    SwitchScene(context_.next_scene());
+  }
+}
 
-  // Create window with graphics context
-  GLFWwindow* window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
-  CHECK(window) << "GLFW create window failed";
-  glfwMakeContextCurrent(window);
-  glfwSwapInterval(1); // Enable vsync
+void Playground::Gui() {
+  const std::unique_ptr<Scene>& scene = scene_map_[context_.current_scene()];
+  scene->OnGui(&context_);
+}
 
-  IMGUI_CHECKVERSION();
-  ImGui::CreateContext();
-  ImGui::StyleColorsDark();
-  ImGuiIO& imgui_io = ImGui::GetIO();
+void Playground::Render() {
+  const std::unique_ptr<Scene>& scene = scene_map_[context_.current_scene()];
+  scene->OnUpdate(&context_);
+  scene->OnRender(&context_);
+}
 
-  ImGui_ImplGlfw_InitForOpenGL(window, true);
-  ImGui_ImplOpenGL3_Init(glsl_version);
+void Playground::EndFrame() {
+  context_.mutable_io()->ClearKeyInput();
+}
 
-  glewInit();
-
-  const std::string kConfigPath = "playground/config.pb.txt";
-  Framework framework;
-  framework.Init(kConfigPath);
-
-  ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-  while (!glfwWindowShouldClose(window)) {
-    int display_w, display_h;
-    glfwGetFramebufferSize(window, &display_w, &display_h);
-    glViewport(0, 0, display_w, display_h);
-    glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glClear(GL_DEPTH_BUFFER_BIT);
-
-    glfwPollEvents();
-
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-
-    const engine::Io& io = framework.io();
-    engine::Io* mutable_io = framework.mutable_io();
-    FillIoInput(window, &imgui_io, mutable_io);
-
-    framework.BeginFrame();
-    framework.Gui();
-    if (io.gui_captured_mouse()) {
-      glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    } else {
-      glfwSetInputMode(window, GLFW_CURSOR, io.left_button_pressed() ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
-    }
-    framework.Update();
-    framework.Render();
-
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-    framework.EndFrame();
-
-    glfwSwapBuffers(window);
+void Playground::SwitchScene(const std::string& scene, bool ignore_current_scene) {
+  if (!ignore_current_scene) {
+    const std::unique_ptr<Scene>& current_scene = scene_map_[context_.current_scene()];
+    current_scene->OnExit(&context_);
   }
 
-  ImGui_ImplOpenGL3_Shutdown();
-  ImGui_ImplGlfw_Shutdown();
-  ImGui::DestroyContext();
+  context_.SetCurrentScene(scene);
+  context_.SetNextScene(scene);
 
-  glfwDestroyWindow(window);
-  glfwTerminate();
-
-  return 0;
+  const std::unique_ptr<Scene>& next_scene = scene_map_[scene];
+  next_scene->OnEnter(&context_);
 }

@@ -3,12 +3,12 @@ load("@rules_cc//cc:defs.bzl", "cc_binary")
 
 
 cc_binary(
-  name = "playground",
+  name = "launcher",
   srcs = [
-    "playground.cc",
+    "launcher.cc",
   ],
   deps = [
-    "//playground:framework",
+    "//playground:playground",
     "@imgui//:imgui",
     "@imgui//backends:backends",
   ],
@@ -24,14 +24,14 @@ cc_binary(
 )
 
 cc_library(
-  name = "framework",
+  name = "playground",
   srcs = [
-    "framework.h",
-    "framework.cc",
+    "playground.h",
+    "playground.cc",
   ],
   deps = [
     "//engine:engine",
-    "//playground:cc_scene_proto",
+    "//playground:cc_config_proto",
     "//playground:scene",
     "//playground/scene:scenes",
   ],
@@ -54,10 +54,19 @@ cc_library(
   srcs = [
     "context.h",
     "context.cc",
+    "io.h",
+    "io.cc",
+    "shader_repo.h",
+    "shader_repo.cc",
+    "texture_repo.h",
+    "texture_repo.cc",
+    "util.h",
+    "util.cc",
   ],
   deps = [
     "//engine:engine",
-    "//playground:cc_scene_proto"
+    "//playground:cc_config_proto",
+    "@SOIL2//:SOIL2",
   ],
   linkopts = [
     "-lfmt",
@@ -65,11 +74,11 @@ cc_library(
 )
 
 proto_library(
-  name = "scene_proto",
-  srcs = [ "scene.proto" ]
+  name = "config_proto",
+  srcs = [ "config.proto" ]
 )
 
 cc_proto_library(
-  name = "cc_scene_proto",
-  deps = [ ":scene_proto" ]
+  name = "cc_config_proto",
+  deps = [ ":config_proto" ]
 )

@@ -10,7 +10,7 @@ class DirectionalLight : public Object {
   void Init();
   void ShadowMapRenderBegin(Context* context);
   void ShadowMapRenderEnd(Context* context);
-  std::shared_ptr<engine::Texture> GetShadowMap() { return depth_frame_buffer_.texture(); }
+  engine::Texture GetShadowMap() { return depth_frame_buffer_.texture(); }
 
  private:
   std::shared_ptr<engine::Camera> shadow_map_camera_ = std::make_shared<engine::Camera>();

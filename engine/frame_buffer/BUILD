@@ -15,7 +15,6 @@ cc_library(
   ],
   deps = [
     "//engine:engine",
-    "//engine:cc_config_proto",
     "@SOIL2//:SOIL2",
   ],
   includes = [
@@ -24,16 +23,6 @@ cc_library(
     "-lfmt",
     "-lGLEW",
   ],
-)
-
-proto_library(
-  name = "config_proto",
-  srcs = [ "config.proto" ]
-)
-
-cc_proto_library(
-  name = "cc_config_proto",
-  deps = [ ":config_proto" ]
 )
 
 cc_test (

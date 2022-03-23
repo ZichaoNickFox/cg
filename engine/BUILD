@@ -6,26 +6,18 @@ cc_library(
   srcs = [
     "camera.h",
     "camera.cc",
-    "io.h",
-    "io.cc",
     "material.h",
     "material.cc",
+    "mesh.h",
+    "mesh.cc",
     "shader.h",
     "shader.cc",
-    "shader_repo.h",
-    "shader_repo.cc",
     "texture.h",
     "texture.cc",
-    "texture_repo.h",
-    "texture_repo.cc",
     "transform.h",
     "transform.cc",
-    "util.h",
-    "util.cc",
   ],
   deps = [
-    "//engine:cc_config_proto",
-    "@SOIL2//:SOIL2",
   ],
   includes = [
   ],
@@ -33,16 +25,6 @@ cc_library(
     "-lfmt",
     "-lGLEW",
   ],
-)
-
-proto_library(
-  name = "config_proto",
-  srcs = [ "config.proto" ]
-)
-
-cc_proto_library(
-  name = "cc_config_proto",
-  deps = [ ":config_proto" ]
 )
 
 cc_test (
