@@ -30,7 +30,7 @@ void ColorFrameBuffer::Init(int inWidth, int inHeight) {
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo_);
 
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-    CHECK(false) << "Frame Buffer Status Error";
+    BTCHECK(false) << "Frame Buffer Status Error";
   }
 
   glBindFramebuffer(GL_FRAMEBUFFER,0); 

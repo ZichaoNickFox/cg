@@ -6,6 +6,7 @@
 
 class Object {
  public:
+  virtual ~Object() {}
   virtual void OnUpdate(Context *context) {}
   virtual void OnRender(Context *context) {}
   virtual void OnDestory(Context *context) {}

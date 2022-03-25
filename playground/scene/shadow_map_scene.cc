@@ -54,6 +54,10 @@ void ShadowMapScene::OnEnter(Context *context)
   plane_transform.SetScale(glm::vec3(10, 0, 10));
   plane_.SetTransform(plane_transform);
 
+  directional_light_.Init(context);
+  directional_light_.mutable_transform()->SetTranslation(glm::vec3(-5, 6.3, -4.6));
+  directional_light_.mutable_transform()->SetRotation(glm::quat(glm::vec3(2.48, -0.82, -3.09)));
+  
   glEnable(GL_DEPTH_TEST);
 }
 
@@ -72,6 +76,7 @@ void ShadowMapScene::OnUpdate(Context *context)
 
   coord_.OnUpdate(context);
   plane_.OnUpdate(context);
+  directional_light_.OnUpdate(context);
 }
 
 void ShadowMapScene::OnGui(Context *context)
@@ -89,6 +94,7 @@ void ShadowMapScene::OnGui(Context *context)
 
   ImGui::Text("camera_location %s", glm::to_string(context->camera().transform().translation()).c_str());
   ImGui::Text("camera_front %s", glm::to_string(context->camera().front()).c_str());
+  ImGui::Text("camera_euler %s", glm::to_string(glm::eulerAngles(context->camera().transform().rotation())).c_str());
 
   ImGui::SliderFloat3("cube0_location", (float*)cubes_[0].mutable_transform()->mutable_translation(), -20, 0);
 
@@ -123,12 +129,12 @@ void ShadowMapScene::OnGui(Context *context)
 
   ImGui::Text("Camera Type");
   ImGui::SameLine();
-  if (ImGui::Button("Perceptive")) {
-    camera_->SetType(engine::Camera::Perspective);
+  if (ImGui::Button("Perceptive Camera")) {
+    context->PopCamera();
   }
   ImGui::SameLine();
-  if (ImGui::Button("Orthographic")) {
-    camera_->SetType(engine::Camera::Orthographic);
+  if (ImGui::Button("Orthographic Direction Light")) {
+    context->PushCamera(directional_light_.Test_GetCamera());
   }
 
   ImGui::End();
@@ -136,11 +142,16 @@ void ShadowMapScene::OnGui(Context *context)
 
 void ShadowMapScene::OnRender(Context *context)
 {
-  // directional_light_.ShadowMapRenderBegin(context);
-  // RenderOnce(context);
-  // directional_light_.ShadowMapRenderEnd(context);
-  // engine::Texture texture = directional_light_.GetShadowMap();
-  // engine::texture::SaveTexture2D("aaa", texture->id());
+  /*
+  directional_light_.ShadowMapRenderBegin(context);
+  RenderOnce(context);
+  directional_light_.ShadowMapRenderEnd(context);
+  engine::Texture texture = directional_light_.GetShadowMapTexture();
+  texture::SaveTexture2D("aaa.png", texture.id());
+  directional_light_.OnRender(context);
+
+  CHECK(false);
+  */
 
   RenderOnce(context);
 }

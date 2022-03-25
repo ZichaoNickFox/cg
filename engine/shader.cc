@@ -3,6 +3,8 @@
 #include "glm/gtc/type_ptr.hpp"
 #include <glog/logging.h>
 
+#include "engine/debug.h"
+
 namespace engine {
 
 Shader& Shader::operator=(const Shader& other) {
@@ -27,28 +29,28 @@ Shader::Shader(const std::string& name, const std::string& vs, const std::string
   vertex = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(vertex, 1, &vs_code, NULL);
   glCompileShader(vertex);
-  CheckCompileErrors(vertex, "vertex");
+  BTCHECKCompileErrors(vertex, "vertex");
 
   // geometry shader
   if (have_gs) {
     geometry = glCreateShader(GL_GEOMETRY_SHADER);
     glShaderSource(geometry, 1, &gs_code, NULL);
     glCompileShader(geometry);
-    CheckCompileErrors(geometry, "geometry");
+    BTCHECKCompileErrors(geometry, "geometry");
   }
 
   // fragment shader
   fragment = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(fragment, 1, &fs_code, NULL);
   glCompileShader(fragment);
-  CheckCompileErrors(fragment, "fragment");
+  BTCHECKCompileErrors(fragment, "fragment");
 
   // tessellation shader
   if (have_ts) {
     tessellation = glCreateShader(GL_TESS_CONTROL_SHADER);
     glShaderSource(tessellation, 1, &ts_code, NULL);
     glCompileShader(tessellation);
-    CheckCompileErrors(tessellation, "tellsellation");
+    BTCHECKCompileErrors(tessellation, "tellsellation");
   }
   
   // shader Program
@@ -62,7 +64,7 @@ Shader::Shader(const std::string& name, const std::string& vs, const std::string
   }
   glAttachShader(id_, fragment);
   glLinkProgram(id_);
-  CheckCompileErrors(id_, "program");
+  BTCHECKCompileErrors(id_, "program");
   // delete the shaders as they're linked into our program now and no longer necessary
   glDeleteShader(vertex);
   glDeleteShader(fragment);
@@ -111,12 +113,12 @@ void Shader::SetVec3(const std::string &location_name, const glm::vec3& value) c
 GLint Shader::GetUniformLocation(const std::string& location_name) const {
   GLint res = glGetUniformLocation(id_, location_name.c_str());
   if (res == -1 || res == GL_INVALID_VALUE || res == GL_INVALID_OPERATION) {
-    CHECK(false) << "Cannot find uniform location '" << location_name << "' in shader '" << name_ << "'";
+    BTCHECK(false) << "Cannot find uniform location '" << location_name << "' in shader '" << name_ << "'";
   }
   return res;
 }
 
-void Shader::CheckCompileErrors(unsigned int shader, const std::string& type) {
+void Shader::BTCHECKCompileErrors(unsigned int shader, const std::string& type) {
   int success;
   char info_log[1024];
   if (type != "program")
@@ -125,7 +127,7 @@ void Shader::CheckCompileErrors(unsigned int shader, const std::string& type) {
     if (!success)
     {
       glGetShaderInfoLog(shader, 1024, NULL, info_log);
-      CHECK(false) << type << " shader compile error : " << info_log;
+      BTCHECK(false) << type << " shader compile error : " << info_log;
     }
   }
   else
@@ -134,7 +136,7 @@ void Shader::CheckCompileErrors(unsigned int shader, const std::string& type) {
     if (!success)
     {
       glGetProgramInfoLog(shader, 1024, NULL, info_log);
-      CHECK(false) << "Program link error :" << info_log;
+      BTCHECK(false) << "Program link error :" << info_log;
     }
   }
 }

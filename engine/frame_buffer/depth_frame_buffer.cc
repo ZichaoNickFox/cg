@@ -10,7 +10,6 @@ void DepthFrameBuffer::Init(int width, int height) {
   width_ = width;
   height_ = height;
 
-  // frame buffer object
   glGenFramebuffers(1, &fbo_);
   glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
 
@@ -21,7 +20,7 @@ void DepthFrameBuffer::Init(int width, int height) {
   glBindTexture(GL_TEXTURE_2D, 0);
 
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-    CHECK(false) << "Frame Buffer Status Error";
+    BTCHECK(false) << "Frame Buffer Status Error";
   }
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);

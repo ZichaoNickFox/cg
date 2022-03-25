@@ -1,6 +1,13 @@
 package(default_visibility=["//visibility:public"])
 load("@rules_cc//cc:defs.bzl", "cc_binary")
 
+cc_library (
+  name = "debug",
+  srcs = [
+    "debug.h"
+  ]
+)
+
 cc_library(
   name = "engine",
   srcs = [
@@ -18,6 +25,7 @@ cc_library(
     "transform.cc",
   ],
   deps = [
+    "//engine:debug"
   ],
   includes = [
   ],

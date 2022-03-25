@@ -6,6 +6,8 @@
 #include <google/protobuf/text_format.h>
 #include <glog/logging.h>
 
+#include "engine/debug.h"
+
 namespace util {
 // file
 void ReadFileToString(const std::string& path, std::string* content);
@@ -21,7 +23,7 @@ std::string Format(const char* fmt, const Args&... args) {
 // proto
 template<typename MessageType>
 void ParseFromString(const std::string& content, MessageType* message) {
-  CHECK(google::protobuf::TextFormat::ParseFromString(content, message));
+  BTCHECK(google::protobuf::TextFormat::ParseFromString(content, message));
 }
 template<typename ElemType>
 std::vector<ElemType> ProtoRepeatedToVector(const google::protobuf::RepeatedPtrField<ElemType>& data) {

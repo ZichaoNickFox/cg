@@ -52,6 +52,8 @@ void Playground::Update() {
   if (context_.current_scene() != context_.next_scene()) {
     SwitchScene(context_.next_scene());
   }
+  const std::unique_ptr<Scene>& scene = scene_map_[context_.current_scene()];
+  scene->OnUpdate(&context_);
 }
 
 void Playground::Gui() {
@@ -61,7 +63,6 @@ void Playground::Gui() {
 
 void Playground::Render() {
   const std::unique_ptr<Scene>& scene = scene_map_[context_.current_scene()];
-  scene->OnUpdate(&context_);
   scene->OnRender(&context_);
 }
 

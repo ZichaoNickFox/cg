@@ -16,7 +16,7 @@ Transform::Transform(const glm::vec3& translation, const glm::quat& rotation, co
 glm::mat4 Transform::GetModelMatrix() const {
   glm::mat4 model(1.0);
   model = glm::translate(model, translation_);
-  model = glm::toMat4(rotation_) * model;
+  model = model * glm::toMat4(rotation_);
   model = glm::scale(model, scale_);
   return model;
 }

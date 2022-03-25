@@ -16,8 +16,8 @@ void ShaderRepo::Init(const Config& config) {
 }
 
 Shader ShaderRepo::GetOrLoadShader(const std::string& name) {
-  CHECK(shaders_.count(name) > 0) << "No shader name : " << name;
-  ShaderData* shader_data = &shaders_[name];
+  BTCHECK(shaders_.count(name) > 0) << "No shader name : " << name;
+  ShaderData* shader_data = &shaders_.at(name);
   if (shader_data->loaded == false) {
     std::string vs;
     std::string fs;
@@ -33,13 +33,13 @@ Shader ShaderRepo::GetOrLoadShader(const std::string& name) {
     if (has_ts) {
       util::ReadFileToString(shader_data->config.ts_path(), &ts); 
     }
-    CHECK(vs.size() > 0) << "Load vs failed : " << name;
-    CHECK(fs.size() > 0) << "Load fs failed : " << name;
+    BTCHECK(vs.size() > 0) << "Load vs failed : " << name;
+    BTCHECK(fs.size() > 0) << "Load fs failed : " << name;
     if (has_gs) {
-      CHECK(gs.size() > 0) << "Load gs failed : " << name;
+      BTCHECK(gs.size() > 0) << "Load gs failed : " << name;
     }
     if (has_ts) {
-      CHECK(ts.size() > 0) << "Load ts failed : " << name;
+      BTCHECK(ts.size() > 0) << "Load ts failed : " << name;
     }
     LOG(ERROR) << "Compiling shader " << name;
     shader_data->loaded = true;

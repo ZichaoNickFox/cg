@@ -10,6 +10,7 @@
 #include "backends/imgui_impl_opengl3.h"
 #include <glog/logging.h>
 
+#include "engine/debug.h"
 #include "playground/playground.h"
 
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
@@ -21,13 +22,8 @@ static void glfw_error_callback(int error, const char *description)
 
 void handler(int sig)
 {
-  void *array[10];
-  size_t size;
-
-  size = backtrace(array, 10);
-
   fprintf(stderr, "Error: signal %d:\n", sig);
-  backtrace_symbols_fd(array, size, STDERR_FILENO);
+  BT();
   exit(1);
 }
 
@@ -58,7 +54,7 @@ int main(int argc, char **argv)
   signal(SIGABRT, handler); // install our handler
 
   glfwSetErrorCallback(glfw_error_callback);
-  CHECK(glfwInit()) << "glfw Init Failed";
+  BTCHECK(glfwInit()) << "glfw Init Failed";
 
   const char *glsl_version = "#version 150";
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -68,7 +64,7 @@ int main(int argc, char **argv)
 
   // Create window with graphics context
   GLFWwindow* window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
-  CHECK(window) << "GLFW create window failed";
+  BTCHECK(window) << "GLFW create window failed";
   glfwMakeContextCurrent(window);
   glfwSwapInterval(1); // Enable vsync
 

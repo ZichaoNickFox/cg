@@ -12,7 +12,6 @@ class ShaderRepo {
 
  private:
   struct ShaderData {
-    ShaderData() {}
     ShaderData(const ShaderConfig& in_config) { config = in_config; }
     bool loaded = false;
     engine::Shader shader;

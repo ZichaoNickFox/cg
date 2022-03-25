@@ -9,12 +9,12 @@ namespace engine {
 
 glm::mat4 Camera::GetProjectMatrix() const {
   if (type_ == Type::Perspective) {
-    return glm::perspective(glm::radians(perspective_fov_), perspective_aspect_, near_clip_, far_clip_);
+    return glm::perspective(glm::radians(perspective_fov_), aspect_, near_clip_, far_clip_);
   } else if (type_ == Type::Orthographic) {
     return glm::ortho(-orthographic_width_ / 2, orthographic_width_ / 2,
-                      -orthographic_height_ / 2, orthographic_height_ / 2);
+                      -orthographic_height() / 2, orthographic_height() / 2, near_clip_, far_clip_);
   } else {
-    CHECK(false) << "Unsupported Camera Type";
+    BTCHECK(false) << "Unsupported Camera Type";
     return glm::mat4(1);
   }
 }
@@ -40,13 +40,6 @@ void Camera::RotateHorizontal(float delta) {
 void Camera::RotateVerticle(float delta) {
   glm::quat q = glm::angleAxis(-delta, right());
   transform_.Rotate(q);
-  // glm::mat4 rot = glm::rotate(glm::mat4(1), -delta, right_);
-  // glm::vec3 target_front = glm::normalize(glm::vec3(rot * glm::vec4(front_, 1)));
-  // // front project to y axis need to between 0.95 to -0.95
-  // if (target_front.y < 0.95 && target_front.y > -0.95) {
-  //   front_ = target_front;
-  //   right_ = glm::cross(front_, world_up_);
-  // }
 }
 
 }

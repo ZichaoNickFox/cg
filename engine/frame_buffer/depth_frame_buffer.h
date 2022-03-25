@@ -1,5 +1,6 @@
 #pragma once
 
+#include "engine/debug.h"
 #include "engine/frame_buffer/frame_buffer.h"
 
 namespace engine{

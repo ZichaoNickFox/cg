@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "engine/debug.h"
 #include "engine/transform.h"
 
 namespace engine {
@@ -17,11 +18,13 @@ class Camera {
   };
   void SetPerspectiveFov(float perspective_fov) { perspective_fov_ = perspective_fov; }
   float perspective_fov() const { return perspective_fov_; }
-  void SetPerspectiveAspect(float perspective_aspect) { perspective_aspect_ = perspective_aspect; }
-  float perspective_aspect() const { return perspective_aspect_; }
 
   void SetOrthographicWidth(float width) { orthographic_width_ = width; }
-  void SetOrthographicHeight(float height) { orthographic_height_ = height; }
+  float orthographic_width() const { return orthographic_width_; }
+  float orthographic_height() const { return orthographic_width_ / aspect_; }
+
+  void SetAspect(float aspect) { aspect_ = aspect; }
+  float aspect() const { return aspect_; }
 
   void SetNearClip(float in) { near_clip_ = in; }
   float nearClip() const { return near_clip_; }
@@ -47,13 +50,13 @@ class Camera {
 
 private:
   float perspective_fov_ = 30.0;
-  float perspective_aspect_ = 1920.0f / 1080.0f;
 
-  float orthographic_width_ = 860;
-  float orthographic_height_ = 640;
+  float orthographic_width_ = 10.0;
 
   float near_clip_ = 0.1;
   float far_clip_ = 250;
+  
+  float aspect_ = 1920.0f / 1080.0f;
 
   Type type_ = Type::Perspective;
 

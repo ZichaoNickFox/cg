@@ -6,13 +6,13 @@ void Context::Init(const Config& config) {
 }
 
 const engine::Camera& Context::camera() {
-  CHECK(!cameras_.empty());
-  CHECK(!cameras_.top().expired());
+  BTCHECK(!cameras_.empty());
+  BTCHECK(!cameras_.top().expired());
   return *cameras_.top().lock().get();
 }
 
 engine::Camera* Context::mutable_camera() {
-  CHECK(!cameras_.empty());
-  CHECK(!cameras_.top().expired());
+  BTCHECK(!cameras_.empty());
+  BTCHECK(!cameras_.top().expired());
   return cameras_.top().lock().get();
 }

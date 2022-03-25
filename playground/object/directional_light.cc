@@ -1,7 +1,10 @@
 #include "playground/object/directional_light.h"
 
-void DirectionalLight::Init() {
+#include <glm/gtx/string_cast.hpp>
+
+void DirectionalLight::Init(Context* context) {
   depth_frame_buffer_.Init(shadow_map_width, shadow_map_height);
+  billboard_.Init(context, Billboard::Data{"directional_light"});
 }
 
 void DirectionalLight::ShadowMapRenderBegin(Context* context) {
@@ -12,4 +15,20 @@ void DirectionalLight::ShadowMapRenderBegin(Context* context) {
 void DirectionalLight::ShadowMapRenderEnd(Context* context) {
   depth_frame_buffer_.Unbind();
   context->PopCamera();
+}
+
+void DirectionalLight::OnUpdate(Context* context) {
+  billboard_.SetTransform(transform_);
+  billboard_.OnUpdate(context);
+
+  glm::vec3 from = transform_.translation();
+  glm::vec3 to = transform_.translation() + transform_.rotation() * glm::vec3(0, 0, -10);
+  lines_.SetData(context, Lines::Data{{from, to}, {glm::vec3(1, 1, 1), glm::vec3(1, 1, 1)}, GL_LINES, 1});
+
+  shadow_map_camera_->SetTransform(transform_);
+}
+
+void DirectionalLight::OnRender(Context* context) {
+  billboard_.OnRender(context);
+  lines_.OnRender(context);
 }

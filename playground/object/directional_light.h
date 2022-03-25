@@ -3,14 +3,22 @@
 #include "engine/camera.h"
 #include "engine/frame_buffer/depth_frame_buffer.h"
 #include "playground/context.h"
+#include "playground/object/billboard.h"
+#include "playground/object/lines.h"
 #include "playground/object/object.h"
 
 class DirectionalLight : public Object {
  public:
-  void Init();
+  void Init(Context* context);
   void ShadowMapRenderBegin(Context* context);
   void ShadowMapRenderEnd(Context* context);
-  engine::Texture GetShadowMap() { return depth_frame_buffer_.texture(); }
+  engine::Texture GetShadowMapTexture() { return depth_frame_buffer_.texture(); }
+
+  void OnUpdate(Context *context) override;
+  void OnRender(Context* context) override;
+
+  // TODO : remove
+  std::shared_ptr<engine::Camera> Test_GetCamera() const { return shadow_map_camera_; }
 
  private:
   std::shared_ptr<engine::Camera> shadow_map_camera_ = std::make_shared<engine::Camera>();
@@ -18,4 +26,6 @@ class DirectionalLight : public Object {
   static constexpr int shadow_map_width = 1024;
   static constexpr int shadow_map_height = 1024;
   engine::DepthFrameBuffer depth_frame_buffer_;
+  Billboard billboard_;
+  Lines lines_;
 };

@@ -8,6 +8,7 @@ cc_binary(
     "launcher.cc",
   ],
   deps = [
+    "//engine:debug",
     "//playground:playground",
     "@imgui//:imgui",
     "@imgui//backends:backends",

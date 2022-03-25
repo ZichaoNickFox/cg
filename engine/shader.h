@@ -8,11 +8,13 @@
 #include "GL/glew.h"
 #include "glm/glm.hpp"
 
+#include "engine/debug.h"
+
 namespace engine {
 class Shader
 {
 public:
-  Shader() {}
+  Shader() {}  
   Shader(const std::string& name, const std::string& vs, const std::string& fs,
          const std::string& gs = "", const std::string& ts = "");
   Shader& operator=(const Shader& other);
@@ -27,7 +29,7 @@ public:
   GLuint id() const { return id_; }
 
 private:
-  void CheckCompileErrors(unsigned int shader, const std::string& type);
+  void BTCHECKCompileErrors(unsigned int shader, const std::string& type);
   GLint GetUniformLocation(const std::string& name) const;
 
  private:

@@ -8,7 +8,7 @@ class Billboard : public Object {
   struct Data {
     std::string texture;
   };
-  void Init(const Data& data);
+  void Init(Context *context, const Data& data);
   void OnUpdate(Context *context) override;
   void OnRender(Context *context) override;
   void OnDestory(Context *context) override;

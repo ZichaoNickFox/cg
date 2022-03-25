@@ -6,7 +6,7 @@
 namespace engine {
 std::shared_ptr<GLubyte> FrameBuffer::GetTextureData() {
   std::shared_ptr<GLubyte> pixels(new GLubyte[width_ * height_ * 3]);
-  glReadPixels(0, 0, width_, height_, GL_RGB, GL_UNSIGNED_BYTE, (void*)(*pixels));
+  glReadPixels(0, 0, width_, height_, GL_RGB, GL_UNSIGNED_BYTE, reinterpret_cast<void*>(*pixels));
   return pixels;
 }
 

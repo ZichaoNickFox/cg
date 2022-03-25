@@ -46,6 +46,12 @@ shader_config {
   fs_path : "engine/frame_buffer/shader/depth_frame_buffer.fs.glsl";
 }
 
+shader_config {
+  name : "billboard";
+  vs_path : "playground/resource/shader/billboard.vs.glsl";
+  fs_path : "playground/resource/shader/billboard.fs.glsl";
+}
+
 texture_config {
   name : "opengl0";
   paths : "playground/resource/texture/opengl0.jpeg";
@@ -55,6 +61,18 @@ texture_config {
 texture_config {
   name : "opengl1";
   paths : "playground/resource/texture/opengl1.jpeg";
+  texture_type : Texture2D;
+}
+
+texture_config {
+  name : "directional_light";
+  paths : "playground/resource/texture/directional_light.png";
+  texture_type : Texture2D;
+}
+
+texture_config {
+  name : "point_light";
+  paths : "playground/resource/texture/point_light.png";
   texture_type : Texture2D;
 }
 
