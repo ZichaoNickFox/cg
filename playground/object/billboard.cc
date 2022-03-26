@@ -4,7 +4,7 @@
 #include <glm/gtx/string_cast.hpp>
 
 void Billboard::Init(Context *context, const Data& data) {
-  plane_.mutable_material()->SetShader(context->mutable_shader_repo()->GetOrLoadShader("billboard"));
+  plane_.mutable_material()->PushShader(context->mutable_shader_repo()->GetOrLoadShader("billboard"));
   plane_.mutable_material()->SetTexture("texture0", context->mutable_texture_repo()->GetOrLoadTexture(data.texture));
   plane_.mutable_transform()->SetScale(glm::vec3(0.1, 0.1, 0.1));
 }

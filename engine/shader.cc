@@ -29,28 +29,28 @@ Shader::Shader(const std::string& name, const std::string& vs, const std::string
   vertex = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(vertex, 1, &vs_code, NULL);
   glCompileShader(vertex);
-  BTCHECKCompileErrors(vertex, "vertex");
+  CheckCompileErrors(vertex, "vertex");
 
   // geometry shader
   if (have_gs) {
     geometry = glCreateShader(GL_GEOMETRY_SHADER);
     glShaderSource(geometry, 1, &gs_code, NULL);
     glCompileShader(geometry);
-    BTCHECKCompileErrors(geometry, "geometry");
+    CheckCompileErrors(geometry, "geometry");
   }
 
   // fragment shader
   fragment = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(fragment, 1, &fs_code, NULL);
   glCompileShader(fragment);
-  BTCHECKCompileErrors(fragment, "fragment");
+  CheckCompileErrors(fragment, "fragment");
 
   // tessellation shader
   if (have_ts) {
     tessellation = glCreateShader(GL_TESS_CONTROL_SHADER);
     glShaderSource(tessellation, 1, &ts_code, NULL);
     glCompileShader(tessellation);
-    BTCHECKCompileErrors(tessellation, "tellsellation");
+    CheckCompileErrors(tessellation, "tellsellation");
   }
   
   // shader Program
@@ -64,7 +64,7 @@ Shader::Shader(const std::string& name, const std::string& vs, const std::string
   }
   glAttachShader(id_, fragment);
   glLinkProgram(id_);
-  BTCHECKCompileErrors(id_, "program");
+  CheckCompileErrors(id_, "program");
   // delete the shaders as they're linked into our program now and no longer necessary
   glDeleteShader(vertex);
   glDeleteShader(fragment);
@@ -118,7 +118,7 @@ GLint Shader::GetUniformLocation(const std::string& location_name) const {
   return res;
 }
 
-void Shader::BTCHECKCompileErrors(unsigned int shader, const std::string& type) {
+void Shader::CheckCompileErrors(unsigned int shader, const std::string& type) {
   int success;
   char info_log[1024];
   if (type != "program")

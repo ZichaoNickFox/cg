@@ -27,9 +27,9 @@ class Camera {
   float aspect() const { return aspect_; }
 
   void SetNearClip(float in) { near_clip_ = in; }
-  float nearClip() const { return near_clip_; }
+  float near_clip() const { return near_clip_; }
   void SetFarClip(float in) { far_clip_ = in; }
-  float farClip() const { return far_clip_; }
+  float far_clip() const { return far_clip_; }
   void SetType(Type type) { type_ = type; }
   Type type() const { return type_; }
 
@@ -54,7 +54,7 @@ private:
   float orthographic_width_ = 10.0;
 
   float near_clip_ = 0.1;
-  float far_clip_ = 250;
+  float far_clip_ = 50;
   
   float aspect_ = 1920.0f / 1080.0f;
 

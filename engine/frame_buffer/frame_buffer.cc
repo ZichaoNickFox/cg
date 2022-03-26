@@ -13,8 +13,9 @@ std::shared_ptr<GLubyte> FrameBuffer::GetTextureData() {
 void FrameBuffer::Bind() {
   glGetIntegerv(GL_FRAMEBUFFER_BINDING, &resumption_fbo_);
   glGetIntegerv(GL_VIEWPORT, resumption_viewport_);
-  glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
   glViewport(0, 0, width_, height_);
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
+  glClear(GL_DEPTH_BUFFER_BIT);
 }
 
 void FrameBuffer::Unbind() {

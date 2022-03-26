@@ -52,6 +52,12 @@ shader_config {
   fs_path : "playground/resource/shader/billboard.fs.glsl";
 }
 
+shader_config {
+  name : "shadow_map";
+  vs_path : "playground/resource/shader/shadow_map.vs.glsl";
+  fs_path : "playground/resource/shader/shadow_map.fs.glsl";
+}
+
 texture_config {
   name : "opengl0";
   paths : "playground/resource/texture/opengl0.jpeg";

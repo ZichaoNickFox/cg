@@ -29,10 +29,8 @@ public:
   GLuint id() const { return id_; }
 
 private:
-  void BTCHECKCompileErrors(unsigned int shader, const std::string& type);
+  void CheckCompileErrors(unsigned int shader, const std::string& type);
   GLint GetUniformLocation(const std::string& name) const;
-
- private:
   GLuint id_;
   std::string name_;
 };

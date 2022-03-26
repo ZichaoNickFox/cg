@@ -14,7 +14,7 @@ public:
   void Unbind();
   virtual void Clear() = 0;
 
-  Texture texture() const { return Texture(texture_, Texture::Texture2D); }
+  Texture texture() const { return texture_; }
   std::shared_ptr<GLubyte> GetTextureData();
   int width() { return width_; }
   int height() { return height_; }
@@ -23,7 +23,7 @@ public:
   int width_;
   int height_;
   GLuint fbo_;
-  GLuint texture_;
+  Texture texture_;
 
   GLint resumption_fbo_;
   GLint resumption_viewport_[4];

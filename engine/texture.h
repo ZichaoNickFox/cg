@@ -15,14 +15,11 @@ class Texture {
   Texture(GLuint inid, Type in) : id_(inid), textureType_(in){}
 
   GLuint id() const { return id_; }
+  GLuint* mutable_id() { return &id_; }
   Type type() const  {return textureType_;}
 
  private:
   GLuint id_;
   Type textureType_ = Texture2D;
 };
-}
-
-namespace texture {
-  engine::Texture CreateTexture2D(int width, int height, int format);
 }

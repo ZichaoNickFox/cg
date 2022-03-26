@@ -17,7 +17,7 @@ void ShadowScene::OnEnter(Context *context)
   engine::Transform light_transform(kLightPos, glm::quat(glm::vec3(0, 0, 0)), kLightScale);
   light_.SetTransform(light_transform);
   engine::Material material;
-  material.SetShader(context->mutable_shader_repo()->GetOrLoadShader("point_light"));
+  material.PushShader(context->mutable_shader_repo()->GetOrLoadShader("point_light"));
   material.SetVec3("light_color", kLightColor);
   light_.SetMaterial(material);
 
@@ -32,7 +32,7 @@ void ShadowScene::OnEnter(Context *context)
     Cube* cube = &cubes_[i];
     cube->SetTransform(cube_transforms_[i]);
     engine::Material cube_material;
-    cube_material.SetShader(context->mutable_shader_repo()->GetOrLoadShader("phong"));
+    cube_material.PushShader(context->mutable_shader_repo()->GetOrLoadShader("phong"));
     cube_material.SetVec3("light_color", kLightColor);
     cube_material.SetVec3("light_pos", kLightPos);
     cube->SetMaterial(cube_material);

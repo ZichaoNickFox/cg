@@ -15,7 +15,7 @@ void ShadowMapScene::OnEnter(Context *context)
   engine::Transform light_transform(light_pos_, glm::quat(glm::vec3(0, 0, 0)), light_scale_);
   light_.SetTransform(light_transform);
   engine::Material light_material;
-  light_material.SetShader(context->mutable_shader_repo()->GetOrLoadShader("point_light"));
+  light_material.PushShader(context->mutable_shader_repo()->GetOrLoadShader("point_light"));
   light_.SetMaterial(light_material);
 
   // http://www.barradeau.com/nicoptere/dump/materials.html
@@ -28,7 +28,7 @@ void ShadowMapScene::OnEnter(Context *context)
     Cube* cube = &cubes_[i];
     cube->SetTransform(cube_transforms_[i]);
     engine::Material cube_material;
-    cube_material.SetShader(context->mutable_shader_repo()->GetOrLoadShader("phong"));
+    cube_material.PushShader(context->mutable_shader_repo()->GetOrLoadShader("phong"));
     cube->SetMaterial(cube_material);
   }
 
@@ -43,7 +43,7 @@ void ShadowMapScene::OnEnter(Context *context)
   coord_.SetData(context, {positions, colors, GL_LINES, 5});
 
   engine::Material plane_material;
-  plane_material.SetShader(context->mutable_shader_repo()->GetOrLoadShader("phong"));
+  plane_material.PushShader(context->mutable_shader_repo()->GetOrLoadShader("phong"));
   plane_material.SetVec3("material.ambient", material_property_.ambient);
   plane_material.SetVec3("material.diffuse", material_property_.diffuse);
   plane_material.SetVec3("material.specular", material_property_.specular);
@@ -112,7 +112,6 @@ void ShadowMapScene::OnGui(Context *context)
   light_.mutable_material()->SetVec3("light_color", light_color_);
   light_.mutable_transform()->SetTranslation(light_pos_);
 
-
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
     cube->mutable_material()->SetVec3("light_pos", light_pos_);
@@ -133,6 +132,10 @@ void ShadowMapScene::OnGui(Context *context)
     context->PopCamera();
   }
   ImGui::SameLine();
+  if (ImGui::Button("Orthographic Camera")) {
+    context->mutable_camera()->SetType(engine::Camera::Orthographic);
+  }
+  ImGui::SameLine();
   if (ImGui::Button("Orthographic Direction Light")) {
     context->PushCamera(directional_light_.Test_GetCamera());
   }
@@ -142,30 +145,41 @@ void ShadowMapScene::OnGui(Context *context)
 
 void ShadowMapScene::OnRender(Context *context)
 {
-  /*
   directional_light_.ShadowMapRenderBegin(context);
-  RenderOnce(context);
+  RenderShadowMap(context);
   directional_light_.ShadowMapRenderEnd(context);
-  engine::Texture texture = directional_light_.GetShadowMapTexture();
-  texture::SaveTexture2D("aaa.png", texture.id());
-  directional_light_.OnRender(context);
 
-  CHECK(false);
-  */
-
-  RenderOnce(context);
+  glm::mat4 shadow_map_vp = directional_light_.GetShadowMapVP();
+  engine::Texture shadow_map_texture = directional_light_.GetShadowMapTexture();
+  RenderScene(context, shadow_map_vp, shadow_map_texture);
 }
 
-void ShadowMapScene::RenderOnce(Context* context) {
+void ShadowMapScene::RenderShadowMap(Context* context) {
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
-    cube->mutable_material()->SetVec3("view_pos", context->camera().transform().translation());
+    cube->mutable_material()->PushShader(context->mutable_shader_repo()->GetOrLoadShader("shadow_map"));
+    cube->OnRender(context);
+    cube->mutable_material()->PopShader();
+  }
+  plane_.mutable_material()->PushShader(context->mutable_shader_repo()->GetOrLoadShader("shadow_map"));
+  plane_.OnRender(context);
+  plane_.mutable_material()->PopShader();
+}
+
+void ShadowMapScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
+                                 const engine::Texture& shadow_map_texture) {
+  for (int i = 0; i < cubes_.size(); ++i) {
+    Cube* cube = &cubes_[i];
+    cube->mutable_material()->SetTexture("shadow_map_texture", shadow_map_texture);
+    cube->mutable_material()->SetMat4("shadow_map_vp", shadow_map_vp);
     cube->OnRender(context);
   }
-  plane_.mutable_material()->SetVec3("view_pos", context->camera().transform().translation());
   light_.OnRender(context);
   coord_.OnRender(context);
+  plane_.mutable_material()->SetTexture("shadow_map_texture", shadow_map_texture);
+  plane_.mutable_material()->SetMat4("shadow_map_vp", shadow_map_vp);
   plane_.OnRender(context);
+  directional_light_.OnRender(context);
 }
 
 void ShadowMapScene::OnExit(Context *context)

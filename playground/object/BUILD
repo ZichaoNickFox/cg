@@ -13,6 +13,8 @@ cc_library(
     "object.h",
     "plane.h",
     "plane.cc",
+    "point_light.h",
+    "point_light.cc",
     "lines.h",
     "lines.cc"
   ],

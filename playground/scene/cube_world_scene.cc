@@ -27,7 +27,7 @@ void CubeWorldScene::OnEnter(Context *context)
     cube->SetTransform(cube_transform);
     engine::Material material;
     material.SetTexture("texture0", context->mutable_texture_repo()->GetOrLoadTexture("cube_texture"));
-    material.SetShader(context->mutable_shader_repo()->GetOrLoadShader("cube"));
+    material.PushShader(context->mutable_shader_repo()->GetOrLoadShader("cube"));
     cube->SetMaterial(material);
     cubes_.push_back(std::move(cube));
   }

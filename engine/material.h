@@ -14,8 +14,9 @@ namespace engine {
 
 class Material {
  public:
-  void SetShader(Shader shader) { shader_ = shader; }
-  const Shader& shader() const { return shader_; }
+  void PushShader(Shader shader);
+  void PopShader();
+  const Shader& shader() const;
 
   void SetFloat(const std::string& location, float value);
   void SetMat4(const std::string& location, const glm::mat4& value);
@@ -27,16 +28,23 @@ class Material {
   void PrepareShader();
 
  private:
-  Shader shader_;
-  std::unordered_map<std::string, float> location_float_;
-  std::unordered_map<std::string, glm::mat4> location_mat4_;
-  struct TextureData {
-    int texture_unit;
-    Texture texture;
+  struct ShaderData {
+    ShaderData(const Shader& shader) { shader_ = shader; }
+    Shader shader_;
+    std::unordered_map<std::string, float> location_float_;
+    std::unordered_map<std::string, glm::mat4> location_mat4_;
+    struct TextureData {
+      int texture_unit;
+      Texture texture;
+    };
+    std::unordered_map<std::string, TextureData> location_texture_;
+    std::unordered_map<std::string, glm::vec4> location_vec4_;
+    std::unordered_map<std::string, glm::vec3> location_vec3_;
   };
-  std::unordered_map<std::string, TextureData> location_texture_;
-  std::unordered_map<std::string, glm::vec4> location_vec4_;
-  std::unordered_map<std::string, glm::vec3> location_vec3_;
+
+  const ShaderData& shader_data() const;
+  ShaderData* mutable_shader_data();
+  std::stack<ShaderData> shader_datas_;
 };
 
 }

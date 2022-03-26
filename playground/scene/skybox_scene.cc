@@ -17,7 +17,7 @@ void SkyboxScene::OnEnter(Context *context)
   engine::Transform light_transform(kLightPos, glm::quat(glm::vec3(0, 0, 0)), kLightScale);
   light_.SetTransform(light_transform);
   engine::Material material;
-  material.SetShader(context->mutable_shader_repo()->GetOrLoadShader("point_light"));
+  material.PushShader(context->mutable_shader_repo()->GetOrLoadShader("point_light"));
   material.SetVec3("light_color", kLightColor);
   light_.SetMaterial(material);
 
@@ -33,7 +33,7 @@ void SkyboxScene::OnEnter(Context *context)
     cube_transform.SetTranslation(cube_positions_[i]);
     cube->SetTransform(cube_transform);
     engine::Material cube_material;
-    cube_material.SetShader(context->mutable_shader_repo()->GetOrLoadShader("phong"));
+    cube_material.PushShader(context->mutable_shader_repo()->GetOrLoadShader("phong"));
     cube_material.SetVec3("light_color", kLightColor);
     cube_material.SetVec3("light_pos", kLightPos);
     cube->SetMaterial(cube_material);
@@ -50,7 +50,7 @@ void SkyboxScene::OnEnter(Context *context)
   coord_.SetData(context, {positions, colors, GL_LINES, 5});
 
   engine::Material skybox_material;
-  skybox_material.SetShader(context->mutable_shader_repo()->GetOrLoadShader("skybox"));
+  skybox_material.PushShader(context->mutable_shader_repo()->GetOrLoadShader("skybox"));
   skybox_material.SetTexture("texture0", context->mutable_texture_repo()->GetOrLoadTexture("skybox"));
   skybox_.SetMaterial(skybox_material);
   skybox_.mutable_transform()->SetScale(glm::vec3(200, 200, 200));

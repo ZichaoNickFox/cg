@@ -5,6 +5,7 @@
 void DirectionalLight::Init(Context* context) {
   depth_frame_buffer_.Init(shadow_map_width, shadow_map_height);
   billboard_.Init(context, Billboard::Data{"directional_light"});
+  shadow_map_camera_->SetType(engine::Camera::Perspective);
 }
 
 void DirectionalLight::ShadowMapRenderBegin(Context* context) {
@@ -15,6 +16,10 @@ void DirectionalLight::ShadowMapRenderBegin(Context* context) {
 void DirectionalLight::ShadowMapRenderEnd(Context* context) {
   depth_frame_buffer_.Unbind();
   context->PopCamera();
+}
+
+glm::mat4 DirectionalLight::GetShadowMapVP() {
+  return shadow_map_camera_->GetProjectMatrix() * shadow_map_camera_->GetViewMatrix();
 }
 
 void DirectionalLight::OnUpdate(Context* context) {
