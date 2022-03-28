@@ -2,16 +2,15 @@
 
 #include "imgui.h"
 
+#include "playground/scene/deferred_shading_scene.h"
 #include "playground/scene/imgui_demo_scene.h"
 #include "playground/scene/gallery_scene.h"
 #include "playground/scene/test_scene.h"
 #include "playground/scene/triangle_scene.h"
 #include "playground/scene/cube_world_scene.h"
 #include "playground/scene/phong_scene.h"
-#include "playground/scene/shadow_scene.h"
 #include "playground/scene/skybox_scene.h"
 #include "playground/scene/shadow_map_scene.h"
-#include "playground/util.h"
 
 namespace {
 const std::string kDefaultScene = "ShadowMapScene";
@@ -40,12 +39,13 @@ void Playground::InitScene() {
   scene_map_.insert(std::make_pair("TriangleScene", std::make_unique<TriangleScene>()));
   scene_map_.insert(std::make_pair("CubeWorldScene", std::make_unique<CubeWorldScene>()));
   scene_map_.insert(std::make_pair("PhongScene", std::make_unique<PhongScene>()));
-  scene_map_.insert(std::make_pair("ShadowScene", std::make_unique<ShadowScene>()));
+  scene_map_.insert(std::make_pair("DeferredShadingScene", std::make_unique<DeferredShadingScene>()));
   scene_map_.insert(std::make_pair("SkyboxScene", std::make_unique<SkyboxScene>()));
   scene_map_.insert(std::make_pair("ShadowMapScene", std::make_unique<ShadowMapScene>()));
 }
 
 void Playground::BeginFrame() {
+  frame_start_time_ = std::chrono::high_resolution_clock::now();
 }
 
 void Playground::Update() {
@@ -68,6 +68,9 @@ void Playground::Render() {
 
 void Playground::EndFrame() {
   context_.mutable_io()->ClearKeyInput();
+  util::Time frame_end_time = std::chrono::high_resolution_clock::now();
+  int64_t frame_interval_millisecond = util::DurationMillisecond(frame_start_time_, frame_end_time);
+  context_.SetFrameInternal(frame_interval_millisecond);
 }
 
 void Playground::SwitchScene(const std::string& scene, bool ignore_current_scene) {

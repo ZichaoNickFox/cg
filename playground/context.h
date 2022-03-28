@@ -33,6 +33,10 @@ class Context {
   const engine::Camera& camera();
   engine::Camera* mutable_camera();
 
+  void SetFrameInternal(int frame_interval);
+  int frame_interval() { return frame_interval_; }
+  int fps() { return fps_; }
+
  private:
   std::string current_scene_;
   std::string next_scene_;
@@ -43,4 +47,7 @@ class Context {
   Io io_;
 
   std::stack<std::weak_ptr<engine::Camera>> cameras_;
+
+  int frame_interval_;
+  int fps_;
 };

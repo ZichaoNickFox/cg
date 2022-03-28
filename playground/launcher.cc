@@ -84,6 +84,8 @@ int main(int argc, char **argv)
 
   ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
   while (!glfwWindowShouldClose(window)) {
+    playground.BeginFrame();
+    
     int display_w, display_h;
     glfwGetFramebufferSize(window, &display_w, &display_h);
     glViewport(0, 0, display_w, display_h);
@@ -101,7 +103,6 @@ int main(int argc, char **argv)
     Io* mutable_io = playground.mutable_io();
     FillIoInput(window, &imgui_io, mutable_io);
 
-    playground.BeginFrame();
     playground.Gui();
     if (io.gui_captured_mouse()) {
       glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -114,9 +115,9 @@ int main(int argc, char **argv)
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-    playground.EndFrame();
-
     glfwSwapBuffers(window);
+
+    playground.EndFrame();
   }
 
   ImGui_ImplOpenGL3_Shutdown();

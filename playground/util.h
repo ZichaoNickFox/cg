@@ -35,4 +35,10 @@ template<typename ElemType>
 int VectorByteSize(const std::vector<ElemType>& v) {
   return sizeof(ElemType) * v.size();
 }
+
+// time
+using Time = std::chrono::high_resolution_clock::time_point;
+Time Now();
+int64_t DurationMillisecond(const Time& from, const Time& to);
+
 }

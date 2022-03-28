@@ -16,3 +16,8 @@ engine::Camera* Context::mutable_camera() {
   BTCHECK(!cameras_.top().expired());
   return cameras_.top().lock().get();
 }
+
+void Context::SetFrameInternal(int frame_interval) {
+  frame_interval_ = frame_interval;
+  fps_ = 1e3 / frame_interval_;
+}

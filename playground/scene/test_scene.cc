@@ -48,7 +48,7 @@ void TestScene::OnUpdate(Context* context) {
 }
 
 void TestScene::OnGui(Context* context) {
-  RenderGoToGallery(context); 
+  RenderFps(context); 
 }
 
 void TestScene::OnRender(Context* context) {

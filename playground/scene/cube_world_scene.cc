@@ -47,7 +47,7 @@ void CubeWorldScene::OnUpdate(Context *context)
 
 void CubeWorldScene::OnGui(Context *context)
 {
-  RenderGoToGallery(context);
+  RenderFps(context);
 }
 
 void CubeWorldScene::OnRender(Context *context)

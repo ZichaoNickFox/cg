@@ -28,4 +28,14 @@ bool EndsWith(const std::string& str, const std::string& ending) {
     return false;
   }
 }
+
+Time Now() {
+  return std::chrono::high_resolution_clock::now();
+}
+
+int64_t DurationMillisecond(const Time& from, const Time& to) {
+  std::chrono::high_resolution_clock::duration duration = to - from;
+  return duration.count() / 1e6;
+}
+
 }

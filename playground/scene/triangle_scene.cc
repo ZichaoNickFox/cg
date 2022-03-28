@@ -56,7 +56,7 @@ void TriangleScene::OnUpdate(Context* context) {
 }
 
 void TriangleScene::OnGui(Context* context) {
-  RenderGoToGallery(context); 
+  RenderFps(context); 
 }
 
 void TriangleScene::OnRender(Context* context) {

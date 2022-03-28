@@ -2,5 +2,5 @@
 
 #include "playground/context.h"
 
-void RenderGoToGallery(Context* context);
+void RenderFps(Context* context);
 void ControlCameraByIo(Context* context);

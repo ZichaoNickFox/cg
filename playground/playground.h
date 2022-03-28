@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <functional>
 #include <memory>
 #include <unordered_map>
@@ -7,6 +8,7 @@
 #include "playground/io.h"
 #include "playground/context.h"
 #include "playground/scene.h"
+#include "playground/util.h"
 
 class Playground {
  public:
@@ -28,4 +30,6 @@ class Playground {
   std::unordered_map<std::string, std::unique_ptr<Scene>> scene_map_;
 
   Context context_;
+
+  util::Time frame_start_time_;
 };

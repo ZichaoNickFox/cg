@@ -79,7 +79,7 @@ void SkyboxScene::OnGui(Context *context)
 {
   bool open = true;
   ImGui::Begin("SkyScene", &open, ImGuiWindowFlags_AlwaysAutoResize);
-  RenderGoToGallery(context);
+  RenderFps(context);
 
   ImGui::Separator();
 

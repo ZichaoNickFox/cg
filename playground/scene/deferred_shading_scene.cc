@@ -1,4 +1,4 @@
-#include "playground/scene/shadow_map_scene.h"
+#include "playground/scene/deferred_shading_scene.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -10,13 +10,11 @@
 #include "engine/transform.h"
 #include "playground/scene/common.h"
 
-void ShadowMapScene::OnEnter(Context *context)
+void DeferredShadingScene::OnEnter(Context *context)
 {
   engine::Transform light_transform(light_pos_, glm::quat(glm::vec3(0, 0, 0)), light_scale_);
   light_.SetTransform(light_transform);
-  engine::Material light_material;
-  light_material.PushShader(context->mutable_shader_repo()->GetOrLoadShader("point_light"));
-  light_.SetMaterial(light_material);
+  light_.mutable_material()->PushShader(context->mutable_shader_repo()->GetOrLoadShader("point_light"));
 
   // http://www.barradeau.com/nicoptere/dump/materials.html
   cube_transforms_.push_back(engine::Transform(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
@@ -27,9 +25,7 @@ void ShadowMapScene::OnEnter(Context *context)
     cubes_.push_back(Cube());
     Cube* cube = &cubes_[i];
     cube->SetTransform(cube_transforms_[i]);
-    engine::Material cube_material;
-    cube_material.PushShader(context->mutable_shader_repo()->GetOrLoadShader("phong"));
-    cube->SetMaterial(cube_material);
+    cube->mutable_material()->PushShader(context->mutable_shader_repo()->GetOrLoadShader("phong"));
   }
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(5.3, 4.3, -3.5));
@@ -61,7 +57,7 @@ void ShadowMapScene::OnEnter(Context *context)
   glEnable(GL_DEPTH_TEST);
 }
 
-void ShadowMapScene::OnUpdate(Context *context)
+void DeferredShadingScene::OnUpdate(Context *context)
 {
   ControlCameraByIo(context);
   light_.OnUpdate(context);
@@ -79,10 +75,10 @@ void ShadowMapScene::OnUpdate(Context *context)
   directional_light_.OnUpdate(context);
 }
 
-void ShadowMapScene::OnGui(Context *context)
+void DeferredShadingScene::OnGui(Context *context)
 {
   bool open = true;
-  ImGui::Begin("ShadowMapScene", &open, ImGuiWindowFlags_AlwaysAutoResize);
+  ImGui::Begin("DeferredShadingScene", &open, ImGuiWindowFlags_AlwaysAutoResize);
   RenderFps(context);
 
   ImGui::Separator();
@@ -143,7 +139,7 @@ void ShadowMapScene::OnGui(Context *context)
   ImGui::End();
 }
 
-void ShadowMapScene::OnRender(Context *context)
+void DeferredShadingScene::OnRender(Context *context)
 {
   directional_light_.ShadowMapRenderBegin(context);
   RenderShadowMap(context);
@@ -154,7 +150,7 @@ void ShadowMapScene::OnRender(Context *context)
   RenderScene(context, shadow_map_vp, shadow_map_texture);
 }
 
-void ShadowMapScene::RenderShadowMap(Context* context) {
+void DeferredShadingScene::RenderShadowMap(Context* context) {
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
     cube->mutable_material()->PushShader(context->mutable_shader_repo()->GetOrLoadShader("shadow_map"));
@@ -166,7 +162,7 @@ void ShadowMapScene::RenderShadowMap(Context* context) {
   plane_.mutable_material()->PopShader();
 }
 
-void ShadowMapScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
+void DeferredShadingScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
                                  const engine::Texture& shadow_map_texture) {
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
@@ -182,7 +178,7 @@ void ShadowMapScene::RenderScene(Context* context, const glm::mat4& shadow_map_v
   directional_light_.OnRender(context);
 }
 
-void ShadowMapScene::OnExit(Context *context)
+void DeferredShadingScene::OnExit(Context *context)
 {
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];

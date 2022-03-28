@@ -3,7 +3,13 @@
 #include "imgui.h"
 #include <glog/logging.h>
 
-void RenderGoToGallery(Context* context) {
+void RenderFps(Context* context) {
+  ImGui::Text("frame interval : ");
+  ImGui::SameLine();
+  ImGui::Text("%d", context->frame_interval());
+  ImGui::Text("FPS : ");
+  ImGui::SameLine();
+  ImGui::Text("%d", context->fps());
 }
 
 void ControlCameraByIo(Context* context) {

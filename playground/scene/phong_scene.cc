@@ -53,7 +53,7 @@ void PhongScene::OnGui(Context *context)
 {
   bool open = true;
   ImGui::Begin("PhongScene", &open, ImGuiWindowFlags_AlwaysAutoResize);
-  RenderGoToGallery(context);
+  RenderFps(context);
 
   ImGui::Separator();
 
