@@ -1,1 +1,1 @@
-bazel test --test_output=errors //engine:*
+bazel test --test_output=all //playground:test

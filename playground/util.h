@@ -41,4 +41,7 @@ using Time = std::chrono::high_resolution_clock::time_point;
 Time Now();
 int64_t DurationMillisecond(const Time& from, const Time& to);
 
+// random : 3 precisely
+float RandFromTo(float from, float to);
+
 }

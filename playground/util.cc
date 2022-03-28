@@ -38,4 +38,23 @@ int64_t DurationMillisecond(const Time& from, const Time& to) {
   return duration.count() / 1e6;
 }
 
+namespace {
+int RandFromTo(int from, int to) {
+  CHECK(to > from) << "to LE than from";
+  std::srand(Now().time_since_epoch().count());
+  uint slide = std::max(0, 0 - from);
+  uint rand_from = from + slide;
+  uint rand_to = to + slide;
+  uint rand_value = rand_from + uint(std::rand()) % (rand_to - rand_from + 1);
+  return rand_value - slide;
+}
+}
+
+float RandFromTo(float from, float to) {
+  int rand_from = from * 1000;
+  int rand_to = to * 1000;
+  int rand_value = RandFromTo(rand_from, rand_to);
+  return rand_value / 1000.0f;
+}
+
 }

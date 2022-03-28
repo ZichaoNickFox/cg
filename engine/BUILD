@@ -27,22 +27,8 @@ cc_library(
   deps = [
     "//engine:debug"
   ],
-  includes = [
-  ],
   linkopts = [
     "-lfmt",
     "-lGLEW",
-  ],
-)
-
-cc_test (
-  name = "engine_test",
-  srcs = [
-      "engine_test.cc",
-  ],
-  deps = [
-    "//engine:engine",
-    "@gtest//:gtest",
-    "@gtest//:gtest_main"
   ],
 )
