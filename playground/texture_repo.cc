@@ -14,24 +14,24 @@ void TextureRepo::Init(const Config& config) {
     state.paths = util::ProtoRepeatedToVector(config.paths());
     state.texture_type = (Texture::Type)config.texture_type();
     textures_[config.name()] = state;
-    LOG(ERROR) << "Init texture : " << config.name() << " (" << TextureType_Name(config.texture_type()) << ")";
+    CGLOG(ERROR) << "Init texture : " << config.name() << " (" << TextureType_Name(config.texture_type()) << ")";
   }
 }
 
 Texture TextureRepo::GetOrLoadTexture(const std::string& name) {
-  BTCHECK(textures_.count(name) > 0) << "Cannot find texture : " << name;
+  CGCHECK(textures_.count(name) > 0) << "Cannot find texture : " << name;
   State* state = &textures_[name];
   if (!state->loaded) {
     if (state->texture_type == Texture::Texture2D) {
-      BTCHECK(state->paths.size() == 1) << "Texture2D has 1 texture : " << name;
+      CGCHECK(state->paths.size() == 1) << "Texture2D has 1 texture : " << name;
       state->texture = texture::LoadTexture2D(state->paths[0], true);
     } else if (state->texture_type == Texture::CubeMap) {
       state->texture = texture::LoadCubeMap(state->paths);
     } else {
-      BTCHECK(false) << "Unsupported Texture Type";
+      CGCHECK(false) << "Unsupported Texture Type";
     }
     state->loaded = true;
-    LOG(ERROR) << "Loaded Texture : id - " << state->texture.id() << " | name - " << name;
+    CGLOG(ERROR) << "Loaded Texture : id - " << state->texture.id() << " | name - " << name;
   }
   return state->texture;
 }
@@ -54,7 +54,7 @@ Texture LoadTexture2D(const std::string& path_with_ext, bool useMipmap) {
   int width,height;
   unsigned char* image = SOIL_load_image(path_with_ext.c_str(), &width, &height, 0, SOILfmt);
   if (!image) {
-    BTCHECK(false) << util::Format("cannot load image {}", path_with_ext);
+    CGCHECK(false) << util::Format("cannot load image {}", path_with_ext);
   }
   glBindTexture(GL_TEXTURE_2D, ret);
   glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, internal_format, GL_UNSIGNED_BYTE, image);
@@ -98,20 +98,20 @@ bool VarifyChannel(const std::string& path, int channel) {
   std::string file_ext = util::GetFileExt(path);
   if (file_ext == "png") {
     if(channel != 1 && channel != 3 && channel != 4) {
-      BTCHECK(false) << util::Format("current texture has {} channels while png need 1 or 3 or 4", channel);
+      CGCHECK(false) << util::Format("current texture has {} channels while png need 1 or 3 or 4", channel);
       return false;
     }
     return channel == 1 || channel == 3 || channel == 4;
   } else if (file_ext == "jpg" || file_ext == "jpeg") {
     if(channel != 3) {
-      BTCHECK(false) << util::Format("current texture has {} channels while jpg need 3", channel).c_str();
+      CGCHECK(false) << util::Format("current texture has {} channels while jpg need 3", channel).c_str();
       return false;
     }
     return channel == 3;
   } else if (file_ext == "bmp") {
     return true;
   } else {
-    BTCHECK(false) << util::Format("not support ext : {}", path);
+    CGCHECK(false) << util::Format("not support ext : {}", path);
     return false;
   }
   return false;
@@ -121,19 +121,36 @@ void RemoveFromGL(GLuint in) {
   glDeleteTextures(1, &in);
 }
 
-void GetInternalFormatSize(int internal_format, int* channel, int* format, int* type) {
+void GetInternalFormatSize(int internal_format, int* channel, int* byte_per_channel, int* format, int* type) {
+  struct Info {
+    int channel;
+    int byte_per_channel;
+    int format;
+    int type;
+    std::string log;
+  };
   // GL Format
   // https://www.cs.uregina.ca/Links/class-info/315/WWW/Lab5/InternalFormats_OGL_Core_3_2.html
-  switch(internal_format){
-    case GL_DEPTH_COMPONENT: *channel = 1; *format = GL_DEPTH_COMPONENT; *type = GL_UNSIGNED_BYTE; return;
-    case GL_DEPTH_STENCIL: *channel = 2; *format = GL_DEPTH_STENCIL; *type = GL_UNSIGNED_BYTE; return;
-    case GL_RED: *channel = 1; *format = GL_RED; *type = GL_UNSIGNED_BYTE; return;
-    case GL_RG: *channel = 2; *format = GL_RG;  *type = GL_UNSIGNED_BYTE; return;
-    case GL_RGB: *channel = 3; *format = GL_RGB; *type = GL_UNSIGNED_BYTE; return;
-    case GL_RGBA: *channel = 4; *format = GL_RGBA; *type = GL_UNSIGNED_BYTE; return;
-    case GL_DEPTH_COMPONENT32F: *channel = 4; *format = GL_DEPTH_COMPONENT; *type = GL_FLOAT; return;
-  }
-  BTCHECK(false) << "Get Internal Format Size Failed : internal_format - " << internal_format;
+  std::unordered_map<GLuint, Info> info_map = {
+    {GL_DEPTH_COMPONENT, {1, 1, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, "GL_DEPTH_COMPONENT"}},
+    {GL_DEPTH_STENCIL, {2, 1, GL_DEPTH_STENCIL, GL_UNSIGNED_BYTE, "GL_DEPTH_STENCIL"}},
+    {GL_RED, {1, 1, GL_RED, GL_UNSIGNED_BYTE, "GL_RED"}},
+    {GL_RG, {2, 2, GL_RG, GL_UNSIGNED_BYTE, "GL_RG"}},
+    {GL_RGB, {2, 2, GL_RGB, GL_UNSIGNED_BYTE, "GL_RGB"}},
+    {GL_RGB8, {3, 1, GL_RGB, GL_UNSIGNED_BYTE, "GL_RGB8"}},
+    {GL_RGBA, {4, 4, GL_RGBA, GL_UNSIGNED_BYTE, "GL_RGBA"}},
+    {GL_RGBA8, {4, 1, GL_RGBA, GL_UNSIGNED_BYTE, "GL_RGBA8"}},
+    {GL_RGBA32F, {4, 4, GL_RGBA, GL_FLOAT, "GL_RGBA32F"}},
+    {GL_DEPTH_COMPONENT32F, {4, 4, GL_DEPTH_COMPONENT, GL_FLOAT, "GL_DEPTH_COMPONENT32F"}},
+  };
+  CGCHECK(info_map.count(internal_format) > 0)
+      << "Get Internal Format Size Failed : internal_format - " << internal_format;
+  const Info info = info_map[internal_format];
+  LOG(ERROR) << "[GetInternalFormatSize] " << info.log;
+  *channel = info.channel;
+  *byte_per_channel = info.byte_per_channel;
+  *format = info.format;
+  *type = info.type;
 }
 
 void ParseImageFormat(const std::string& fileName, int* SOILfmt, GLint* internal_format) {
@@ -149,12 +166,13 @@ void ParseImageFormat(const std::string& fileName, int* SOILfmt, GLint* internal
     *internal_format = GL_RGB;
     return;
   } else {
-    BTCHECK(false) << "Unsupported texture format : " << file_ext;
+    CGCHECK(false) << "Unsupported texture format : " << file_ext;
   }
 }
 
 // failed return 0
 void SaveTexture2D(const std::string& path_with_ext, GLuint tex) {
+  CGLOG(INFO) << "[texture::SaveTexture2D] path : " << path_with_ext;
   glBindTexture(GL_TEXTURE_2D, tex);
 
   int width = -1, height = -1, internal_format = -1;
@@ -162,18 +180,20 @@ void SaveTexture2D(const std::string& path_with_ext, GLuint tex) {
   glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
   glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &internal_format);
   
-  int channel = -1, format = -1, type = -1;
-  GetInternalFormatSize(internal_format, &channel, &format, &type);
-  GLubyte pixels[width * height * channel];
+  int channel = -1, byte_per_channel = -1, format = -1, type = -1;
+  GetInternalFormatSize(internal_format, &channel, &byte_per_channel, &format, &type);
+  GLubyte* pixels = new GLubyte[width * height * channel * byte_per_channel];
+
   // https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glGetTexImage.xhtml
   glGetTexImage(GL_TEXTURE_2D, 0, format, type, pixels);
 
-  LOG(INFO) << "[Texture::saveTexture] path : " << path_with_ext;
-  CHECK(width > 0) << "Widget must > 0";
-  CHECK(height > 0) << "Height must > 0";
+  CGCHECK(width > 0) << "Widget must > 0";
+  CGCHECK(height > 0) << "Height must > 0";
 
-  BTCHECK(VarifyChannel(path_with_ext, channel)); 
-	BTCHECK(SOIL_save_image(path_with_ext.c_str(), SOIL_SAVE_TYPE_BMP, width, height, channel, pixels));
+  CGCHECK(VarifyChannel(path_with_ext, channel)); 
+	CGCHECK(SOIL_save_image(path_with_ext.c_str(), SOIL_SAVE_TYPE_PNG, width, height, channel, pixels));
+
+  delete[] pixels;
 }
 
 Texture LoadCubeMap(const std::vector<std::string>& path) {
@@ -189,7 +209,7 @@ Texture LoadCubeMap(const std::vector<std::string>& path) {
     int width, height;
     unsigned char* image = SOIL_load_image(path[i].c_str(), &width, &height, 0, SOILfmt);
     if(!image) {
-      BTCHECK(false) << util::Format("cannot load image {}", path[i]);
+      CGCHECK(false) << util::Format("cannot load image {}", path[i]);
     }
     glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
       0, internal_format, width, height, 0, internal_format, GL_UNSIGNED_BYTE, image
@@ -216,9 +236,9 @@ int SaveCubeMap(const std::vector<std::string>& path_with_exts, GLuint tex) {
     glGetTexLevelParameteriv(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_TEXTURE_HEIGHT, &height);
     glGetTexLevelParameteriv(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_TEXTURE_INTERNAL_FORMAT, &internal_format);
 
-    int channel = -1, format = -1, type = -1;
-    GetInternalFormatSize(internal_format, &channel, &format, &type);
-    GLubyte* pixels = new GLubyte[width * height * channel];
+    int channel = -1, byte_per_channel = -1, format = -1, type = -1;
+    GetInternalFormatSize(internal_format, &channel, &byte_per_channel, &format, &type);
+    GLubyte* pixels = new GLubyte[width * height * channel * byte_per_channel];
 
     // https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glGetTexImage.xhtml
     glGetTexImage(GL_TEXTURE_2D, 0, format, type, pixels);
@@ -237,9 +257,9 @@ Texture Copy(GLuint source) {
   glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
   glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &internal_format);
 
-  int channel = -1, format = -1, type = -1;
-  GetInternalFormatSize(internal_format, &channel, &format, &type);
-  GLubyte* pixels = new GLubyte[width * height * channel];
+  int channel = -1, byte_per_channel = -1, format = -1, type = -1;
+  GetInternalFormatSize(internal_format, &channel, &byte_per_channel, &format, &type);
+  GLubyte* pixels = new GLubyte[width * height * channel * byte_per_channel];
   // https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glGetTexImage.xhtml
   glGetTexImage(GL_TEXTURE_2D, 0, format, type, pixels);
 

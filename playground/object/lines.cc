@@ -16,7 +16,7 @@ void Lines::OnInit(Context *context, const Data& data) {
   vertex_size_ = data.points.size();
   line_width_ = data.line_width;
 
-  BTCHECK(data.points.size() == data.colors.size());
+  CGCHECK(data.points.size() == data.colors.size());
   std::vector<glm::vec3> buffer(data.points.size() + data.colors.size(), glm::vec3());
   glGenBuffers(1, &vbo_);
   glBindBuffer(GL_ARRAY_BUFFER, vbo_);

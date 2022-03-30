@@ -13,6 +13,12 @@ cc_library(
   srcs = [
     "camera.h",
     "camera.cc",
+    "color_frame_buffer.h",
+    "color_frame_buffer.cc",
+    "depth_frame_buffer.h",
+    "depth_frame_buffer.cc",
+    "frame_buffer.h",
+    "frame_buffer.cc",
     "material.h",
     "material.cc",
     "mesh.h",

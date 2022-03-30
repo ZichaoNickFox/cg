@@ -1,7 +1,7 @@
 #pragma once
 
 #include "engine/camera.h"
-#include "engine/frame_buffer/depth_frame_buffer.h"
+#include "engine/depth_frame_buffer.h"
 #include "playground/context.h"
 #include "playground/object/billboard.h"
 #include "playground/object/lines.h"
@@ -24,8 +24,10 @@ class DirectionalLight : public Object {
  private:
   std::shared_ptr<engine::Camera> shadow_map_camera_ = std::make_shared<engine::Camera>();
 
-  static constexpr int shadow_map_width = 1024;
-  static constexpr int shadow_map_height = 1024;
+  static int directional_light_num_;
+
+  static constexpr int kShadowMapWidth = 1024;
+  static constexpr int kShadowMapHeight = 1024;
   engine::DepthFrameBuffer depth_frame_buffer_;
   Billboard billboard_;
   Lines lines_;

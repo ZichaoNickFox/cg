@@ -1,18 +1,19 @@
 #pragma once
 
 #include "engine/camera.h"
-#include "engine/depth_frame_buffer.h"
+#include "engine/color_frame_buffer.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
 #include "playground/object/cube.h"
 #include "playground/object/directional_light.h"
+#include "playground/object/fullscreen_quad.h"
 #include "playground/object/lines.h"
 #include "playground/object/plane.h"
 #include "playground/object/point_light.h"
 #include "playground/scene.h"
 
-class DeferredShadingScene : public Scene {
+class MrtScene : public Scene {
  public:
   void OnEnter(Context* context);
   void OnUpdate(Context* context);
@@ -41,11 +42,14 @@ class DeferredShadingScene : public Scene {
   std::vector<Cube> cubes_;
   std::vector<engine::Transform> cube_transforms_;
 
-  int point_lights_num_ = 200;
+  int point_lights_num_ = 100;
   std::vector<PointLight> point_lights_;
   Lines coord_;
   Plane plane_;
   DirectionalLight directional_light_;
 
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
+
+  engine::ColorFrameBuffer mrt_frame_buffer_;
+  FullscreenQuad fullscreen_quad_;
 };

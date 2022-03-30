@@ -35,18 +35,6 @@ shader_config {
 }
 
 shader_config {
-  name : "color_frame_buffer";
-  vs_path : "engine/frame_buffer/shader/frame_buffer.vs.glsl";
-  fs_path : "engine/frame_buffer/shader/color_frame_buffer.fs.glsl";
-}
-
-shader_config {
-  name : "depth_frame_buffer";
-  vs_path : "engine/frame_buffer/shader/frame_buffer.vs.glsl";
-  fs_path : "engine/frame_buffer/shader/depth_frame_buffer.fs.glsl";
-}
-
-shader_config {
   name : "billboard";
   vs_path : "playground/resource/shader/billboard.vs.glsl";
   fs_path : "playground/resource/shader/billboard.fs.glsl";
@@ -56,6 +44,18 @@ shader_config {
   name : "shadow_map";
   vs_path : "playground/resource/shader/shadow_map.vs.glsl";
   fs_path : "playground/resource/shader/shadow_map.fs.glsl";
+}
+
+shader_config {
+  name : "forward_shading";
+  vs_path : "playground/resource/shader/forward_shading.vs.glsl";
+  fs_path : "playground/resource/shader/forward_shading.fs.glsl";
+}
+
+shader_config {
+  name : "mrt_fusion";
+  vs_path : "playground/resource/shader/mrt_fusion.vs.glsl";
+  fs_path : "playground/resource/shader/mrt_fusion.fs.glsl";
 }
 
 texture_config {

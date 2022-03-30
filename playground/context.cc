@@ -1,19 +1,30 @@
 #include "playground/context.h"
 
-void Context::Init(const Config& config) {
+#include "playground/util.h"
+
+void Context::Init(const Option& option) {
+  std::string content;
+  util::ReadFileToString(option.config_path, &content);
+  Config config;
+  util::ParseFromString(content, &config);
+
+  screen_width_ = option.screen_width;
+  screen_height_ = option.screen_height;
   shader_repo_.Init(config);
   texture_repo_.Init(config);
+
+  clear_color_ = option.clear_color;
 }
 
 const engine::Camera& Context::camera() {
-  BTCHECK(!cameras_.empty());
-  BTCHECK(!cameras_.top().expired());
+  CGCHECK(!cameras_.empty());
+  CGCHECK(!cameras_.top().expired());
   return *cameras_.top().lock().get();
 }
 
 engine::Camera* Context::mutable_camera() {
-  BTCHECK(!cameras_.empty());
-  BTCHECK(!cameras_.top().expired());
+  CGCHECK(!cameras_.empty());
+  CGCHECK(!cameras_.top().expired());
   return cameras_.top().lock().get();
 }
 

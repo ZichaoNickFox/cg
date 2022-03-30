@@ -10,6 +10,8 @@ cc_library(
     "cube.cc",
     "directional_light.h",
     "directional_light.cc",
+    "fullscreen_quad.h",
+    "fullscreen_quad.cc",
     "object.h",
     "plane.h",
     "plane.cc",
@@ -20,7 +22,6 @@ cc_library(
   ],
   deps = [
     "//engine:engine",
-    "//engine/frame_buffer:frame_buffer",
     "//playground:context",
   ],
   linkopts = [

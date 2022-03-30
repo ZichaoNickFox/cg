@@ -88,6 +88,8 @@ void PointLight::OnRender(Context *context)
 {
   glBindVertexArray(vao_);
 
+  material_.SetVec3("light_color", color_);
+
   const engine::Camera& camera = context->camera();
   glm::mat4 project = camera.GetProjectMatrix();
   glm::mat4 view = camera.GetViewMatrix();

@@ -77,6 +77,7 @@ Shader::Shader(const std::string& name, const std::string& vs, const std::string
 }
 
 void Shader::Use() const {
+  CGLOG(ERROR, false) << "Use shader : " << name_;
   glUseProgram(id_);
 }
 
@@ -113,7 +114,7 @@ void Shader::SetVec3(const std::string &location_name, const glm::vec3& value) c
 GLint Shader::GetUniformLocation(const std::string& location_name) const {
   GLint res = glGetUniformLocation(id_, location_name.c_str());
   if (res == -1 || res == GL_INVALID_VALUE || res == GL_INVALID_OPERATION) {
-    BTCHECK(false) << "Cannot find uniform location '" << location_name << "' in shader '" << name_ << "'";
+    CGCHECK(false) << "Cannot find uniform location '" << location_name << "' in shader '" << name_ << "'";
   }
   return res;
 }
@@ -127,7 +128,7 @@ void Shader::CheckCompileErrors(unsigned int shader, const std::string& type) {
     if (!success)
     {
       glGetShaderInfoLog(shader, 1024, NULL, info_log);
-      BTCHECK(false) << type << " shader compile error : " << info_log;
+      CGCHECK(false) << " : " << type << " shader compile error : " << info_log << "In shader " << name_;
     }
   }
   else
@@ -136,7 +137,7 @@ void Shader::CheckCompileErrors(unsigned int shader, const std::string& type) {
     if (!success)
     {
       glGetProgramInfoLog(shader, 1024, NULL, info_log);
-      BTCHECK(false) << "Program link error :" << info_log;
+      CGCHECK(false) << " : Program link error :" << info_log << "In shader" << name_;
     }
   }
 }

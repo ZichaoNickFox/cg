@@ -12,7 +12,13 @@
 
 class Context {
  public:
-  void Init(const Config& config);
+  struct Option {
+    std::string config_path;
+    int screen_width;
+    int screen_height;
+    glm::vec4 clear_color;
+  };
+  void Init(const Option& option);
 
   void SetCurrentScene(const std::string& current_scene) { current_scene_ = current_scene; }
   const std::string& current_scene() const { return current_scene_; }
@@ -34,10 +40,18 @@ class Context {
   engine::Camera* mutable_camera();
 
   void SetFrameInternal(int frame_interval);
-  int frame_interval() { return frame_interval_; }
-  int fps() { return fps_; }
+  int frame_interval() const { return frame_interval_; }
+  int fps() const { return fps_; }
+
+  int screen_width() const { return screen_width_; }
+  int screen_height() const { return screen_height_; }
+
+  const glm::vec4 clear_color() const { return clear_color_; }
 
  private:
+  int screen_width_;
+  int screen_height_;
+
   std::string current_scene_;
   std::string next_scene_;
   
@@ -50,4 +64,6 @@ class Context {
 
   int frame_interval_;
   int fps_;
+
+  glm::vec4 clear_color_;
 };

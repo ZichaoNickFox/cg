@@ -1,10 +1,12 @@
 #version 330 core
 
-uniform vec3 light_color;
-out vec4 FragColor;
+layout (location = 0) out vec4 FragColor;
+layout (location = 1) out vec4 BrightColor;
 
-// http://www.barradeau.com/nicoptere/dump/materials.html
+uniform vec3 light_color;
+
 void main()
 {
   FragColor = vec4(light_color, 1.0f);
+  BrightColor = vec4(light_color, 1.0f);
 }

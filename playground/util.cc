@@ -7,7 +7,7 @@
 namespace util {
 
 void ReadFileToString(const std::string& path, std::string* content) {
-  BTCHECK(content);
+  CGCHECK(content);
   std::ifstream input_file(path);
   *content = std::string((std::istreambuf_iterator<char>(input_file)), std::istreambuf_iterator<char>());
   input_file.close();

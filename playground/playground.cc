@@ -2,33 +2,25 @@
 
 #include "imgui.h"
 
+#include "playground/scene/cube_world_scene.h"
 #include "playground/scene/deferred_shading_scene.h"
+#include "playground/scene/forward_shading_scene.h"
 #include "playground/scene/imgui_demo_scene.h"
 #include "playground/scene/gallery_scene.h"
 #include "playground/scene/test_scene.h"
 #include "playground/scene/triangle_scene.h"
-#include "playground/scene/cube_world_scene.h"
 #include "playground/scene/phong_scene.h"
 #include "playground/scene/skybox_scene.h"
 #include "playground/scene/shadow_map_scene.h"
+#include "playground/scene/mrt_scene.h"
 
 namespace {
-const std::string kDefaultScene = "ShadowMapScene";
+const std::string kDefaultScene = "DeferredShadingScene";
 }
 
-void Playground::Init(const std::string& config_path) {
+void Playground::Init(const Context::Option& option) {
   InitScene();
-  InitContext(config_path);
-}
-
-void Playground::InitContext(const std::string& config_path) {
-  std::string content;
-  util::ReadFileToString(config_path, &content);
-
-  Config config;
-  util::ParseFromString(content, &config);
-  context_.Init(config);
-
+  context_.Init(option);
   SwitchScene(kDefaultScene, true);
 }
 
@@ -39,12 +31,15 @@ void Playground::InitScene() {
   scene_map_.insert(std::make_pair("TriangleScene", std::make_unique<TriangleScene>()));
   scene_map_.insert(std::make_pair("CubeWorldScene", std::make_unique<CubeWorldScene>()));
   scene_map_.insert(std::make_pair("PhongScene", std::make_unique<PhongScene>()));
+  scene_map_.insert(std::make_pair("ForwardShadingScene", std::make_unique<ForwardShadingScene>()));
   scene_map_.insert(std::make_pair("DeferredShadingScene", std::make_unique<DeferredShadingScene>()));
   scene_map_.insert(std::make_pair("SkyboxScene", std::make_unique<SkyboxScene>()));
   scene_map_.insert(std::make_pair("ShadowMapScene", std::make_unique<ShadowMapScene>()));
+  scene_map_.insert(std::make_pair("MrtScene", std::make_unique<MrtScene>()));
 }
 
 void Playground::BeginFrame() {
+  CGLOG(ERROR, false) << "begin--------begin---------begin";
   frame_start_time_ = std::chrono::high_resolution_clock::now();
 }
 
@@ -71,6 +66,7 @@ void Playground::EndFrame() {
   util::Time frame_end_time = std::chrono::high_resolution_clock::now();
   int64_t frame_interval_millisecond = util::DurationMillisecond(frame_start_time_, frame_end_time);
   context_.SetFrameInternal(frame_interval_millisecond);
+  CGLOG(ERROR, false) << "end--------end---------end";
 }
 
 void Playground::SwitchScene(const std::string& scene, bool ignore_current_scene) {

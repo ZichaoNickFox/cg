@@ -12,7 +12,7 @@
 #include "playground/object/point_light.h"
 #include "playground/scene.h"
 
-class DeferredShadingScene : public Scene {
+class ForwardShadingScene : public Scene {
  public:
   void OnEnter(Context* context);
   void OnUpdate(Context* context);

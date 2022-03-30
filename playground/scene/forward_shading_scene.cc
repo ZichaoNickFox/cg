@@ -1,4 +1,4 @@
-#include "playground/scene/deferred_shading_scene.h"
+#include "playground/scene/forward_shading_scene.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -11,7 +11,7 @@
 #include "playground/scene/common.h"
 #include "playground/util.h"
 
-void DeferredShadingScene::OnEnter(Context *context)
+void ForwardShadingScene::OnEnter(Context *context)
 {
   for (int i = 0; i < point_lights_num_; ++i) {
     point_lights_.push_back(PointLight());
@@ -63,7 +63,7 @@ void DeferredShadingScene::OnEnter(Context *context)
   glEnable(GL_DEPTH_TEST);
 }
 
-void DeferredShadingScene::OnUpdate(Context *context)
+void ForwardShadingScene::OnUpdate(Context *context)
 {
   ControlCameraByIo(context);
 
@@ -94,10 +94,10 @@ void DeferredShadingScene::OnUpdate(Context *context)
   directional_light_.OnUpdate(context);
 }
 
-void DeferredShadingScene::OnGui(Context *context)
+void ForwardShadingScene::OnGui(Context *context)
 {
   bool open = true;
-  ImGui::Begin("DeferredShadingScene", &open, ImGuiWindowFlags_AlwaysAutoResize);
+  ImGui::Begin("ForwardShadingScene", &open, ImGuiWindowFlags_AlwaysAutoResize);
   RenderFps(context);
 
   ImGui::Separator();
@@ -146,7 +146,7 @@ void DeferredShadingScene::OnGui(Context *context)
   ImGui::End();
 }
 
-void DeferredShadingScene::OnRender(Context *context)
+void ForwardShadingScene::OnRender(Context *context)
 {
   directional_light_.ShadowMapRenderBegin(context);
   RenderShadowMap(context);
@@ -157,7 +157,7 @@ void DeferredShadingScene::OnRender(Context *context)
   RenderScene(context, shadow_map_vp, shadow_map_texture);
 }
 
-void DeferredShadingScene::RenderShadowMap(Context* context) {
+void ForwardShadingScene::RenderShadowMap(Context* context) {
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
     cube->mutable_material()->PushShader(context->mutable_shader_repo()->GetOrLoadShader("shadow_map"));
@@ -169,7 +169,7 @@ void DeferredShadingScene::RenderShadowMap(Context* context) {
   plane_.mutable_material()->PopShader();
 }
 
-void DeferredShadingScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
+void ForwardShadingScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
                                        const engine::Texture& shadow_map_texture) {
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
@@ -187,7 +187,7 @@ void DeferredShadingScene::RenderScene(Context* context, const glm::mat4& shadow
   directional_light_.OnRender(context);
 }
 
-void DeferredShadingScene::OnExit(Context *context)
+void ForwardShadingScene::OnExit(Context *context)
 {
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];

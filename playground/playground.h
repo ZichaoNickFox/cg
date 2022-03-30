@@ -10,9 +10,10 @@
 #include "playground/scene.h"
 #include "playground/util.h"
 
+// CG roadmap? https://github.com/miloyip/game-programmer
 class Playground {
  public:
-  void Init(const std::string& config_path);
+  void Init(const Context::Option& option);
   void BeginFrame();
   void Update();
   void Gui();
@@ -25,7 +26,6 @@ class Playground {
  
  private:
   void InitScene();
-  void InitContext(const std::string& config_path);
 
   std::unordered_map<std::string, std::unique_ptr<Scene>> scene_map_;
 

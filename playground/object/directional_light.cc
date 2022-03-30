@@ -2,8 +2,15 @@
 
 #include <glm/gtx/string_cast.hpp>
 
+#include "playground/util.h"
+
+int DirectionalLight::directional_light_num_ = 0;
+
 void DirectionalLight::Init(Context* context) {
-  depth_frame_buffer_.Init(shadow_map_width, shadow_map_height);
+  engine::DepthFrameBuffer::Option option{
+      util::Format("directional_light_{}_depth_buffer", directional_light_num_++),
+      kShadowMapWidth, kShadowMapHeight};
+  depth_frame_buffer_.Init(option);
   billboard_.Init(context, Billboard::Data{"directional_light"});
   shadow_map_camera_->SetType(engine::Camera::Perspective);
 }

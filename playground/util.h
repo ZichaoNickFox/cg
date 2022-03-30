@@ -23,7 +23,7 @@ std::string Format(const char* fmt, const Args&... args) {
 // proto
 template<typename MessageType>
 void ParseFromString(const std::string& content, MessageType* message) {
-  BTCHECK(google::protobuf::TextFormat::ParseFromString(content, message));
+  CGCHECK(google::protobuf::TextFormat::ParseFromString(content, message));
 }
 template<typename ElemType>
 std::vector<ElemType> ProtoRepeatedToVector(const google::protobuf::RepeatedPtrField<ElemType>& data) {

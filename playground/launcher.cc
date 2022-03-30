@@ -54,7 +54,7 @@ int main(int argc, char **argv)
   signal(SIGABRT, handler); // install our handler
 
   glfwSetErrorCallback(glfw_error_callback);
-  BTCHECK(glfwInit()) << "glfw Init Failed";
+  CGCHECK(glfwInit()) << "glfw Init Failed";
 
   const char *glsl_version = "#version 150";
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -63,8 +63,10 @@ int main(int argc, char **argv)
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);           // Required on Mac
 
   // Create window with graphics context
-  GLFWwindow* window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
-  BTCHECK(window) << "GLFW create window failed";
+  constexpr int kScreenWidth = 1280;
+  constexpr int kScreenHeight = 720;
+  GLFWwindow* window = glfwCreateWindow(kScreenWidth, kScreenHeight, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
+  CGCHECK(window) << "GLFW create window failed";
   glfwMakeContextCurrent(window);
   glfwSwapInterval(1); // Enable vsync
 
@@ -78,11 +80,11 @@ int main(int argc, char **argv)
 
   glewInit();
 
+  glm::vec4 clear_color = glm::vec4(0.45f, 0.55f, 0.60f, 1.00f);
   const std::string kConfigPath = "playground/config.pb.txt";
   Playground playground;
-  playground.Init(kConfigPath);
+  playground.Init({kConfigPath, kScreenWidth, kScreenHeight, clear_color});
 
-  ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
   while (!glfwWindowShouldClose(window)) {
     playground.BeginFrame();
     
@@ -90,8 +92,7 @@ int main(int argc, char **argv)
     glfwGetFramebufferSize(window, &display_w, &display_h);
     glViewport(0, 0, display_w, display_h);
     glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glClear(GL_DEPTH_BUFFER_BIT);
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     glfwPollEvents();
 

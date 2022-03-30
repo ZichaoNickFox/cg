@@ -11,12 +11,12 @@ void ShaderRepo::Init(const Config& config) {
   for (const ShaderConfig& shader_config : config.shader_config()) {
     std::string name = shader_config.name();
     shaders_.insert(std::make_pair(name, ShaderData(shader_config)));
-    LOG(ERROR) << "Init shader : " << name;
+    CGLOG(ERROR) << "Init shader : " << name;
   }
 }
 
 Shader ShaderRepo::GetOrLoadShader(const std::string& name) {
-  BTCHECK(shaders_.count(name) > 0) << "No shader name : " << name;
+  CGCHECK(shaders_.count(name) > 0) << "No shader name : " << name;
   ShaderData* shader_data = &shaders_.at(name);
   if (shader_data->loaded == false) {
     std::string vs;
@@ -33,15 +33,15 @@ Shader ShaderRepo::GetOrLoadShader(const std::string& name) {
     if (has_ts) {
       util::ReadFileToString(shader_data->config.ts_path(), &ts); 
     }
-    BTCHECK(vs.size() > 0) << "Load vs failed : " << name;
-    BTCHECK(fs.size() > 0) << "Load fs failed : " << name;
+    CGCHECK(vs.size() > 0) << "Load vs failed : " << name;
+    CGCHECK(fs.size() > 0) << "Load fs failed : " << name;
     if (has_gs) {
-      BTCHECK(gs.size() > 0) << "Load gs failed : " << name;
+      CGCHECK(gs.size() > 0) << "Load gs failed : " << name;
     }
     if (has_ts) {
-      BTCHECK(ts.size() > 0) << "Load ts failed : " << name;
+      CGCHECK(ts.size() > 0) << "Load ts failed : " << name;
     }
-    LOG(ERROR) << "Compiling shader " << name;
+    CGLOG(ERROR) << "Compiling shader " << name;
     shader_data->loaded = true;
     shader_data->shader = Shader(name, vs, fs, gs, ts);
   }

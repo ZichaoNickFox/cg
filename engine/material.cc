@@ -34,8 +34,14 @@ void Material::SetMat4(const std::string& location, const glm::mat4& value) {
 }
 
 int Material::SetTexture(const std::string& location, Texture value) {
-  int texture_unit = mutable_shader_data()->location_texture_.size();
-  mutable_shader_data()->location_texture_[location] = ShaderData::TextureData{texture_unit, value};
+  std::unordered_map<std::string, ShaderData::TextureData>* texture_data = &mutable_shader_data()->location_texture_;
+  int texture_unit = -1;
+  if (texture_data->count(location) == 0) {
+    texture_unit = (*texture_data).size();
+    (*texture_data)[location] = ShaderData::TextureData{texture_unit, value};
+  } else {
+    texture_unit = (*texture_data)[location].texture_unit;
+  }
   return texture_unit;
 }
 
@@ -64,6 +70,9 @@ void Material::PrepareShader() {
   for (const auto& pair : shader_data->location_vec3_) {
     shader_data->shader_.SetVec3(pair.first, pair.second);
   }
+  for (const auto& pair : shader_data->location_int_) {
+    shader_data->shader_.SetInt(pair.first, pair.second);
+  }
 }
 
 void Material::SetVec4(const std::string& location, const glm::vec4& value) {
@@ -72,6 +81,10 @@ void Material::SetVec4(const std::string& location, const glm::vec4& value) {
 
 void Material::SetVec3(const std::string& location, const glm::vec3& value) {
   mutable_shader_data()->location_vec3_[location] = value;
+}
+
+void Material::SetInt(const std::string& location, int value) {
+  mutable_shader_data()->location_int_[location] = value;
 }
 
 }

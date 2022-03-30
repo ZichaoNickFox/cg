@@ -14,7 +14,7 @@ glm::mat4 Camera::GetProjectMatrix() const {
     return glm::ortho(-orthographic_width_ / 2, orthographic_width_ / 2,
                       -orthographic_height() / 2, orthographic_height() / 2, near_clip_, far_clip_);
   } else {
-    BTCHECK(false) << "Unsupported Camera Type";
+    CGCHECK(false) << "Unsupported Camera Type";
     return glm::mat4(1);
   }
 }
