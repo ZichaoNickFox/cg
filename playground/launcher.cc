@@ -48,6 +48,19 @@ void FillIoInput(GLFWwindow* window, ImGuiIO* imgui_io, Io* io) {
   io->SetGuiCapturedMouse(imgui_io->WantCaptureMouse);
 }
 
+
+void GLAPIENTRY GLDebugMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
+                                  const GLchar* message, const void* user_param) {
+  return;
+  LOG(ERROR) << "GLDebugMessageCallback";
+  LOG(ERROR) << "-------------------------";
+  LOG(ERROR) << "type : " << type;
+  LOG(ERROR) << "id : " << id;
+  LOG(ERROR) << "severity : " << severity;
+  LOG(ERROR) << "length : " << length;
+  LOG(ERROR) << "message : " << message;
+  LOG(ERROR) << "-------------------------";
+}
 int main(int argc, char **argv)
 {
   signal(SIGSEGV, handler); // install our handler
@@ -56,11 +69,9 @@ int main(int argc, char **argv)
   glfwSetErrorCallback(glfw_error_callback);
   CGCHECK(glfwInit()) << "glfw Init Failed";
 
-  const char *glsl_version = "#version 150";
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // 3.2+ only
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);           // Required on Mac
 
   // Create window with graphics context
   constexpr int kScreenWidth = 1280;
@@ -76,6 +87,7 @@ int main(int argc, char **argv)
   ImGuiIO& imgui_io = ImGui::GetIO();
 
   ImGui_ImplGlfw_InitForOpenGL(window, true);
+  const char *glsl_version = "#version 150";
   ImGui_ImplOpenGL3_Init(glsl_version);
 
   glewInit();

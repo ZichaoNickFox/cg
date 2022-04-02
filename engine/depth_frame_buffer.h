@@ -16,5 +16,6 @@ class DepthFrameBuffer : public FrameBuffer {
   void OnBind() override;
   void Clear() override;
   void OnUnbind() override;
+  Texture GetTexture(int i = 0) override;
 };
 }

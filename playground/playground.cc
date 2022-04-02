@@ -2,6 +2,8 @@
 
 #include "imgui.h"
 
+#include "playground/scene/AA_scene.h"
+#include "playground/scene/AA_test_scene.h"
 #include "playground/scene/cube_world_scene.h"
 #include "playground/scene/deferred_shading_scene.h"
 #include "playground/scene/forward_shading_scene.h"
@@ -15,7 +17,7 @@
 #include "playground/scene/mrt_scene.h"
 
 namespace {
-const std::string kDefaultScene = "DeferredShadingScene";
+const std::string kDefaultScene = "AATestScene";
 }
 
 void Playground::Init(const Context::Option& option) {
@@ -36,6 +38,8 @@ void Playground::InitScene() {
   scene_map_.insert(std::make_pair("SkyboxScene", std::make_unique<SkyboxScene>()));
   scene_map_.insert(std::make_pair("ShadowMapScene", std::make_unique<ShadowMapScene>()));
   scene_map_.insert(std::make_pair("MrtScene", std::make_unique<MrtScene>()));
+  scene_map_.insert(std::make_pair("AAScene", std::make_unique<AAScene>()));
+  scene_map_.insert(std::make_pair("AATestScene", std::make_unique<AATestScene>()));
 }
 
 void Playground::BeginFrame() {

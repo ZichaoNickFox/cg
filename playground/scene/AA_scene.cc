@@ -1,4 +1,4 @@
-#include "playground/scene/mrt_scene.h"
+#include "playground/scene/AA_scene.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -13,12 +13,17 @@
 #include "playground/texture_repo.h"
 #include "playground/util.h"
 
-void MrtScene::OnEnter(Context *context)
+void AAScene::OnEnter(Context *context)
 {
-  engine::ColorFrameBuffer::Option option{
-      "mrt_2_color_frame_buffer", context->screen_width(), context->screen_height(), 2,
-      {context->clear_color(), glm::vec4(0, 0, 0, 1)}};
-  mrt_frame_buffer_.Init(option);
+  engine::MSFrameBuffer::Option ms_fbo_option{
+      "mrt_2_ms_frame_buffer", context->screen_width(), context->screen_height(), 1,
+      {context->clear_color()/*, glm::vec4(0, 0, 0, 1)*/}, 4};
+  ms_frame_buffer_.Init(ms_fbo_option);
+
+  engine::ColorFrameBuffer::Option color_fbo_option{
+      "color_frame_buffer", context->screen_width(), context->screen_height(), 1,
+      {context->clear_color()/*, glm::vec4(0, 0, 0, 1)*/}};
+  color_frame_buffer_.Init(color_fbo_option);
   
   for (int i = 0; i < point_lights_num_; ++i) {
     point_lights_.push_back(PointLight());
@@ -69,7 +74,7 @@ void MrtScene::OnEnter(Context *context)
   glEnable(GL_DEPTH_TEST);
 }
 
-void MrtScene::OnUpdate(Context *context)
+void AAScene::OnUpdate(Context *context)
 {
   ControlCameraByIo(context);
 
@@ -100,22 +105,15 @@ void MrtScene::OnUpdate(Context *context)
   directional_light_.OnUpdate(context);
 }
 
-void MrtScene::OnGui(Context *context)
+void AAScene::OnGui(Context *context)
 {
   bool open = true;
-  ImGui::Begin("MrtScene", &open, ImGuiWindowFlags_AlwaysAutoResize);
+  ImGui::Begin("AAScene", &open, ImGuiWindowFlags_AlwaysAutoResize);
   RenderFps(context);
-
-  ImGui::Separator();
-
-  ImGui::Text("camera_location %s", glm::to_string(context->camera().transform().translation()).c_str());
-  ImGui::Text("camera_front %s", glm::to_string(context->camera().front()).c_str());
-  ImGui::Text("camera_euler %s", glm::to_string(glm::eulerAngles(context->camera().transform().rotation())).c_str());
-
   ImGui::End();
 }
 
-void MrtScene::OnRender(Context *context)
+void AAScene::OnRender(Context *context)
 {
   RenderShadowMap(context);
 
@@ -124,7 +122,7 @@ void MrtScene::OnRender(Context *context)
   RenderScene(context, shadow_map_vp, shadow_map_texture);
 }
 
-void MrtScene::RenderShadowMap(Context* context) {
+void AAScene::RenderShadowMap(Context* context) {
   directional_light_.ShadowMapRenderBegin(context);
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
@@ -138,9 +136,9 @@ void MrtScene::RenderShadowMap(Context* context) {
   directional_light_.ShadowMapRenderEnd(context);
 }
 
-void MrtScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
+void AAScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
                            const engine::Texture& shadow_map_texture) {
-  mrt_frame_buffer_.Bind();
+  ms_frame_buffer_.Bind();
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
     cube->mutable_material()->SetTexture("shadow_map_texture", shadow_map_texture);
@@ -157,14 +155,18 @@ void MrtScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
   plane_.OnRender(context);
 
   directional_light_.OnRender(context);
-  mrt_frame_buffer_.Unbind();
+  ms_frame_buffer_.Unbind();
 
-  fullscreen_quad_.mutable_material()->SetTexture("scene", mrt_frame_buffer_.GetTexture(0));
-  fullscreen_quad_.mutable_material()->SetTexture("bright", mrt_frame_buffer_.GetTexture(1));
+  // ms_frame_buffer_.Blit(&color_frame_buffer_);
+
+  fullscreen_quad_.mutable_material()->SetTexture("scene", ms_frame_buffer_.GetTexture(0));
+  fullscreen_quad_.mutable_material()->SetTexture("bright", ms_frame_buffer_.GetTexture(1));
+  // fullscreen_quad_.mutable_material()->SetTexture("scene", color_frame_buffer_.GetTexture(0));
+  // fullscreen_quad_.mutable_material()->SetTexture("bright", color_frame_buffer_.GetTexture(1));
   fullscreen_quad_.OnRender(context);
 }
 
-void MrtScene::OnExit(Context *context)
+void AAScene::OnExit(Context *context)
 {
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];

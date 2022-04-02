@@ -4,6 +4,7 @@
 #include <unistd.h>
 
 #include <glog/logging.h>
+#include <GL/glew.h>
 
 // Variable Argument Macro (VA_MACRO) upto 6 arguments
 #define NUM_ARGS_(_1, _2, _3, _4, _5, _6, TOTAL, ...) TOTAL
@@ -30,3 +31,8 @@
 #define CGLOG(...) VA_MACRO(CGLOG, __VA_ARGS__)
 #define CGLOG1(verbose) LOG(ERROR)
 #define CGLOG2(verbose, false) LOG_IF(verbose, false)
+
+#define VAR_LINE2(var, line) var##line
+#define VAR_LINE(var, line) VAR_LINE2(var, line) 
+#define CGCHECKGL() int VAR_LINE(gl_get_error_res, __LINE__) = glGetError(); \
+  CGCHECK(VAR_LINE(gl_get_error_res, __LINE__) == 0) << VAR_LINE(gl_get_error_res, __LINE__) << "\n"

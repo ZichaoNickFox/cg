@@ -4,6 +4,7 @@
 #include "SOIL2/SOIL2.h"
 #include "SOIL2/stb_image.h"
 
+#include "engine/debug.h"
 #include "playground/util.h"
 
 using engine::Texture;
@@ -62,8 +63,8 @@ Texture LoadTexture2D(const std::string& path_with_ext, bool useMipmap) {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   if(useMipmap){
     glGenerateMipmap(GL_TEXTURE_2D);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_MIPMAP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_MIPMAP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   }else{
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -171,21 +172,22 @@ void ParseImageFormat(const std::string& fileName, int* SOILfmt, GLint* internal
 }
 
 // failed return 0
-void SaveTexture2D(const std::string& path_with_ext, GLuint tex) {
+void SaveTexture2D(const std::string& path_with_ext, GLuint tex, bool ms) {
   CGLOG(INFO) << "[texture::SaveTexture2D] path : " << path_with_ext;
-  glBindTexture(GL_TEXTURE_2D, tex);
+  GLuint target = ms ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+  glBindTexture(target, tex);
 
   int width = -1, height = -1, internal_format = -1;
-  glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
-  glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
-  glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &internal_format);
+  glGetTexLevelParameteriv(target, 0, GL_TEXTURE_WIDTH, &width);
+  glGetTexLevelParameteriv(target, 0, GL_TEXTURE_HEIGHT, &height);
+  glGetTexLevelParameteriv(target, 0, GL_TEXTURE_INTERNAL_FORMAT, &internal_format);
   
   int channel = -1, byte_per_channel = -1, format = -1, type = -1;
   GetInternalFormatSize(internal_format, &channel, &byte_per_channel, &format, &type);
   GLubyte* pixels = new GLubyte[width * height * channel * byte_per_channel];
 
   // https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glGetTexImage.xhtml
-  glGetTexImage(GL_TEXTURE_2D, 0, format, type, pixels);
+  glGetTexImage(target, 0, format, type, pixels);
 
   CGCHECK(width > 0) << "Widget must > 0";
   CGCHECK(height > 0) << "Height must > 0";

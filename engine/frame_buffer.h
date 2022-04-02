@@ -16,14 +16,8 @@ public:
   virtual void OnBind() = 0;
   virtual void Clear() = 0;
   virtual void OnUnbind() = 0;
+  virtual Texture GetTexture(int i = 0) = 0;
 
-  Texture texture(int i = 0) const { return textures_[i]; }
-  template<typename PixelType>
-  std::shared_ptr<PixelType> GetTextureData(GLenum format, GLenum type) {
-    std::shared_ptr<GLubyte> pixels(new PixelType[width_ * height_]);
-    glReadPixels(0, 0, width_, height_, format, type, reinterpret_cast<void*>(*pixels));
-    return pixels;
-  }
   int width() { return width_; }
   int height() { return height_; }
 

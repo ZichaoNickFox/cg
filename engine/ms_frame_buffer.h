@@ -2,11 +2,12 @@
 
 #include <vector>
 
+#include "engine/color_frame_buffer.h"
 #include "engine/frame_buffer.h"
 #include "engine/shader.h"
 
 namespace engine {
-class ColorFrameBuffer : public FrameBuffer {
+class MSFrameBuffer : public FrameBuffer {
  public:
   struct Option {
     std::string name;
@@ -14,6 +15,7 @@ class ColorFrameBuffer : public FrameBuffer {
     int height;
     int mrt;
     std::vector<glm::vec4> clear_colors;
+    int ms_num = 2;
   };
   void Init(const Option& option);
 
@@ -22,9 +24,11 @@ class ColorFrameBuffer : public FrameBuffer {
   void OnUnbind() override;
   Texture GetTexture(int i = 0) override;
 
-  GLuint fbo() { return fbo_; }
+  void Blit(ColorFrameBuffer* color_frame_buffer);
   
  private:
+  void CheckSupportMSNum(GLuint fbo, int num);
+
   Option option_;
 };
 }

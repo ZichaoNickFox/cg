@@ -4,6 +4,10 @@ load("@rules_proto//proto:defs.bzl", "proto_library")
 cc_library(
   name = "scenes",
   srcs = [
+    "AA_scene.h",
+    "AA_scene.cc",
+    "AA_test_scene.h",
+    "AA_test_scene.cc",
     "common.h",
     "common.cc",
     "cube_world_scene.h",

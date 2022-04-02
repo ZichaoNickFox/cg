@@ -48,6 +48,9 @@ class Context {
 
   const glm::vec4 clear_color() const { return clear_color_; }
 
+  engine::Shader GetShader(const std::string& name);
+  engine::Texture GetTexture(const std::string& name);
+
  private:
   int screen_width_;
   int screen_height_;

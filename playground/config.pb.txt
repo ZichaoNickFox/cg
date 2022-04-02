@@ -58,6 +58,18 @@ shader_config {
   fs_path : "playground/resource/shader/mrt_fusion.fs.glsl";
 }
 
+shader_config {
+  name : "aa_test_scene";
+  vs_path : "playground/resource/shader/aa_test_scene.vs.glsl";
+  fs_path : "playground/resource/shader/aa_test_scene.fs.glsl";
+}
+
+shader_config {
+  name : "fullscreen_quad";
+  vs_path : "playground/resource/shader/fullscreen_quad.vs.glsl";
+  fs_path : "playground/resource/shader/fullscreen_quad.fs.glsl";
+}
+
 texture_config {
   name : "opengl0";
   paths : "playground/resource/texture/opengl0.jpeg";

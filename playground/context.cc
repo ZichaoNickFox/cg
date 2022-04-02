@@ -32,3 +32,11 @@ void Context::SetFrameInternal(int frame_interval) {
   frame_interval_ = frame_interval;
   fps_ = 1e3 / frame_interval_;
 }
+
+engine::Shader Context::GetShader(const std::string& name) {
+  return shader_repo_.GetOrLoadShader(name);
+}
+
+engine::Texture Context::GetTexture(const std::string& name) {
+  return texture_repo_.GetOrLoadTexture(name);
+}

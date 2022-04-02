@@ -46,4 +46,8 @@ void DepthFrameBuffer::Clear() {
 
 void DepthFrameBuffer::OnUnbind() {
 }
+
+Texture DepthFrameBuffer::GetTexture(int i) {
+  return textures_[i];
+}
 }

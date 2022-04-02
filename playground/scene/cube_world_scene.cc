@@ -23,20 +23,15 @@ void CubeWorldScene::OnEnter(Context *context)
 
   for (int i = 0; i < kCubeNum; ++i) {
     std::unique_ptr<Cube> cube = std::make_unique<Cube>();
-    engine::Transform cube_transform(cube_positions_[i], glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
-    cube->SetTransform(cube_transform);
-    engine::Material material;
-    material.SetTexture("texture0", context->mutable_texture_repo()->GetOrLoadTexture("cube_texture"));
-    material.PushShader(context->mutable_shader_repo()->GetOrLoadShader("cube"));
-    cube->SetMaterial(material);
+    cube->mutable_transform()->SetTranslation(cube_positions_[i]);
+    cube->mutable_material()->PushShader(context->mutable_shader_repo()->GetOrLoadShader("cube"));
+    cube->mutable_material()->SetTexture("texture0", context->mutable_texture_repo()->GetOrLoadTexture("cube_texture"));
     cubes_.push_back(std::move(cube));
   }
 
   glEnable(GL_DEPTH_TEST);
 
-  engine::Transform camera_transform(glm::vec3(0, 0, 10), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
-  camera_->SetTransform(camera_transform);
-  // camera_->SetFront(glm::vec3(0, 0, -1));
+  camera_->mutable_transform()->SetTranslation(glm::vec3(0, 0, 10));
   context->PushCamera(camera_);
 }
 

@@ -21,6 +21,8 @@ cc_library(
     "frame_buffer.cc",
     "material.h",
     "material.cc",
+    "ms_frame_buffer.h",
+    "ms_frame_buffer.cc",
     "mesh.h",
     "mesh.cc",
     "shader.h",

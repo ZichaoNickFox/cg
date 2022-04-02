@@ -1,5 +1,7 @@
 #include "engine/material.h"
 
+#include "engine/debug.h"
+
 namespace engine {
 
 void Material::PushShader(Shader shader) {

@@ -16,9 +16,11 @@ void ColorFrameBuffer::Init(const Option& option) {
   glGenFramebuffers(1, &fbo_);
   SetFboNamePair(fbo_, option.name);
   glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
+
   for (int i = 0; i < option.mrt; ++i) {
     textures_.push_back(Texture());
     glGenTextures(1, textures_[i].mutable_id());
+    
     glBindTexture(GL_TEXTURE_2D, textures_[i].id());
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, option.width, option.height, 0, GL_RGBA, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -30,8 +32,8 @@ void ColorFrameBuffer::Init(const Option& option) {
   }
 
   // Depth frame buffer
+  // Attention :ms_color_buffer must work with ms_depth_buffer
   textures_.push_back(Texture());
-  // After generating textures, index increased to mrt
   glGenTextures(1, textures_[option.mrt].mutable_id());
   glBindTexture(GL_TEXTURE_2D, textures_[option.mrt].id());
   glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, option.width, option.height, 0, GL_DEPTH_COMPONENT,
@@ -51,8 +53,11 @@ void ColorFrameBuffer::Init(const Option& option) {
 }
 
 void ColorFrameBuffer::OnBind() {
-  GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-  glDrawBuffers(2, attachments);
+  std::vector<GLuint> attachments;
+  for (int i = 0; i < option_.mrt; ++i) {
+    attachments.push_back(GL_COLOR_ATTACHMENT0 + i);
+  }
+  glDrawBuffers(option_.mrt, attachments.data());
 }
 
 void ColorFrameBuffer::Clear() {
@@ -69,4 +74,7 @@ void ColorFrameBuffer::OnUnbind() {
 
 }
 
+Texture ColorFrameBuffer::GetTexture(int i) {
+  return textures_[i];
+}
 }
