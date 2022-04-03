@@ -7,17 +7,18 @@
 #include "playground/scene/cube_world_scene.h"
 #include "playground/scene/deferred_shading_scene.h"
 #include "playground/scene/forward_shading_scene.h"
-#include "playground/scene/imgui_demo_scene.h"
 #include "playground/scene/gallery_scene.h"
+#include "playground/scene/imgui_demo_scene.h"
+#include "playground/scene/model_scene.h"
+#include "playground/scene/mrt_scene.h"
+#include "playground/scene/phong_scene.h"
+#include "playground/scene/shadow_map_scene.h"
+#include "playground/scene/skybox_scene.h"
 #include "playground/scene/test_scene.h"
 #include "playground/scene/triangle_scene.h"
-#include "playground/scene/phong_scene.h"
-#include "playground/scene/skybox_scene.h"
-#include "playground/scene/shadow_map_scene.h"
-#include "playground/scene/mrt_scene.h"
 
 namespace {
-const std::string kDefaultScene = "AATestScene";
+const std::string kDefaultScene = "ModelScene";
 }
 
 void Playground::Init(const Context::Option& option) {
@@ -40,6 +41,7 @@ void Playground::InitScene() {
   scene_map_.insert(std::make_pair("MrtScene", std::make_unique<MrtScene>()));
   scene_map_.insert(std::make_pair("AAScene", std::make_unique<AAScene>()));
   scene_map_.insert(std::make_pair("AATestScene", std::make_unique<AATestScene>()));
+  scene_map_.insert(std::make_pair("ModelScene", std::make_unique<ModelScene>()));
 }
 
 void Playground::BeginFrame() {

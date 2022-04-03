@@ -70,6 +70,18 @@ shader_config {
   fs_path : "playground/resource/shader/fullscreen_quad.fs.glsl";
 }
 
+shader_config {
+  name : "nanosuit";
+  vs_path : "playground/resource/shader/nanosuit.vs.glsl";
+  fs_path : "playground/resource/shader/nanosuit.fs.glsl";
+}
+
+shader_config {
+  name : "model_test";
+  vs_path : "playground/resource/shader/model_test.vs.glsl";
+  fs_path : "playground/resource/shader/model_test.fs.glsl";
+}
+
 texture_config {
   name : "opengl0";
   paths : "playground/resource/texture/opengl0.jpeg";
@@ -115,4 +127,10 @@ texture_config {
   paths : "playground/resource/texture/skybox/front.jpg";
   paths : "playground/resource/texture/skybox/back.jpg";
   texture_type : CubeMap;
+}
+
+model_config {
+  name : "nanosuit";
+  obj_path : "playground/resource/model/nanosuit/nanosuit.obj";
+  texture_dir : "playground/resource/model/nanosuit";
 }

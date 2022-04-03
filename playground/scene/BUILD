@@ -22,6 +22,8 @@ cc_library(
     "gallery_scene.cc",
     "mrt_scene.h",
     "mrt_scene.cc",
+    "model_scene.h",
+    "model_scene.cc",
     "phong_scene.h",
     "phong_scene.cc",
     "shadow_map_scene.h",

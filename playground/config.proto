@@ -15,11 +15,19 @@ enum TextureType {
 
 message TextureConfig {
   string name = 1;
+  // Plural for cubemap
   repeated string paths = 2;
   TextureType texture_type = 3;
+}
+
+message ModelConfig {
+  string name = 1;
+  string obj_path = 2;
+  string texture_dir = 3;
 }
 
 message Config {
   repeated ShaderConfig shader_config = 1;
   repeated TextureConfig texture_config = 2;
+  repeated ModelConfig model_config = 3;
 }

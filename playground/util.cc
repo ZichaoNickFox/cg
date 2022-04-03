@@ -21,6 +21,19 @@ std::string GetFileExt(const std::string& file_name) {
   return file_name.substr(pos + 1);
 }
 
+std::string FileName(const std::string& path) {
+  std::string res = path;
+  int slash_pos = path.find_last_of('/');
+  if (slash_pos != std::string::npos) {
+    res = path.substr(slash_pos + 1);
+  }
+  int dot_pos = res.find_last_of('.');
+  if (dot_pos != std::string::npos) {
+    res = res.substr(0, dot_pos);
+  }
+  return res;
+}
+
 bool EndsWith(const std::string& str, const std::string& ending) {
   if (str.length() >= ending.length()) {
     return (0 == str.compare (str.length() - ending.length(), ending.length(), ending));

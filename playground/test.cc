@@ -13,4 +13,9 @@ TEST(engine_test, util)
     EXPECT_LE(rand_value, 10.0);
     EXPECT_GE(rand_value, -10.0);
   }
+
+  EXPECT_EQ(util::FileName("a/target.png"), "target");
+  EXPECT_EQ(util::FileName("target.png"), "target");
+  EXPECT_EQ(util::FileName("target"), "target");
+  EXPECT_EQ(util::FileName("a/target"), "target");
 }

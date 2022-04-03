@@ -45,8 +45,8 @@ Texture LoadTexture2D(const std::string& path_with_ext, bool useMipmap) {
   // So flip vertical uv
   stbi_set_flip_vertically_on_load(true);
 
-  GLuint ret;
-  glGenTextures(1, &ret);
+  GLuint id;
+  glGenTextures(1, &id);
 
   int SOILfmt;
   GLint internal_format;
@@ -57,7 +57,7 @@ Texture LoadTexture2D(const std::string& path_with_ext, bool useMipmap) {
   if (!image) {
     CGCHECK(false) << util::Format("cannot load image {}", path_with_ext);
   }
-  glBindTexture(GL_TEXTURE_2D, ret);
+  glBindTexture(GL_TEXTURE_2D, id);
   glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, internal_format, GL_UNSIGNED_BYTE, image);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -71,7 +71,7 @@ Texture LoadTexture2D(const std::string& path_with_ext, bool useMipmap) {
   }
   glBindTexture(GL_TEXTURE_2D, 0);
   SOIL_free_image_data(image);
-  return Texture(ret, Texture::Texture2D);
+  return Texture(id, Texture::Texture2D, util::FileName(path_with_ext));
 }
 
 Texture CreateFromData( GLubyte* data, int width, int height, bool useMipmap) {

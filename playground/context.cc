@@ -12,6 +12,7 @@ void Context::Init(const Option& option) {
   screen_height_ = option.screen_height;
   shader_repo_.Init(config);
   texture_repo_.Init(config);
+  model_repo_.Init(config);
 
   clear_color_ = option.clear_color;
 }

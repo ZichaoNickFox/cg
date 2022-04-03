@@ -7,6 +7,7 @@
 #include "engine/camera.h"
 #include "playground/config.pb.h"
 #include "playground/io.h"
+#include "playground/model_repo.h"
 #include "playground/shader_repo.h"
 #include "playground/texture_repo.h"
 
@@ -28,8 +29,10 @@ class Context {
 
   const ShaderRepo& shader_repo() { return shader_repo_; }
   const TextureRepo& texture_repo() { return texture_repo_; }
+  const ModelRepo& model_repo() { return model_repo_; }
   ShaderRepo* mutable_shader_repo() { return &shader_repo_; }
   TextureRepo* mutable_texture_repo() { return &texture_repo_; }
+  ModelRepo* mutable_model_repo() { return &model_repo_; }
 
   const Io& io() { return io_; }
   Io* mutable_io() { return &io_; }
@@ -60,6 +63,7 @@ class Context {
   
   ShaderRepo shader_repo_;
   TextureRepo texture_repo_;
+  ModelRepo model_repo_;
 
   Io io_;
 

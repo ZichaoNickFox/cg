@@ -14,6 +14,7 @@
 #include "playground/object/point_light.h"
 #include "playground/scene.h"
 
+// TODO : I don't know why cannot use
 class AAScene : public Scene {
  public:
   void OnEnter(Context* context);

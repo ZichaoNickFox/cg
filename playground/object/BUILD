@@ -18,7 +18,9 @@ cc_library(
     "point_light.h",
     "point_light.cc",
     "lines.h",
-    "lines.cc"
+    "lines.cc",
+    "model.h",
+    "model.cc",
   ],
   deps = [
     "//engine:engine",

@@ -33,7 +33,8 @@ cc_library(
     "transform.cc",
   ],
   deps = [
-    "//engine:debug"
+    "//engine:debug",
+    "@imgui//:imgui",
   ],
   linkopts = [
     "-lfmt",

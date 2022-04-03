@@ -32,7 +32,11 @@
 #define CGLOG1(verbose) LOG(ERROR)
 #define CGLOG2(verbose, false) LOG_IF(verbose, false)
 
+#define CGLOG_IF(verbose, condition) LOG_IF(verbose, condition)
+
 #define VAR_LINE2(var, line) var##line
 #define VAR_LINE(var, line) VAR_LINE2(var, line) 
 #define CGCHECKGL() int VAR_LINE(gl_get_error_res, __LINE__) = glGetError(); \
   CGCHECK(VAR_LINE(gl_get_error_res, __LINE__) == 0) << VAR_LINE(gl_get_error_res, __LINE__) << "\n"
+
+#define CGCHECK_NOTNULL(p) CHECK_NOTNULL(p)

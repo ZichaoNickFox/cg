@@ -3,6 +3,7 @@
 #include <string>
 
 #include "engine/transform.h"
+#include "playground/context.h"
 
 class Object {
  public:

@@ -37,6 +37,7 @@ cc_library(
   ],
   linkopts = [
     "-lfmt",
+    "-lassimp",
   ],
 )
 
@@ -56,6 +57,8 @@ cc_library(
     "context.cc",
     "io.h",
     "io.cc",
+    "model_repo.h",
+    "model_repo.cc",
     "shader_repo.h",
     "shader_repo.cc",
     "texture_repo.h",

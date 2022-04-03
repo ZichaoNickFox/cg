@@ -12,6 +12,7 @@ namespace util {
 // file
 void ReadFileToString(const std::string& path, std::string* content);
 std::string GetFileExt(const std::string& file_name);
+std::string FileName(const std::string& path);
 
 // string
 bool EndsWith(const std::string& str, const std::string& end_with);
