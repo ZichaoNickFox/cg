@@ -12,6 +12,7 @@ void Context::Init(const Option& option) {
   screen_height_ = option.screen_height;
   shader_repo_.Init(config);
   texture_repo_.Init(config);
+  mesh_repo_.Init(config);
   model_repo_.Init(config);
 
   clear_color_ = option.clear_color;
@@ -40,4 +41,8 @@ engine::Shader Context::GetShader(const std::string& name) {
 
 engine::Texture Context::GetTexture(const std::string& name) {
   return texture_repo_.GetOrLoadTexture(name);
+}
+
+std::shared_ptr<engine::Mesh> Context::GetMesh(const std::string& name) {
+  return mesh_repo_.GetOrLoadMesh(name);
 }

@@ -11,7 +11,6 @@
 
 class PointLight : public Object {
  public:
-  PointLight();
   void OnUpdate(Context *context) override;
   void OnRender(Context *context) override;
   void OnDestory(Context *context) override;
@@ -27,9 +26,6 @@ class PointLight : public Object {
   float attenuation_quadratic() { return attenuation_quadratic_; }
 
  private: 
-  GLuint vao_;
-  GLuint vbo_;
-
   glm::vec4 color_;
 
   float attenuation_constant_ = 1.0;

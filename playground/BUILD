@@ -57,6 +57,8 @@ cc_library(
     "context.cc",
     "io.h",
     "io.cc",
+    "mesh_repo.h",
+    "mesh_repo.cc",
     "model_repo.h",
     "model_repo.cc",
     "shader_repo.h",

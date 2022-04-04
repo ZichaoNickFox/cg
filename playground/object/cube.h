@@ -2,6 +2,7 @@
 
 #include "engine/camera.h"
 #include "engine/material.h"
+#include "engine/mesh.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "engine/transform.h"
@@ -11,7 +12,6 @@
 
 class Cube : public Object {
  public:
-  Cube();
   void OnUpdate(Context *context) override;
   void OnRender(Context *context) override;
   void OnDestory(Context *context) override;
@@ -20,8 +20,6 @@ class Cube : public Object {
   engine::Material* mutable_material() { return &material_; }
 
  private: 
-  GLuint vao_;
-  GLuint vbo_;
-
+  std::shared_ptr<engine::Mesh> mesh_;
   engine::Material material_;
 };

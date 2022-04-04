@@ -9,7 +9,6 @@
 
 class Plane : public Object {
  public:
-  Plane();
   void OnUpdate(Context *context);
   void OnRender(Context *context);
   void OnDestory(Context *context);
@@ -18,10 +17,5 @@ class Plane : public Object {
   engine::Material* mutable_material() { return &material_; }
 
  private: 
-  GLuint vao_;
-  GLuint vbo_;
-
   engine::Material material_;
-
-  std::string name_;
 };

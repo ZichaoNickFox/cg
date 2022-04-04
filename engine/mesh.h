@@ -23,17 +23,7 @@ class Mesh {
     uint32_t size_in_float;
     uint32_t size_in_byte;
   };
-  //! Attention: Mesh vertex layout:
-  // TODO A vertex contains all components for GBuffer.
-  // TODO If I think a better way out. I will optimize vertex format for memory saving.
-  std::unordered_map<std::string, VertexComponent> kVertexComponents = {
-    {"position", {"position", GL_RGB, GL_FLOAT, 3, 12}},
-    {"normal", {"normal", GL_RGB, GL_FLOAT, 3, 12}},
-    {"texcoord", {"texcoord", GL_RGB, GL_FLOAT, 2, 8}},
-    {"tangent", {"tangent", GL_RGB, GL_FLOAT, 3, 12}},
-    {"bitangent", {"bitangent", GL_RGB, GL_FLOAT, 3, 12}},
-    {"color", {"color", GL_RGB, GL_FLOAT, 3, 12}},
-  };
+  static std::unordered_map<std::string, Mesh::VertexComponent> kVertexLayout;
 
   void SetPositions(const std::vector<glm::vec3> &positions) { positions_ = positions; }
   void SetNormals(const std::vector<glm::vec3> &normals) { normals_ = normals; }

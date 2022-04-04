@@ -15,15 +15,24 @@ void* AsVoidPtr(Type& var) {
 }
 }
 
+std::unordered_map<std::string, Mesh::VertexComponent> Mesh::kVertexLayout = {
+  {"position", {"position", GL_RGB, GL_FLOAT, 3, 12}},
+  {"normal", {"normal", GL_RGB, GL_FLOAT, 3, 12}},
+  {"texcoord", {"texcoord", GL_RGB, GL_FLOAT, 2, 8}},
+  {"tangent", {"tangent", GL_RGB, GL_FLOAT, 3, 12}},
+  {"bitangent", {"bitangent", GL_RGB, GL_FLOAT, 3, 12}},
+  {"color", {"color", GL_RGB, GL_FLOAT, 3, 12}},
+};
+
 void Mesh::Setup() {
   int enabled_component_num = 0;
   int vertex_size_in_float = 0;
-  vertex_size_in_float += kVertexComponents["position"].size_in_float; enabled_component_num++;
-  vertex_size_in_float += kVertexComponents["normal"].size_in_float; enabled_component_num++;
-  vertex_size_in_float += kVertexComponents["texcoord"].size_in_float; enabled_component_num++;
-  vertex_size_in_float += kVertexComponents["tangnet"].size_in_float; enabled_component_num++;
-  vertex_size_in_float += kVertexComponents["bitangent"].size_in_float; enabled_component_num++;
-  vertex_size_in_float += kVertexComponents["color"].size_in_float; enabled_component_num++;
+  vertex_size_in_float += kVertexLayout["position"].size_in_float; enabled_component_num++;
+  vertex_size_in_float += kVertexLayout["normal"].size_in_float; enabled_component_num++;
+  vertex_size_in_float += kVertexLayout["texcoord"].size_in_float; enabled_component_num++;
+  vertex_size_in_float += kVertexLayout["tangnet"].size_in_float; enabled_component_num++;
+  vertex_size_in_float += kVertexLayout["bitangent"].size_in_float; enabled_component_num++;
+  vertex_size_in_float += kVertexLayout["color"].size_in_float; enabled_component_num++;
 
   SetupVBO(vertex_size_in_float);
   SetupVAO(enabled_component_num);
@@ -76,12 +85,12 @@ void Mesh::SetupVAO(int enabled_component_num) {
   offset_in_vbo += VectorSizeInByte(component); \
   vertex_component_index++;
 
-  ENABLE_VERTEX_COMPONENT(positions_, vertex_component_index, kVertexComponents["position"].size_in_float);
-  ENABLE_VERTEX_COMPONENT(normals_, vertex_component_index, kVertexComponents["normal"].size_in_float);
-  ENABLE_VERTEX_COMPONENT(texcoords_, vertex_component_index, kVertexComponents["texcoord"].size_in_float);
-  ENABLE_VERTEX_COMPONENT(tangents_, vertex_component_index, kVertexComponents["tangent"].size_in_float);
-  ENABLE_VERTEX_COMPONENT(bitangents_, vertex_component_index, kVertexComponents["bitangent"].size_in_float);
-  ENABLE_VERTEX_COMPONENT(colors_, vertex_component_index, kVertexComponents["color"].size_in_float);
+  ENABLE_VERTEX_COMPONENT(positions_, vertex_component_index, kVertexLayout["position"].size_in_float);
+  ENABLE_VERTEX_COMPONENT(normals_, vertex_component_index, kVertexLayout["normal"].size_in_float);
+  ENABLE_VERTEX_COMPONENT(texcoords_, vertex_component_index, kVertexLayout["texcoord"].size_in_float);
+  ENABLE_VERTEX_COMPONENT(tangents_, vertex_component_index, kVertexLayout["tangent"].size_in_float);
+  ENABLE_VERTEX_COMPONENT(bitangents_, vertex_component_index, kVertexLayout["bitangent"].size_in_float);
+  ENABLE_VERTEX_COMPONENT(colors_, vertex_component_index, kVertexLayout["color"].size_in_float);
   
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
