@@ -24,7 +24,7 @@ void AATestScene::OnEnter(Context *context)
   for (int i = 0; i < kCubeNum; ++i) {
     std::unique_ptr<Cube> cube = std::make_unique<Cube>();
     cube->mutable_transform()->SetTranslation(cube_positions_[i]);
-    cube->mutable_material()->PushShader(context->mutable_shader_repo()->GetOrLoadShader("aa_test_scene"));
+    cube->mutable_material()->PushShader(context->GetShader("aa_test_scene"));
     cubes_.push_back(std::move(cube));
   }
 
@@ -57,9 +57,10 @@ void AATestScene::OnRender(Context *context)
 
   engine::Texture texture = ms_frame_buffer_.GetTexture();
 
-  full_screen_quad_.mutable_material()->PushShader(context->GetShader("fullscreen_quad"));
-  full_screen_quad_.mutable_material()->SetTexture("texture0", texture);
-  full_screen_quad_.OnRender(context);
+  FullscreenQuad full_screen_quad;
+  full_screen_quad.mutable_material()->PushShader(context->GetShader("fullscreen_quad"));
+  full_screen_quad.mutable_material()->SetTexture("texture0", texture);
+  full_screen_quad.OnRender(context);
 }
 
 void AATestScene::OnExit(Context *context)

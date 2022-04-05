@@ -14,25 +14,19 @@ void PhongScene::OnEnter(Context *context)
   const glm::vec3 kLightColor = glm::vec3(0.0, 1.0, 0.0);
   const glm::vec3 kLightPos = glm::vec3(1, 1, 0);
   const glm::vec3 kLightScale = glm::vec3(0.4, 0.4, 0.4);
-  engine::Transform light_transform(kLightPos, glm::quat(glm::vec3(0, 0, 0)), kLightScale);
-  light_.SetTransform(light_transform);
-  engine::Material material;
-  material.PushShader(context->mutable_shader_repo()->GetOrLoadShader("point_light"));
-  material.SetVec3("light_color", kLightColor);
-  light_.SetMaterial(material);
+  light_.mutable_transform()->SetTranslation(kLightPos);
+  light_.mutable_transform()->SetScale(kLightScale);
+  light_.mutable_material()->PushShader(context->GetShader("point_light"));
+  light_.mutable_material()->SetVec3("light_color", kLightColor);
 
   // http://www.barradeau.com/nicoptere/dump/materials.html
   const glm::vec3 kCubePosition = glm::vec3(0, 0, 0);
-  engine::Transform cube_transform;
-  cube_transform.SetTranslation(kCubePosition);
-  engine::Material cube_material;
-  cube_material.PushShader(context->mutable_shader_repo()->GetOrLoadShader("phong"));
-  cube_material.SetVec3("light_color", kLightColor);
-  cube_material.SetVec3("light_pos", kLightPos);
-  cube_.SetMaterial(cube_material);
+  cube_.mutable_transform()->SetTranslation(kCubePosition);
+  cube_.mutable_material()->PushShader(context->GetShader("phong"));
+  cube_.mutable_material()->SetVec3("light_color", kLightColor);
+  cube_.mutable_material()->SetVec3("light_pos", kLightPos);
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(-1.0, 1.5, 1.1));
-  // camera_->SetFront(glm::vec3(0.7, -0.4, -0.4));
   context->PushCamera(camera_);
 
   glEnable(GL_DEPTH_TEST);

@@ -5,6 +5,7 @@
 #include <glog/logging.h>
 
 #include "engine/camera.h"
+#include "engine/pass.h"
 #include "playground/config.pb.h"
 #include "playground/io.h"
 #include "playground/mesh_repo.h"
@@ -57,6 +58,10 @@ class Context {
   engine::Shader GetShader(const std::string& name);
   engine::Texture GetTexture(const std::string& name);
   std::shared_ptr<engine::Mesh> GetMesh(const std::string& name);
+  std::vector<ModelRepo::ModelPart> GetModel(const std::string& name);
+
+  const Pass pass() const { return pass_; }
+  void SetPass(Pass pass) { pass_ = pass; }
 
  private:
   int screen_width_;
@@ -78,4 +83,6 @@ class Context {
   int fps_;
 
   glm::vec4 clear_color_;
+
+  Pass pass_;
 };

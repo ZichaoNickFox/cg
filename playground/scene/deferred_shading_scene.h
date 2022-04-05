@@ -2,11 +2,13 @@
 
 #include "engine/camera.h"
 #include "engine/depth_frame_buffer.h"
+#include "engine/g_buffer.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
 #include "playground/object/cube.h"
 #include "playground/object/directional_light.h"
+#include "playground/object/fullscreen_quad.h"
 #include "playground/object/lines.h"
 #include "playground/object/plane.h"
 #include "playground/object/point_light.h"
@@ -22,8 +24,10 @@ class DeferredShadingScene : public Scene {
 
  private:
   void RenderShadowMap(Context* context);
-  void RenderScene(Context* context, const glm::mat4& shadow_map_vp,
-                   const engine::Texture& shadow_map_texture);
+  void ForwardShading(Context* context, const glm::mat4& shadow_map_vp,
+                      const engine::Texture& shadow_map_texture);
+  void DeferredShading(Context* context, const glm::mat4& shadow_map_vp,
+                       const engine::Texture& shadow_map_texture);
 
   struct MaterialProperty {
     glm::vec3 ambient;
@@ -47,5 +51,9 @@ class DeferredShadingScene : public Scene {
   Plane plane_;
   DirectionalLight directional_light_;
 
+  engine::GBuffer g_buffer_;
+
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
+ 
+  FullscreenQuad deferred_shading_quad_;
 };

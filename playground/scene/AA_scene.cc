@@ -69,8 +69,6 @@ void AAScene::OnEnter(Context *context)
   directional_light_.mutable_transform()->SetTranslation(glm::vec3(-5, 6.3, -4.6));
   directional_light_.mutable_transform()->SetRotation(glm::quat(glm::vec3(2.48, -0.82, -3.09)));
 
-  fullscreen_quad_.mutable_material()->PushShader(context->mutable_shader_repo()->GetOrLoadShader("mrt_fusion"));
-  
   glEnable(GL_DEPTH_TEST);
 }
 
@@ -123,7 +121,7 @@ void AAScene::OnRender(Context *context)
 }
 
 void AAScene::RenderShadowMap(Context* context) {
-  directional_light_.ShadowMapRenderBegin(context);
+  directional_light_.ShadowMappingPassBegin(context);
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
     cube->mutable_material()->PushShader(context->mutable_shader_repo()->GetOrLoadShader("shadow_map"));
@@ -133,7 +131,7 @@ void AAScene::RenderShadowMap(Context* context) {
   plane_.mutable_material()->PushShader(context->mutable_shader_repo()->GetOrLoadShader("shadow_map"));
   plane_.OnRender(context);
   plane_.mutable_material()->PopShader();
-  directional_light_.ShadowMapRenderEnd(context);
+  directional_light_.ShadowMappingPassEnd(context);
 }
 
 void AAScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
@@ -159,11 +157,12 @@ void AAScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
 
   // ms_frame_buffer_.Blit(&color_frame_buffer_);
 
-  fullscreen_quad_.mutable_material()->SetTexture("scene", ms_frame_buffer_.GetTexture(0));
-  fullscreen_quad_.mutable_material()->SetTexture("bright", ms_frame_buffer_.GetTexture(1));
-  // fullscreen_quad_.mutable_material()->SetTexture("scene", color_frame_buffer_.GetTexture(0));
-  // fullscreen_quad_.mutable_material()->SetTexture("bright", color_frame_buffer_.GetTexture(1));
-  fullscreen_quad_.OnRender(context);
+  FullscreenQuad fullscreen_quad;
+  fullscreen_quad.mutable_material()->SetTexture("scene", ms_frame_buffer_.GetTexture(0));
+  fullscreen_quad.mutable_material()->SetTexture("bright", ms_frame_buffer_.GetTexture(1));
+  // fullscreen_quad.mutable_material()->SetTexture("scene", color_frame_buffer_.GetTexture(0));
+  // fullscreen_quad.mutable_material()->SetTexture("bright", color_frame_buffer_.GetTexture(1));
+  fullscreen_quad.OnRender(context);
 }
 
 void AAScene::OnExit(Context *context)

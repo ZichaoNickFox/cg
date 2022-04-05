@@ -34,10 +34,10 @@ void TriangleScene::OnEnter(Context* context) {
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
 
-  texture0_ = context->mutable_texture_repo()->GetOrLoadTexture("opengl0");
-  texture1_ = context->mutable_texture_repo()->GetOrLoadTexture("opengl1");
+  texture0_ = context->GetTexture("opengl0");
+  texture1_ = context->GetTexture("opengl1");
 
-  shader_ = context->mutable_shader_repo()->GetOrLoadShader("triangle");
+  shader_ = context->GetShader("triangle");
   shader_.Use();
   // Set sampler to 0# texture unit
   shader_.SetInt("texture0", 0);

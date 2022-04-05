@@ -138,6 +138,7 @@ void GetInternalFormatSize(int internal_format, int* channel, int* byte_per_chan
     {GL_RED, {1, 1, GL_RED, GL_UNSIGNED_BYTE, "GL_RED"}},
     {GL_RG, {2, 2, GL_RG, GL_UNSIGNED_BYTE, "GL_RG"}},
     {GL_RGB, {2, 2, GL_RGB, GL_UNSIGNED_BYTE, "GL_RGB"}},
+    {GL_RGB32F, {3, 4, GL_RGB, GL_FLOAT, "GL_RGB32F"}},
     {GL_RGB8, {3, 1, GL_RGB, GL_UNSIGNED_BYTE, "GL_RGB8"}},
     {GL_RGBA, {4, 4, GL_RGBA, GL_UNSIGNED_BYTE, "GL_RGBA"}},
     {GL_RGBA8, {4, 1, GL_RGBA, GL_UNSIGNED_BYTE, "GL_RGBA8"}},
@@ -172,9 +173,9 @@ void ParseImageFormat(const std::string& fileName, int* SOILfmt, GLint* internal
 }
 
 // failed return 0
-void SaveTexture2D(const std::string& path_with_ext, GLuint tex, bool ms) {
+void SaveTexture2D(const std::string& path_with_ext, GLuint tex, bool multiple_sample) {
   CGLOG(INFO) << "[texture::SaveTexture2D] path : " << path_with_ext;
-  GLuint target = ms ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+  GLuint target = multiple_sample ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
   glBindTexture(target, tex);
 
   int width = -1, height = -1, internal_format = -1;

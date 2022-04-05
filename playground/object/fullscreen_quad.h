@@ -1,5 +1,7 @@
 #pragma once
 
+#include <limits>
+
 #include "engine/camera.h"
 #include "engine/material.h"
 #include "engine/shader.h"
@@ -15,9 +17,9 @@ class FullscreenQuad : public Object {
   void OnRender(Context *context) override;
   void OnDestory(Context *context) override;
 
-  void SetMaterial(const engine::Material& material) { material_ = material; }
   engine::Material* mutable_material() { return &material_; }
 
  private: 
   engine::Material material_;
+  GLuint empty_vao_ = std::numeric_limits<GLuint>::max();
 };

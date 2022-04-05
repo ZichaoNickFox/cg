@@ -39,7 +39,7 @@ void Lines::OnInit(Context *context, const Data& data) {
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
 
-  material_.PushShader(context->mutable_shader_repo()->GetOrLoadShader("lines"));
+  material_.PushShader(context->GetShader("lines"));
 }
 
 void Lines::OnUpdate(Context *context) {

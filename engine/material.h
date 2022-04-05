@@ -16,6 +16,7 @@ class Material {
  public:
   void PushShader(Shader shader);
   void PopShader();
+  bool HasShader() const { return shader_datas_.size() > 0; }
   const Shader& shader() const;
 
   void SetFloat(const std::string& location, float value);

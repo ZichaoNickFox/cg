@@ -5,6 +5,8 @@
 #include "playground/context.h"
 #include "playground/scene.h"
 
+#include "playground/object/fullscreen_quad.h"
+
 class TriangleScene : public Scene {
  public:
   void OnEnter(Context* context);

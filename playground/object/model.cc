@@ -6,7 +6,7 @@
 #include "playground/util.h"
 
 void Model::Init(Context* context, const std::string& object_name, const std::string& model_name) {
-  model_parts_ = context->mutable_model_repo()->GetOrLoadModel(model_name);
+  model_parts_ = context->GetModel(model_name);
   model_materials_.resize(model_parts_.size());
 }
 

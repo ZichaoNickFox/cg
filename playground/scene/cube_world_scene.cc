@@ -24,8 +24,8 @@ void CubeWorldScene::OnEnter(Context *context)
   for (int i = 0; i < kCubeNum; ++i) {
     std::unique_ptr<Cube> cube = std::make_unique<Cube>();
     cube->mutable_transform()->SetTranslation(cube_positions_[i]);
-    cube->mutable_material()->PushShader(context->mutable_shader_repo()->GetOrLoadShader("cube"));
-    cube->mutable_material()->SetTexture("texture0", context->mutable_texture_repo()->GetOrLoadTexture("cube_texture"));
+    cube->mutable_material()->PushShader(context->GetShader("texture0"));
+    cube->mutable_material()->SetTexture("texture0", context->GetTexture("cube_texture"));
     cubes_.push_back(std::move(cube));
   }
 

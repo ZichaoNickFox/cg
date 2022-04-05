@@ -51,5 +51,4 @@ class MrtScene : public Scene {
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
 
   engine::ColorFrameBuffer mrt_frame_buffer_;
-  FullscreenQuad fullscreen_quad_;
 };

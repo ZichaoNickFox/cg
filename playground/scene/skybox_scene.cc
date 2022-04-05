@@ -16,10 +16,8 @@ void SkyboxScene::OnEnter(Context *context)
   const glm::vec3 kLightScale = glm::vec3(0.4, 0.4, 0.4);
   engine::Transform light_transform(kLightPos, glm::quat(glm::vec3(0, 0, 0)), kLightScale);
   light_.SetTransform(light_transform);
-  engine::Material material;
-  material.PushShader(context->mutable_shader_repo()->GetOrLoadShader("point_light"));
-  material.SetVec3("light_color", kLightColor);
-  light_.SetMaterial(material);
+  light_.mutable_material()->PushShader(context->GetShader("point_light"));
+  light_.mutable_material()->SetVec3("light_color", kLightColor);
 
   // http://www.barradeau.com/nicoptere/dump/materials.html
   cube_positions_.push_back(glm::vec3(0, 0, 0));
@@ -29,14 +27,10 @@ void SkyboxScene::OnEnter(Context *context)
   for (int i = 0; i < cube_positions_.size(); ++i) {
     cubes_.push_back(Cube());
     Cube* cube = &cubes_[i];
-    engine::Transform cube_transform;
-    cube_transform.SetTranslation(cube_positions_[i]);
-    cube->SetTransform(cube_transform);
-    engine::Material cube_material;
-    cube_material.PushShader(context->mutable_shader_repo()->GetOrLoadShader("phong"));
-    cube_material.SetVec3("light_color", kLightColor);
-    cube_material.SetVec3("light_pos", kLightPos);
-    cube->SetMaterial(cube_material);
+    cube->mutable_transform()->SetTranslation(cube_positions_[i]);
+    cube->mutable_material()->PushShader(context->GetShader("phong"));
+    cube->mutable_material()->SetVec3("light_color", kLightColor);
+    cube->mutable_material()->SetVec3("light_pos", kLightPos);
   }
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(-1.0, 1.5, 1.1));
@@ -49,10 +43,8 @@ void SkyboxScene::OnEnter(Context *context)
                                 glm::vec3(0, 0, 1), glm::vec3(0, 0, 1)};
   coord_.SetData(context, {positions, colors, GL_LINES, 5});
 
-  engine::Material skybox_material;
-  skybox_material.PushShader(context->mutable_shader_repo()->GetOrLoadShader("skybox"));
-  skybox_material.SetTexture("texture0", context->mutable_texture_repo()->GetOrLoadTexture("skybox"));
-  skybox_.SetMaterial(skybox_material);
+  skybox_.mutable_material()->PushShader(context->GetShader("skybox"));
+  skybox_.mutable_material()->SetTexture("texture0", context->GetTexture("skybox"));
   skybox_.mutable_transform()->SetScale(glm::vec3(200, 200, 200));
 
   glEnable(GL_DEPTH_TEST);

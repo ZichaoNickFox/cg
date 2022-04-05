@@ -10,8 +10,8 @@
 class DirectionalLight : public Object {
  public:
   void Init(Context* context);
-  void ShadowMapRenderBegin(Context* context);
-  void ShadowMapRenderEnd(Context* context);
+  void ShadowMappingPassBegin(Context* context);
+  void ShadowMappingPassEnd(Context* context);
   engine::Texture GetShadowMapTexture() { return depth_frame_buffer_.GetTexture(); }
   glm::mat4 GetShadowMapVP();
 

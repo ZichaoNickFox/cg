@@ -18,7 +18,7 @@
 #include "playground/scene/triangle_scene.h"
 
 namespace {
-const std::string kDefaultScene = "ForwardShadingScene";
+const std::string kDefaultScene = "DeferredShadingScene";
 }
 
 void Playground::Init(const Context::Option& option) {

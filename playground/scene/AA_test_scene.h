@@ -28,5 +28,4 @@ class AATestScene : public Scene {
   std::vector<std::unique_ptr<Cube>> cubes_;
   engine::ColorFrameBuffer color_frame_buffer_;
   engine::MSFrameBuffer ms_frame_buffer_;
-  FullscreenQuad full_screen_quad_;
 };

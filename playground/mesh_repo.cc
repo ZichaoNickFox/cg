@@ -54,7 +54,7 @@ class CubeMesh : public engine::Mesh {
       glm::vec2(1.0f, 1.0f), glm::vec2(0.0f, 1.0f), glm::vec2(0.0f, 0.0f),
     };
     SetTexcoords(texcoords);
-    std::vector<glm::vec3> normal{
+    std::vector<glm::vec3> normals{
       // back
       glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, -1.0f),
       glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, -1.0f),
@@ -74,6 +74,7 @@ class CubeMesh : public engine::Mesh {
       glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f),
       glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)
     };
+    SetNormals(normals);
   }
 };
 
@@ -85,20 +86,20 @@ class PlaneMesh : public engine::Mesh {
       glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(-1.0f, 0.0f, 1.0f), glm::vec3(-1.0f, 0.0f, -1.0f),
     };
     SetPositions(positions);
+    std::vector<glm::vec3> normals{
+      glm::vec3(0.0f, 1.0f, 0.0f),
+      glm::vec3(0.0f, 1.0f, 0.0f),
+      glm::vec3(0.0f, 1.0f, 0.0f),
+      glm::vec3(0.0f, 1.0f, 0.0f),
+      glm::vec3(0.0f, 1.0f, 0.0f),
+      glm::vec3(0.0f, 1.0f, 0.0f),
+    };
+    SetNormals(normals);
     std::vector<glm::vec2> texcoords{
       glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 0.0f), glm::vec2(1.0f, 1.0f),
       glm::vec2(1.0f, 1.0f), glm::vec2(0.0f, 1.0f), glm::vec2(0.0f, 0.0f),
     };
     SetTexcoords(texcoords);
-    std::vector<glm::vec3> normal{
-      glm::vec3(0.0f, 1.0f, 0.0f),
-      glm::vec3(0.0f, 1.0f, 0.0f),
-      glm::vec3(0.0f, 1.0f, 0.0f),
-      glm::vec3(0.0f, 1.0f, 0.0f),
-      glm::vec3(0.0f, 1.0f, 0.0f),
-      glm::vec3(0.0f, 1.0f, 0.0f),
-    };
-    SetNormals(normal);
   }
 };
 

@@ -9,17 +9,17 @@ void Material::PushShader(Shader shader) {
 }
 
 void Material::PopShader() {
-  CHECK(!shader_datas_.empty());
+  CGCHECK(!shader_datas_.empty());
   shader_datas_.pop();
 }
 
 Material::ShaderData* Material::mutable_shader_data() {
-  CHECK(!shader_datas_.empty());
+  CGCHECK(!shader_datas_.empty());
   return &shader_datas_.top();
 }
 
 const Shader& Material::shader() const {
-  CHECK(!shader_datas_.empty());
+  CGCHECK(!shader_datas_.empty());
   return shader_data().shader_;
 }
 

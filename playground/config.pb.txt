@@ -5,9 +5,9 @@ shader_config {
 }
 
 shader_config {
-  name : "cube";
-  vs_path : "playground/resource/shader/cube.vs.glsl";
-  fs_path : "playground/resource/shader/cube.fs.glsl";
+  name : "texture0";
+  vs_path : "playground/resource/shader/texture0.vs.glsl";
+  fs_path : "playground/resource/shader/texture0.fs.glsl";
 }
 
 shader_config {
@@ -35,15 +35,9 @@ shader_config {
 }
 
 shader_config {
-  name : "billboard";
-  vs_path : "playground/resource/shader/billboard.vs.glsl";
-  fs_path : "playground/resource/shader/billboard.fs.glsl";
-}
-
-shader_config {
-  name : "shadow_map";
-  vs_path : "playground/resource/shader/shadow_map.vs.glsl";
-  fs_path : "playground/resource/shader/shadow_map.fs.glsl";
+  name : "depth_buffer";
+  vs_path : "playground/resource/shader/depth_buffer.vs.glsl";
+  fs_path : "playground/resource/shader/depth_buffer.fs.glsl";
 }
 
 shader_config {
@@ -80,6 +74,18 @@ shader_config {
   name : "model_test";
   vs_path : "playground/resource/shader/model_test.vs.glsl";
   fs_path : "playground/resource/shader/model_test.fs.glsl";
+}
+
+shader_config {
+  name : "deferred_shading_geometry";
+  vs_path : "playground/resource/shader/deferred_shading_geometry.vs.glsl";
+  fs_path : "playground/resource/shader/deferred_shading_geometry.fs.glsl";
+}
+
+shader_config {
+  name : "deferred_shading_lighting";
+  vs_path : "playground/resource/shader/deferred_shading_lighting.vs.glsl";
+  fs_path : "playground/resource/shader/deferred_shading_lighting.fs.glsl";
 }
 
 texture_config {

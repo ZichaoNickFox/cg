@@ -16,9 +16,8 @@ class Cube : public Object {
   void OnRender(Context *context) override;
   void OnDestory(Context *context) override;
 
-  void SetMaterial(const engine::Material& material) { material_ = material; }
   engine::Material* mutable_material() { return &material_; }
-
+  
  private: 
   std::shared_ptr<engine::Mesh> mesh_;
   engine::Material material_;

@@ -15,14 +15,16 @@ void DirectionalLight::Init(Context* context) {
   shadow_map_camera_->SetType(engine::Camera::Perspective);
 }
 
-void DirectionalLight::ShadowMapRenderBegin(Context* context) {
+void DirectionalLight::ShadowMappingPassBegin(Context* context) {
   depth_frame_buffer_.Bind();
   context->PushCamera(shadow_map_camera_);
+  context->SetPass(pass::kPassShadowMapping);
 }
 
-void DirectionalLight::ShadowMapRenderEnd(Context* context) {
+void DirectionalLight::ShadowMappingPassEnd(Context* context) {
   depth_frame_buffer_.Unbind();
   context->PopCamera();
+  context->SetPass(pass::kPassNone);
 }
 
 glm::mat4 DirectionalLight::GetShadowMapVP() {

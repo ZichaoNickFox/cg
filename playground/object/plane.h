@@ -12,8 +12,7 @@ class Plane : public Object {
   void OnUpdate(Context *context);
   void OnRender(Context *context);
   void OnDestory(Context *context);
-
-  void SetMaterial(const engine::Material& material) { material_ = material; }
+  
   engine::Material* mutable_material() { return &material_; }
 
  private: 

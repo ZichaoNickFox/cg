@@ -15,7 +15,7 @@ void ShadowMapScene::OnEnter(Context *context)
   engine::Transform light_transform(light_pos_, glm::quat(glm::vec3(0, 0, 0)), light_scale_);
   light_.SetTransform(light_transform);
   engine::Material light_material;
-  light_material.PushShader(context->mutable_shader_repo()->GetOrLoadShader("point_light"));
+  light_material.PushShader(context->GetShader("point_light"));
   light_.SetMaterial(light_material);
 
   // http://www.barradeau.com/nicoptere/dump/materials.html
@@ -27,9 +27,7 @@ void ShadowMapScene::OnEnter(Context *context)
     cubes_.push_back(Cube());
     Cube* cube = &cubes_[i];
     cube->SetTransform(cube_transforms_[i]);
-    engine::Material cube_material;
-    cube_material.PushShader(context->mutable_shader_repo()->GetOrLoadShader("phong"));
-    cube->SetMaterial(cube_material);
+    cube->mutable_material()->PushShader(context->GetShader("phong"));
   }
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(5.3, 4.3, -3.5));
@@ -42,17 +40,14 @@ void ShadowMapScene::OnEnter(Context *context)
                                 glm::vec3(0, 0, 1), glm::vec3(0, 0, 1)};
   coord_.SetData(context, {positions, colors, GL_LINES, 5});
 
-  engine::Material plane_material;
-  plane_material.PushShader(context->mutable_shader_repo()->GetOrLoadShader("phong"));
-  plane_material.SetVec3("material.ambient", material_property_.ambient);
-  plane_material.SetVec3("material.diffuse", material_property_.diffuse);
-  plane_material.SetVec3("material.specular", material_property_.specular);
-  plane_material.SetFloat("material.shininess", material_property_.shininess);
-  plane_.SetMaterial(plane_material);
-  engine::Transform plane_transform;
-  plane_transform.SetTranslation(glm::vec3(0, -1, 0));
-  plane_transform.SetScale(glm::vec3(10, 0, 10));
-  plane_.SetTransform(plane_transform);
+  plane_.mutable_material()->PushShader(context->GetShader("phong"));
+  plane_.mutable_material()->SetVec3("material.ambient", material_property_.ambient);
+  plane_.mutable_material()->SetVec3("material.diffuse", material_property_.diffuse);
+  plane_.mutable_material()->SetVec3("material.specular", material_property_.specular);
+  plane_.mutable_material()->SetFloat("material.shininess", material_property_.shininess);
+
+  plane_.mutable_transform()->SetTranslation(glm::vec3(0, -1, 0));
+  plane_.mutable_transform()->SetScale(glm::vec3(10, 0, 10));
 
   directional_light_.Init(context);
   directional_light_.mutable_transform()->SetTranslation(glm::vec3(-5, 6.3, -4.6));
@@ -145,9 +140,9 @@ void ShadowMapScene::OnGui(Context *context)
 
 void ShadowMapScene::OnRender(Context *context)
 {
-  directional_light_.ShadowMapRenderBegin(context);
+  directional_light_.ShadowMappingPassBegin(context);
   RenderShadowMap(context);
-  directional_light_.ShadowMapRenderEnd(context);
+  directional_light_.ShadowMappingPassEnd(context);
 
   glm::mat4 shadow_map_vp = directional_light_.GetShadowMapVP();
   engine::Texture shadow_map_texture = directional_light_.GetShadowMapTexture();
@@ -157,11 +152,11 @@ void ShadowMapScene::OnRender(Context *context)
 void ShadowMapScene::RenderShadowMap(Context* context) {
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
-    cube->mutable_material()->PushShader(context->mutable_shader_repo()->GetOrLoadShader("shadow_map"));
+    cube->mutable_material()->PushShader(context->GetShader("shadow_map"));
     cube->OnRender(context);
     cube->mutable_material()->PopShader();
   }
-  plane_.mutable_material()->PushShader(context->mutable_shader_repo()->GetOrLoadShader("shadow_map"));
+  plane_.mutable_material()->PushShader(context->GetShader("shadow_map"));
   plane_.OnRender(context);
   plane_.mutable_material()->PopShader();
 }

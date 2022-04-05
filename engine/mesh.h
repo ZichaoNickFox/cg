@@ -9,6 +9,7 @@
 #include <vector>
 #include <memory>
 
+#include "engine/pass.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "engine/material.h"
@@ -16,15 +17,6 @@
 namespace engine {
 class Mesh {
  public:
-  struct VertexComponent {
-    std::string name;
-    GLuint format;
-    GLuint type;
-    uint32_t size_in_float;
-    uint32_t size_in_byte;
-  };
-  static std::unordered_map<std::string, Mesh::VertexComponent> kVertexLayout;
-
   void SetPositions(const std::vector<glm::vec3> &positions) { positions_ = positions; }
   void SetNormals(const std::vector<glm::vec3> &normals) { normals_ = normals; }
   void SetTexcoords(const std::vector<glm::vec2> &texcoords) { texcoords_ = texcoords; }

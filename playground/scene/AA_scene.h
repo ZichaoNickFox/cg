@@ -54,5 +54,4 @@ class AAScene : public Scene {
 
   engine::MSFrameBuffer ms_frame_buffer_;
   engine::ColorFrameBuffer color_frame_buffer_;
-  FullscreenQuad fullscreen_quad_;
 };
