@@ -34,7 +34,7 @@ void SkyboxScene::OnEnter(Context *context)
   }
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(-1.0, 1.5, 1.1));
-  // camera_->SetFront(glm::vec3(0.7, -0.4, -0.4));
+  camera_->SetFarClip(200);
   context->PushCamera(camera_);
 
   std::vector<glm::vec3> positions{glm::vec3(0, 0, 0), glm::vec3(2, 0, 0), glm::vec3(0, 0, 0), glm::vec3(0, 2, 0),
@@ -45,7 +45,7 @@ void SkyboxScene::OnEnter(Context *context)
 
   skybox_.mutable_material()->PushShader(context->GetShader("skybox"));
   skybox_.mutable_material()->SetTexture("texture0", context->GetTexture("skybox"));
-  skybox_.mutable_transform()->SetScale(glm::vec3(200, 200, 200));
+  skybox_.mutable_transform()->SetScale(glm::vec3(100, 100, 100));
 
   glEnable(GL_DEPTH_TEST);
 }

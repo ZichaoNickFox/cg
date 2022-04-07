@@ -11,6 +11,13 @@ shader_config {
 }
 
 shader_config {
+  name : "normal";
+  vs_path : "playground/resource/shader/normal.vs.glsl";
+  gs_path : "playground/resource/shader/normal.gs.glsl";
+  fs_path : "playground/resource/shader/normal.fs.glsl";
+}
+
+shader_config {
   name : "phong";
   vs_path : "playground/resource/shader/phong.vs.glsl";
   fs_path : "playground/resource/shader/phong.fs.glsl";
@@ -86,6 +93,12 @@ shader_config {
   name : "deferred_shading_lighting";
   vs_path : "playground/resource/shader/deferred_shading_lighting.vs.glsl";
   fs_path : "playground/resource/shader/deferred_shading_lighting.fs.glsl";
+}
+
+shader_config {
+  name : "test";
+  vs_path : "playground/resource/shader/test.vs.glsl";
+  fs_path : "playground/resource/shader/test.fs.glsl";
 }
 
 texture_config {

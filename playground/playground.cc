@@ -11,6 +11,7 @@
 #include "playground/scene/imgui_demo_scene.h"
 #include "playground/scene/model_scene.h"
 #include "playground/scene/mrt_scene.h"
+#include "playground/scene/pbr_scene.h"
 #include "playground/scene/phong_scene.h"
 #include "playground/scene/shadow_map_scene.h"
 #include "playground/scene/skybox_scene.h"
@@ -18,7 +19,7 @@
 #include "playground/scene/triangle_scene.h"
 
 namespace {
-const std::string kDefaultScene = "DeferredShadingScene";
+const std::string kDefaultScene = "PbrScene";
 }
 
 void Playground::Init(const Context::Option& option) {
@@ -42,6 +43,7 @@ void Playground::InitScene() {
   scene_map_.insert(std::make_pair("AAScene", std::make_unique<AAScene>()));
   scene_map_.insert(std::make_pair("AATestScene", std::make_unique<AATestScene>()));
   scene_map_.insert(std::make_pair("ModelScene", std::make_unique<ModelScene>()));
+  scene_map_.insert(std::make_pair("PbrScene", std::make_unique<PbrScene>()));
 }
 
 void Playground::BeginFrame() {
@@ -76,6 +78,7 @@ void Playground::EndFrame() {
 }
 
 void Playground::SwitchScene(const std::string& scene, bool ignore_current_scene) {
+  CGCHECK(scene_map_.count(scene) > 0) << " Cannot find scene : " << scene;
   if (!ignore_current_scene) {
     const std::unique_ptr<Scene>& current_scene = scene_map_[context_.current_scene()];
     current_scene->OnExit(&context_);

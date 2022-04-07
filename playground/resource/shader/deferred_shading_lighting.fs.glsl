@@ -82,6 +82,5 @@ void main()
 
   FragColor = vec4(light_result * shadow_factor, 1.0);
   */
-
   FragColor = vec4(light_result, 1.0);
 }

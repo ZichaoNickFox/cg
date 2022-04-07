@@ -3,8 +3,9 @@
 #include <string>
 
 #include "fmt/format.h"
-#include <google/protobuf/text_format.h>
+#include <glm/glm.hpp>
 #include <glog/logging.h>
+#include <google/protobuf/text_format.h>
 
 #include "engine/debug.h"
 
@@ -44,5 +45,4 @@ int64_t DurationMillisecond(const Time& from, const Time& to);
 
 // random : 3 precisely
 float RandFromTo(float from, float to);
-
 }
