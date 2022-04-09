@@ -13,14 +13,13 @@ uniform Material material;
 struct Light {
   vec3 color;
   vec3 pos;
-
-  // attenuation
-  float constant;
-  float linear;
-  float quadratic;
+  float constant;   // attenuation
+  float linear;     // attenuation
+  float quadratic;  // attenuation
 };
 uniform int light_count;
 uniform Light lights[200];
+
 uniform vec3 view_pos;
 uniform bool blinn_phong;
 

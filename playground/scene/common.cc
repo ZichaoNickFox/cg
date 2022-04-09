@@ -1,13 +1,16 @@
 #include "playground/scene/common.h"
 
 #include "imgui.h"
+#include <glm/gtx/string_cast.hpp>
 #include <glog/logging.h>
 
 OnUpdateCommon::OnUpdateCommon(Context* context, const std::string& title) {
   ControlCameraByIo(context);
   bool open = true;
   ImGui::Begin(title.c_str(), &open, ImGuiWindowFlags_AlwaysAutoResize);
-  RenderFps(context);
+  GuiFps(context);
+  ImGui::Separator();
+  GuiCamera(context);
   ImGui::Separator();
 }
 
@@ -15,7 +18,13 @@ OnUpdateCommon::~OnUpdateCommon() {
   ImGui::End();
 }
 
-void OnUpdateCommon::RenderFps(Context* context) {
+void OnUpdateCommon::GuiCamera(Context* context) {
+  ImGui::Text("camera_location %s", glm::to_string(context->camera().transform().translation()).c_str());
+  ImGui::Text("camera_rotation %s", glm::to_string(context->camera().transform().rotation()).c_str());
+  ImGui::Text("camera_front %s", glm::to_string(context->camera().front()).c_str());
+}
+
+void OnUpdateCommon::GuiFps(Context* context) {
   ImGui::Text("frame interval : ");
   ImGui::SameLine();
   ImGui::Text("%d", context->frame_interval());

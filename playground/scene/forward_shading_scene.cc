@@ -18,17 +18,14 @@ void ForwardShadingScene::OnEnter(Context *context)
     glm::vec3 point_light_pos(util::RandFromTo(-5, 5), util::RandFromTo(0, 5), util::RandFromTo(-5, 5));
     point_lights_[i].mutable_transform()->SetTranslation(point_light_pos);
     point_lights_[i].mutable_transform()->SetScale(glm::vec3(0.2, 0.2, 0.2));
-    point_lights_[i].mutable_material()->PushShader(context->GetShader("point_light"));
     glm::vec3 color(util::RandFromTo(0, 1), util::RandFromTo(0, 1), util::RandFromTo(0, 1));
     point_lights_[i].SetColor(color);
 
-    material_light_info_.light_poses.push_back(point_light_pos);
-    material_light_info_.light_colors.push_back(color);
-    material_light_info_.light_attenuation_metres.push_back(7);
-    material_light_info_.use_blinn_phong = false;
+    shader_light_info_ .light_poses.push_back(point_light_pos);
+    shader_light_info_ .light_colors.push_back(color);
+    shader_light_info_ .light_attenuation_metres.push_back(7);
   }
 
-  // http://www.barradeau.com/nicoptere/dump/materials.html
   cube_transforms_.push_back(engine::Transform(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
   cube_transforms_.push_back(engine::Transform(glm::vec3(1, 1, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
   cube_transforms_.push_back(engine::Transform(glm::vec3(2, 2, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
@@ -37,7 +34,6 @@ void ForwardShadingScene::OnEnter(Context *context)
     cubes_.push_back(Cube());
     Cube* cube = &cubes_[i];
     cube->SetTransform(cube_transforms_[i]);
-    cube->mutable_material()->PushShader(context->GetShader("phong_shadow"));
   }
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(5.3, 4.3, -3.5));
@@ -101,16 +97,15 @@ void ForwardShadingScene::OnUpdate(Context *context)
     point_lights_[i].OnUpdate(context);
   }
 
+  PhongShaderParam phong;
+  phong.material_propery_name = "gold";
+  phong.light_info = shader_light_info_;
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
-    PhongMaterialPrefab prefab{"gold", material_light_info_};
-    material_prefab::UpdatePhongMaterial(context, prefab, cube->mutable_material());
+    shader_param::UpdateShader(context, phong, cube->mutable_material());
   }
-
   coord_.OnUpdate(context);
-
-  PhongMaterialPrefab prefab{"gold", material_light_info_};
-  material_prefab::UpdatePhongMaterial(context, prefab, plane_.mutable_material());
+  shader_param::UpdateShader(context, phong, plane_.mutable_material());
   plane_.OnUpdate(context);
   directional_light_.OnUpdate(context);
 }
@@ -142,16 +137,12 @@ void ForwardShadingScene::RenderScene(Context* context, const glm::mat4& shadow_
                                        const engine::Texture& shadow_map_texture) {
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
-    // cube->mutable_material()->SetTexture("shadow_map_texture", shadow_map_texture);
-    // cube->mutable_material()->SetMat4("shadow_map_vp", shadow_map_vp);
     cube->OnRender(context);
   }
   for (int i = 0; i < point_lights_num_; ++i) {
     point_lights_[i].OnRender(context);
   }
   coord_.OnRender(context);
-  // plane_.mutable_material()->SetTexture("shadow_map_texture", shadow_map_texture);
-  // plane_.mutable_material()->SetMat4("shadow_map_vp", shadow_map_vp);
   plane_.OnRender(context);
   directional_light_.OnRender(context);
 }

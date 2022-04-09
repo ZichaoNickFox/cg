@@ -6,6 +6,7 @@
 #include "playground/context.h"
 #include "playground/object/cube.h"
 #include "playground/object/lines.h"
+#include "playground/object/skybox.h"
 #include "playground/scene.h"
 
 class SkyboxScene : public Scene {
@@ -24,7 +25,7 @@ class SkyboxScene : public Scene {
 
   Cube light_;
   Lines coord_;
-  Cube skybox_;
+  Skybox skybox_;
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
 };
 #pragma once

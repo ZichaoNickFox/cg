@@ -36,8 +36,8 @@ cc_library(
   deps = [
     "//engine:engine",
     "//playground:context",
-    "//playground:material_prefab",
     "//playground:scene",
+    "//playground:shader_param",
     "//playground/object:object",
     "@imgui//:imgui",
   ],

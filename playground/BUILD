@@ -79,10 +79,10 @@ cc_library(
 )
 
 cc_library(
-  name = "material_prefab",
+  name = "shader_param",
   srcs = [
-    "material_prefab.h",
-    "material_prefab.cc",
+    "shader_param.h",
+    "shader_param.cc",
   ],
   deps = [
     "//engine:engine",

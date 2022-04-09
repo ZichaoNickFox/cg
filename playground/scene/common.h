@@ -8,6 +8,7 @@ class OnUpdateCommon {
   ~OnUpdateCommon();
 
  private:
-  void RenderFps(Context* context);
+  void GuiFps(Context* context);
+  void GuiCamera(Context* context);
   void ControlCameraByIo(Context* context);
 };

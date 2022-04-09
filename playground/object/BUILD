@@ -21,6 +21,8 @@ cc_library(
     "plane.cc",
     "point_light.h",
     "point_light.cc",
+    "skybox.h",
+    "skybox.cc",
     "sphere.h",
     "sphere.cc",
   ],

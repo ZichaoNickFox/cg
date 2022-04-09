@@ -2,13 +2,28 @@
 
 out vec4 FragColor;
 
-in vec3 world_pos_;
+in vec3 frag_world_pos_;
 in vec3 normal_;
 
-uniform vec3 camera_pos;
-uniform vec3 albedo;
-uniform float metallic;
-uniform float roughness;
+struct Light {
+  vec3 color;
+  vec3 pos;
+  float constant;   // attenuation
+  float linear;     // attenuation
+  float quadratic;  // attenuation
+};
+uniform int light_count;
+uniform Light lights[200];
+
+uniform vec3 view_pos;
+
+struct Material {
+  vec3 albedo;
+  float metallic;
+  float roughness;
+};
+uniform Material material;
+
 uniform float ao;
 
 const float PI = 3.1415926;
@@ -50,35 +65,37 @@ vec3 FresnelSchlink(float cosTheta, vec3 F0) {
 void main()
 {
   vec3 N = normalize(normal_);
-  vec3 V = normalize(camera_pos - world_pos_);
+  vec3 V = normalize(view_pos - frag_world_pos_);
+
+  vec3 F0 = vec3(0.04);
+  F0 = mix(F0, material.albedo, material.metallic);
 
   vec3 Lo = vec3(0.0);
-  for (int i = 0; i < 4; ++i) {
-    vec3 L = normalize(light_position[i] - world_pos_);
+  for (int i = 0; i < light_count; ++i) {
+    vec3 L = normalize(lights[i].pos - frag_world_pos_);
     vec3 H = normalize(V + L);
-    float distance = length(light_position[i] - world_pos_);
-    float attenuation = 1.0 / (distance * distance);
-    vec3 radiance = light_color[i] * attenuation;
+    float distance = length(lights[i].pos - frag_world_pos_);
+    float attenuation = 1.0 / (distance * distance) * lights[i].quadratic
+        + distance * lights[i].linear + distance * lights[i].constant;
+    vec3 radiance = lights[i].color * attenuation;
 
-    vec3 F0 = vec3(0.04);
-    F0 = mix(F0, albedo, metallic);
     vec3 F = FresnelSchlink(max(dot(H, V), 0.0), F0);
 
-    float NDF = D_GGX_TR(N, H, roughness);
-    float G = GeometrySmith(N, V, L, roughness);
+    float NDF = D_GGX_TR(N, H, material.roughness);
+    float G = GeometrySmith(N, V, L, material.roughness);
 
     vec3 nominator = NDF * G * F;
     float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.001;
     vec3 specular = nominator / denominator;
 
-    vec3 kS = F:
+    vec3 kS = F;
     vec3 kD = vec3(1.0) - kS;
-    kD *= 1.0 - metallic;
+    kD *= 1.0 - material.metallic;
 
     float NdotL = max(dot(N, L), 0.0);
-    Lo += (kD * albedo / PI + specular) * radiance * NdotL;
+    Lo += (kD * material.albedo / PI + specular) * radiance * NdotL;
   }
-  vec3 ambient = vec3(0.03) * albedo * ao;
+  vec3 ambient = vec3(0.03) * material.albedo * ao;
   vec3 color = ambient + Lo;
   color = color / (color + vec3(1.0));
   color = pow(color, vec3(1.0 / 2.2));

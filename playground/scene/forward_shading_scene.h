@@ -5,13 +5,13 @@
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
-#include "playground/material_prefab.h"
 #include "playground/object/cube.h"
 #include "playground/object/directional_light.h"
 #include "playground/object/lines.h"
 #include "playground/object/plane.h"
 #include "playground/object/point_light.h"
 #include "playground/scene.h"
+#include "playground/shader_param.h"
 
 class ForwardShadingScene : public Scene {
  public:
@@ -32,7 +32,7 @@ class ForwardShadingScene : public Scene {
 
   int point_lights_num_ = 200;
   std::vector<PointLight> point_lights_;
-  MaterialLightInfo material_light_info_;
+  ShaderLightInfo shader_light_info_ ;
 
   Lines coord_;
   Plane plane_;

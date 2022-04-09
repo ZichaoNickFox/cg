@@ -1,7 +1,6 @@
 #include "playground/scene/phong_scene.h"
 
 #include <glm/glm.hpp>
-#include <glm/gtx/string_cast.hpp>
 #include "glog/logging.h"
 #include "imgui.h"
 #include <memory>
@@ -18,9 +17,9 @@ void PhongScene::OnEnter(Context *context)
   point_light_.mutable_transform()->SetScale(kLightScale);
   point_light_.SetColor(kLightColor);
 
-  material_light_info_.light_poses.push_back(kLightPos);
-  material_light_info_.light_colors.push_back(kLightColor);
-  material_light_info_.light_attenuation_metres.push_back(100);
+  shader_light_info_ .light_poses.push_back(kLightPos);
+  shader_light_info_ .light_colors.push_back(kLightColor);
+  shader_light_info_ .light_attenuation_metres.push_back(100);
 
   const glm::vec3 kCubePosition = glm::vec3(0, 0.5, 0);
   cube_.mutable_transform()->SetTranslation(kCubePosition);
@@ -38,10 +37,6 @@ void PhongScene::OnUpdate(Context *context)
   OnUpdateCommon _(context, "PhongScene");
 
   ImGui::ColorEdit3("light_color", (float*)&light_color_);
-  ImGui::Separator();
-  ImGui::Text("camera_location %s", glm::to_string(context->camera().transform().translation()).c_str());
-  ImGui::Text("camera_rotation %s", glm::to_string(context->camera().transform().rotation()).c_str());
-  ImGui::Text("camera_front %s", glm::to_string(context->camera().front()).c_str());
   if (ImGui::Button("gold")) {
     material_property_name_ = "gold";
   }
@@ -57,17 +52,17 @@ void PhongScene::OnUpdate(Context *context)
   if (ImGui::Button("rube")) {
     material_property_name_ = "ruby";
   }
-  ImGui::Checkbox("blinn_phong", &blinn_phong_);
+  ImGui::Checkbox("blinn_phong", &use_blinn_phong_);
 
-  material_light_info_.light_colors.assign(material_light_info_.light_colors.size(), light_color_);
+  shader_light_info_ .light_colors.assign(shader_light_info_ .light_colors.size(), light_color_);
 
-  PhongMaterialPrefab prefab;
-  prefab.material_propery_name = material_property_name_;
-  prefab.material_light_info = material_light_info_;
-  prefab.material_light_info.use_blinn_phong = blinn_phong_;
+  PhongShaderParam phong;
+  phong.material_propery_name = material_property_name_;
+  phong.light_info = shader_light_info_ ;
+  phong.use_blinn_phong = use_blinn_phong_;
 
-  material_prefab::UpdatePhongMaterial(context, prefab, cube_.mutable_material());
-  material_prefab::UpdatePhongMaterial(context, prefab, plane_.mutable_material());
+  shader_param::UpdateShader(context, phong, cube_.mutable_material());
+  shader_param::UpdateShader(context, phong, plane_.mutable_material());
 
   cube_.OnUpdate(context);
   point_light_.SetColor(light_color_);

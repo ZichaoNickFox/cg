@@ -50,7 +50,7 @@ Shader::Shader(const std::string& name, const std::string& vs, const std::string
     tessellation = glCreateShader(GL_TESS_CONTROL_SHADER);
     glShaderSource(tessellation, 1, &ts_code, NULL);
     glCompileShader(tessellation);
-    CheckCompileErrors(tessellation, "tellsellation");
+    CheckCompileErrors(tessellation, "tessellation");
   }
   
   // shader Program
@@ -128,7 +128,12 @@ void Shader::CheckCompileErrors(unsigned int shader, const std::string& type) {
     if (!success)
     {
       glGetShaderInfoLog(shader, 1024, NULL, info_log);
-      CGCHECK(false) << " : " << type << " shader compile error : " << info_log << "In shader " << name_;
+      std::string show_type;
+      if (type == "vertex") show_type = "vs";
+      else if (type == "fragment") show_type = "fs";
+      else if (type == "geometry") show_type = "gs";
+      else if (type == "tessellation") show_type = "ts";
+      CGCHECK(false) << ": " << name_ << "." << show_type << " compile error : " << info_log;
     }
   }
   else
