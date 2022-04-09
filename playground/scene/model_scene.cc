@@ -26,16 +26,9 @@ void ModelScene::OnEnter(Context *context)
 
 void ModelScene::OnUpdate(Context *context)
 {
-  ControlCameraByIo(context);
-}
+  OnUpdateCommon _(context, "ModelScene");
 
-void ModelScene::OnGui(Context *context)
-{
-  bool open = true;
-  ImGui::Begin("Model Scene", &open, ImGuiWindowFlags_AlwaysAutoResize);
-  RenderFps(context);
   nanosuit_.ModelInspector();
-  ImGui::End();
 }
 
 void ModelScene::OnRender(Context *context)

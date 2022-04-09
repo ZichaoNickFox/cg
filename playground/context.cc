@@ -1,5 +1,6 @@
 #include "playground/context.h"
 
+#include "engine/debug.h"
 #include "playground/util.h"
 
 void Context::Init(const Option& option) {
@@ -14,6 +15,8 @@ void Context::Init(const Option& option) {
   texture_repo_.Init(config);
   mesh_repo_.Init(config);
   model_repo_.Init(config);
+  light_attenuation_config_ = config.light_attenuation_config();
+  material_property_config_ = config.material_property_config();
 
   clear_color_ = option.clear_color;
 }
@@ -49,4 +52,48 @@ std::shared_ptr<engine::Mesh> Context::GetMesh(const std::string& name) {
 
 std::vector<ModelRepo::ModelPart> Context::GetModel(const std::string& name) {
   return model_repo_.GetOrLoadModel(name);
+}
+
+float Context::light_attenuation_constant(int metre) {
+  CGCHECK(light_attenuation_config_.count(metre) > 0) << " : " << metre;
+  return light_attenuation_config_[metre].constant();
+}
+
+float Context::light_attenuation_linear(int metre) {
+  CGCHECK(light_attenuation_config_.count(metre) > 0) << " : " << metre;
+  return light_attenuation_config_[metre].linear();
+}
+
+float Context::light_attenuation_quadratic(int metre) {
+  CGCHECK(light_attenuation_config_.count(metre) > 0) << " : " << metre;
+  return light_attenuation_config_[metre].quadratic();
+}
+
+glm::vec4 Context::material_property_ambient(const std::string& name) {
+  CGCHECK(material_property_config_.count(name) > 0) << " : " << name;
+  return glm::vec4(material_property_config_[name].ambient(0),
+                   material_property_config_[name].ambient(1),
+                   material_property_config_[name].ambient(2),
+                   material_property_config_[name].ambient(3));
+}
+
+glm::vec4 Context::material_property_diffuse(const std::string& name) {
+  CGCHECK(material_property_config_.count(name) > 0) << " : " << name;
+  return glm::vec4(material_property_config_[name].diffuse(0),
+                   material_property_config_[name].diffuse(1),
+                   material_property_config_[name].diffuse(2),
+                   material_property_config_[name].diffuse(3));
+}
+
+glm::vec4 Context::material_property_specular(const std::string& name) {
+  CGCHECK(material_property_config_.count(name) > 0) << " : " << name;
+  return glm::vec4(material_property_config_[name].specular(0),
+                   material_property_config_[name].specular(1),
+                   material_property_config_[name].specular(2),
+                   material_property_config_[name].specular(3));
+}
+
+float Context::material_property_shininess(const std::string& name) {
+  CGCHECK(material_property_config_.count(name) > 0) << " : " << name;
+  return material_property_config_[name].shininess();
 }

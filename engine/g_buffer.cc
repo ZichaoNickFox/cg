@@ -63,4 +63,16 @@ void GBuffer::OnUnbind() {
 Texture GBuffer::GetTexture(int i) {
   return textures_[i];
 }
+
+void GBuffer::BlitDepth(DepthFrameBuffer* depth_frame_buffer) {
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo_);
+  if (depth_frame_buffer == nullptr) {
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+  } else {
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, depth_frame_buffer->fbo());
+  }
+  glBlitFramebuffer(0, 0, option_.width, option_.height,
+                    0, 0, option_.width, option_.height,
+                    GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+}
 }

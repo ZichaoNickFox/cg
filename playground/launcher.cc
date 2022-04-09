@@ -94,15 +94,16 @@ int main(int argc, char **argv)
 
   glm::vec4 clear_color = glm::vec4(0.45f, 0.55f, 0.60f, 1.00f);
   const std::string kConfigPath = "playground/config.pb.txt";
+    
+  int display_w, display_h;
+  glfwGetFramebufferSize(window, &display_w, &display_h);
+  glViewport(0, 0, display_w, display_h);
+
   Playground playground;
-  playground.Init({kConfigPath, kScreenWidth, kScreenHeight, clear_color});
+  playground.Init({kConfigPath, display_w, display_h, clear_color});
 
   while (!glfwWindowShouldClose(window)) {
     playground.BeginFrame();
-    
-    int display_w, display_h;
-    glfwGetFramebufferSize(window, &display_w, &display_h);
-    glViewport(0, 0, display_w, display_h);
     glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
@@ -116,7 +117,6 @@ int main(int argc, char **argv)
     Io* mutable_io = playground.mutable_io();
     FillIoInput(window, &imgui_io, mutable_io);
 
-    playground.Gui();
     if (io.gui_captured_mouse()) {
       glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     } else {

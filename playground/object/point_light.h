@@ -18,15 +18,15 @@ class PointLight : public Object {
   void SetMaterial(const engine::Material& material) { material_ = material; }
   engine::Material* mutable_material() { return &material_; }
 
-  void SetColor(const glm::vec4& color) { color_ = color; }
-  glm::vec4 color() { return color_; }
+  void SetColor(const glm::vec3& color) { color_ = color; }
+  glm::vec3 color() { return color_; }
 
   float attenuation_constant() { return attenuation_constant_; }
   float attenuation_linear() { return attenuation_linear_; }
   float attenuation_quadratic() { return attenuation_quadratic_; }
 
  private: 
-  glm::vec4 color_;
+  glm::vec3 color_;
 
   float attenuation_constant_ = 1.0;
   float attenuation_linear_ = 0.7;

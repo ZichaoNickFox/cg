@@ -74,7 +74,7 @@ void AAScene::OnEnter(Context *context)
 
 void AAScene::OnUpdate(Context *context)
 {
-  ControlCameraByIo(context);
+  OnUpdateCommon _(context, "AAScene");
 
   for (int i = 0; i < point_lights_num_; ++i) {
     point_lights_[i].OnUpdate(context);
@@ -101,14 +101,6 @@ void AAScene::OnUpdate(Context *context)
   coord_.OnUpdate(context);
   plane_.OnUpdate(context);
   directional_light_.OnUpdate(context);
-}
-
-void AAScene::OnGui(Context *context)
-{
-  bool open = true;
-  ImGui::Begin("AAScene", &open, ImGuiWindowFlags_AlwaysAutoResize);
-  RenderFps(context);
-  ImGui::End();
 }
 
 void AAScene::OnRender(Context *context)

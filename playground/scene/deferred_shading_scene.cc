@@ -32,7 +32,7 @@ void DeferredShadingScene::OnEnter(Context *context)
     cubes_.push_back(Cube());
     Cube* cube = &cubes_[i];
     cube->SetTransform(cube_transforms_[i]);
-    cube->mutable_material()->PushShader(context->GetShader("forward_shading"));
+    cube->mutable_material()->PushShader(context->GetShader("phong_shadow"));
   }
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(5.3, 4.3, -3.5));
@@ -45,11 +45,11 @@ void DeferredShadingScene::OnEnter(Context *context)
                                 glm::vec3(0, 0, 1), glm::vec3(0, 0, 1)};
   coord_.SetData(context, {positions, colors, GL_LINES, 5});
 
-  plane_.mutable_material()->PushShader(context->GetShader("forward_shading"));
-  plane_.mutable_material()->SetVec3("material.ambient", material_property_.ambient);
-  plane_.mutable_material()->SetVec3("material.diffuse", material_property_.diffuse);
-  plane_.mutable_material()->SetVec3("material.specular", material_property_.specular);
-  plane_.mutable_material()->SetFloat("material.shininess", material_property_.shininess);
+  plane_.mutable_material()->PushShader(context->GetShader("phong_shadow"));
+  plane_.mutable_material()->SetVec3("material.ambient", context->material_property_ambient(material_name_));
+  plane_.mutable_material()->SetVec3("material.diffuse", context->material_property_diffuse(material_name_));
+  plane_.mutable_material()->SetVec3("material.specular", context->material_property_specular(material_name_));
+  plane_.mutable_material()->SetFloat("material.shininess", context->material_property_shininess(material_name_));
 
   plane_.mutable_transform()->SetTranslation(glm::vec3(0, -1, 0));
   plane_.mutable_transform()->SetScale(glm::vec3(10, 0, 10));
@@ -65,6 +65,7 @@ void DeferredShadingScene::OnEnter(Context *context)
 
   deferred_shading_quad_.mutable_material()->PushShader(context->GetShader("deferred_shading_lighting"));
   deferred_shading_quad_.mutable_material()->SetInt("light_count", point_lights_num_);
+  deferred_shading_quad_.mutable_material()->SetVec3("clear_color", context->clear_color());
   for (int i = 0; i < point_lights_num_; ++i) {
     deferred_shading_quad_.mutable_material()->SetVec3(util::Format("lights[{}].color", i).c_str(),
                                       point_lights_[i].color());
@@ -77,15 +78,60 @@ void DeferredShadingScene::OnEnter(Context *context)
     deferred_shading_quad_.mutable_material()->SetFloat(util::Format("lights[{}].quadratic", i).c_str(),
                                         point_lights_[i].attenuation_quadratic());
   }
-  deferred_shading_quad_.mutable_material()->SetVec3("material.ambient", material_property_.ambient);
-  deferred_shading_quad_.mutable_material()->SetVec3("material.diffuse", material_property_.diffuse);
-  deferred_shading_quad_.mutable_material()->SetVec3("material.specular", material_property_.specular);
-  deferred_shading_quad_.mutable_material()->SetFloat("material.shininess", material_property_.shininess);
+  deferred_shading_quad_.mutable_material()->SetVec3("material.ambient",
+                                                     context->material_property_ambient(material_name_));
+  deferred_shading_quad_.mutable_material()->SetVec3("material.diffuse",
+                                                     context->material_property_diffuse(material_name_));
+  deferred_shading_quad_.mutable_material()->SetVec3("material.specular",
+                                                     context->material_property_specular(material_name_));
+  deferred_shading_quad_.mutable_material()->SetFloat("material.shininess",
+                                                      context->material_property_shininess(material_name_));
 }
 
 void DeferredShadingScene::OnUpdate(Context *context)
 {
-  ControlCameraByIo(context);
+  OnUpdateCommon _(context, "DeferredShadingScene");
+
+  ImGui::Text("camera_location %s", glm::to_string(context->camera().transform().translation()).c_str());
+  ImGui::Text("camera_front %s", glm::to_string(context->camera().front()).c_str());
+  ImGui::Text("camera_euler %s", glm::to_string(glm::eulerAngles(context->camera().transform().rotation())).c_str());
+
+  ImGui::SliderFloat3("cube0_location", (float*)cubes_[0].mutable_transform()->mutable_translation(), -20, 0);
+
+  glm::vec3 axis_x = cubes_[0].transform().rotation() * glm::vec3(1, 0, 0);
+  glm::vec3 axis_y = cubes_[0].transform().rotation() * glm::vec3(0, 1, 0);
+  glm::vec3 axis_z = cubes_[0].transform().rotation() * glm::vec3(0, 0, 1);
+  float angle_xyz[3] = {0};
+  ImGui::SliderFloat3("cube0_rotate_x", angle_xyz, -5, 5);
+  cubes_[0].mutable_transform()->Rotate(glm::angleAxis(angle_xyz[0], axis_x));
+  cubes_[0].mutable_transform()->Rotate(glm::angleAxis(angle_xyz[1], axis_y));
+  cubes_[0].mutable_transform()->Rotate(glm::angleAxis(angle_xyz[2], axis_z));
+
+  ImGui::SliderFloat3("cube0_scale", (float*)cubes_[0].mutable_transform()->mutable_scale(), -2, 2);
+
+  for (int i = 0; i < cubes_.size(); ++i) {
+    Cube* cube = &cubes_[i];
+    cube->mutable_material()->SetVec3("material.ambient", context->material_property_ambient(material_name_));
+    cube->mutable_material()->SetVec3("material.diffuse", context->material_property_diffuse(material_name_));
+    cube->mutable_material()->SetVec3("material.specular", context->material_property_specular(material_name_));
+    cube->mutable_material()->SetFloat("material.shininess", context->material_property_shininess(material_name_));
+  }
+
+  ImGui::Separator();
+
+  ImGui::Text("Camera Type");
+  ImGui::SameLine();
+  if (ImGui::Button("Perceptive Camera")) {
+    context->PopCamera();
+  }
+  ImGui::SameLine();
+  if (ImGui::Button("Orthographic Camera")) {
+    context->mutable_camera()->SetType(engine::Camera::Orthographic);
+  }
+  ImGui::SameLine();
+  if (ImGui::Button("Orthographic Direction Light")) {
+    context->PushCamera(directional_light_.Test_GetCamera());
+  }
 
   for (int i = 0; i < point_lights_num_; ++i) {
     point_lights_[i].OnUpdate(context);
@@ -112,58 +158,6 @@ void DeferredShadingScene::OnUpdate(Context *context)
   coord_.OnUpdate(context);
   plane_.OnUpdate(context);
   directional_light_.OnUpdate(context);
-}
-
-void DeferredShadingScene::OnGui(Context *context)
-{
-  bool open = true;
-  ImGui::Begin("DeferredShadingScene", &open, ImGuiWindowFlags_AlwaysAutoResize);
-  RenderFps(context);
-
-  ImGui::Separator();
-
-  ImGui::Text("camera_location %s", glm::to_string(context->camera().transform().translation()).c_str());
-  ImGui::Text("camera_front %s", glm::to_string(context->camera().front()).c_str());
-  ImGui::Text("camera_euler %s", glm::to_string(glm::eulerAngles(context->camera().transform().rotation())).c_str());
-
-  ImGui::SliderFloat3("cube0_location", (float*)cubes_[0].mutable_transform()->mutable_translation(), -20, 0);
-
-  glm::vec3 axis_x = cubes_[0].transform().rotation() * glm::vec3(1, 0, 0);
-  glm::vec3 axis_y = cubes_[0].transform().rotation() * glm::vec3(0, 1, 0);
-  glm::vec3 axis_z = cubes_[0].transform().rotation() * glm::vec3(0, 0, 1);
-  float angle_xyz[3] = {0};
-  ImGui::SliderFloat3("cube0_rotate_x", angle_xyz, -5, 5);
-  cubes_[0].mutable_transform()->Rotate(glm::angleAxis(angle_xyz[0], axis_x));
-  cubes_[0].mutable_transform()->Rotate(glm::angleAxis(angle_xyz[1], axis_y));
-  cubes_[0].mutable_transform()->Rotate(glm::angleAxis(angle_xyz[2], axis_z));
-
-  ImGui::SliderFloat3("cube0_scale", (float*)cubes_[0].mutable_transform()->mutable_scale(), -2, 2);
-
-  for (int i = 0; i < cubes_.size(); ++i) {
-    Cube* cube = &cubes_[i];
-    cube->mutable_material()->SetVec3("material.ambient", material_property_.ambient);
-    cube->mutable_material()->SetVec3("material.diffuse", material_property_.diffuse);
-    cube->mutable_material()->SetVec3("material.specular", material_property_.specular);
-    cube->mutable_material()->SetFloat("material.shininess", material_property_.shininess);
-  }
-
-  ImGui::Separator();
-
-  ImGui::Text("Camera Type");
-  ImGui::SameLine();
-  if (ImGui::Button("Perceptive Camera")) {
-    context->PopCamera();
-  }
-  ImGui::SameLine();
-  if (ImGui::Button("Orthographic Camera")) {
-    context->mutable_camera()->SetType(engine::Camera::Orthographic);
-  }
-  ImGui::SameLine();
-  if (ImGui::Button("Orthographic Direction Light")) {
-    context->PushCamera(directional_light_.Test_GetCamera());
-  }
-
-  ImGui::End();
 }
 
 void DeferredShadingScene::OnRender(Context *context)
@@ -216,11 +210,6 @@ void DeferredShadingScene::DeferredShading(Context* context, const glm::mat4& sh
     cube->OnRender(context);
     cube->mutable_material()->PopShader();
   }
-  for (int i = 0; i < point_lights_num_; ++i) {
-    point_lights_[i].mutable_material()->PushShader(deferred_shading_geometry);
-    point_lights_[i].OnRender(context);
-    point_lights_[i].mutable_material()->PopShader();
-  }
   plane_.mutable_material()->PushShader(deferred_shading_geometry);
   plane_.OnRender(context);
   plane_.mutable_material()->PopShader();
@@ -235,6 +224,14 @@ void DeferredShadingScene::DeferredShading(Context* context, const glm::mat4& sh
   deferred_shading_quad_.mutable_material()->SetTexture("texture_normal", texture_normal);
   deferred_shading_quad_.mutable_material()->SetTexture("texture_frag_world_pos", texture_frag_world_pos);
   deferred_shading_quad_.OnRender(context);
+
+  context->SetPass(pass::kPassForwardShading);
+
+  g_buffer_.BlitDepth(nullptr);
+
+  for (int i = 0; i < point_lights_num_; ++i) {
+    point_lights_[i].OnRender(context);
+  }
 }
 
 void DeferredShadingScene::OnExit(Context *context)

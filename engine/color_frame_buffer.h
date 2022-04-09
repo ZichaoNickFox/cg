@@ -21,8 +21,6 @@ class ColorFrameBuffer : public FrameBuffer {
   void Clear() override;
   void OnUnbind() override;
   Texture GetTexture(int i = 0) override;
-
-  GLuint fbo() { return fbo_; }
   
  private:
   Option option_;

@@ -3,7 +3,7 @@
 #include <unordered_map>
 
 #include "engine/texture.h"
-#include "playground/config.pb.h"
+#include "playground/proto/config.pb.h"
 
 class TextureRepo {
  public:

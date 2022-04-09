@@ -6,10 +6,10 @@
 
 #include "engine/camera.h"
 #include "engine/pass.h"
-#include "playground/config.pb.h"
 #include "playground/io.h"
 #include "playground/mesh_repo.h"
 #include "playground/model_repo.h"
+#include "playground/proto/config.pb.h"
 #include "playground/shader_repo.h"
 #include "playground/texture_repo.h"
 
@@ -63,6 +63,15 @@ class Context {
   const Pass pass() const { return pass_; }
   void SetPass(Pass pass) { pass_ = pass; }
 
+  float light_attenuation_constant(int metre);
+  float light_attenuation_linear(int metre);
+  float light_attenuation_quadratic(int metre);
+
+  glm::vec4 material_property_ambient(const std::string& name);
+  glm::vec4 material_property_diffuse(const std::string& name);
+  glm::vec4 material_property_specular(const std::string& name);
+  float material_property_shininess(const std::string& name);
+
  private:
   int screen_width_;
   int screen_height_;
@@ -74,6 +83,8 @@ class Context {
   TextureRepo texture_repo_;
   MeshRepo mesh_repo_;
   ModelRepo model_repo_;
+  google::protobuf::Map<google::protobuf::int32, LightAttenuationConfig> light_attenuation_config_;
+  google::protobuf::Map<google::protobuf::string, MaterialProperty> material_property_config_;
 
   Io io_;
 

@@ -12,23 +12,10 @@ class SkyboxScene : public Scene {
  public:
   void OnEnter(Context* context);
   void OnUpdate(Context* context);
-  void OnGui(Context* context);
   void OnRender(Context* contexnt);
   void OnExit(Context* context);
 
  private:
-  struct MaterialProperty {
-    glm::vec3 ambient;
-    glm::vec3 diffuse;
-    glm::vec3 specular;
-    float shininess;
-  };
-  MaterialProperty gold_ = {
-    glm::vec4(0.24725, 0.1995, 0.0745, 1),
-    glm::vec4(0.75164, 0.60648, 0.22648, 1),
-    glm::vec4(0.628281, 0.555802, 0.366065, 1),
-    51.2};
-  MaterialProperty material_property_ = gold_;
   glm::vec3 light_scale_ = glm::vec3(.2, .2, .2);
   glm::vec3 light_color_ = glm::vec3(1, 1, 1);
 

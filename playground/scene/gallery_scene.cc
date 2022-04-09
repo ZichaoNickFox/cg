@@ -10,9 +10,6 @@ void GalleryScene::OnUpdate(Context* context) {
 
 }
 
-void GalleryScene::OnGui(Context* context) {
-}
-
 void GalleryScene::OnRender(Context* context) {
 }
 

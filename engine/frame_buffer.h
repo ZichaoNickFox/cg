@@ -20,6 +20,7 @@ public:
 
   int width() { return width_; }
   int height() { return height_; }
+  GLuint fbo() { return fbo_; }
 
  protected:
   void SetFboNamePair(GLuint fbo, const std::string& name);

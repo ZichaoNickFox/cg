@@ -2,5 +2,12 @@
 
 #include "playground/context.h"
 
-void RenderFps(Context* context);
-void ControlCameraByIo(Context* context);
+class OnUpdateCommon {
+ public:
+  OnUpdateCommon(Context* context, const std::string& title);
+  ~OnUpdateCommon();
+
+ private:
+  void RenderFps(Context* context);
+  void ControlCameraByIo(Context* context);
+};

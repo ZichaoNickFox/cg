@@ -52,11 +52,7 @@ void TriangleScene::OnEnter(Context* context) {
 }
 
 void TriangleScene::OnUpdate(Context* context) {
-
-}
-
-void TriangleScene::OnGui(Context* context) {
-  RenderFps(context); 
+  OnUpdateCommon _(context, "TriangleScene");
 }
 
 void TriangleScene::OnRender(Context* context) {

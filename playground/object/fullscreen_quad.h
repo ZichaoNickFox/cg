@@ -3,6 +3,7 @@
 #include <limits>
 
 #include "engine/camera.h"
+#include "engine/frame_buffer.h"
 #include "engine/material.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
@@ -13,6 +14,8 @@
 
 class FullscreenQuad : public Object {
  public:
+  FullscreenQuad(){}
+  FullscreenQuad(engine::FrameBuffer* framebuffer, int frame_buffer_texture_id);
   void OnUpdate(Context *context) override;
   void OnRender(Context *context) override;
   void OnDestory(Context *context) override;
@@ -20,6 +23,9 @@ class FullscreenQuad : public Object {
   engine::Material* mutable_material() { return &material_; }
 
  private: 
+  engine::FrameBuffer* frame_buffer_ = nullptr;
+  int frame_buffer_texture_id_;
+  
   engine::Material material_;
   GLuint empty_vao_ = std::numeric_limits<GLuint>::max();
 };

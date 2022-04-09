@@ -9,7 +9,7 @@
 
 #include "engine/mesh.h"
 #include "engine/texture.h"
-#include "playground/config.pb.h"
+#include "playground/proto/config.pb.h"
 
 class ModelRepo {
  public:

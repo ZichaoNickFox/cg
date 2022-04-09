@@ -24,6 +24,12 @@ shader_config {
 }
 
 shader_config {
+  name : "phong_shadow";
+  vs_path : "playground/resource/shader/phong_shadow.vs.glsl";
+  fs_path : "playground/resource/shader/phong_shadow.fs.glsl";
+}
+
+shader_config {
   name : "point_light";
   vs_path : "playground/resource/shader/point_light.vs.glsl";
   fs_path : "playground/resource/shader/point_light.fs.glsl";
@@ -42,15 +48,9 @@ shader_config {
 }
 
 shader_config {
-  name : "depth_buffer";
-  vs_path : "playground/resource/shader/depth_buffer.vs.glsl";
-  fs_path : "playground/resource/shader/depth_buffer.fs.glsl";
-}
-
-shader_config {
-  name : "forward_shading";
-  vs_path : "playground/resource/shader/forward_shading.vs.glsl";
-  fs_path : "playground/resource/shader/forward_shading.fs.glsl";
+  name : "shadow_map";
+  vs_path : "playground/resource/shader/shadow_map.vs.glsl";
+  fs_path : "playground/resource/shader/shadow_map.fs.glsl";
 }
 
 shader_config {
@@ -93,6 +93,12 @@ shader_config {
   name : "deferred_shading_lighting";
   vs_path : "playground/resource/shader/deferred_shading_lighting.vs.glsl";
   fs_path : "playground/resource/shader/deferred_shading_lighting.fs.glsl";
+}
+
+shader_config {
+  name : "pbr";
+  vs_path : "playground/resource/shader/pbr.vs.glsl";
+  fs_path : "playground/resource/shader/pbr.fs.glsl";
 }
 
 shader_config {
@@ -152,4 +158,174 @@ model_config {
   name : "nanosuit";
   obj_path : "playground/resource/model/nanosuit/nanosuit.obj";
   texture_dir : "playground/resource/model/nanosuit";
+}
+
+light_attenuation_config {
+  key : 7;
+  value : {
+    constant : 1.0;
+    linear : 0.7;
+    quadratic : 1.8;
+  }
+}
+light_attenuation_config {
+  key : 13;
+  value : {
+    constant : 1.0;
+    linear : 0.35;
+    quadratic : 0.44;
+  }
+}
+light_attenuation_config {
+  key : 20;
+  value : {
+    constant : 1.0;
+    linear : 0.22;
+    quadratic : 0.20;
+  }
+}
+light_attenuation_config {
+  key : 32;
+  value : {
+    constant : 1.0;
+    linear : 0.14;
+    quadratic : 0.07;
+  }
+}
+light_attenuation_config {
+  key : 50;
+  value : {
+    constant : 1.0;
+    linear : 0.09;
+    quadratic : 0.032;
+  }
+}
+light_attenuation_config {
+  key : 65;
+  value : {
+    constant : 1.0;
+    linear : 0.07;
+    quadratic : 0.017;
+  }
+}
+light_attenuation_config {
+  key : 100;
+  value : {
+    constant : 1.0;
+    linear : 0.045;
+    quadratic : 0.0075;
+  }
+}
+light_attenuation_config {
+  key : 160;
+  value : {
+    constant : 1.0;
+    linear : 0.027;
+    quadratic : 0.0028;
+  }
+}
+light_attenuation_config {
+  key : 200;
+  value : {
+    constant : 1.0;
+    linear : 0.022;
+    quadratic : 0.0019;
+  }
+}
+light_attenuation_config {
+  key : 325;
+  value : {
+    constant : 1.0;
+    linear : 0.014;
+    quadratic : 0.0007;
+  }
+}
+light_attenuation_config {
+  key : 600;
+  value : {
+    constant : 1.0;
+    linear : 0.007;
+    quadratic : 0.0002;
+  }
+}
+light_attenuation_config {
+  key : 3250;
+  value : {
+    constant : 1.0;
+    linear : 0.0014;
+    quadratic : 0.000007;
+  }
+}
+
+material_property_config {
+  key : "gold";
+  value : {
+    ambient : 0.24725;
+    ambient : 0.1995;
+    ambient : 0.0745;
+    ambient : 1;
+    diffuse : 0.75164;
+    diffuse : 0.60648;
+    diffuse : 0.22648;
+    diffuse : 1;
+    specular : 0.628281;
+    specular : 0.555802;
+    specular : 0.366065;
+    specular : 1;
+    shininess : 51.2;
+  }
+}
+material_property_config {
+  key : "silver";
+  value : {
+    ambient : 0.19225;
+    ambient : 0.19225;
+    ambient : 0.19225;
+    ambient : 1;
+    diffuse : 0.50754;
+    diffuse : 0.50754;
+    diffuse : 0.50754;
+    diffuse : 1;
+    specular : 0.508273;
+    specular : 0.508273;
+    specular : 0.508273;
+    specular : 1;
+    shininess : 51.2;
+  }
+}
+material_property_config {
+  key : "jade";
+  value : {
+    ambient : 0.135;
+    ambient : 0.2225;
+    ambient : 0.1575;
+    ambient : 0.95;
+    diffuse : 0.54;
+    diffuse : 0.89;
+    diffuse : 0.63;
+    diffuse : 0.95;
+    specular : 0.316228;
+    specular : 0.316228;
+    specular : 0.316228;
+    specular : 0.95;
+    shininess : 12.8;
+  }
+}
+material_property_config {
+  key : "ruby";
+  value : {
+    ambient : 0.1745;
+    ambient : 0.01175;
+    ambient : 0.01175;
+    ambient : 0.55;
+    diffuse : 0.61424;
+    diffuse : 0.04136;
+    diffuse : 0.04136;
+    diffuse : 0.55;
+    specular : 0.727811;
+    specular : 0.626959;
+    specular : 0.626959;
+    specular : 0.55;
+    shininess : 76.8;
+  }
 }

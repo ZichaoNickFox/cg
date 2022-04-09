@@ -16,7 +16,6 @@ class Playground {
   void Init(const Context::Option& option);
   void BeginFrame();
   void Update();
-  void Gui();
   void Render();
   void EndFrame();
 

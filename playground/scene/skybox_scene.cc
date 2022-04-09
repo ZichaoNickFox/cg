@@ -29,8 +29,12 @@ void SkyboxScene::OnEnter(Context *context)
     Cube* cube = &cubes_[i];
     cube->mutable_transform()->SetTranslation(cube_positions_[i]);
     cube->mutable_material()->PushShader(context->GetShader("phong"));
-    cube->mutable_material()->SetVec3("light_color", kLightColor);
-    cube->mutable_material()->SetVec3("light_pos", kLightPos);
+    cube->mutable_material()->SetVec3("lights[0].color", kLightColor);
+    cube->mutable_material()->SetVec3("lights[0].pos", kLightPos);
+    cube->mutable_material()->SetFloat("lights[0].constant", context->light_attenuation_constant(100));
+    cube->mutable_material()->SetFloat("lights[0].linear", context->light_attenuation_linear(100));
+    cube->mutable_material()->SetFloat("lights[0].quadratic", context->light_attenuation_quadratic(100));
+    cube->mutable_material()->SetInt("light_count", 1);
   }
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(-1.0, 1.5, 1.1));
@@ -52,28 +56,7 @@ void SkyboxScene::OnEnter(Context *context)
 
 void SkyboxScene::OnUpdate(Context *context)
 {
-  ControlCameraByIo(context);
-  light_.OnUpdate(context);
-  light_.mutable_transform()->SetScale(light_scale_);
-  light_.mutable_material()->SetVec3("light_color", light_color_);
-
-  for (int i = 0; i < cubes_.size(); ++i) {
-    Cube* cube = &cubes_[i];
-    cube->OnUpdate(context);
-    cube->mutable_material()->SetVec3("light_color", light_color_);
-  }
-
-  coord_.OnUpdate(context);
-  skybox_.OnUpdate(context);
-}
-
-void SkyboxScene::OnGui(Context *context)
-{
-  bool open = true;
-  ImGui::Begin("SkyScene", &open, ImGuiWindowFlags_AlwaysAutoResize);
-  RenderFps(context);
-
-  ImGui::Separator();
+  OnUpdateCommon _(context, "SkyboxScene");
 
   ImGui::SliderFloat3("light_scale", (float*)&light_scale_, 0, 2);
   ImGui::ColorEdit3("light_color", (float*)&light_color_);
@@ -85,13 +68,24 @@ void SkyboxScene::OnGui(Context *context)
 
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
-    cube->mutable_material()->SetVec3("material.ambient", material_property_.ambient);
-    cube->mutable_material()->SetVec3("material.diffuse", material_property_.diffuse);
-    cube->mutable_material()->SetVec3("material.specular", material_property_.specular);
-    cube->mutable_material()->SetFloat("material.shininess", material_property_.shininess);
+    cube->mutable_material()->SetVec3("material.ambient", context->material_property_ambient("gold"));
+    cube->mutable_material()->SetVec3("material.diffuse", context->material_property_diffuse("gold"));
+    cube->mutable_material()->SetVec3("material.specular", context->material_property_specular("gold"));
+    cube->mutable_material()->SetFloat("material.shininess", context->material_property_shininess("gold"));
   }
 
-  ImGui::End();
+  light_.OnUpdate(context);
+  light_.mutable_transform()->SetScale(light_scale_);
+  light_.mutable_material()->SetVec3("light_color", light_color_);
+
+  for (int i = 0; i < cubes_.size(); ++i) {
+    Cube* cube = &cubes_[i];
+    cube->OnUpdate(context);
+    cube->mutable_material()->SetVec3("lights[0].color", light_color_);
+  }
+
+  coord_.OnUpdate(context);
+  skybox_.OnUpdate(context);
 }
 
 void SkyboxScene::OnRender(Context *context)

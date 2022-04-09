@@ -13,7 +13,6 @@ class ModelScene : public Scene {
  public:
   void OnEnter(Context* context);
   void OnUpdate(Context* context);
-  void OnGui(Context* context);
   void OnRender(Context* contexnt);
   void OnExit(Context* context);
 

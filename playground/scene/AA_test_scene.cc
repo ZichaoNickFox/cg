@@ -36,14 +36,7 @@ void AATestScene::OnEnter(Context *context)
 
 void AATestScene::OnUpdate(Context *context)
 {
-  ControlCameraByIo(context);
-}
-
-void AATestScene::OnGui(Context *context)
-{
-  ImGui::Begin("AATestScene");
-  RenderFps(context);
-  ImGui::End();
+  OnUpdateCommon _(context, "AATestScene");
 }
 
 void AATestScene::OnRender(Context *context)

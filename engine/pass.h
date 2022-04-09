@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GL/glew.h"
+#include <unordered_map>
 
 enum class PassType {
   kNone,
@@ -34,13 +35,12 @@ struct MeshVertexComponent {
   uint32_t size_in_float;
   uint32_t size_in_byte;
 };
-static const std::vector<MeshVertexComponent> kMeshVertexLayout = {
-  {"position", GL_RGB, GL_FLOAT, GL_RGB32F, 3, 12},
-  {"normal", GL_RGB, GL_FLOAT, GL_RGB32F, 3, 12},
-  {"texcoord", GL_RG, GL_FLOAT, GL_RG32F, 2, 8},
-  {"tangent", GL_RGB, GL_FLOAT, GL_RGB32F, 3, 12},
-  {"bitangent", GL_RGB, GL_FLOAT, GL_RGB32F, 3, 12},
-  {"color", GL_RGBA, GL_FLOAT, GL_RGB32F, 4, 16},
+static const std::unordered_map<std::string, MeshVertexComponent> kMeshVertexLayout = {
+  {"position", {"position", GL_RGB, GL_FLOAT, GL_RGB32F, 3, 12}},
+  {"normal", {"normal", GL_RGB, GL_FLOAT, GL_RGB32F, 3, 12}},
+  {"texcoord", {"texcoord", GL_RG, GL_FLOAT, GL_RG32F, 2, 8}},
+  {"tangent", {"tangent", GL_RGB, GL_FLOAT, GL_RGB32F, 3, 12}},
+  {"bitangent", {"bitangent", GL_RGB, GL_FLOAT, GL_RGB32F, 3, 12}},
 };
 
 struct FrameBufferAttachment {

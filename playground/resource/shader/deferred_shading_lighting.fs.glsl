@@ -27,6 +27,7 @@ uniform vec3 view_pos;
 
 uniform sampler2D texture_normal;
 uniform sampler2D texture_frag_world_pos;
+uniform vec3 clear_color;
 
 // shadow map
 uniform sampler2D shadow_map_texture;
@@ -62,6 +63,10 @@ void main()
   vec3 normal_ = texture(texture_normal, texcoord_).xyz;
   vec3 frag_world_pos_ = texture(texture_frag_world_pos, texcoord_).xyz;
 
+  if (frag_world_pos_ == clear_color) {
+    FragColor = vec4(clear_color, 1.0);
+    return;
+  }
   for (int i = 0; i < light_count; ++i) {
     light_result += CalcLight(lights[i], normal_, frag_world_pos_);
   }

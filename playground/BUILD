@@ -1,5 +1,6 @@
 package(default_visibility=["//visibility:public"])
 load("@rules_cc//cc:defs.bzl", "cc_binary")
+load("//:cg_proto_library.bzl", "cg_proto_library")
 
 cc_binary(
   name = "launcher",
@@ -31,8 +32,8 @@ cc_library(
   ],
   deps = [
     "//engine:engine",
-    "//playground:cc_config_proto",
     "//playground:scene",
+    "//playground/proto:cc_config_proto",
     "//playground/scene:scenes",
   ],
   linkopts = [
@@ -68,13 +69,26 @@ cc_library(
   ],
   deps = [
     "//engine:engine",
-    "//playground:cc_config_proto",
     "//playground:util",
+    "//playground/proto:cc_config_proto",
     "@SOIL2//:SOIL2",
   ],
   linkopts = [
     "-lfmt",
   ],
+)
+
+cc_library(
+  name = "material_prefab",
+  srcs = [
+    "material_prefab.h",
+    "material_prefab.cc",
+  ],
+  deps = [
+    "//engine:engine",
+    "//playground:context",
+    "//playground:util",
+  ]
 )
 
 cc_library(
@@ -86,21 +100,11 @@ cc_library(
   deps = [
     "//engine:debug",
     # TODO : for compile success
-    "//playground:cc_config_proto",
+    "//playground/proto:cc_config_proto",
   ],
   linkopts = [
     "-lglog"
   ],
-)
-
-proto_library(
-  name = "config_proto",
-  srcs = [ "config.proto" ]
-)
-
-cc_proto_library(
-  name = "cc_config_proto",
-  deps = [ ":config_proto" ]
 )
 
 cc_test (

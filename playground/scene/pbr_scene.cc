@@ -12,12 +12,17 @@
 void PbrScene::OnEnter(Context *context)
 {
   const glm::vec3 kLightColor = glm::vec3(0.0, 1.0, 0.0);
-  const glm::vec3 kLightPos = glm::vec3(1, 1, 0);
   const glm::vec3 kLightScale = glm::vec3(0.4, 0.4, 0.4);
-  engine::Transform light_transform(kLightPos, glm::quat(glm::vec3(0, 0, 0)), kLightScale);
-  light_.SetTransform(light_transform);
-  light_.mutable_material()->PushShader(context->GetShader("point_light"));
-  light_.mutable_material()->SetVec3("light_color", kLightColor);
+
+  std::vector<glm::vec3> light_poses{glm::vec3(2, 2, 0), glm::vec3(2, 0, 2),
+                                     glm::vec3(0, 2, 2), glm::vec3(2, 2, 2)};
+  for (int i = 0; i < light_num; ++i) {
+    lights_.push_back(PointLight());
+    lights_[i].mutable_transform()->SetTranslation(light_poses[i]);
+    lights_[i].mutable_transform()->SetScale(kLightScale);
+    lights_[i].mutable_material()->PushShader(context->GetShader("point_light"));
+    lights_[i].mutable_material()->SetVec3("light_color", kLightColor);
+  }
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(-1.0, 1.5, 1.1));
   camera_->SetFarClip(200);
@@ -33,55 +38,50 @@ void PbrScene::OnEnter(Context *context)
   skybox_.mutable_material()->SetTexture("texture0", context->GetTexture("skybox"));
   skybox_.mutable_transform()->SetScale(glm::vec3(100, 100, 100));
 
-  sphere_.mutable_material()->PushShader(context->GetShader("texture0"));
-  sphere_.mutable_material()->SetTexture("texture0", context->GetTexture("opengl0"));
+  sphere_.mutable_material()->PushShader(context->GetShader("phong"));
+
+  plane_.mutable_material()->PushShader(context->GetShader("phong"));
 
   glEnable(GL_DEPTH_TEST);
 }
 
 void PbrScene::OnUpdate(Context *context)
 {
-  ControlCameraByIo(context);
-  light_.OnUpdate(context);
-  light_.mutable_transform()->SetScale(light_scale_);
-  light_.mutable_material()->SetVec3("light_color", light_color_);
+  OnUpdateCommon _(context, "PbrScene");
+
+  ImGui::ColorEdit3("light_color", (float*)&light_color_);
+  
+  for (int i = 0; i < light_num; ++i) {
+    lights_[i].OnUpdate(context);
+    lights_[i].mutable_material()->SetVec3("light_color", light_color_);
+  }
 
   sphere_.OnUpdate(context);
   coord_.OnUpdate(context);
   skybox_.OnUpdate(context);
-}
-
-void PbrScene::OnGui(Context *context)
-{
-  bool open = true;
-  ImGui::Begin("SkyScene", &open, ImGuiWindowFlags_AlwaysAutoResize);
-  RenderFps(context);
-
-  ImGui::Separator();
-
-  ImGui::SliderFloat3("light_scale", (float*)&light_scale_, 0, 2);
-  ImGui::ColorEdit3("light_color", (float*)&light_color_);
-
-  ImGui::Separator();
-
-  ImGui::Text("camera_location %s", glm::to_string(context->camera().transform().translation()).c_str());
-  ImGui::Text("camera_front %s", glm::to_string(context->camera().front()).c_str());
-
-  ImGui::End();
+  plane_.OnUpdate(context);
 }
 
 void PbrScene::OnRender(Context *context)
 {
+  sphere_.mutable_material()->SetVec3("camera_pos", context->camera().transform().translation());
+  for (int i = 0; i < light_num; ++i) {
+    lights_[i].OnRender(context);
+    // sphere_.mutable_material()->SetVec4();
+  }
   sphere_.OnRender(context);
-  light_.OnRender(context);
   coord_.OnRender(context);
   skybox_.OnRender(context);
+  plane_.OnRender(context);
 }
 
 void PbrScene::OnExit(Context *context)
 {
-  light_.OnDestory(context);
+  for (int i = 0; i < light_num; ++i) {
+    lights_[i].OnDestory(context);
+  }
   coord_.OnDestory(context);
   skybox_.OnDestory(context);
   context->PopCamera();
+  plane_.OnDestory(context);
 }

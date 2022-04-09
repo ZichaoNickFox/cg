@@ -3,7 +3,7 @@
 #include <unordered_map>
 
 #include "engine/shader.h"
-#include "playground/config.pb.h"
+#include "playground/proto/config.pb.h"
 
 class ShaderRepo {
  public:

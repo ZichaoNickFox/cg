@@ -65,7 +65,6 @@ void Model::ModelInspector() {
         ImGui::Text("Texcoord Num : %lu", model_part.mesh->texcoords().size());
         ImGui::Text("Tangent Num : %lu", model_part.mesh->tangents().size());
         ImGui::Text("Bitangent Num : %lu", model_part.mesh->bitangents().size());
-        ImGui::Text("Color Num : %lu", model_part.mesh->colors().size());
         if (ImGui::TreeNode(util::Format("Diffuse Textures Num : {}", model_part.diffuse_textures.size()).c_str())) {
           for (int i = 0; i < model_part.diffuse_textures.size(); ++i) {
             ImGui::Text("%s", model_part.diffuse_textures[i].name().c_str());

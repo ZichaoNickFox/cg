@@ -3,7 +3,19 @@
 #include "imgui.h"
 #include <glog/logging.h>
 
-void RenderFps(Context* context) {
+OnUpdateCommon::OnUpdateCommon(Context* context, const std::string& title) {
+  ControlCameraByIo(context);
+  bool open = true;
+  ImGui::Begin(title.c_str(), &open, ImGuiWindowFlags_AlwaysAutoResize);
+  RenderFps(context);
+  ImGui::Separator();
+}
+
+OnUpdateCommon::~OnUpdateCommon() {
+  ImGui::End();
+}
+
+void OnUpdateCommon::RenderFps(Context* context) {
   ImGui::Text("frame interval : ");
   ImGui::SameLine();
   ImGui::Text("%d", context->frame_interval());
@@ -12,7 +24,7 @@ void RenderFps(Context* context) {
   ImGui::Text("%d", context->fps());
 }
 
-void ControlCameraByIo(Context* context) {
+void OnUpdateCommon::ControlCameraByIo(Context* context) {
   if (context->io().gui_captured_mouse()) {
     return;
   }

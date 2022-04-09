@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "engine/depth_frame_buffer.h"
 #include "engine/frame_buffer.h"
 #include "engine/shader.h"
 
@@ -22,6 +23,8 @@ class GBuffer : public FrameBuffer {
 
   GLuint fbo() { return fbo_; }
   
+  void BlitDepth(DepthFrameBuffer* depth_frame_buffer);
+
  private:
   Option option_;
 };

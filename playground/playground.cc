@@ -8,18 +8,16 @@
 #include "playground/scene/deferred_shading_scene.h"
 #include "playground/scene/forward_shading_scene.h"
 #include "playground/scene/gallery_scene.h"
-#include "playground/scene/imgui_demo_scene.h"
 #include "playground/scene/model_scene.h"
 #include "playground/scene/mrt_scene.h"
 #include "playground/scene/pbr_scene.h"
 #include "playground/scene/phong_scene.h"
 #include "playground/scene/shadow_map_scene.h"
 #include "playground/scene/skybox_scene.h"
-#include "playground/scene/test_scene.h"
 #include "playground/scene/triangle_scene.h"
 
 namespace {
-const std::string kDefaultScene = "PbrScene";
+const std::string kDefaultScene = "DeferredShadingScene";
 }
 
 void Playground::Init(const Context::Option& option) {
@@ -30,8 +28,6 @@ void Playground::Init(const Context::Option& option) {
 
 void Playground::InitScene() {
   scene_map_.insert(std::make_pair("GalleryScene", std::make_unique<GalleryScene>()));
-  scene_map_.insert(std::make_pair("TestScene", std::make_unique<TestScene>()));
-  scene_map_.insert(std::make_pair("ImGuiDemoScene", std::make_unique<ImGuiDemoScene>()));
   scene_map_.insert(std::make_pair("TriangleScene", std::make_unique<TriangleScene>()));
   scene_map_.insert(std::make_pair("CubeWorldScene", std::make_unique<CubeWorldScene>()));
   scene_map_.insert(std::make_pair("PhongScene", std::make_unique<PhongScene>()));
@@ -57,11 +53,6 @@ void Playground::Update() {
   }
   const std::unique_ptr<Scene>& scene = scene_map_[context_.current_scene()];
   scene->OnUpdate(&context_);
-}
-
-void Playground::Gui() {
-  const std::unique_ptr<Scene>& scene = scene_map_[context_.current_scene()];
-  scene->OnGui(&context_);
 }
 
 void Playground::Render() {

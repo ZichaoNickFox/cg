@@ -20,7 +20,6 @@ class Mesh {
   void SetPositions(const std::vector<glm::vec3> &positions) { positions_ = positions; }
   void SetNormals(const std::vector<glm::vec3> &normals) { normals_ = normals; }
   void SetTexcoords(const std::vector<glm::vec2> &texcoords) { texcoords_ = texcoords; }
-  void SetColors(const std::vector<glm::vec3>& colors) { colors_ = colors; }
   void SetTangent(const std::vector<glm::vec3> &tangents) { tangents_ = tangents; }
   void SetBitangent(const std::vector<glm::vec3> &bitangents) { bitangents_ = bitangents; }
 
@@ -29,7 +28,6 @@ class Mesh {
   const std::vector<glm::vec2>& texcoords() { return texcoords_; }
   const std::vector<glm::vec3>& tangents() { return tangents_; }
   const std::vector<glm::vec3>& bitangents() { return bitangents_; }
-  const std::vector<glm::vec3>& colors() { return colors_; }
 
   void SetName(const std::string& name) { name_ = name; }
   const std::string& name() { return name_; }
@@ -51,7 +49,6 @@ class Mesh {
   std::vector<glm::vec2> texcoords_;
   std::vector<glm::vec3> tangents_;
   std::vector<glm::vec3> bitangents_;
-  std::vector<glm::vec3> colors_;
 
   std::vector<GLuint> indices_;
 

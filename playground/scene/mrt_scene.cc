@@ -69,7 +69,11 @@ void MrtScene::OnEnter(Context *context)
 
 void MrtScene::OnUpdate(Context *context)
 {
-  ControlCameraByIo(context);
+  OnUpdateCommon _(context, "MrtScene");
+
+  ImGui::Text("camera_location %s", glm::to_string(context->camera().transform().translation()).c_str());
+  ImGui::Text("camera_front %s", glm::to_string(context->camera().front()).c_str());
+  ImGui::Text("camera_euler %s", glm::to_string(glm::eulerAngles(context->camera().transform().rotation())).c_str());
 
   for (int i = 0; i < point_lights_num_; ++i) {
     point_lights_[i].OnUpdate(context);
@@ -96,21 +100,6 @@ void MrtScene::OnUpdate(Context *context)
   coord_.OnUpdate(context);
   plane_.OnUpdate(context);
   directional_light_.OnUpdate(context);
-}
-
-void MrtScene::OnGui(Context *context)
-{
-  bool open = true;
-  ImGui::Begin("MrtScene", &open, ImGuiWindowFlags_AlwaysAutoResize);
-  RenderFps(context);
-
-  ImGui::Separator();
-
-  ImGui::Text("camera_location %s", glm::to_string(context->camera().transform().translation()).c_str());
-  ImGui::Text("camera_front %s", glm::to_string(context->camera().front()).c_str());
-  ImGui::Text("camera_euler %s", glm::to_string(glm::eulerAngles(context->camera().transform().rotation())).c_str());
-
-  ImGui::End();
 }
 
 void MrtScene::OnRender(Context *context)

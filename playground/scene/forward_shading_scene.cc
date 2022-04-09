@@ -19,7 +19,13 @@ void ForwardShadingScene::OnEnter(Context *context)
     point_lights_[i].mutable_transform()->SetTranslation(point_light_pos);
     point_lights_[i].mutable_transform()->SetScale(glm::vec3(0.2, 0.2, 0.2));
     point_lights_[i].mutable_material()->PushShader(context->GetShader("point_light"));
-    point_lights_[i].SetColor(glm::vec4(util::RandFromTo(0, 1), util::RandFromTo(0, 1), util::RandFromTo(0, 1), 1.0));
+    glm::vec3 color(util::RandFromTo(0, 1), util::RandFromTo(0, 1), util::RandFromTo(0, 1));
+    point_lights_[i].SetColor(color);
+
+    material_light_info_.light_poses.push_back(point_light_pos);
+    material_light_info_.light_colors.push_back(color);
+    material_light_info_.light_attenuation_metres.push_back(7);
+    material_light_info_.use_blinn_phong = false;
   }
 
   // http://www.barradeau.com/nicoptere/dump/materials.html
@@ -31,7 +37,7 @@ void ForwardShadingScene::OnEnter(Context *context)
     cubes_.push_back(Cube());
     Cube* cube = &cubes_[i];
     cube->SetTransform(cube_transforms_[i]);
-    cube->mutable_material()->PushShader(context->GetShader("forward_shading"));
+    cube->mutable_material()->PushShader(context->GetShader("phong_shadow"));
   }
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(5.3, 4.3, -3.5));
@@ -43,12 +49,6 @@ void ForwardShadingScene::OnEnter(Context *context)
   std::vector<glm::vec3> colors{glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0),
                                 glm::vec3(0, 0, 1), glm::vec3(0, 0, 1)};
   coord_.SetData(context, {positions, colors, GL_LINES, 5});
-
-  plane_.mutable_material()->PushShader(context->GetShader("forward_shading"));
-  plane_.mutable_material()->SetVec3("material.ambient", material_property_.ambient);
-  plane_.mutable_material()->SetVec3("material.diffuse", material_property_.diffuse);
-  plane_.mutable_material()->SetVec3("material.specular", material_property_.specular);
-  plane_.mutable_material()->SetFloat("material.shininess", material_property_.shininess);
 
   plane_.mutable_transform()->SetTranslation(glm::vec3(0, -1, 0));
   plane_.mutable_transform()->SetScale(glm::vec3(10, 0, 10));
@@ -62,42 +62,7 @@ void ForwardShadingScene::OnEnter(Context *context)
 
 void ForwardShadingScene::OnUpdate(Context *context)
 {
-  ControlCameraByIo(context);
-
-  for (int i = 0; i < point_lights_num_; ++i) {
-    point_lights_[i].OnUpdate(context);
-  }
-
-  for (int i = 0; i < cubes_.size(); ++i) {
-    Cube* cube = &cubes_[i];
-    cube->OnUpdate(context);
-    cube->mutable_material()->SetInt("light_count", point_lights_num_);
-    for (int i = 0; i < point_lights_num_; ++i) {
-      cube->mutable_material()->SetVec3(util::Format("lights[{}].color", i).c_str(),
-                                        point_lights_[i].color());
-      cube->mutable_material()->SetVec3(util::Format("lights[{}].pos", i).c_str(),
-                                        point_lights_[i].transform().translation());
-      cube->mutable_material()->SetFloat(util::Format("lights[{}].constant", i).c_str(),
-                                         point_lights_[i].attenuation_constant());
-      cube->mutable_material()->SetFloat(util::Format("lights[{}].linear", i).c_str(),
-                                         point_lights_[i].attenuation_linear());
-      cube->mutable_material()->SetFloat(util::Format("lights[{}].quadratic", i).c_str(),
-                                         point_lights_[i].attenuation_quadratic());
-    }
-  }
-
-  coord_.OnUpdate(context);
-  plane_.OnUpdate(context);
-  directional_light_.OnUpdate(context);
-}
-
-void ForwardShadingScene::OnGui(Context *context)
-{
-  bool open = true;
-  ImGui::Begin("ForwardShadingScene", &open, ImGuiWindowFlags_AlwaysAutoResize);
-  RenderFps(context);
-
-  ImGui::Separator();
+  OnUpdateCommon _(context, "ForwardShadingScene");
 
   ImGui::Text("camera_location %s", glm::to_string(context->camera().transform().translation()).c_str());
   ImGui::Text("camera_front %s", glm::to_string(context->camera().front()).c_str());
@@ -116,14 +81,6 @@ void ForwardShadingScene::OnGui(Context *context)
 
   ImGui::SliderFloat3("cube0_scale", (float*)cubes_[0].mutable_transform()->mutable_scale(), -2, 2);
 
-  for (int i = 0; i < cubes_.size(); ++i) {
-    Cube* cube = &cubes_[i];
-    cube->mutable_material()->SetVec3("material.ambient", material_property_.ambient);
-    cube->mutable_material()->SetVec3("material.diffuse", material_property_.diffuse);
-    cube->mutable_material()->SetVec3("material.specular", material_property_.specular);
-    cube->mutable_material()->SetFloat("material.shininess", material_property_.shininess);
-  }
-
   ImGui::Separator();
 
   ImGui::Text("Camera Type");
@@ -140,7 +97,22 @@ void ForwardShadingScene::OnGui(Context *context)
     context->PushCamera(directional_light_.Test_GetCamera());
   }
 
-  ImGui::End();
+  for (int i = 0; i < point_lights_num_; ++i) {
+    point_lights_[i].OnUpdate(context);
+  }
+
+  for (int i = 0; i < cubes_.size(); ++i) {
+    Cube* cube = &cubes_[i];
+    PhongMaterialPrefab prefab{"gold", material_light_info_};
+    material_prefab::UpdatePhongMaterial(context, prefab, cube->mutable_material());
+  }
+
+  coord_.OnUpdate(context);
+
+  PhongMaterialPrefab prefab{"gold", material_light_info_};
+  material_prefab::UpdatePhongMaterial(context, prefab, plane_.mutable_material());
+  plane_.OnUpdate(context);
+  directional_light_.OnUpdate(context);
 }
 
 void ForwardShadingScene::OnRender(Context *context)
@@ -170,16 +142,16 @@ void ForwardShadingScene::RenderScene(Context* context, const glm::mat4& shadow_
                                        const engine::Texture& shadow_map_texture) {
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
-    cube->mutable_material()->SetTexture("shadow_map_texture", shadow_map_texture);
-    cube->mutable_material()->SetMat4("shadow_map_vp", shadow_map_vp);
+    // cube->mutable_material()->SetTexture("shadow_map_texture", shadow_map_texture);
+    // cube->mutable_material()->SetMat4("shadow_map_vp", shadow_map_vp);
     cube->OnRender(context);
   }
   for (int i = 0; i < point_lights_num_; ++i) {
     point_lights_[i].OnRender(context);
   }
   coord_.OnRender(context);
-  plane_.mutable_material()->SetTexture("shadow_map_texture", shadow_map_texture);
-  plane_.mutable_material()->SetMat4("shadow_map_vp", shadow_map_vp);
+  // plane_.mutable_material()->SetTexture("shadow_map_texture", shadow_map_texture);
+  // plane_.mutable_material()->SetMat4("shadow_map_vp", shadow_map_vp);
   plane_.OnRender(context);
   directional_light_.OnRender(context);
 }

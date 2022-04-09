@@ -75,6 +75,9 @@ void Material::PrepareShader() {
   for (const auto& pair : shader_data->location_int_) {
     shader_data->shader_.SetInt(pair.first, pair.second);
   }
+  for (const auto& pair : shader_data->location_bool_) {
+    shader_data->shader_.SetBool(pair.first, pair.second);
+  }
 }
 
 void Material::SetVec4(const std::string& location, const glm::vec4& value) {
@@ -87,6 +90,10 @@ void Material::SetVec3(const std::string& location, const glm::vec3& value) {
 
 void Material::SetInt(const std::string& location, int value) {
   mutable_shader_data()->location_int_[location] = value;
+}
+
+void Material::SetBool(const std::string& location, bool value) {
+  mutable_shader_data()->location_bool_[location] = value;
 }
 
 }

@@ -11,5 +11,4 @@ void main()
 {
   float depth = texture(texture0, texcoord_).r;
   FragColor = vec4(depth, depth, depth, 1.0);
-  FragColor = vec4(1,0,0,1);
 }

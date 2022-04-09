@@ -37,12 +37,7 @@ void CubeWorldScene::OnEnter(Context *context)
 
 void CubeWorldScene::OnUpdate(Context *context)
 {
-  ControlCameraByIo(context);
-}
-
-void CubeWorldScene::OnGui(Context *context)
-{
-  RenderFps(context);
+  OnUpdateCommon _(context, "CubeWorldScene");
 }
 
 void CubeWorldScene::OnRender(Context *context)

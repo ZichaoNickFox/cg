@@ -27,7 +27,7 @@ void ShadowMapScene::OnEnter(Context *context)
     cubes_.push_back(Cube());
     Cube* cube = &cubes_[i];
     cube->SetTransform(cube_transforms_[i]);
-    cube->mutable_material()->PushShader(context->GetShader("phong"));
+    cube->mutable_material()->PushShader(context->GetShader("phong_shadow"));
   }
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(5.3, 4.3, -3.5));
@@ -40,11 +40,11 @@ void ShadowMapScene::OnEnter(Context *context)
                                 glm::vec3(0, 0, 1), glm::vec3(0, 0, 1)};
   coord_.SetData(context, {positions, colors, GL_LINES, 5});
 
-  plane_.mutable_material()->PushShader(context->GetShader("phong"));
-  plane_.mutable_material()->SetVec3("material.ambient", material_property_.ambient);
-  plane_.mutable_material()->SetVec3("material.diffuse", material_property_.diffuse);
-  plane_.mutable_material()->SetVec3("material.specular", material_property_.specular);
-  plane_.mutable_material()->SetFloat("material.shininess", material_property_.shininess);
+  plane_.mutable_material()->PushShader(context->GetShader("phong_shadow"));
+  plane_.mutable_material()->SetVec3("material.ambient", context->material_property_ambient("gold"));
+  plane_.mutable_material()->SetVec3("material.diffuse", context->material_property_diffuse("gold"));
+  plane_.mutable_material()->SetVec3("material.specular", context->material_property_specular("gold"));
+  plane_.mutable_material()->SetFloat("material.shininess", context->material_property_shininess("gold"));
 
   plane_.mutable_transform()->SetTranslation(glm::vec3(0, -1, 0));
   plane_.mutable_transform()->SetScale(glm::vec3(10, 0, 10));
@@ -58,29 +58,7 @@ void ShadowMapScene::OnEnter(Context *context)
 
 void ShadowMapScene::OnUpdate(Context *context)
 {
-  ControlCameraByIo(context);
-  light_.OnUpdate(context);
-  light_.mutable_transform()->SetScale(light_scale_);
-  light_.mutable_material()->SetVec3("light_color", light_color_);
-
-  for (int i = 0; i < cubes_.size(); ++i) {
-    Cube* cube = &cubes_[i];
-    cube->OnUpdate(context);
-    cube->mutable_material()->SetVec3("light_color", light_color_);
-  }
-
-  coord_.OnUpdate(context);
-  plane_.OnUpdate(context);
-  directional_light_.OnUpdate(context);
-}
-
-void ShadowMapScene::OnGui(Context *context)
-{
-  bool open = true;
-  ImGui::Begin("ShadowMapScene", &open, ImGuiWindowFlags_AlwaysAutoResize);
-  RenderFps(context);
-
-  ImGui::Separator();
+  OnUpdateCommon _(context, "ShadowMapScene");
 
   ImGui::SliderFloat3("light_scale", (float*)&light_scale_, 0, 2);
   ImGui::ColorEdit3("light_color", (float*)&light_color_);
@@ -110,10 +88,10 @@ void ShadowMapScene::OnGui(Context *context)
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
     cube->mutable_material()->SetVec3("light_pos", light_pos_);
-    cube->mutable_material()->SetVec3("material.ambient", material_property_.ambient);
-    cube->mutable_material()->SetVec3("material.diffuse", material_property_.diffuse);
-    cube->mutable_material()->SetVec3("material.specular", material_property_.specular);
-    cube->mutable_material()->SetFloat("material.shininess", material_property_.shininess);
+    cube->mutable_material()->SetVec3("material.ambient", context->material_property_ambient("gold"));
+    cube->mutable_material()->SetVec3("material.diffuse", context->material_property_diffuse("gold"));
+    cube->mutable_material()->SetVec3("material.specular", context->material_property_specular("gold"));
+    cube->mutable_material()->SetFloat("material.shininess", context->material_property_shininess("gold"));
   }
 
   plane_.mutable_material()->SetVec3("light_pos", light_pos_);
@@ -135,7 +113,19 @@ void ShadowMapScene::OnGui(Context *context)
     context->PushCamera(directional_light_.Test_GetCamera());
   }
 
-  ImGui::End();
+  light_.OnUpdate(context);
+  light_.mutable_transform()->SetScale(light_scale_);
+  light_.mutable_material()->SetVec3("light_color", light_color_);
+
+  for (int i = 0; i < cubes_.size(); ++i) {
+    Cube* cube = &cubes_[i];
+    cube->OnUpdate(context);
+    cube->mutable_material()->SetVec3("light_color", light_color_);
+  }
+
+  coord_.OnUpdate(context);
+  plane_.OnUpdate(context);
+  directional_light_.OnUpdate(context);
 }
 
 void ShadowMapScene::OnRender(Context *context)
