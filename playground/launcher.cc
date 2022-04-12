@@ -36,6 +36,8 @@ void FillIoInput(GLFWwindow* window, ImGuiIO* imgui_io, Io* io) {
     io->FeedKeyInput("a");
   if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     io->FeedKeyInput("d");
+  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    io->FeedKeyInput("esc");
   
   double xpos, ypos; 
   glfwGetCursorPos(window, &xpos, &ypos);
@@ -74,9 +76,10 @@ int main(int argc, char **argv)
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // 3.2+ only
 
   // Create window with graphics context
-  constexpr int kScreenWidth = 1280;
-  constexpr int kScreenHeight = 720;
-  GLFWwindow* window = glfwCreateWindow(kScreenWidth, kScreenHeight, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
+  constexpr int kScreenWidth = 2560;
+  constexpr int kScreenHeight = 1440;
+  GLFWwindow* window = glfwCreateWindow(kScreenWidth, kScreenHeight, "CG",
+                                        NULL, NULL);
   CGCHECK(window) << "GLFW create window failed";
   glfwMakeContextCurrent(window);
   glfwSwapInterval(1); // Enable vsync

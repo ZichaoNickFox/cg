@@ -6,6 +6,7 @@
 #include "engine/texture.h"
 #include "playground/context.h"
 #include "playground/object/cube.h"
+#include "playground/object/coord.h"
 #include "playground/object/directional_light.h"
 #include "playground/object/fullscreen_quad.h"
 #include "playground/object/lines.h"
@@ -43,7 +44,7 @@ class MrtScene : public Scene {
 
   int point_lights_num_ = 100;
   std::vector<PointLight> point_lights_;
-  Lines coord_;
+  Coord coord_;
   Plane plane_;
   DirectionalLight directional_light_;
 

@@ -3,18 +3,31 @@
 #include "engine/debug.h"
 #include "playground/util.h"
 
-namespace shader_param {
-namespace {
-void UpdateLightInfo(Context* context, const ShaderLightInfo& light_info, engine::Material* material) {
-  CGCHECK(light_info.light_poses.size() == light_info.light_colors.size())
-      << light_info.light_poses.size() << " " << light_info.light_colors.size();
-  CGCHECK(light_info.light_poses.size() == light_info.light_attenuation_metres.size())
-      << light_info.light_poses.size() << " " << light_info.light_attenuation_metres.size();
-  material->SetInt("light_count", light_info.light_poses.size());
-  for (int i = 0; i < light_info.light_poses.size(); ++i) {
-    material->SetVec3(util::Format("lights[{}].color", i).c_str(), light_info.light_colors[i]);
-    material->SetVec3(util::Format("lights[{}].pos", i).c_str(), light_info.light_poses[i]);
-    int light_attenuation_metre = light_info.light_attenuation_metres[i];
+ShaderLightInfo::ShaderLightInfo(const PointLight& point_light) {
+  Insert(point_light);
+}
+
+ShaderLightInfo::ShaderLightInfo(const std::vector<PointLight>& point_lights) {
+  for (const PointLight& point_light : point_lights) {
+    Insert(point_light);
+  }
+}
+
+void ShaderLightInfo::Insert(const PointLight& point_light) {
+  light_poses.push_back(point_light.transform().translation());
+  light_colors.push_back(point_light.color());
+  light_attenuation_metres.push_back(point_light.attenuation_metre());
+}
+
+void ShaderLightInfo::UpdateMaterial(Context* context, engine::Material* material) const {
+  CGCHECK(light_poses.size() == light_colors.size())
+      << light_poses.size() << " " << light_colors.size();
+  CGCHECK(light_poses.size() == light_attenuation_metres.size())
+      << light_poses.size() << " " << light_attenuation_metres.size();
+  for (int i = 0; i < light_poses.size(); ++i) {
+    material->SetVec3(util::Format("lights[{}].color", i).c_str(), light_colors[i]);
+    material->SetVec3(util::Format("lights[{}].pos", i).c_str(), light_poses[i]);
+    int light_attenuation_metre = light_attenuation_metres[i];
     material->SetFloat(util::Format("lights[{}].constant", i).c_str(),
                                     context->light_attenuation_constant(light_attenuation_metre));
     material->SetFloat(util::Format("lights[{}].linear", i).c_str(),
@@ -22,29 +35,69 @@ void UpdateLightInfo(Context* context, const ShaderLightInfo& light_info, engine
     material->SetFloat(util::Format("lights[{}].quadratic", i).c_str(),
                                     context->light_attenuation_quadratic(light_attenuation_metre));
   }
-  material->SetInt("light_count", light_info.light_poses.size());
-}
+  CHECK(light_poses.size()) << ": Need at least 1 light";
+  material->SetInt("light_count", light_poses.size());
 }
 
-void UpdateShader(Context* context, const PhongShaderParam& phong, engine::Material* material) {
+PhongShader::PhongShader(const Param& phong, Context* context, Object* object) {
+  engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
   material->PushShader(context->GetShader(phong.shader_name));
 
+  const engine::Camera& camera = context->camera();
+  glm::mat4 project = camera.GetProjectMatrix();
+  glm::mat4 view = camera.GetViewMatrix();
+  material->SetMat4("project", project);
+  material->SetMat4("view", view);
+  material->SetMat4("model", object->GetModelMatrix());
   material->SetVec3("view_pos", context->camera().transform().translation());
 
-  const std::string& material_property_name = phong.material_propery_name;
-  material->SetVec3("material.ambient", context->material_property_ambient(material_property_name));
-  material->SetVec3("material.diffuse", context->material_property_diffuse(material_property_name));
-  material->SetVec3("material.specular", context->material_property_specular(material_property_name));
-  material->SetFloat("material.shininess", context->material_property_shininess(material_property_name));
+  material->SetVec3("material.ambient", phong.ambient);
+  material->SetVec3("material.diffuse", phong.diffuse);
+  material->SetVec3("material.specular", phong.specular);
+  material->SetFloat("material.shininess", phong.shininess);
+  if (phong.texture_normal) {
+    material->SetBool("material.use_texture_normal", true);
+    material->SetTexture("material.texture_normal0", phong.texture_normal.value());
+  } else {
+    material->SetBool("material.use_texture_normal", false);
+  }
 
-  UpdateLightInfo(context, phong.light_info, material);
+  if (phong.texture_specular) {
+    material->SetBool("material.use_texture_specular", true);
+    material->SetTexture("material.texture_specular0", phong.texture_specular.value());
+  } else {
+    material->SetBool("material.use_texture_specular", false);
+  }
+  
+  if (phong.texture_ambient) {
+    material->SetBool("material.use_texture_ambient", true);
+    material->SetTexture("material.texture_ambient0", phong.texture_ambient.value());
+  } else {
+    material->SetBool("material.use_texture_ambient", false);
+  }
+  
+  if (phong.texture_diffuse) {
+    material->SetBool("material.use_texture_diffuse", true);
+    material->SetTexture("material.texture_diffuse0", phong.texture_diffuse.value());
+  } else {
+    material->SetBool("material.use_texture_diffuse", false);
+  }
+
+  phong.light_info.UpdateMaterial(context, material);
 
   material->SetInt("blinn_phong", phong.use_blinn_phong);
 }
 
-void UpdateShader(Context* context, const PbrShaderParam& pbr, engine::Material* material) {
+PbrShader::PbrShader(const Param& pbr, Context* context, Object* object) {
+  engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
   material->PushShader(context->GetShader(pbr.shader_name));
 
+  const engine::Camera& camera = context->camera();
+  glm::mat4 project = camera.GetProjectMatrix();
+  glm::mat4 view = camera.GetViewMatrix();
+  material->SetMat4("project", project);
+  material->SetMat4("view", view);
+  material->SetMat4("model", object->GetModelMatrix());
   material->SetVec3("view_pos", context->camera().transform().translation());
 
   material->SetVec3("material.albedo", pbr.albedo);
@@ -53,7 +106,20 @@ void UpdateShader(Context* context, const PbrShaderParam& pbr, engine::Material*
 
   material->SetFloat("ao", pbr.ao);
 
-  UpdateLightInfo(context, pbr.light_info, material);
+  pbr.light_info.UpdateMaterial(context, material);
 }
 
-};
+NormalShader::NormalShader(const Param& normal, Context* context, Object* object) {
+  engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
+  material->PushShader(context->GetShader("normal"));
+  const engine::Camera& camera = context->camera();
+  glm::mat4 project = camera.GetProjectMatrix();
+  glm::mat4 view = camera.GetViewMatrix();
+  material->SetMat4("project", project);
+  material->SetMat4("view", view);
+  material->SetMat4("model", object->GetModelMatrix());
+  material->SetFloat("length", normal.length);
+  material->SetBool("show_normal", normal.show_normal);
+  material->SetBool("show_TBN", normal.show_TBN);
+  material->SetBool("show_triangle", normal.show_triangle);
+}

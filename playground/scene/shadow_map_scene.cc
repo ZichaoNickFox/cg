@@ -14,9 +14,7 @@ void ShadowMapScene::OnEnter(Context *context)
 {
   engine::Transform light_transform(light_pos_, glm::quat(glm::vec3(0, 0, 0)), light_scale_);
   light_.SetTransform(light_transform);
-  engine::Material light_material;
-  light_material.PushShader(context->GetShader("point_light"));
-  light_.SetMaterial(light_material);
+  light_.mutable_material()->PushShader(context->GetShader("point_light"));
 
   // http://www.barradeau.com/nicoptere/dump/materials.html
   cube_transforms_.push_back(engine::Transform(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
@@ -33,12 +31,6 @@ void ShadowMapScene::OnEnter(Context *context)
   camera_->mutable_transform()->SetTranslation(glm::vec3(5.3, 4.3, -3.5));
   camera_->mutable_transform()->SetRotation(glm::quat(glm::vec3(2.7, 0.75, -3.1)));
   context->PushCamera(camera_);
-
-  std::vector<glm::vec3> positions{glm::vec3(0, 0, 0), glm::vec3(2, 0, 0), glm::vec3(0, 0, 0), glm::vec3(0, 2, 0),
-                                   glm::vec3(0, 0, 0), glm::vec3(0, 0, 2)};
-  std::vector<glm::vec3> colors{glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0),
-                                glm::vec3(0, 0, 1), glm::vec3(0, 0, 1)};
-  coord_.SetData(context, {positions, colors, GL_LINES, 5});
 
   plane_.mutable_material()->PushShader(context->GetShader("phong_shadow"));
   plane_.mutable_material()->SetVec3("material.ambient", context->material_property_ambient("gold"));

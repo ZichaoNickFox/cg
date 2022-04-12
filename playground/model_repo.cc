@@ -23,7 +23,7 @@ void ModelRepo::Init(const Config& config) {
   }
 }
 
-std::vector<ModelRepo::ModelPart> ModelRepo::GetOrLoadModel(const std::string& name) {
+std::vector<ModelRepo::ModelPartData> ModelRepo::GetOrLoadModel(const std::string& name) {
   CGCHECK(models_.count(name) > 0) << "Cannot find model : " << name;
   State* state = &models_[name];
   if (!state->loaded) {
@@ -40,7 +40,7 @@ std::vector<ModelRepo::ModelPart> ModelRepo::GetOrLoadModel(const std::string& n
     CGLOG(ERROR) << "Loaded Model : name=" << name;
   }
   for (int i = 0; i < state->model_parts.size(); ++i) {
-    ModelPart* model_part = &state->model_parts[i];
+    ModelPartData* model_part = &state->model_parts[i];
     model_part->mesh->Setup();
   }
   return state->model_parts;
@@ -50,7 +50,7 @@ void ModelRepo::ProcessNode(const aiScene& ai_scene, const aiNode& ai_node, Stat
   for(uint32_t i = 0; i < ai_node.mNumMeshes; i++) {
     aiMesh* ai_mesh = ai_scene.mMeshes[ai_node.mMeshes[i]];
 
-    state->model_parts.push_back(ModelPart());
+    state->model_parts.push_back(ModelPartData());
     state->handling_model_part = &state->model_parts.back();
     state->handling_model_part->mesh->SetName(ai_mesh->mName.C_Str());
     
@@ -107,7 +107,7 @@ void ModelRepo::ProcessMesh(const aiMesh& ai_mesh, State* state) {
 void ModelRepo::ProcessTexture(const aiScene& ai_scene, const aiMesh& ai_mesh, State* state) {
   const aiMaterial& ai_material = *CGCHECK_NOTNULL(ai_scene.mMaterials[ai_mesh.mMaterialIndex]);
 
-  ModelPart* handling_model_part = state->handling_model_part;
+  ModelPartData* handling_model_part = state->handling_model_part;
 
   std::vector<engine::Texture> diffuses = LoadTextures(ai_material, aiTextureType_DIFFUSE, state);
   handling_model_part->diffuse_textures.insert(
@@ -121,16 +121,21 @@ void ModelRepo::ProcessTexture(const aiScene& ai_scene, const aiMesh& ai_mesh, S
   handling_model_part->normal_textures.insert(
       handling_model_part->normal_textures.end(), normals.begin(), normals.end());
 
+  std::vector<engine::Texture> heights = LoadTextures(ai_material, aiTextureType_HEIGHT, state);
+  handling_model_part->height_textures.insert(
+      handling_model_part->height_textures.end(), heights.begin(), heights.end());
+
   std::vector<engine::Texture> ambients = LoadTextures(ai_material, aiTextureType_AMBIENT, state);
   handling_model_part->ambient_textures.insert(
       handling_model_part->ambient_textures.end(), ambients.begin(), ambients.end());
 
   CGLOG(ERROR) << "Process Texture : model=" << state->name;
   CGLOG(ERROR) << "Texture Begin";
+  CGLOG_IF(ERROR, ambients.size() > 0) << "ambients : size=" << ambients.size();
   CGLOG_IF(ERROR, diffuses.size() > 0) << "diffuses : size=" << diffuses.size();
   CGLOG_IF(ERROR, speculars.size() > 0) << "speculars : size=" << speculars.size();
   CGLOG_IF(ERROR, normals.size() > 0) << "normals : size=" << normals.size();
-  CGLOG_IF(ERROR, ambients.size() > 0) << "ambients : size=" << ambients.size();
+  CGLOG_IF(ERROR, heights.size() > 0) << "heights : size=" << heights.size();
   CGLOG(ERROR) << "Texture End";
 }
 
@@ -149,6 +154,7 @@ std::vector<Texture> ModelRepo::LoadTextures(const aiMaterial& ai_material, aiTe
     if(!skip) {
       engine::Texture texture;
       texture = texture::LoadTexture2D(full_path);
+      LOG(ERROR) << "Loading " << TextureTypeToString(type) << " texture from " << full_path;
       textures.push_back(texture);
       loaded_paths[full_path] = texture;
     }

@@ -43,7 +43,7 @@ void Mesh::SetupVBO(int buffer_size_in_float) {
   if (component.size() == 0) { \
     component.resize(vertex_num); \
   } else { \
-    CGCHECK(component.size() == vertex_num); \
+    CGCHECK(component.size() == vertex_num) << component.size() << " " << vertex_num; \
   } \
   glBufferSubData(GL_ARRAY_BUFFER, offset_in_vbo, VectorSizeInByte(component), component.data()); \
   offset_in_vbo += VectorSizeInByte(component);

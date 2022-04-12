@@ -10,6 +10,7 @@
 #include "playground/scene/gallery_scene.h"
 #include "playground/scene/model_scene.h"
 #include "playground/scene/mrt_scene.h"
+#include "playground/scene/normal_scene.h"
 #include "playground/scene/pbr_scene.h"
 #include "playground/scene/phong_scene.h"
 #include "playground/scene/shadow_map_scene.h"
@@ -17,7 +18,7 @@
 #include "playground/scene/triangle_scene.h"
 
 namespace {
-const std::string kDefaultScene = "PbrScene";
+const std::string kDefaultScene = "ModelScene";
 }
 
 void Playground::Init(const Context::Option& option) {
@@ -40,6 +41,7 @@ void Playground::InitScene() {
   scene_map_.insert(std::make_pair("AATestScene", std::make_unique<AATestScene>()));
   scene_map_.insert(std::make_pair("ModelScene", std::make_unique<ModelScene>()));
   scene_map_.insert(std::make_pair("PbrScene", std::make_unique<PbrScene>()));
+  scene_map_.insert(std::make_pair("NormalScene", std::make_unique<NormalScene>()));
 }
 
 void Playground::BeginFrame() {

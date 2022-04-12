@@ -142,7 +142,7 @@ void Shader::CheckCompileErrors(unsigned int shader, const std::string& type) {
     if (!success)
     {
       glGetProgramInfoLog(shader, 1024, NULL, info_log);
-      CGCHECK(false) << " : Program link error :" << info_log << "In shader" << name_;
+      CGCHECK(false) << name_ << " : Program link error :" << info_log;
     }
   }
 }

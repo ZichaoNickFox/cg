@@ -48,7 +48,7 @@ cc_library(
     "scene.h"
   ],
   deps = [
-    "//playground:context"
+    "//playground:context",
   ]
 )
 cc_library(
@@ -70,6 +70,7 @@ cc_library(
   deps = [
     "//engine:engine",
     "//playground:util",
+    "//playground/primitive:primitives",
     "//playground/proto:cc_config_proto",
     "@SOIL2//:SOIL2",
   ],
@@ -87,6 +88,7 @@ cc_library(
   deps = [
     "//engine:engine",
     "//playground:context",
+    "//playground/object:object",
     "//playground:util",
   ]
 )

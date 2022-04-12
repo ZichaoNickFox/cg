@@ -39,12 +39,6 @@ void DeferredShadingScene::OnEnter(Context *context)
   camera_->mutable_transform()->SetRotation(glm::quat(glm::vec3(2.7, 0.75, -3.1)));
   context->PushCamera(camera_);
 
-  std::vector<glm::vec3> positions{glm::vec3(0, 0, 0), glm::vec3(2, 0, 0), glm::vec3(0, 0, 0), glm::vec3(0, 2, 0),
-                                   glm::vec3(0, 0, 0), glm::vec3(0, 0, 2)};
-  std::vector<glm::vec3> colors{glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0),
-                                glm::vec3(0, 0, 1), glm::vec3(0, 0, 1)};
-  coord_.SetData(context, {positions, colors, GL_LINES, 5});
-
   plane_.mutable_material()->PushShader(context->GetShader("phong_shadow"));
   plane_.mutable_material()->SetVec3("material.ambient", context->material_property_ambient(material_name_));
   plane_.mutable_material()->SetVec3("material.diffuse", context->material_property_diffuse(material_name_));
@@ -63,6 +57,7 @@ void DeferredShadingScene::OnEnter(Context *context)
   
   glEnable(GL_DEPTH_TEST);
 
+/*
   deferred_shading_quad_.mutable_material()->PushShader(context->GetShader("deferred_shading_lighting"));
   deferred_shading_quad_.mutable_material()->SetInt("light_count", point_lights_num_);
   deferred_shading_quad_.mutable_material()->SetVec3("clear_color", context->clear_color());
@@ -86,6 +81,7 @@ void DeferredShadingScene::OnEnter(Context *context)
                                                      context->material_property_specular(material_name_));
   deferred_shading_quad_.mutable_material()->SetFloat("material.shininess",
                                                       context->material_property_shininess(material_name_));
+*/
 }
 
 void DeferredShadingScene::OnUpdate(Context *context)
@@ -140,6 +136,7 @@ void DeferredShadingScene::OnUpdate(Context *context)
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
     cube->OnUpdate(context);
+    /*
     cube->mutable_material()->SetInt("light_count", point_lights_num_);
     for (int i = 0; i < point_lights_num_; ++i) {
       cube->mutable_material()->SetVec3(util::Format("lights[{}].color", i).c_str(),
@@ -153,6 +150,7 @@ void DeferredShadingScene::OnUpdate(Context *context)
       cube->mutable_material()->SetFloat(util::Format("lights[{}].quadratic", i).c_str(),
                                          point_lights_[i].attenuation_quadratic());
     }
+    */
   }
 
   coord_.OnUpdate(context);

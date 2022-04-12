@@ -45,12 +45,6 @@ void MrtScene::OnEnter(Context *context)
   camera_->mutable_transform()->SetRotation(glm::quat(glm::vec3(2.7, 0.75, -3.1)));
   context->PushCamera(camera_);
 
-  std::vector<glm::vec3> positions{glm::vec3(0, 0, 0), glm::vec3(2, 0, 0), glm::vec3(0, 0, 0), glm::vec3(0, 2, 0),
-                                   glm::vec3(0, 0, 0), glm::vec3(0, 0, 2)};
-  std::vector<glm::vec3> colors{glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0),
-                                glm::vec3(0, 0, 1), glm::vec3(0, 0, 1)};
-  coord_.SetData(context, {positions, colors, GL_LINES, 5});
-
   plane_.mutable_material()->PushShader(context->GetShader("forward_shading"));
   plane_.mutable_material()->SetVec3("material.ambient", material_property_.ambient);
   plane_.mutable_material()->SetVec3("material.diffuse", material_property_.diffuse);
@@ -82,19 +76,19 @@ void MrtScene::OnUpdate(Context *context)
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
     cube->OnUpdate(context);
-    cube->mutable_material()->SetInt("light_count", point_lights_num_);
-    for (int i = 0; i < point_lights_num_; ++i) {
-      cube->mutable_material()->SetVec3(util::Format("lights[{}].color", i).c_str(),
-                                        point_lights_[i].color());
-      cube->mutable_material()->SetVec3(util::Format("lights[{}].pos", i).c_str(),
-                                        point_lights_[i].transform().translation());
-      cube->mutable_material()->SetFloat(util::Format("lights[{}].constant", i).c_str(),
-                                         point_lights_[i].attenuation_constant());
-      cube->mutable_material()->SetFloat(util::Format("lights[{}].linear", i).c_str(),
-                                         point_lights_[i].attenuation_linear());
-      cube->mutable_material()->SetFloat(util::Format("lights[{}].quadratic", i).c_str(),
-                                         point_lights_[i].attenuation_quadratic());
-    }
+    // cube->mutable_material()->SetInt("light_count", point_lights_num_);
+    // for (int i = 0; i < point_lights_num_; ++i) {
+    //   cube->mutable_material()->SetVec3(util::Format("lights[{}].color", i).c_str(),
+    //                                     point_lights_[i].color());
+    //   cube->mutable_material()->SetVec3(util::Format("lights[{}].pos", i).c_str(),
+    //                                     point_lights_[i].transform().translation());
+    //   cube->mutable_material()->SetFloat(util::Format("lights[{}].constant", i).c_str(),
+    //                                      point_lights_[i].attenuation_constant());
+    //   cube->mutable_material()->SetFloat(util::Format("lights[{}].linear", i).c_str(),
+    //                                      point_lights_[i].attenuation_linear());
+    //   cube->mutable_material()->SetFloat(util::Format("lights[{}].quadratic", i).c_str(),
+    //                                      point_lights_[i].attenuation_quadratic());
+    // }
   }
 
   coord_.OnUpdate(context);

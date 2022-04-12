@@ -16,13 +16,18 @@ class Lines : public Object {
     GLuint primitive;    // line_style : GL_LINES, GL_LINE_STRIP, GL_LINE_LOOP
     int line_width = 1;
   };
-  void SetData(Context *context, const Data& data);
-  void OnUpdate(Context *context);
-  void OnRender(Context *context);
-  void OnDestory(Context *context);
+  void SetData(const Data& data);
+
+  void OnUpdate(Context *context) override;
+  void OnRender(Context *context) override;
+  void OnDestory(Context *context) override;
+  
+  int material_num() const override { return 1; }
+  engine::Material* mutable_material(int index = 0) override { return &material_; }
 
  private: 
-  void OnInit(Context *context, const Data& data);
+  void OnInit(const Data& data);
+  void Clear();
 
   engine::Material material_;
 

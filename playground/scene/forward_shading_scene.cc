@@ -20,10 +20,6 @@ void ForwardShadingScene::OnEnter(Context *context)
     point_lights_[i].mutable_transform()->SetScale(glm::vec3(0.2, 0.2, 0.2));
     glm::vec3 color(util::RandFromTo(0, 1), util::RandFromTo(0, 1), util::RandFromTo(0, 1));
     point_lights_[i].SetColor(color);
-
-    shader_light_info_ .light_poses.push_back(point_light_pos);
-    shader_light_info_ .light_colors.push_back(color);
-    shader_light_info_ .light_attenuation_metres.push_back(7);
   }
 
   cube_transforms_.push_back(engine::Transform(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
@@ -39,12 +35,6 @@ void ForwardShadingScene::OnEnter(Context *context)
   camera_->mutable_transform()->SetTranslation(glm::vec3(5.3, 4.3, -3.5));
   camera_->mutable_transform()->SetRotation(glm::quat(glm::vec3(2.7, 0.75, -3.1)));
   context->PushCamera(camera_);
-
-  std::vector<glm::vec3> positions{glm::vec3(0, 0, 0), glm::vec3(2, 0, 0), glm::vec3(0, 0, 0), glm::vec3(0, 2, 0),
-                                   glm::vec3(0, 0, 0), glm::vec3(0, 0, 2)};
-  std::vector<glm::vec3> colors{glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0),
-                                glm::vec3(0, 0, 1), glm::vec3(0, 0, 1)};
-  coord_.SetData(context, {positions, colors, GL_LINES, 5});
 
   plane_.mutable_transform()->SetTranslation(glm::vec3(0, -1, 0));
   plane_.mutable_transform()->SetScale(glm::vec3(10, 0, 10));
@@ -97,15 +87,7 @@ void ForwardShadingScene::OnUpdate(Context *context)
     point_lights_[i].OnUpdate(context);
   }
 
-  PhongShaderParam phong;
-  phong.material_propery_name = "gold";
-  phong.light_info = shader_light_info_;
-  for (int i = 0; i < cubes_.size(); ++i) {
-    Cube* cube = &cubes_[i];
-    shader_param::UpdateShader(context, phong, cube->mutable_material());
-  }
   coord_.OnUpdate(context);
-  shader_param::UpdateShader(context, phong, plane_.mutable_material());
   plane_.OnUpdate(context);
   directional_light_.OnUpdate(context);
 }
@@ -135,14 +117,18 @@ void ForwardShadingScene::RenderShadowMap(Context* context) {
 
 void ForwardShadingScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
                                        const engine::Texture& shadow_map_texture) {
+  PhongShader::Param phong;
+  phong.light_info = shader_light_info_;
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
+    PhongShader(phong, context, cube);
     cube->OnRender(context);
   }
   for (int i = 0; i < point_lights_num_; ++i) {
     point_lights_[i].OnRender(context);
   }
   coord_.OnRender(context);
+  PhongShader(phong, context, &plane_);
   plane_.OnRender(context);
   directional_light_.OnRender(context);
 }

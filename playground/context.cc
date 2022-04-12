@@ -50,7 +50,7 @@ std::shared_ptr<engine::Mesh> Context::GetMesh(const std::string& name) {
   return mesh_repo_.GetOrLoadMesh(name);
 }
 
-std::vector<ModelRepo::ModelPart> Context::GetModel(const std::string& name) {
+std::vector<ModelRepo::ModelPartData> Context::GetModel(const std::string& name) {
   return model_repo_.GetOrLoadModel(name);
 }
 

@@ -9,6 +9,6 @@ class OnUpdateCommon {
 
  private:
   void GuiFps(Context* context);
-  void GuiCamera(Context* context);
-  void ControlCameraByIo(Context* context);
+  void InspectCamera(Context* context);
+  void MoveCamera(Context* context);
 };

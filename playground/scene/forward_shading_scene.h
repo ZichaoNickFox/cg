@@ -5,6 +5,7 @@
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
+#include "playground/object/coord.h"
 #include "playground/object/cube.h"
 #include "playground/object/directional_light.h"
 #include "playground/object/lines.h"
@@ -34,7 +35,7 @@ class ForwardShadingScene : public Scene {
   std::vector<PointLight> point_lights_;
   ShaderLightInfo shader_light_info_ ;
 
-  Lines coord_;
+  Coord coord_;
   Plane plane_;
   DirectionalLight directional_light_;
 

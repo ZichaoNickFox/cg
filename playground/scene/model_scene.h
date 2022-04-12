@@ -7,6 +7,7 @@
 #include "playground/context.h"
 #include "playground/object/cube.h"
 #include "playground/object/model.h"
+#include "playground/object/point_light.h"
 #include "playground/scene.h"
 
 class ModelScene : public Scene {
@@ -17,6 +18,19 @@ class ModelScene : public Scene {
   void OnExit(Context* context);
 
  private:
+  float shininess_ = 1;
+  bool texture_ambient_ = true;
+  bool texture_normal_ = true;
+  bool texture_specular_ = true;
+  bool texture_diffuse_ = true;
+  bool texture_height_ = true;
+  bool show_normal_ = false;
+  bool show_TBN_ = false;
+  bool show_triangle_ = false;
+
+  float rotate_speed_ = 0.01;
+
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
   Model nanosuit_;
+  std::vector<PointLight> point_lights_;
 };

@@ -16,7 +16,8 @@ class Material {
  public:
   void PushShader(Shader shader);
   void PopShader();
-  bool HasShader() const { return shader_datas_.size() > 0; }
+  // bool HasShader() const { shader_datas_.size() > 0; }
+  bool HasShader() const { return bool(shader_data_); }
   const Shader& shader() const;
 
   void SetFloat(const std::string& location, float value);
@@ -49,7 +50,8 @@ class Material {
 
   const ShaderData& shader_data() const;
   ShaderData* mutable_shader_data();
-  std::stack<ShaderData> shader_datas_;
+  // std::stack<ShaderData> shader_datas_;
+  std::unique_ptr<ShaderData> shader_data_;
 };
 
 }

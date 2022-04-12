@@ -41,12 +41,6 @@ void SkyboxScene::OnEnter(Context *context)
   camera_->SetFarClip(200);
   context->PushCamera(camera_);
 
-  std::vector<glm::vec3> positions{glm::vec3(0, 0, 0), glm::vec3(2, 0, 0), glm::vec3(0, 0, 0), glm::vec3(0, 2, 0),
-                                   glm::vec3(0, 0, 0), glm::vec3(0, 0, 2)};
-  std::vector<glm::vec3> colors{glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0),
-                                glm::vec3(0, 0, 1), glm::vec3(0, 0, 1)};
-  coord_.SetData(context, {positions, colors, GL_LINES, 5});
-
   skybox_.mutable_material()->PushShader(context->GetShader("skybox"));
   skybox_.mutable_material()->SetTexture("texture0", context->GetTexture("skybox"));
   skybox_.mutable_transform()->SetScale(glm::vec3(100, 100, 100));

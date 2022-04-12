@@ -13,6 +13,9 @@ class Billboard : public Object {
   void OnRender(Context *context) override;
   void OnDestory(Context *context) override;
 
+  int material_num() const override { return 0; }
+  engine::Material* mutable_material(int index = 0) override { return nullptr; }
+
  private:
   Plane plane_;
 };

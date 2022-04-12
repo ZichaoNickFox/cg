@@ -6,6 +6,8 @@ cc_library(
   srcs = [
     "billboard.h",
     "billboard.cc",
+    "coord.h",
+    "coord.cc",
     "cube.h",
     "cube.cc",
     "directional_light.h",

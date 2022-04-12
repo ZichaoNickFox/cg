@@ -1,33 +1,74 @@
 #pragma once
 
-#include "engine/material.h"
-#include "playground/context.h"
+#include <optional>
 
-struct ShaderLightInfo {
+#include "engine/material.h"
+#include "engine/texture.h"
+#include "playground/context.h"
+#include "playground/object/object.h"
+#include "playground/object/point_light.h"
+
+class ShaderLightInfo {
+ public:
+  ShaderLightInfo() {}
+  ShaderLightInfo(const PointLight& point_light);
+  ShaderLightInfo(const std::vector<PointLight>& point_lights);
+
+  void UpdateMaterial(Context* context, engine::Material* material) const;
+
+ private:
+  void Insert(const PointLight& point_light);
+
   std::vector<glm::vec3> light_poses;
   std::vector<glm::vec3> light_colors;
-  std::vector<int> light_attenuation_metres; // 7 / 13 / 20 / 32 / 50 / 65 / 100 / 160 / 200 / 325 / 600 / 3250
+  std::vector<int> light_attenuation_metres;
+};
+  
+class PhongShader {
+ public:
+  struct Param {
+    std::string shader_name = "phong";
+    ShaderLightInfo light_info;
+    bool use_blinn_phong;
+
+    glm::vec3 ambient = glm::vec3(0, 0, 0);
+    glm::vec3 diffuse = glm::vec3(0, 0, 0);
+    glm::vec3 specular = glm::vec3(0, 0, 0);
+    float shininess = 0;
+    std::optional<engine::Texture> texture_ambient;
+    std::optional<engine::Texture> texture_normal;
+    std::optional<engine::Texture> texture_specular;
+    std::optional<engine::Texture> texture_diffuse;
+  };
+  PhongShader(const Param& param, Context* context, Object* object);
 };
 
-struct PhongShaderParam {
-  std::string shader_name = "phong";
-  std::string material_propery_name; // gold / silver / jade / ruby
-  ShaderLightInfo light_info;
-  bool use_blinn_phong;
+class PbrShader {
+ public:
+  struct Param {
+    std::string shader_name = "pbr";
+    glm::vec3 albedo;
+    float metallic;
+    float roughness;
+    float ao;
+    ShaderLightInfo light_info;
+
+    std::optional<engine::Texture> texture_normal;
+    std::optional<engine::Texture> texture_albedo;
+    std::optional<engine::Texture> texture_metallic;
+    std::optional<engine::Texture> texture_roughness;
+
+  };
+  PbrShader(const Param& param, Context* context, Object* object);
 };
 
-struct PbrShaderParam {
-  std::string shader_name = "pbr";
-  glm::vec3 albedo;
-  float metallic;
-  float roughness;
-  float ao;
-  ShaderLightInfo light_info;
-};
-
-namespace shader_param {
-
-void UpdateShader(Context* context, const PhongShaderParam& phong, engine::Material* material);
-void UpdateShader(Context* context, const PbrShaderParam& pbr, engine::Material* material);
-
+class NormalShader {
+ public:
+  struct Param {
+    float length = 0.4;
+    bool show_normal = true;
+    bool show_TBN = true;
+    bool show_triangle = true;
+  };
+  NormalShader(const Param& param, Context* context, Object* object);
 };

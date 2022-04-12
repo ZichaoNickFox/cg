@@ -5,87 +5,109 @@
 #include "playground/model_repo.h"
 #include "playground/util.h"
 
+void ModelPart::OnUpdate(Context *context) {
+
+}
+
+void ModelPart::OnRender(Context *context) {
+  if (!hidden_) {
+    material_.PrepareShader();
+    model_part_data_.mesh->Submit();
+  }
+}
+
+void ModelPart::OnDestory(Context *context) {
+
+}
+
+std::optional<engine::Texture> ModelPart::texture_diffuse(int i) const {
+  if (model_part_data_.diffuse_textures.size() >= i + 1) {
+    return model_part_data_.diffuse_textures[i];
+  }
+  return {};
+}
+
+std::optional<engine::Texture> ModelPart::texture_specular(int i) const {
+  if (model_part_data_.specular_textures.size() >= i + 1) {
+    return model_part_data_.specular_textures[i];
+  }
+  return {};
+}
+
+std::optional<engine::Texture> ModelPart::texture_normal(int i) const {
+  if (model_part_data_.normal_textures.size() >= i + 1) {
+    return model_part_data_.normal_textures[i];
+  }
+  return {};
+}
+
+std::optional<engine::Texture> ModelPart::texture_ambient(int i) const {
+  if (model_part_data_.ambient_textures.size() >= i + 1) {
+    return model_part_data_.ambient_textures[i];
+  }
+  return {};
+}
+
+std::optional<engine::Texture> ModelPart::texture_height(int i) const {
+  if (model_part_data_.height_textures.size() >= i + 1) {
+    return model_part_data_.height_textures[i];
+  }
+  return {};
+}
+
 void Model::Init(Context* context, const std::string& object_name, const std::string& model_name) {
-  model_parts_ = context->GetModel(model_name);
-  model_materials_.resize(model_parts_.size());
-}
-
-void Model::OnUpdate(Context *context) {
-
-}
-
-void Model::OnRender(Context *context) {
-  for (int i = 0; i < model_parts_.size(); ++i) {
-    const ModelRepo::ModelPart& model_part = model_parts_[i];
-    for (int j = 0; j < model_part.diffuse_textures.size(); ++j) {
-      const engine::Texture& texture = model_part.diffuse_textures[j];
-      model_materials_[i].SetTexture(util::Format("diffuse_texture{}", j), texture);
-    }
-    for (int j = 0; j < model_part.specular_textures.size(); ++j) {
-      const engine::Texture& texture = model_part.specular_textures[j];
-      model_materials_[i].SetTexture(util::Format("specular_texture{}", j), texture);
-    }
-    for (int j = 0; j < model_part.normal_textures.size(); ++j) {
-      const engine::Texture& texture = model_part.normal_textures[j];
-      model_materials_[i].SetTexture(util::Format("noraml_texture{}", j), texture);
-    }
-    for (int j = 0; j < model_part.ambient_textures.size(); ++j) {
-      const engine::Texture& texture = model_part.ambient_textures[j];
-      model_materials_[i].SetTexture(util::Format("ambient_texture{}", j), texture);
-    }
+  std::vector<ModelRepo::ModelPartData> model_parts_data = context->GetModel(model_name);
+  for (const ModelRepo::ModelPartData& model_part_data : model_parts_data) {
+    model_parts_.push_back(ModelPart(model_part_data));
   }
-
-  for (int i = 0; i < model_parts_.size(); ++i) {
-    const engine::Camera& camera = context->camera();
-    glm::mat4 project = camera.GetProjectMatrix();
-    glm::mat4 view = camera.GetViewMatrix();
-    glm::mat4 model = transform_.GetModelMatrix();
-    model_materials_[i].SetMat4("project", project);
-    model_materials_[i].SetMat4("view", view);
-    model_materials_[i].SetMat4("model", model);
-    model_materials_[i].PrepareShader();
-
-    model_parts_[i].mesh->Submit();
-  }
-}
-
-void Model::OnDestory(Context *context) {
-
 }
 
 void Model::ModelInspector() {
   if (ImGui::TreeNode("Mesh Parts")) {
     ImGui::PushID("Mesh Parts");
-    for (int i = 0; i < model_parts_.size(); ++i) {
-      const ModelRepo::ModelPart& model_part = model_parts_[i];
-      if (ImGui::TreeNode(util::Format("{}", model_part.mesh->name()).c_str())) {
-        ImGui::PushID(model_part.mesh->name().c_str());
-        ImGui::Text("Position Num : %lu", model_part.mesh->positions().size());
-        ImGui::Text("Normal Num : %lu", model_part.mesh->normals().size());
-        ImGui::Text("Texcoord Num : %lu", model_part.mesh->texcoords().size());
-        ImGui::Text("Tangent Num : %lu", model_part.mesh->tangents().size());
-        ImGui::Text("Bitangent Num : %lu", model_part.mesh->bitangents().size());
-        if (ImGui::TreeNode(util::Format("Diffuse Textures Num : {}", model_part.diffuse_textures.size()).c_str())) {
-          for (int i = 0; i < model_part.diffuse_textures.size(); ++i) {
-            ImGui::Text("%s", model_part.diffuse_textures[i].name().c_str());
+    for (int i = 0; i < model_part_num(); ++i) {
+      ModelPart* model_part = &model_parts_[i];
+      const ModelRepo::ModelPartData& model_part_data = model_part->model_part_data();
+      if (ImGui::TreeNode(util::Format("{}", model_part_data.mesh->name()).c_str())) {
+        ImGui::PushID(model_part_data.mesh->name().c_str());
+        ImGui::Checkbox(util::Format("hidden{}", i).c_str(), model_part->mutable_hidden());
+        ImGui::Text("Position Num : %lu", model_part_data.mesh->positions().size());
+        ImGui::Text("Normal Num : %lu", model_part_data.mesh->normals().size());
+        ImGui::Text("Texcoord Num : %lu", model_part_data.mesh->texcoords().size());
+        ImGui::Text("Tangent Num : %lu", model_part_data.mesh->tangents().size());
+        ImGui::Text("Bitangent Num : %lu", model_part_data.mesh->bitangents().size());
+        if (ImGui::TreeNode(util::Format("Diffuse Textures Num : {}",
+                                         model_part_data.diffuse_textures.size()).c_str())) {
+          for (int i = 0; i < model_part_data.diffuse_textures.size(); ++i) {
+            ImGui::Text("%s", model_part_data.diffuse_textures[i].info().c_str());
           }
           ImGui::TreePop();
         }
-        if (ImGui::TreeNode(util::Format("Specular Textures Num : {}", model_part.specular_textures.size()).c_str())) {
-          for (int i = 0; i < model_part.specular_textures.size(); ++i) {
-            ImGui::Text("%s", model_part.specular_textures[i].name().c_str());
+        if (ImGui::TreeNode(util::Format("Specular Textures Num : {}",
+                                         model_part_data.specular_textures.size()).c_str())) {
+          for (int i = 0; i < model_part_data.specular_textures.size(); ++i) {
+            ImGui::Text("%s", model_part_data.specular_textures[i].info().c_str());
           }
           ImGui::TreePop();
         }
-        if (ImGui::TreeNode(util::Format("Normal Textures Num : {}", model_part.normal_textures.size()).c_str())) {
-          for (int i = 0; i < model_part.normal_textures.size(); ++i) {
-            ImGui::Text("%s", model_part.normal_textures[i].name().c_str());
+        if (ImGui::TreeNode(util::Format("Normal Textures Num : {}",
+                                         model_part_data.normal_textures.size()).c_str())) {
+          for (int i = 0; i < model_part_data.normal_textures.size(); ++i) {
+            ImGui::Text("%s", model_part_data.normal_textures[i].info().c_str());
           }
           ImGui::TreePop();
         }
-        if (ImGui::TreeNode(util::Format("Ambient Textures Num : {}", model_part.ambient_textures.size()).c_str())) {
-          for (int i = 0; i < model_part.ambient_textures.size(); ++i) {
-            ImGui::Text("%s", model_part.ambient_textures[i].name().c_str());
+        if (ImGui::TreeNode(util::Format("Ambient Textures Num : {}",
+                                         model_part_data.ambient_textures.size()).c_str())) {
+          for (int i = 0; i < model_part_data.ambient_textures.size(); ++i) {
+            ImGui::Text("%s", model_part_data.ambient_textures[i].info().c_str());
+          }
+          ImGui::TreePop();
+        }
+        if (ImGui::TreeNode(util::Format("Height Textures Num : {}",
+                                         model_part_data.height_textures.size()).c_str())) {
+          for (int i = 0; i < model_part_data.height_textures.size(); ++i) {
+            ImGui::Text("%s", model_part_data.height_textures[i].info().c_str());
           }
           ImGui::TreePop();
         }

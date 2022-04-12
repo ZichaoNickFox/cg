@@ -1,7 +1,7 @@
 
 # build
 bazel build \
-  --cxxopt="--std=c++14" \
+  --cxxopt="--std=c++17" \
   --cxxopt="-Wreturn-type" \
   --cxxopt="-Wnonportable-include-path" \
   --cxxopt="-Wunused-private-field" \

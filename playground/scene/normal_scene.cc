@@ -1,14 +1,15 @@
-#include "playground/scene/phong_scene.h"
+#include "playground/scene/normal_scene.h"
 
 #include <glm/glm.hpp>
 #include "glog/logging.h"
 #include "imgui.h"
+#include <math.h>
 #include <memory>
 
 #include "engine/transform.h"
 #include "playground/scene/common.h"
 
-void PhongScene::OnEnter(Context *context)
+void NormalScene::OnEnter(Context *context)
 {
   const glm::vec3 kLightColor = glm::vec3(1.0, 1.0, 1.0);
   const glm::vec3 kLightPos = glm::vec3(2, 2, 0);
@@ -17,9 +18,10 @@ void PhongScene::OnEnter(Context *context)
   point_light_.mutable_transform()->SetScale(kLightScale);
   point_light_.SetColor(kLightColor);
 
-  const glm::vec3 kCubePosition = glm::vec3(0, 0.5, 0);
-  cube_.mutable_transform()->SetTranslation(kCubePosition);
   plane_.mutable_transform()->SetScale(glm::vec3(3, 3, 3));
+  // plane_.mutable_transform()->SetRotation(glm::angleAxis(float(M_PI) / 2, glm::vec3(1.0, 0.0, -1.0)));
+
+  sphere_.mutable_transform()->SetTranslation(glm::vec3(3, 1, 1));
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(-4.8, 6.1, 5.8));
   camera_->mutable_transform()->SetRotation(glm::quat(0.88, -0.30, -0.32, -0.11));
@@ -28,9 +30,9 @@ void PhongScene::OnEnter(Context *context)
   glEnable(GL_DEPTH_TEST);
 }
 
-void PhongScene::OnUpdate(Context *context)
+void NormalScene::OnUpdate(Context *context)
 {
-  OnUpdateCommon _(context, "PhongScene");
+  OnUpdateCommon _(context, "NormalScene");
 
   ImGui::ColorEdit3("light_color", (float*)&light_color_);
   if (ImGui::Button("gold")) {
@@ -53,28 +55,36 @@ void PhongScene::OnUpdate(Context *context)
   point_light_.SetColor(light_color_);
   point_light_.OnUpdate(context);
 
-  cube_.OnUpdate(context);
+  coord_.OnUpdate(context);
 }
 
-void PhongScene::OnRender(Context *context)
+void NormalScene::OnRender(Context *context)
 {
-  PhongShader::Param phong;
-  phong.light_info = ShaderLightInfo({point_light_});
-  phong.use_blinn_phong = use_blinn_phong_;
+  coord_.OnRender(context);
+  point_light_.OnRender(context);
 
-  PhongShader(phong, context, &cube_);
-  cube_.OnRender(context);
+  PhongShader::Param phong;
+  phong.light_info = ShaderLightInfo(point_light_);
+  phong.use_blinn_phong = use_blinn_phong_;
+  phong.texture_normal = context->GetTexture("brickwall_normal");
+  phong.texture_diffuse = context->GetTexture("brickwall");
 
   PhongShader(phong, context, &plane_);
   plane_.OnRender(context);
+  NormalShader({0.1}, context, &plane_);
+  plane_.OnRender(context);
 
-  point_light_.OnRender(context);
+  PhongShader(phong, context, &sphere_);
+  sphere_.OnRender(context);
+  NormalShader({0.1}, context, &sphere_);
+  sphere_.OnRender(context);
 }
 
-void PhongScene::OnExit(Context *context)
+void NormalScene::OnExit(Context *context)
 {
-  cube_.OnDestory(context);
   point_light_.OnDestory(context);
   plane_.OnDestory(context);
+  sphere_.OnDestory(context);
+  coord_.OnDestory(context);
   context->PopCamera();
 }

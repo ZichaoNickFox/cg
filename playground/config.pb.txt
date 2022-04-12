@@ -107,6 +107,13 @@ shader_config {
   fs_path : "playground/resource/shader/test.fs.glsl";
 }
 
+shader_config {
+  name : "TBN";
+  vs_path : "playground/resource/shader/TBN.vs.glsl";
+  gs_path : "playground/resource/shader/TBN.gs.glsl";
+  fs_path : "playground/resource/shader/TBN.fs.glsl";
+}
+
 texture_config {
   name : "opengl0";
   paths : "playground/resource/texture/opengl0.jpeg";
@@ -140,6 +147,18 @@ texture_config {
 texture_config {
   name : "cube_specular";
   paths : "playground/resource/texture/cube_specular.png";
+  texture_type : Texture2D;
+}
+
+texture_config {
+  name : "brickwall";
+  paths : "playground/resource/texture/brickwall.jpg";
+  texture_type : Texture2D;
+}
+
+texture_config {
+  name : "brickwall_normal";
+  paths : "playground/resource/texture/brickwall_normal.jpg";
   texture_type : Texture2D;
 }
 

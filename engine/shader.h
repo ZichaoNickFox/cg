@@ -28,6 +28,8 @@ public:
   void SetVec3(const std::string &location_name, const glm::vec3& value) const;
   GLuint id() const { return id_; }
 
+  const std::string& name() { return name_; }
+
 private:
   void CheckCompileErrors(unsigned int shader, const std::string& type);
   GLint GetUniformLocation(const std::string& name) const;

@@ -14,14 +14,15 @@
 class ModelRepo {
  public:
   void Init(const Config& config);
-  struct ModelPart {
+  struct ModelPartData {
+    std::vector<engine::Texture> ambient_textures;
     std::vector<engine::Texture> diffuse_textures;
     std::vector<engine::Texture> specular_textures;
     std::vector<engine::Texture> normal_textures;
-    std::vector<engine::Texture> ambient_textures;
+    std::vector<engine::Texture> height_textures;
     std::shared_ptr<engine::Mesh> mesh = std::make_shared<engine::Mesh>();
   };
-  std::vector<ModelPart> GetOrLoadModel(const std::string& name);
+  std::vector<ModelPartData> GetOrLoadModel(const std::string& name);
 
  private:
   struct State {
@@ -29,9 +30,9 @@ class ModelRepo {
     std::string name;
     std::string obj_path;
     std::string texture_dir;
-    std::vector<ModelPart> model_parts;
+    std::vector<ModelPartData> model_parts;
 
-    ModelPart* handling_model_part = nullptr;
+    ModelPartData* handling_model_part = nullptr;
   };
   std::vector<engine::Texture> LoadTextures(const aiMaterial& mat, aiTextureType type, State* state);
   void ProcessNode(const aiScene& scene, const aiNode& node, State* state);

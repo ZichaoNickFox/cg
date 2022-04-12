@@ -5,26 +5,37 @@
 namespace engine {
 
 void Material::PushShader(Shader shader) {
-  shader_datas_.push(shader);
+  // // TODO : Maybe need not push / pop
+  // if (shader_datas_.size() > 0 && shader.name() == shader_datas_.top().shader_.name()) {
+  //   return;
+  // }
+  // if (shader_datas_.size() > 100) {
+  //   CHECK(false) << "material has too much shader. Logic error";
+  // }
+  // shader_datas_.push(shader);
+  shader_data_ = std::make_unique<ShaderData>(shader);
 }
 
 void Material::PopShader() {
-  CGCHECK(!shader_datas_.empty());
-  shader_datas_.pop();
+  // CGCHECK(!shader_datas_.empty());
+  // shader_datas_.pop();
 }
 
 Material::ShaderData* Material::mutable_shader_data() {
-  CGCHECK(!shader_datas_.empty());
-  return &shader_datas_.top();
+  // CGCHECK(!shader_datas_.empty());
+  // return &shader_datas_.top();
+  return shader_data_.get();
 }
 
 const Shader& Material::shader() const {
-  CGCHECK(!shader_datas_.empty());
-  return shader_data().shader_;
+  // CGCHECK(!shader_datas_.empty());
+  // return shader_data().shader_;
+  return shader_data_->shader_;
 }
 
 const Material::ShaderData& Material::shader_data() const {
-  return shader_datas_.top();
+  // return shader_datas_.top();
+  return *shader_data_.get();
 }
 
 void Material::SetFloat(const std::string& location, float value) {

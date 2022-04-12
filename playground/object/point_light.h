@@ -15,22 +15,19 @@ class PointLight : public Object {
   void OnRender(Context *context) override;
   void OnDestory(Context *context) override;
 
-  void SetMaterial(const engine::Material& material) { material_ = material; }
-  engine::Material* mutable_material() { return &material_; }
+  int material_num() const override { return 1; }
+  engine::Material* mutable_material(int index = 0) override { return &material_; }
 
   void SetColor(const glm::vec3& color) { color_ = color; }
-  glm::vec3 color() { return color_; }
+  glm::vec3 color() const { return color_; }
 
-  float attenuation_constant() { return attenuation_constant_; }
-  float attenuation_linear() { return attenuation_linear_; }
-  float attenuation_quadratic() { return attenuation_quadratic_; }
+  void SetAttenuationMetre(int metre) { attenuation_metre_ = metre; }
+  int attenuation_metre() const { return attenuation_metre_; }
 
  private: 
-  glm::vec3 color_;
+  glm::vec3 color_ = glm::vec3(1, 1, 1);
 
-  float attenuation_constant_ = 1.0;
-  float attenuation_linear_ = 0.7;
-  float attenuation_quadratic_ = 1.8;
+  int attenuation_metre_ = 100; // 7 / 13 / 20 / 32 / 50 / 65 / 100 / 160 / 200 / 325 / 600 / 3250
 
   engine::Material material_;
 };

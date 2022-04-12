@@ -4,6 +4,8 @@
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
+#include "playground/object/coord.h"
+#include "playground/object/cube.h"
 #include "playground/object/cube.h"
 #include "playground/object/lines.h"
 #include "playground/object/skybox.h"
@@ -24,7 +26,7 @@ class SkyboxScene : public Scene {
   std::vector<glm::vec3> cube_positions_;
 
   Cube light_;
-  Lines coord_;
+  Coord coord_;
   Skybox skybox_;
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
 };

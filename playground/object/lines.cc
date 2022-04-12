@@ -6,12 +6,12 @@
 
 #include "playground/util.h"
 
-void Lines::SetData(Context *context, const Data& data) {
-  OnDestory(context);
-  OnInit(context, data);
+void Lines::SetData(const Data& data) {
+  Clear();
+  OnInit(data);
 }
 
-void Lines::OnInit(Context *context, const Data& data) {
+void Lines::OnInit(const Data& data) {
   primitive_ = data.primitive;
   vertex_size_ = data.points.size();
   line_width_ = data.line_width;
@@ -38,8 +38,6 @@ void Lines::OnInit(Context *context, const Data& data) {
 
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
-
-  material_.PushShader(context->GetShader("lines"));
 }
 
 void Lines::OnUpdate(Context *context) {
@@ -48,6 +46,9 @@ void Lines::OnUpdate(Context *context) {
 
 void Lines::OnRender(Context *context)
 {
+  if (!material_.HasShader()) {
+    material_.PushShader(context->GetShader("lines"));
+  }
   glBindVertexArray(vao_);
 
   const engine::Camera& camera = context->camera();
@@ -63,6 +64,10 @@ void Lines::OnRender(Context *context)
 }
 
 void Lines::OnDestory(Context *context) {
+  Clear();
+}
+
+void Lines::Clear() {
   glDeleteVertexArrays(1, &vao_);
   glDeleteBuffers(1, &vbo_);
 }

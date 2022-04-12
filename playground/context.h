@@ -58,7 +58,7 @@ class Context {
   engine::Shader GetShader(const std::string& name);
   engine::Texture GetTexture(const std::string& name);
   std::shared_ptr<engine::Mesh> GetMesh(const std::string& name);
-  std::vector<ModelRepo::ModelPart> GetModel(const std::string& name);
+  std::vector<ModelRepo::ModelPartData> GetModel(const std::string& name);
 
   const Pass pass() const { return pass_; }
   void SetPass(Pass pass) { pass_ = pass; }
@@ -71,6 +71,11 @@ class Context {
   glm::vec4 material_property_diffuse(const std::string& name);
   glm::vec4 material_property_specular(const std::string& name);
   float material_property_shininess(const std::string& name);
+
+  float* mutable_camera_move_speed() { return &camera_move_speed_; }
+  float* mutable_camera_rotate_speed() { return &camera_rotate_speed_; }
+  float camera_move_speed() { return camera_move_speed_; }
+  float camera_rotate_speed() { return camera_rotate_speed_; }
 
  private:
   int screen_width_;
@@ -96,4 +101,7 @@ class Context {
   glm::vec4 clear_color_;
 
   Pass pass_;
+
+  float camera_move_speed_ = 5;
+  float camera_rotate_speed_ = 5;
 };
