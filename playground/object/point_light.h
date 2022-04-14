@@ -20,9 +20,12 @@ class PointLight : public Object {
 
   void SetColor(const glm::vec3& color) { color_ = color; }
   glm::vec3 color() const { return color_; }
+  float* mutable_color() { return reinterpret_cast<float*>(&color_); }
 
   void SetAttenuationMetre(int metre) { attenuation_metre_ = metre; }
   int attenuation_metre() const { return attenuation_metre_; }
+
+  std::shared_ptr<const engine::Mesh> mesh(Context* context) const override { return context->GetMesh("cube"); }
 
  private: 
   glm::vec3 color_ = glm::vec3(1, 1, 1);

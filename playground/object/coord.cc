@@ -13,6 +13,7 @@ void Coord::OnUpdate(Context *context) {
 }
 
 void Coord::OnRender(Context *context) {
+  // CoordShader(context, &lines);
   lines_.OnRender(context);
 }
 

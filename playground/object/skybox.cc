@@ -29,8 +29,7 @@ void Skybox::OnRender(Context *context) {
   material_.SetTexture("texture0", cube_map_);
   material_.PrepareShader();
 
-  mesh_ = context->GetMesh("cube");
-  mesh_->Submit(); 
+  mesh(context)->Submit(); 
 }
 
 void Skybox::OnDestory(Context *context) {

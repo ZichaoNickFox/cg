@@ -46,7 +46,7 @@ engine::Texture Context::GetTexture(const std::string& name) {
   return texture_repo_.GetOrLoadTexture(name);
 }
 
-std::shared_ptr<engine::Mesh> Context::GetMesh(const std::string& name) {
+std::shared_ptr<const engine::Mesh> Context::GetMesh(const std::string& name) {
   return mesh_repo_.GetOrLoadMesh(name);
 }
 

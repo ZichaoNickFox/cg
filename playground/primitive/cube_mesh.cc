@@ -2,7 +2,9 @@
 
 #include "playground/primitive/primitive_util.h"
 
-CubeMesh::CubeMesh() {
+CubeMesh::CubeMesh(const std::string& name) {
+  SetName(name);
+
   std::vector<glm::vec3> positions{
     // back
     glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.5f, -0.5f, -0.5f), glm::vec3(0.5f, 0.5f, -0.5f),
@@ -83,4 +85,6 @@ CubeMesh::CubeMesh() {
   }
   SetTangent(tangents);
   SetBitangent(bitangents);
+
+  Setup();
 }

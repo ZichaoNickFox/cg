@@ -1,6 +1,7 @@
 #include "playground/scene/normal_scene.h"
 
 #include <glm/glm.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include "glog/logging.h"
 #include "imgui.h"
 #include <math.h>
@@ -26,6 +27,17 @@ void NormalScene::OnEnter(Context *context)
   camera_->mutable_transform()->SetTranslation(glm::vec3(-4.8, 6.1, 5.8));
   camera_->mutable_transform()->SetRotation(glm::quat(0.88, -0.30, -0.32, -0.11));
   context->PushCamera(camera_);
+
+  struct Data {
+    std::vector<glm::vec3> points;
+    std::vector<glm::vec3> colors;
+    GLuint primitive_mode;    // line_style : GL_LINES, GL_LINE_STRIP, GL_LINE_LOOP
+    int line_width = 1;
+  };
+
+  Lines::Data line_data{{kLineFrom, kLineTo},
+                        {glm::vec3(1, 0, 0), glm::vec3(1, 0, 0)}, GL_LINES};
+  line_.SetData(line_data);
 
   glEnable(GL_DEPTH_TEST);
 }
@@ -55,6 +67,14 @@ void NormalScene::OnUpdate(Context *context)
   point_light_.SetColor(light_color_);
   point_light_.OnUpdate(context);
 
+  intersect_line_.reset();
+  Object::IntersectResult intersect_result;
+  if (plane_.Intersect(context, kLineFrom, kLineTo - kLineFrom, &intersect_result)) {
+    intersect_line_ = std::make_unique<Lines>();
+    intersect_line_->SetData({{intersect_result.pos_ws, intersect_result.pos_ws + intersect_result.normal_ws * 10.0f},
+                              {glm::vec3(1, 0, 0), glm::vec3(1, 0, 0)}, GL_LINES, 1});
+  }
+
   coord_.OnUpdate(context);
 }
 
@@ -78,6 +98,11 @@ void NormalScene::OnRender(Context *context)
   sphere_.OnRender(context);
   NormalShader({0.1}, context, &sphere_);
   sphere_.OnRender(context);
+
+  if (intersect_line_) {
+    LinesShader lines_shader(context, intersect_line_.get());
+    intersect_line_->OnRender(context);
+  }
 }
 
 void NormalScene::OnExit(Context *context)

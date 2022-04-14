@@ -4,5 +4,5 @@
 
 class PlaneMesh : public engine::Mesh {
  public:
-  PlaneMesh();
+  PlaneMesh(const std::string& name = "plane_mesh");
 };

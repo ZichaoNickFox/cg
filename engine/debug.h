@@ -16,10 +16,10 @@
 
 // functions
 #define BT() \
-  void *array[10]; \
-  size_t size; \
-  size = backtrace(array, 10); \
-  backtrace_symbols_fd(array, size, STDERR_FILENO);
+  void *bt_array[10]; \
+  size_t bt_size; \
+  bt_size = backtrace(bt_array, 10); \
+  backtrace_symbols_fd(bt_array, bt_size, STDERR_FILENO);
 
 #define CGCHECK(condition)  \
   if (!(condition)) { \

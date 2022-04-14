@@ -9,9 +9,7 @@ void Cube::OnUpdate(Context *context) {
 
 void Cube::OnRender(Context *context) {
   material_.PrepareShader();
-
-  mesh_ = context->GetMesh("cube");
-  mesh_->Submit(); 
+  mesh(context)->Submit(); 
 }
 
 void Cube::OnDestory(Context *context) {

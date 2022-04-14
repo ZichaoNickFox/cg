@@ -32,10 +32,11 @@ uniform Light lights[200];
 uniform vec3 view_pos;
 uniform bool blinn_phong;
 
-in mat3 TBN_;
-in vec3 normal_;
+in mat3 world_TBN_;
 in vec2 texcoord_;
 in vec3 frag_world_pos_;
+in vec3 frag_world_normal_;
+in mat4 model_;
 
 vec3 CalcLight(Light light) {
   vec3 ambient = vec3(0, 0, 0);
@@ -45,11 +46,11 @@ vec3 CalcLight(Light light) {
     ambient = material.ambient;
   }
 
-  vec3 normal = vec3(0, 0, 1);
+  vec3 normal = vec3(0, 0, 0);
   if (material.use_texture_normal) {
-    normal = TBN_ * texture(material.texture_normal0, texcoord_).xyz;
+    normal = world_TBN_ * texture(material.texture_normal0, texcoord_).xyz;
   } else {
-    normal = normalize(normal_);
+    normal = normalize(frag_world_normal_);
   }
 
   vec3 diffuse = vec3(0.0);
@@ -99,5 +100,5 @@ void main()
   for (int i = 0; i < light_count; ++i) {
     light_result += CalcLight(lights[i]);
   }
-  FragColor = vec4(light_result, 1.0);
+  FragColor = vec4(light_result, 0.5);
 }

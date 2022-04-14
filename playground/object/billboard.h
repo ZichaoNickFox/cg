@@ -16,6 +16,8 @@ class Billboard : public Object {
   int material_num() const override { return 0; }
   engine::Material* mutable_material(int index = 0) override { return nullptr; }
 
+  std::shared_ptr<const engine::Mesh> mesh(Context* context) const override { return nullptr; }
+
  private:
   Plane plane_;
 };

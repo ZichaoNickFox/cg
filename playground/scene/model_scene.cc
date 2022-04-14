@@ -16,9 +16,10 @@
 void ModelScene::OnEnter(Context *context)
 {
   glEnable(GL_DEPTH_TEST);
+  glEnable(GL_BLEND_COLOR);
 
-  camera_->mutable_transform()->SetTranslation(glm::vec3(3.3, 6.4, 7.6));
-  camera_->mutable_transform()->SetRotation(glm::quat(0.94, -0.22, 0.24, 0.05));
+  camera_->mutable_transform()->SetTranslation(glm::vec3(0.87, 4.87, 3.87));
+  camera_->mutable_transform()->SetRotation(glm::quat(0.94, -0.14, 0.13, 0.014));
   context->PushCamera(camera_);
 
   nanosuit_.Init(context, "nanosuit1", "nanosuit");
@@ -48,6 +49,9 @@ void ModelScene::OnUpdate(Context *context)
   ImGui::SliderFloat("shininess", &shininess_, 0, 50);
 
   ImGui::SliderFloat("rotate speed", &rotate_speed_, 0.0, 0.1);
+  
+  ImGui::ColorEdit3("light color", point_lights_[0].mutable_color());
+
 
   glm::quat rotate = glm::angleAxis(rotate_speed_, glm::vec3(0, 1, 0));
   for (int i = 0; i < nanosuit_.model_part_num(); ++i) {
@@ -84,12 +88,13 @@ void ModelScene::OnRender(Context *context) {
     PhongShader(phong, context, model_part);
     model_part->OnRender(context);
     
-    NormalShader({0.1, show_normal_, show_triangle_, show_TBN_}, context, model_part);
+    NormalShader({0.1, show_normal_, show_TBN_, show_triangle_}, context, model_part);
     model_part->OnRender(context);
   }
 
   point_lights_[0].OnRender(context);
   // point_lights_[1].OnRender(context);
+  coord_.OnRender(context);
 }
 
 void ModelScene::OnExit(Context *context)

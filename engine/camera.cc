@@ -42,4 +42,23 @@ void Camera::RotateVerticle(float delta) {
   transform_.Rotate(q);
 }
 
+/*
+void Camera::GetPickRay(const glm::vec2& mouse_screen_pos, glm::vec3* world_pos_on_near_clip,
+                        glm::vec3* world_pos_on_far_clip) {
+  glm::vec3 near_screen_space = glm::vec3(mouse_screen_pos.x, mouse_screen_pos.y, 0);
+  glm::vec3 far_screen_space = glm::vec3(mouse_screen_pos.x, mouse_screen_pos.y, 1);
+  std::vector<glm::vec3> screen_spaces{near_screen_space, far_screen_space};
+  std::vector<glm::vec3> world_spaces(2);
+  for (int i = 0; i < screen_spaces.size(); ++i) {
+    const glm::vec3& screen_space = screen_spaces[i];
+    glm::vec3 ndc_space = screen_space * 2.0 - 1.0;
+    glm::vec3 clip_space = ndc_space * (far_clip_ - near_clip_) / 2.0;
+    glm::mat4 inverse_vp = glm::inverse(GetProjectMatrix() * GetViewMatrix());
+    world_spaces[i] = inverse_vp * glm::vec4(clip_space, 1.0);
+  }
+  *world_pos_on_near_clip = world_spaces[0];
+  *world_pos_on_far_clip = world_spaces[1];
+}
+*/
+
 }

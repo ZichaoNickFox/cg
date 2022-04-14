@@ -31,6 +31,8 @@ class ModelPart : public Object {
   void SetHidden(bool hidden) { hidden_ = hidden; }
   bool* mutable_hidden() { return &hidden_; }
 
+  std::shared_ptr<const engine::Mesh> mesh(Context* context) const override { return model_part_data_.mesh; }
+
  private:
   bool hidden_ = false;
 

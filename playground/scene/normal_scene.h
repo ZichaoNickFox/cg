@@ -1,11 +1,14 @@
 #pragma once
 
+#include <memory>
+
 #include "engine/camera.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
 #include "playground/object/coord.h"
 #include "playground/object/cube.h"
+#include "playground/object/lines.h"
 #include "playground/object/plane.h"
 #include "playground/object/point_light.h"
 #include "playground/object/sphere.h"
@@ -32,4 +35,9 @@ class NormalScene : public Scene {
   std::string material_property_name_ = "gold";
 
   Coord coord_;
+
+  glm::vec3 kLineFrom = glm::vec3(0.8, 1, 0.8);
+  glm::vec3 kLineTo = glm::vec3(0.1, -1, 0.1);
+  Lines line_;
+  std::unique_ptr<Lines> intersect_line_;
 };

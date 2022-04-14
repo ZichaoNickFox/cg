@@ -17,8 +17,7 @@ void Sphere::OnRender(Context *context) {
   material_.SetMat4("model", model);
   material_.PrepareShader();
 
-  std::shared_ptr<engine::Mesh> mesh = context->GetMesh("sphere");
-  mesh->Submit();
+  mesh(context)->Submit();
 }
 
 void Sphere::OnDestory(Context *context) {

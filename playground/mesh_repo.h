@@ -14,8 +14,8 @@
 class MeshRepo {
  public:
   void Init(const Config& config);
-  std::shared_ptr<engine::Mesh> GetOrLoadMesh(const std::string& name);
+  std::shared_ptr<const engine::Mesh> GetOrLoadMesh(const std::string& name);
 
  private:
-  std::unordered_map<std::string, std::shared_ptr<engine::Mesh>> meshes_;
+  std::unordered_map<std::string, std::shared_ptr<const engine::Mesh>> meshes_;
 };

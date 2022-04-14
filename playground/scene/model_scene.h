@@ -5,6 +5,7 @@
 #include "engine/texture.h"
 #include "engine/transform.h"
 #include "playground/context.h"
+#include "playground/object/coord.h"
 #include "playground/object/cube.h"
 #include "playground/object/model.h"
 #include "playground/object/point_light.h"
@@ -33,4 +34,6 @@ class ModelScene : public Scene {
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
   Model nanosuit_;
   std::vector<PointLight> point_lights_;
+
+  Coord coord_;
 };

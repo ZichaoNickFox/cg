@@ -12,18 +12,21 @@ uniform mat4 project;
 
 out vec2 texcoord_;
 out vec3 frag_world_pos_;
-out vec3 normal_;
-out mat3 TBN_;
+out vec3 frag_world_normal_;
+out mat3 world_TBN_;
+out mat4 model_;
 
 void main()
 {
   texcoord_ = texcoord;
   frag_world_pos_ = mat3(model) * pos;
-  normal_ = mat3(model) * normal;
+  frag_world_normal_ = mat3(model) * normal;
 
-  TBN_[0] = tangent;
-  TBN_[1] = bitangent;
-  TBN_[2] = normal_;
+  world_TBN_[0] = normalize(vec3(model * vec4(tangent, 1.0)));
+  world_TBN_[1] = normalize(vec3(model * vec4(bitangent, 1.0)));
+  world_TBN_[2] = normalize(vec3(model * vec4(normal, 1.0)));
+
+  model_ = model;
 
   gl_Position = project * view * model * vec4(pos, 1.0);
 }

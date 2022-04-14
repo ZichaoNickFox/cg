@@ -2,7 +2,9 @@
 
 #include "playground/primitive/primitive_util.h"
 
-PlaneMesh::PlaneMesh() {
+PlaneMesh::PlaneMesh(const std::string& name) {
+  SetName(name);
+
   std::vector<glm::vec3> positions{
     glm::vec3(-1.0f, 0.0f, -1.0f), glm::vec3(1.0f, 0.0f, -1.0f), glm::vec3(1.0f, 0.0f, 1.0f),
     glm::vec3(1.0f, 0.0f, 1.0f), glm::vec3(-1.0f, 0.0f, 1.0f), glm::vec3(-1.0f, 0.0f, -1.0f),
@@ -39,4 +41,6 @@ PlaneMesh::PlaneMesh() {
   }
   SetTangent(tangents);
   SetBitangent(bitangents);
+
+  Setup();
 }

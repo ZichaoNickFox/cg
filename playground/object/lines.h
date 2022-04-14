@@ -13,7 +13,7 @@ class Lines : public Object {
   struct Data {
     std::vector<glm::vec3> points;
     std::vector<glm::vec3> colors;
-    GLuint primitive;    // line_style : GL_LINES, GL_LINE_STRIP, GL_LINE_LOOP
+    GLuint primitive_mode;    // line_style : GL_LINES, GL_LINE_STRIP, GL_LINE_LOOP
     int line_width = 1;
   };
   void SetData(const Data& data);
@@ -25,6 +25,8 @@ class Lines : public Object {
   int material_num() const override { return 1; }
   engine::Material* mutable_material(int index = 0) override { return &material_; }
 
+  std::shared_ptr<const engine::Mesh> mesh(Context* context) const override { return nullptr; }
+
  private: 
   void OnInit(const Data& data);
   void Clear();
@@ -33,7 +35,7 @@ class Lines : public Object {
 
   int line_width_;
   int vertex_size_;
-  GLuint primitive_;
+  GLuint primitive_mode_;
   GLuint vao_;
   GLuint vbo_;
 };

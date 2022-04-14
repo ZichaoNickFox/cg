@@ -4,5 +4,5 @@
 
 class CubeMesh : public engine::Mesh {
  public:
-  CubeMesh();
+  CubeMesh(const std::string& name = "cube_mesh");
 };

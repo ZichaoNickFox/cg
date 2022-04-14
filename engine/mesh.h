@@ -23,21 +23,24 @@ class Mesh {
   void SetTangent(const std::vector<glm::vec3> &tangents) { tangents_ = tangents; }
   void SetBitangent(const std::vector<glm::vec3> &bitangents) { bitangents_ = bitangents; }
 
-  const std::vector<glm::vec3>& positions() { return positions_; }
-  const std::vector<glm::vec3>& normals() { return normals_; }
-  const std::vector<glm::vec2>& texcoords() { return texcoords_; }
-  const std::vector<glm::vec3>& tangents() { return tangents_; }
-  const std::vector<glm::vec3>& bitangents() { return bitangents_; }
+  const std::vector<glm::vec3>& positions() const { return positions_; }
+  const std::vector<glm::vec3>& normals() const { return normals_; }
+  const std::vector<glm::vec2>& texcoords() const { return texcoords_; }
+  const std::vector<glm::vec3>& tangents() const { return tangents_; }
+  const std::vector<glm::vec3>& bitangents() const { return bitangents_; }
 
   void SetName(const std::string& name) { name_ = name; }
-  const std::string& name() { return name_; }
+  const std::string& name() const { return name_; }
 
   void SetIndices(const std::vector<GLuint> &indices) { indices_ = indices; }
-  const std::vector<GLuint>& indices() { return indices_; }
+  const std::vector<GLuint>& indices() const { return indices_; }
 
   void Setup();
-  void Submit();
-  
+  void Submit() const;
+
+  bool Intersect(const glm::vec3& origin_ls, const glm::vec3& dir_ls,
+                 glm::vec3* position_ls, glm::vec3* normal_ls, float* distance_ls,
+                 glm::vec3* vertex0_ls, glm::vec3* vertex1_ls, glm::vec3* vertex2_ls) const;
  private:
   void SetupVBO(int vertex_float_size);
   void SetupVAO(int enabled_component_num);

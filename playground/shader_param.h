@@ -72,3 +72,13 @@ class NormalShader {
   };
   NormalShader(const Param& param, Context* context, Object* object);
 };
+
+class LinesShader {
+ public:
+  LinesShader(Context* context, Object* object);
+};
+
+class CoordShader {
+ public:
+  CoordShader(Context* context, Object* object);
+};

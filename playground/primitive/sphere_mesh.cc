@@ -2,7 +2,9 @@
 
 #include "playground/primitive/primitive_util.h"
 
-SphereMesh::SphereMesh(int refine) {
+SphereMesh::SphereMesh(int refine, const std::string& name) {
+  SetName(name);
+
   // https://baike.baidu.com/item/%E6%AD%A3%E4%BA%8C%E5%8D%81%E9%9D%A2%E4%BD%93/1921640?fr=aladdin
   // p0 - p11
   // http://blog.andreaskahler.com/2009/06/creating-icosphere-mesh-in-code.html
@@ -108,4 +110,6 @@ SphereMesh::SphereMesh(int refine) {
   }
   SetTangent(tangents);
   SetBitangent(bitangents);
+
+  Setup();
 }

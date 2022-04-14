@@ -57,7 +57,7 @@ class Context {
 
   engine::Shader GetShader(const std::string& name);
   engine::Texture GetTexture(const std::string& name);
-  std::shared_ptr<engine::Mesh> GetMesh(const std::string& name);
+  std::shared_ptr<const engine::Mesh> GetMesh(const std::string& name);
   std::vector<ModelRepo::ModelPartData> GetModel(const std::string& name);
 
   const Pass pass() const { return pass_; }

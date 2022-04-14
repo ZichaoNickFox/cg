@@ -19,6 +19,7 @@ cc_library(
     "model.h",
     "model.cc",
     "object.h",
+    "object.cc",
     "plane.h",
     "plane.cc",
     "point_light.h",

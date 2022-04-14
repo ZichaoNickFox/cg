@@ -86,6 +86,8 @@ PhongShader::PhongShader(const Param& phong, Context* context, Object* object) {
   phong.light_info.UpdateMaterial(context, material);
 
   material->SetInt("blinn_phong", phong.use_blinn_phong);
+
+  material->PrepareShader();
 }
 
 PbrShader::PbrShader(const Param& pbr, Context* context, Object* object) {
@@ -107,6 +109,8 @@ PbrShader::PbrShader(const Param& pbr, Context* context, Object* object) {
   material->SetFloat("ao", pbr.ao);
 
   pbr.light_info.UpdateMaterial(context, material);
+
+  material->PrepareShader();
 }
 
 NormalShader::NormalShader(const Param& normal, Context* context, Object* object) {
@@ -122,4 +126,39 @@ NormalShader::NormalShader(const Param& normal, Context* context, Object* object
   material->SetBool("show_normal", normal.show_normal);
   material->SetBool("show_TBN", normal.show_TBN);
   material->SetBool("show_triangle", normal.show_triangle);
+  
+  material->PrepareShader();
+}
+
+LinesShader::LinesShader(Context* context, Object* object) {
+  engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
+  material->PushShader(context->GetShader("lines"));
+
+  const engine::Camera& camera = context->camera();
+  glm::mat4 project = camera.GetProjectMatrix();
+  glm::mat4 view = camera.GetViewMatrix();
+  glm::mat4 model = glm::mat4(1);
+  material->SetMat4("project", project);
+  material->SetMat4("view", view);
+  material->SetMat4("model", model);
+
+  material->PrepareShader();
+}
+
+CoordShader::CoordShader(Context* context, Object* object) {
+  engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
+  material->PushShader(context->GetShader("coord"));
+
+  const engine::Camera& camera = context->camera();
+  glm::mat4 project = camera.GetProjectMatrix();
+
+  glm::vec3 translation = -(camera.transform().rotation() * glm::vec3(0, 0, -1));
+  glm::mat4 view = glm::lookAt(translation, glm::vec3(0, 0, 0), camera.world_up());
+
+  glm::mat4 model = glm::mat4(1);
+  material->SetMat4("project", project);
+  material->SetMat4("view", view);
+  material->SetMat4("model", model);
+
+  material->PrepareShader();
 }

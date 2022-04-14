@@ -69,5 +69,4 @@ float RandFromTo(float from, float to) {
   int rand_value = RandFromTo(rand_from, rand_to);
   return rand_value / 1000.0f;
 }
-
 }

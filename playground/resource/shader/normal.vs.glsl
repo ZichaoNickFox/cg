@@ -14,9 +14,7 @@ out vec4 pos_;
 out vec3 pos_bug_;
 out mat4 mvp_;
 
-out vec3 TBN_tangent_dir_;
-out vec3 TBN_bitangent_dir_;
-out vec3 TBN_normal_dir_;
+out mat3 TBN_;
 
 void main()
 {
@@ -25,7 +23,5 @@ void main()
   pos_ = vec4(pos, 1.0);
   pos_bug_ = pos;
 
-  TBN_tangent_dir_ = tangent;
-  TBN_bitangent_dir_ = bitangent;
-  TBN_normal_dir_ = normal_;
+  TBN_ = mat3(tangent, bitangent, normal_);
 }

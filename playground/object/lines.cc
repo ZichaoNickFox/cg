@@ -12,7 +12,7 @@ void Lines::SetData(const Data& data) {
 }
 
 void Lines::OnInit(const Data& data) {
-  primitive_ = data.primitive;
+  primitive_mode_ = data.primitive_mode;
   vertex_size_ = data.points.size();
   line_width_ = data.line_width;
 
@@ -45,22 +45,9 @@ void Lines::OnUpdate(Context *context) {
 }
 
 void Lines::OnRender(Context *context)
-{
-  if (!material_.HasShader()) {
-    material_.PushShader(context->GetShader("lines"));
-  }
+{ 
   glBindVertexArray(vao_);
-
-  const engine::Camera& camera = context->camera();
-  glm::mat4 project = camera.GetProjectMatrix();
-  glm::mat4 view = camera.GetViewMatrix();
-  glm::mat4 model = glm::mat4(1);
-  material_.SetMat4("project", project);
-  material_.SetMat4("view", view);
-  material_.SetMat4("model", model);
-  material_.PrepareShader();
-
-  glDrawArrays(primitive_, 0, vertex_size_);
+  glDrawArrays(primitive_mode_, 0, vertex_size_);
 }
 
 void Lines::OnDestory(Context *context) {

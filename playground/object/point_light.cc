@@ -30,8 +30,7 @@ void PointLight::OnRender(Context *context)
   }
   material_.PrepareShader();
 
-  std::shared_ptr<engine::Mesh> mesh = context->GetMesh("cube");
-  mesh->Submit();
+  mesh(context)->Submit();
 }
 
 void PointLight::OnDestory(Context *context) {

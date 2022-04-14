@@ -9,9 +9,7 @@ void Plane::OnUpdate(Context *context) {
 
 void Plane::OnRender(Context *context) {
   material_.PrepareShader();
-
-  std::shared_ptr<engine::Mesh> mesh = context->GetMesh("plane");
-  mesh->Submit();
+  mesh(context)->Submit();
 }
 
 void Plane::OnDestory(Context *context) {

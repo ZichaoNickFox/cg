@@ -48,6 +48,11 @@ class Camera {
   glm::mat4 GetProjectMatrix() const;
   glm::mat4 GetViewMatrix() const;
 
+  glm::vec3 world_up() const { return world_up_; }
+
+  // void GetPickRay(const glm::vec2& mouse_screen_pos, glm::vec3* world_pos_on_near_clip,
+  //                 glm::vec3* world_pos_on_far_clip);
+
 private:
   float perspective_fov_ = 30.0;
 
