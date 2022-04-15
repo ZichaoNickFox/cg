@@ -1,4 +1,4 @@
-#include "playground/shader_param.h"
+#include "playground/materials.h"
 
 #include "engine/debug.h"
 #include "playground/util.h"
@@ -122,7 +122,9 @@ NormalShader::NormalShader(const Param& normal, Context* context, Object* object
   material->SetMat4("project", project);
   material->SetMat4("view", view);
   material->SetMat4("model", object->GetModelMatrix());
-  material->SetFloat("length", normal.length);
+  material->SetFloat("line_length", normal.length);
+  material->SetFloat("line_width", normal.width);
+  material->SetVec3("view_pos", camera.transform().translation());
   material->SetBool("show_normal", normal.show_normal);
   material->SetBool("show_TBN", normal.show_TBN);
   material->SetBool("show_triangle", normal.show_triangle);
@@ -130,8 +132,8 @@ NormalShader::NormalShader(const Param& normal, Context* context, Object* object
   material->PrepareShader();
 }
 
-LinesShader::LinesShader(Context* context, Object* object) {
-  engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
+LinesShader::LinesShader(const Param& param, Context* context, Lines* lines) {
+  engine::Material* material = CGCHECK_NOTNULL(lines->mutable_material(0));
   material->PushShader(context->GetShader("lines"));
 
   const engine::Camera& camera = context->camera();
@@ -141,24 +143,8 @@ LinesShader::LinesShader(Context* context, Object* object) {
   material->SetMat4("project", project);
   material->SetMat4("view", view);
   material->SetMat4("model", model);
-
-  material->PrepareShader();
-}
-
-CoordShader::CoordShader(Context* context, Object* object) {
-  engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
-  material->PushShader(context->GetShader("coord"));
-
-  const engine::Camera& camera = context->camera();
-  glm::mat4 project = camera.GetProjectMatrix();
-
-  glm::vec3 translation = -(camera.transform().rotation() * glm::vec3(0, 0, -1));
-  glm::mat4 view = glm::lookAt(translation, glm::vec3(0, 0, 0), camera.world_up());
-
-  glm::mat4 model = glm::mat4(1);
-  material->SetMat4("project", project);
-  material->SetMat4("view", view);
-  material->SetMat4("model", model);
+  material->SetVec3("view_pos", camera.transform().translation());
+  material->SetFloat("line_width", param.line_width);
 
   material->PrepareShader();
 }

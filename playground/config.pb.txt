@@ -38,6 +38,7 @@ shader_config {
 shader_config {
   name : "lines";
   vs_path : "playground/resource/shader/lines.vs.glsl";
+  gs_path : "playground/resource/shader/lines.gs.glsl";
   fs_path : "playground/resource/shader/lines.fs.glsl";
 }
 

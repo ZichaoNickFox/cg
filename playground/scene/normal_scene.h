@@ -6,14 +6,13 @@
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
-#include "playground/object/coord.h"
+#include "playground/materials.h"
 #include "playground/object/cube.h"
 #include "playground/object/lines.h"
 #include "playground/object/plane.h"
 #include "playground/object/point_light.h"
 #include "playground/object/sphere.h"
 #include "playground/scene.h"
-#include "playground/shader_param.h"
 
 class NormalScene : public Scene {
  public:

@@ -39,7 +39,7 @@ cc_library(
     "//engine:engine",
     "//playground:context",
     "//playground:scene",
-    "//playground:shader_param",
+    "//playground:materials",
     "//playground/object:object",
     "@imgui//:imgui",
   ],

@@ -10,13 +10,12 @@
 
 class Lines : public Object {
  public:
-  struct Data {
+  struct Mesh {
     std::vector<glm::vec3> points;
     std::vector<glm::vec3> colors;
     GLuint primitive_mode;    // line_style : GL_LINES, GL_LINE_STRIP, GL_LINE_LOOP
-    int line_width = 1;
   };
-  void SetData(const Data& data);
+  void SetMesh(const Mesh& data);
 
   void OnUpdate(Context *context) override;
   void OnRender(Context *context) override;
@@ -28,14 +27,18 @@ class Lines : public Object {
   std::shared_ptr<const engine::Mesh> mesh(Context* context) const override { return nullptr; }
 
  private: 
-  void OnInit(const Data& data);
+  void OnInit(const Mesh& data);
   void Clear();
 
   engine::Material material_;
 
-  int line_width_;
   int vertex_size_;
   GLuint primitive_mode_;
   GLuint vao_;
   GLuint vbo_;
+};
+
+class Coord : public Lines {
+ public:
+  Coord();
 };

@@ -6,15 +6,14 @@
 
 #include "playground/util.h"
 
-void Lines::SetData(const Data& data) {
+void Lines::SetMesh(const Mesh& data) {
   Clear();
   OnInit(data);
 }
 
-void Lines::OnInit(const Data& data) {
+void Lines::OnInit(const Mesh& data) {
   primitive_mode_ = data.primitive_mode;
   vertex_size_ = data.points.size();
-  line_width_ = data.line_width;
 
   CGCHECK(data.points.size() == data.colors.size());
   std::vector<glm::vec3> buffer(data.points.size() + data.colors.size(), glm::vec3());
@@ -57,4 +56,12 @@ void Lines::OnDestory(Context *context) {
 void Lines::Clear() {
   glDeleteVertexArrays(1, &vao_);
   glDeleteBuffers(1, &vbo_);
+}
+
+Coord::Coord() {
+  std::vector<glm::vec3> positions{glm::vec3(0, 0, 0), glm::vec3(2, 0, 0), glm::vec3(0, 0, 0), glm::vec3(0, 2, 0),
+                                   glm::vec3(0, 0, 0), glm::vec3(0, 0, 2)};
+  std::vector<glm::vec3> colors{glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0),
+                                glm::vec3(0, 0, 1), glm::vec3(0, 0, 1)};
+  SetMesh({positions, colors, GL_LINES});
 }

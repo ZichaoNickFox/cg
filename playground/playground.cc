@@ -18,7 +18,7 @@
 #include "playground/scene/triangle_scene.h"
 
 namespace {
-const std::string kDefaultScene = "NormalScene";
+const std::string kDefaultScene = "ModelScene";
 }
 
 void Playground::Init(const Context::Option& option) {

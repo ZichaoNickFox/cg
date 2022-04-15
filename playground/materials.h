@@ -5,6 +5,7 @@
 #include "engine/material.h"
 #include "engine/texture.h"
 #include "playground/context.h"
+#include "playground/object/lines.h"
 #include "playground/object/object.h"
 #include "playground/object/point_light.h"
 
@@ -66,6 +67,7 @@ class NormalShader {
  public:
   struct Param {
     float length = 0.4;
+    float width = 1.0;
     bool show_normal = true;
     bool show_TBN = true;
     bool show_triangle = true;
@@ -75,10 +77,8 @@ class NormalShader {
 
 class LinesShader {
  public:
-  LinesShader(Context* context, Object* object);
-};
-
-class CoordShader {
- public:
-  CoordShader(Context* context, Object* object);
+  struct Param {
+    float line_width = 1.0;
+  };
+  LinesShader(const Param& param, Context* context, Lines* object);
 };

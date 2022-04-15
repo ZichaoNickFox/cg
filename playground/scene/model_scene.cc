@@ -8,9 +8,9 @@
 #include <memory>
 #include <vector>
 
+#include "playground/materials.h"
 #include "playground/model_repo.h"
 #include "playground/scene/common.h"
-#include "playground/shader_param.h"
 #include "playground/util.h"
 
 void ModelScene::OnEnter(Context *context)
@@ -88,12 +88,14 @@ void ModelScene::OnRender(Context *context) {
     PhongShader(phong, context, model_part);
     model_part->OnRender(context);
     
-    NormalShader({0.1, show_normal_, show_TBN_, show_triangle_}, context, model_part);
+    NormalShader({0.1, 1, show_normal_, show_TBN_, show_triangle_}, context, model_part);
     model_part->OnRender(context);
   }
 
   point_lights_[0].OnRender(context);
   // point_lights_[1].OnRender(context);
+
+  LinesShader lines_shader({10.0}, context, &coord_);
   coord_.OnRender(context);
 }
 

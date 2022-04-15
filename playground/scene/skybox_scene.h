@@ -4,8 +4,6 @@
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
-#include "playground/object/coord.h"
-#include "playground/object/cube.h"
 #include "playground/object/cube.h"
 #include "playground/object/lines.h"
 #include "playground/object/skybox.h"

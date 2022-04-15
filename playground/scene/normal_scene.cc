@@ -35,9 +35,9 @@ void NormalScene::OnEnter(Context *context)
     int line_width = 1;
   };
 
-  Lines::Data line_data{{kLineFrom, kLineTo},
+  Lines::Mesh line_data{{kLineFrom, kLineTo},
                         {glm::vec3(1, 0, 0), glm::vec3(1, 0, 0)}, GL_LINES};
-  line_.SetData(line_data);
+  line_.SetMesh(line_data);
 
   glEnable(GL_DEPTH_TEST);
 }
@@ -71,8 +71,8 @@ void NormalScene::OnUpdate(Context *context)
   Object::IntersectResult intersect_result;
   if (plane_.Intersect(context, kLineFrom, kLineTo - kLineFrom, &intersect_result)) {
     intersect_line_ = std::make_unique<Lines>();
-    intersect_line_->SetData({{intersect_result.pos_ws, intersect_result.pos_ws + intersect_result.normal_ws * 10.0f},
-                              {glm::vec3(1, 0, 0), glm::vec3(1, 0, 0)}, GL_LINES, 1});
+    intersect_line_->SetMesh({{intersect_result.pos_ws, intersect_result.pos_ws + intersect_result.normal_ws * 10.0f},
+                              {glm::vec3(1, 0, 0), glm::vec3(1, 0, 0)}, GL_LINES});
   }
 
   coord_.OnUpdate(context);
@@ -80,9 +80,6 @@ void NormalScene::OnUpdate(Context *context)
 
 void NormalScene::OnRender(Context *context)
 {
-  coord_.OnRender(context);
-  point_light_.OnRender(context);
-
   PhongShader::Param phong;
   phong.light_info = ShaderLightInfo(point_light_);
   phong.use_blinn_phong = use_blinn_phong_;
@@ -100,9 +97,12 @@ void NormalScene::OnRender(Context *context)
   sphere_.OnRender(context);
 
   if (intersect_line_) {
-    LinesShader lines_shader(context, intersect_line_.get());
+    LinesShader lines_shader({1.0}, context, intersect_line_.get());
     intersect_line_->OnRender(context);
   }
+
+  LinesShader lines({1.0}, context, &coord_); 
+  coord_.OnRender(context);
 }
 
 void NormalScene::OnExit(Context *context)

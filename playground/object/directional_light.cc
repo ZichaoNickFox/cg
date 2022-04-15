@@ -37,7 +37,7 @@ void DirectionalLight::OnUpdate(Context* context) {
 
   glm::vec3 from = transform_.translation();
   glm::vec3 to = transform_.translation() + transform_.rotation() * glm::vec3(0, 0, -10);
-  lines_.SetData(Lines::Data{{from, to}, {glm::vec3(1, 1, 1), glm::vec3(1, 1, 1)}, GL_LINES, 1});
+  lines_.SetMesh(Lines::Mesh{{from, to}, {glm::vec3(1, 1, 1), glm::vec3(1, 1, 1)}, GL_LINES});
 
   shadow_map_camera_->SetTransform(transform_);
 }
