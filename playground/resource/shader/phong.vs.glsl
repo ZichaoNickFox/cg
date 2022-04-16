@@ -22,9 +22,9 @@ void main()
   frag_world_pos_ = mat3(model) * pos;
   frag_world_normal_ = mat3(model) * normal;
 
-  world_TBN_[0] = normalize(vec3(model * vec4(tangent, 1.0)));
-  world_TBN_[1] = normalize(vec3(model * vec4(bitangent, 1.0)));
-  world_TBN_[2] = normalize(vec3(model * vec4(normal, 1.0)));
+  world_TBN_[0] = normalize(vec3(model * vec4(tangent, 0.0)));
+  world_TBN_[1] = normalize(vec3(model * vec4(bitangent, 0.0)));
+  world_TBN_[2] = normalize(vec3(model * vec4(normal, 0.0)));
 
   model_ = model;
 
