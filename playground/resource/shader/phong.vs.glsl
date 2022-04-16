@@ -19,7 +19,7 @@ out mat4 model_;
 void main()
 {
   texcoord_ = texcoord;
-  frag_world_pos_ = mat3(model) * pos;
+  frag_world_pos_ = (model * vec4(pos, 1.0)).xyz;
   frag_world_normal_ = mat3(model) * normal;
 
   world_TBN_[0] = normalize(vec3(model * vec4(tangent, 0.0)));
