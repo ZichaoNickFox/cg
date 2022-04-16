@@ -19,13 +19,13 @@ void TextureRepo::Init(const Config& config) {
   }
 }
 
-Texture TextureRepo::GetOrLoadTexture(const std::string& name) {
+Texture TextureRepo::GetOrLoadTexture(const std::string& name, bool flip_vertically, bool use_mipmap) {
   CGCHECK(textures_.count(name) > 0) << "Cannot find texture : " << name;
   State* state = &textures_[name];
   if (!state->loaded) {
     if (state->texture_type == Texture::Texture2D) {
       CGCHECK(state->paths.size() == 1) << "Texture2D has 1 texture : " << name;
-      state->texture = texture::LoadTexture2D(state->paths[0], true);
+      state->texture = texture::LoadTexture2D(state->paths[0], flip_vertically, use_mipmap);
     } else if (state->texture_type == Texture::CubeMap) {
       state->texture = texture::LoadCubeMap(state->paths);
     } else {
@@ -39,11 +39,11 @@ Texture TextureRepo::GetOrLoadTexture(const std::string& name) {
 
 namespace texture {
 
-Texture LoadTexture2D(const std::string& path_with_ext, bool useMipmap) {
+Texture LoadTexture2D(const std::string& path_with_ext, bool flip_vertically, bool useMipmap) {
   // OpenGL uv (0,0) is at left bottom
   // Texture uv (0,0) is at left top
   // So flip vertical uv
-  stbi_set_flip_vertically_on_load(true);
+  stbi_set_flip_vertically_on_load(flip_vertically);
 
   GLuint id;
   glGenTextures(1, &id);

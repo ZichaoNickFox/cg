@@ -40,8 +40,8 @@ engine::Shader Context::GetShader(const std::string& name) {
   return shader_repo_.GetOrLoadShader(name);
 }
 
-engine::Texture Context::GetTexture(const std::string& name) {
-  return texture_repo_.GetOrLoadTexture(name);
+engine::Texture Context::GetTexture(const std::string& name, bool flip_vertically, bool use_mipmap) {
+  return texture_repo_.GetOrLoadTexture(name, flip_vertically, use_mipmap);
 }
 
 std::shared_ptr<const engine::Mesh> Context::GetMesh(const std::string& name) {
