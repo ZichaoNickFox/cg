@@ -9,8 +9,6 @@ void Context::Init(const Option& option) {
   Config config;
   util::ParseFromString(content, &config);
 
-  screen_width_ = option.screen_width;
-  screen_height_ = option.screen_height;
   shader_repo_.Init(config);
   texture_repo_.Init(config);
   mesh_repo_.Init(config);

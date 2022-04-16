@@ -52,7 +52,7 @@ void DeferredShadingScene::OnEnter(Context *context)
   directional_light_.mutable_transform()->SetTranslation(glm::vec3(-5, 6.3, -4.6));
   directional_light_.mutable_transform()->SetRotation(glm::quat(glm::vec3(2.48, -0.82, -3.09)));
 
-  engine::GBuffer::Option option{"deferred_shading", context->screen_width(), context->screen_height()};
+  engine::GBuffer::Option option{"deferred_shading", context->io().screen_width(), context->io().screen_height()};
   g_buffer_.Init(option);
   
   glEnable(GL_DEPTH_TEST);

@@ -17,8 +17,6 @@ class Context {
  public:
   struct Option {
     std::string config_path;
-    int screen_width;
-    int screen_height;
     glm::vec4 clear_color;
   };
   void Init(const Option& option);
@@ -50,9 +48,6 @@ class Context {
   int frame_interval() const { return frame_interval_; }
   int fps() const { return fps_; }
 
-  int screen_width() const { return screen_width_; }
-  int screen_height() const { return screen_height_; }
-
   const glm::vec4 clear_color() const { return clear_color_; }
 
   engine::Shader GetShader(const std::string& name);
@@ -78,9 +73,6 @@ class Context {
   float camera_rotate_speed() { return camera_rotate_speed_; }
 
  private:
-  int screen_width_;
-  int screen_height_;
-
   std::string current_scene_;
   std::string next_scene_;
   

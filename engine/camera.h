@@ -50,8 +50,8 @@ class Camera {
 
   glm::vec3 world_up() const { return world_up_; }
 
-  // void GetPickRay(const glm::vec2& mouse_screen_pos, glm::vec3* world_pos_on_near_clip,
-  //                 glm::vec3* world_pos_on_far_clip);
+  void GetPickRay(const glm::vec2& cursor_screen_pos, glm::vec3* cursor_world_pos_near,
+                  glm::vec3* cursor_world_pos_far) const;
 
 private:
   float perspective_fov_ = 30.0;

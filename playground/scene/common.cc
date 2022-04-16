@@ -13,6 +13,9 @@ OnUpdateCommon::OnUpdateCommon(Context* context, const std::string& title) {
   MoveCamera(context);
   InspectCamera(context);
   ImGui::Separator();
+
+  InSpectCursor(context);
+  ImGui::Separator();
 }
 
 OnUpdateCommon::~OnUpdateCommon() {
@@ -23,6 +26,13 @@ void OnUpdateCommon::InspectCamera(Context* context) {
   ImGui::Text("camera_location %s", glm::to_string(context->camera().transform().translation()).c_str());
   ImGui::Text("camera_rotation %s", glm::to_string(context->camera().transform().rotation()).c_str());
   ImGui::Text("camera_front %s", glm::to_string(context->camera().front()).c_str());
+}
+
+void OnUpdateCommon::InSpectCursor(Context* context) {
+  ImGui::Text("cursor pos x %lf", context->io().cursor_screen_pos_x());
+  ImGui::Text("cursor pos y %lf", context->io().cursor_screen_pos_y());
+  ImGui::Text("cursor screen space x %lf", context->io().cursor_screen_pos_x() / context->io().screen_width());
+  ImGui::Text("cursor screen space y %lf", context->io().cursor_screen_pos_y() / context->io().screen_height());
 }
 
 void OnUpdateCommon::GuiFps(Context* context) {
@@ -40,7 +50,7 @@ void OnUpdateCommon::MoveCamera(Context* context) {
   float camera_move_speed = context->camera_move_speed() / 200.0;
   float camera_rotate_speed = context->camera_rotate_speed() / 3000.0;
 
-  if (context->io().gui_captured_mouse()) {
+  if (context->io().gui_captured_cursor()) {
     return;
   }
   engine::Camera* camera = context->mutable_camera();

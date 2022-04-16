@@ -22,15 +22,14 @@ class Object {
   glm::mat4 GetModelMatrix() const { return transform_.GetModelMatrix(); }
 
   struct IntersectResult {
-    glm::vec3 pos_ws;
+    glm::vec3 position_ws;
     glm::vec3 normal_ws;
     float distance_ws;
     glm::vec3 vertex0_ws;
     glm::vec3 vertex1_ws;
     glm::vec3 vertex2_ws;
   };
-  bool Intersect(Context* context, const glm::vec3& ray_origin_ws, const glm::vec3& ray_dir_ws,
-                 IntersectResult* result);
+  bool Intersect(Context* context, const glm::vec3& origin_ws, const glm::vec3& dir_ws, IntersectResult* result);
 
  protected:
   glm::mat4 GetInverseModelMatrix() { return glm::inverse(GetModelMatrix()); }

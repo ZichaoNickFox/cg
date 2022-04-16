@@ -10,9 +10,9 @@ bazel build \
   --cxxopt="-Wint-to-void-pointer-cast" \
   --cxxopt="-Wreturn-stack-address" \
   --cxxopt="-Wunused-private-field" \
-  //playground:launcher
+  //playground:window
 
 # run
 if [ $? -eq '0' ]; then
-  ./bazel-bin/playground/launcher
+  ./bazel-bin/playground/window
 fi

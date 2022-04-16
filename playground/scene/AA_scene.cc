@@ -16,12 +16,12 @@
 void AAScene::OnEnter(Context *context)
 {
   engine::MSFrameBuffer::Option ms_fbo_option{
-      "mrt_2_ms_frame_buffer", context->screen_width(), context->screen_height(), 1,
+      "mrt_2_ms_frame_buffer", context->io().screen_width(), context->io().screen_height(), 1,
       {context->clear_color()/*, glm::vec4(0, 0, 0, 1)*/}, 4};
   ms_frame_buffer_.Init(ms_fbo_option);
 
   engine::ColorFrameBuffer::Option color_fbo_option{
-      "color_frame_buffer", context->screen_width(), context->screen_height(), 1,
+      "color_frame_buffer", context->io().screen_width(), context->io().screen_height(), 1,
       {context->clear_color()/*, glm::vec4(0, 0, 0, 1)*/}};
   color_frame_buffer_.Init(color_fbo_option);
   

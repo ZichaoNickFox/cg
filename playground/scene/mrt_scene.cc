@@ -16,7 +16,7 @@
 void MrtScene::OnEnter(Context *context)
 {
   engine::ColorFrameBuffer::Option option{
-      "mrt_2_color_frame_buffer", context->screen_width(), context->screen_height(), 2,
+      "mrt_2_color_frame_buffer", context->io().screen_width(), context->io().screen_height(), 2,
       {context->clear_color(), glm::vec4(0, 0, 0, 1)}};
   mrt_frame_buffer_.Init(option);
   

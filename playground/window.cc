@@ -98,12 +98,17 @@ int main(int argc, char **argv)
   glm::vec4 clear_color = glm::vec4(0.45f, 0.55f, 0.60f, 1.00f);
   const std::string kConfigPath = "playground/config.pb.txt";
     
-  int display_w, display_h;
-  glfwGetFramebufferSize(window, &display_w, &display_h);
-  glViewport(0, 0, display_w, display_h);
+  int framebuffer_width, framebuffer_height;
+  glfwGetFramebufferSize(window, &framebuffer_width, &framebuffer_height);
+  glViewport(0, 0, framebuffer_width, framebuffer_height);
+
+  int screen_width, screen_height;
+  glfwGetWindowSize(window, &screen_width, &screen_height);
 
   Playground playground;
-  playground.Init({kConfigPath, display_w, display_h, clear_color});
+  playground.Init({kConfigPath, clear_color});
+  playground.mutable_io()->SetScreenWidth(screen_width);
+  playground.mutable_io()->SetScreenHeight(screen_height);
 
   while (!glfwWindowShouldClose(window)) {
     playground.BeginFrame();
@@ -116,11 +121,10 @@ int main(int argc, char **argv)
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    const Io& io = playground.io();
-    Io* mutable_io = playground.mutable_io();
-    FillIoInput(window, &imgui_io, mutable_io);
+    FillIoInput(window, &imgui_io, playground.mutable_io());
 
-    if (io.gui_captured_mouse()) {
+    Io io = playground.io();
+    if (playground.io().gui_captured_cursor()) {
       glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     } else {
       glfwSetInputMode(window, GLFW_CURSOR, io.left_button_pressed() ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);

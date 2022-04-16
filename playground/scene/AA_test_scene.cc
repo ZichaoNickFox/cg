@@ -12,11 +12,11 @@
 void AATestScene::OnEnter(Context *context)
 {
   engine::ColorFrameBuffer::Option option{
-      "test_scene", context->screen_width(), context->screen_height(), 1, {glm::vec4(1,0,0,1)}};
+      "test_scene", context->io().screen_width(), context->io().screen_height(), 1, {glm::vec4(1,0,0,1)}};
   color_frame_buffer_.Init(option);
 
   engine::MSFrameBuffer::Option ms_option{
-      "ms_test_scene", context->screen_width(), context->screen_height(), 1, {glm::vec4(1,0,0,1)}, 4};
+      "ms_test_scene", context->io().screen_width(), context->io().screen_height(), 1, {glm::vec4(1,0,0,1)}, 4};
   ms_frame_buffer_.Init(ms_option);
 
   cube_positions_[0] = glm::vec3(0.0f, 0.0f, 0.0f);

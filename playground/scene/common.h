@@ -11,4 +11,5 @@ class OnUpdateCommon {
   void GuiFps(Context* context);
   void InspectCamera(Context* context);
   void MoveCamera(Context* context);
+  void InSpectCursor(Context* context);
 };

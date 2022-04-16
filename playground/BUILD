@@ -3,9 +3,9 @@ load("@rules_cc//cc:defs.bzl", "cc_binary")
 load("//:cg_proto_library.bzl", "cg_proto_library")
 
 cc_binary(
-  name = "launcher",
+  name = "window",
   srcs = [
-    "launcher.cc",
+    "window.cc",
   ],
   deps = [
     "//engine:debug",

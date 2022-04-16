@@ -21,6 +21,7 @@ void NormalScene::OnEnter(Context *context)
 
   plane_.mutable_transform()->SetScale(glm::vec3(3, 3, 3));
   // plane_.mutable_transform()->SetRotation(glm::angleAxis(float(M_PI) / 2, glm::vec3(1.0, 0.0, -1.0)));
+  plane_.mutable_transform()->SetTranslation(glm::vec3(1, 1, 1));
 
   sphere_.mutable_transform()->SetTranslation(glm::vec3(3, 1, 1));
 
@@ -67,11 +68,18 @@ void NormalScene::OnUpdate(Context *context)
   point_light_.SetColor(light_color_);
   point_light_.OnUpdate(context);
 
+  glm::vec2 normalized_cursor_screen_pos(context->io().normalized_cursor_screen_pos_x(),
+                                         context->io().normalized_cursor_screen_pos_y());
+  glm::vec3 cursor_world_pos_near, cursor_world_pos_far;
+  context->camera().GetPickRay(normalized_cursor_screen_pos, &cursor_world_pos_near, &cursor_world_pos_far);
+  kLineFrom = cursor_world_pos_near;
+  kLineTo = cursor_world_pos_far;
+
   intersect_line_.reset();
   Object::IntersectResult intersect_result;
-  if (plane_.Intersect(context, kLineFrom, kLineTo - kLineFrom, &intersect_result)) {
+  if (sphere_.Intersect(context, kLineFrom, kLineTo - kLineFrom, &intersect_result)) {
     intersect_line_ = std::make_unique<Lines>();
-    intersect_line_->SetMesh({{intersect_result.pos_ws, intersect_result.pos_ws + intersect_result.normal_ws * 10.0f},
+    intersect_line_->SetMesh({{intersect_result.position_ws, intersect_result.position_ws + intersect_result.normal_ws * 10.0f},
                               {glm::vec3(1, 0, 0), glm::vec3(1, 0, 0)}, GL_LINES});
   }
 
