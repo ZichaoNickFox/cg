@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <glog/logging.h>
+#include <limits>
 #include <string>
 
 namespace util {
@@ -69,4 +70,9 @@ float RandFromTo(float from, float to) {
   int rand_value = RandFromTo(rand_from, rand_to);
   return rand_value / 1000.0f;
 }
+
+float FloatEq(float value, float target) {
+  return value < target + std::numeric_limits<float>::epsilon()
+      && value > target - std::numeric_limits<float>::epsilon();
 }
+} // namespace util

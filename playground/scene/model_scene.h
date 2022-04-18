@@ -20,14 +20,16 @@ class ModelScene : public Scene {
 
  private:
   float shininess_ = 1;
-  bool texture_ambient_ = true;
-  bool texture_normal_ = true;
-  bool texture_specular_ = true;
-  bool texture_diffuse_ = true;
-  bool texture_height_ = true;
-  bool show_normal_ = false;
+  bool use_texture_ambient_ = true;
+  bool use_texture_normal_ = true;
+  bool use_texture_specular_ = true;
+  bool use_texture_diffuse_ = true;
+  bool use_texture_height_ = true;
+  bool show_vertex_normal_ = false;
+  bool show_texture_normal_ = false;
   bool show_TBN_ = false;
   bool show_triangle_ = false;
+  bool use_blinn_phong_ = false;
 
   float rotate_speed_ = 0.01;
 

@@ -115,6 +115,12 @@ shader_config {
   fs_path : "playground/resource/shader/TBN.fs.glsl";
 }
 
+shader_config {
+  name : "color";
+  vs_path : "playground/resource/shader/color.vs.glsl";
+  fs_path : "playground/resource/shader/color.fs.glsl";
+}
+
 texture_config {
   name : "opengl0";
   paths : "playground/resource/texture/opengl0.jpeg";

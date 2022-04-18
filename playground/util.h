@@ -45,4 +45,6 @@ int64_t DurationMillisecond(const Time& from, const Time& to);
 
 // random : 3 precisely
 float RandFromTo(float from, float to);
+
+float FloatEq(float value, float target);
 }

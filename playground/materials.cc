@@ -86,8 +86,6 @@ PhongShader::PhongShader(const Param& phong, Context* context, Object* object) {
   phong.light_info.UpdateMaterial(context, material);
 
   material->SetInt("blinn_phong", phong.use_blinn_phong);
-
-  material->PrepareShader();
 }
 
 PbrShader::PbrShader(const Param& pbr, Context* context, Object* object) {
@@ -109,8 +107,6 @@ PbrShader::PbrShader(const Param& pbr, Context* context, Object* object) {
   material->SetFloat("ao", pbr.ao);
 
   pbr.light_info.UpdateMaterial(context, material);
-
-  material->PrepareShader();
 }
 
 NormalShader::NormalShader(const Param& normal, Context* context, Object* object) {
@@ -125,11 +121,13 @@ NormalShader::NormalShader(const Param& normal, Context* context, Object* object
   material->SetFloat("line_length", normal.length);
   material->SetFloat("line_width", normal.width);
   material->SetVec3("view_pos", camera.transform().translation());
-  material->SetBool("show_normal", normal.show_normal);
+  material->SetBool("show_vertex_normal", normal.show_vertex_normal);
   material->SetBool("show_TBN", normal.show_TBN);
   material->SetBool("show_triangle", normal.show_triangle);
-  
-  material->PrepareShader();
+  material->SetBool("show_texture_normal", normal.show_texture_normal && normal.texture_normal);
+  if (normal.texture_normal) {
+    material->SetTexture("texture_normal", normal.texture_normal.value());
+  }
 }
 
 LinesShader::LinesShader(const Param& param, Context* context, Lines* lines) {
@@ -145,6 +143,32 @@ LinesShader::LinesShader(const Param& param, Context* context, Lines* lines) {
   material->SetMat4("model", model);
   material->SetVec3("view_pos", camera.transform().translation());
   material->SetFloat("line_width", param.line_width);
+}
 
-  material->PrepareShader();
+ColorShader::ColorShader(const Param& param, Context* context, Object* object) {
+  engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
+  material->PushShader(context->GetShader("color"));
+
+  const engine::Camera& camera = context->camera();
+  glm::mat4 project = camera.GetProjectMatrix();
+  glm::mat4 view = camera.GetViewMatrix();
+  glm::mat4 model = object->GetModelMatrix();
+  material->SetMat4("project", project);
+  material->SetMat4("view", view);
+  material->SetMat4("model", model);
+  material->SetVec4("color", param.color);
+}
+
+Texture0Shader::Texture0Shader(const Param& param, Context* context, Object* object) {
+  engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
+  material->PushShader(context->GetShader("texture0"));
+
+  const engine::Camera& camera = context->camera();
+  glm::mat4 project = camera.GetProjectMatrix();
+  glm::mat4 view = camera.GetViewMatrix();
+  glm::mat4 model = object->GetModelMatrix();
+  material->SetMat4("project", project);
+  material->SetMat4("view", view);
+  material->SetMat4("model", model);
+  material->SetTexture("texture0", param.texture0);
 }

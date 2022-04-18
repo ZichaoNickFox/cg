@@ -14,11 +14,12 @@
 #include "playground/scene/pbr_scene.h"
 #include "playground/scene/phong_scene.h"
 #include "playground/scene/shadow_map_scene.h"
+#include "playground/scene/share_scene.h"
 #include "playground/scene/skybox_scene.h"
 #include "playground/scene/triangle_scene.h"
 
 namespace {
-const std::string kDefaultScene = "NormalScene";
+const std::string kDefaultScene = "ShareScene";
 }
 
 void Playground::Init(const Context::Option& option) {
@@ -42,6 +43,7 @@ void Playground::InitScene() {
   scene_map_.insert(std::make_pair("ModelScene", std::make_unique<ModelScene>()));
   scene_map_.insert(std::make_pair("PbrScene", std::make_unique<PbrScene>()));
   scene_map_.insert(std::make_pair("NormalScene", std::make_unique<NormalScene>()));
+  scene_map_.insert(std::make_pair("ShareScene", std::make_unique<ShareScene>()));
 }
 
 void Playground::BeginFrame() {

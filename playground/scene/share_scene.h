@@ -14,7 +14,7 @@
 #include "playground/object/sphere.h"
 #include "playground/scene.h"
 
-class NormalScene : public Scene {
+class ShareScene : public Scene {
  public:
   void OnEnter(Context* context);
   void OnUpdate(Context* context);
@@ -22,6 +22,10 @@ class NormalScene : public Scene {
   void OnExit(Context* context);
 
  private:
+  int step_ = 1013;
+  glm::vec4 plane_color_1011_ = glm::vec4(1, 0, 0, 1);
+  glm::vec4 sphere_color_1011_ = glm::vec4(0, 1, 0, 1);
+  
   glm::vec3 light_color_ = glm::vec3(1, 1, 1);
 
   bool use_blinn_phong_ = false;

@@ -38,15 +38,17 @@ void ModelScene::OnUpdate(Context *context)
   point_lights_[0].SetAttenuationMetre(600);
   // point_lights_[1].SetAttenuationMetre(600);
   
-  ImGui::Checkbox("texture ambient", &texture_ambient_);
-  ImGui::Checkbox("texture diffuse", &texture_diffuse_);
-  ImGui::Checkbox("texture normal", &texture_normal_);
-  ImGui::Checkbox("texture height", &texture_height_);
-  ImGui::Checkbox("texture specular", &texture_specular_);
-  ImGui::Checkbox("show normal", &show_normal_);
-  ImGui::Checkbox("show TBN", &show_TBN_);
-  ImGui::Checkbox("show triangle", &show_triangle_);
-  ImGui::SliderFloat("shininess", &shininess_, 0, 50);
+  ImGui::Checkbox("texture_ambient", &use_texture_ambient_);
+  ImGui::Checkbox("texture_diffuse", &use_texture_diffuse_);
+  ImGui::Checkbox("texture_normal", &use_texture_normal_);
+  ImGui::Checkbox("texture_height", &use_texture_height_);
+  ImGui::Checkbox("texture_specular", &use_texture_specular_);
+  ImGui::Checkbox("show_vertex_normal", &show_vertex_normal_);
+  ImGui::Checkbox("show_texture_normal", &show_texture_normal_);
+  ImGui::Checkbox("show_TBN", &show_TBN_);
+  ImGui::Checkbox("show_triangle", &show_triangle_);
+  ImGui::SliderFloat("shininess", &shininess_, 0, 1);
+  ImGui::Checkbox("use_blinn_phong", &use_blinn_phong_);
 
   ImGui::SliderFloat("rotate speed", &rotate_speed_, 0.0, 0.1);
   
@@ -63,32 +65,34 @@ void ModelScene::OnUpdate(Context *context)
 void ModelScene::OnRender(Context *context) {
   PhongShader::Param phong;
   phong.light_info = ShaderLightInfo(point_lights_);
-  phong.use_blinn_phong = false;
   for (int i = 0; i < nanosuit_.model_part_num(); ++i) {
     ModelPart* model_part = nanosuit_.mutable_model_part(i);
     model_part->mutable_transform()->SetScale(glm::vec3(0.3, 0.3, 0.3));
 
-    if (texture_ambient_) {
+    if (use_texture_ambient_) {
       phong.texture_ambient = model_part->texture_ambient(0);
     }
-    if (texture_normal_) {
+    if (use_texture_normal_) {
       phong.texture_normal = model_part->texture_normal(0);
     }
     // TODO assimp may has some error
-    if (texture_height_) {
+    if (use_texture_height_) {
       phong.texture_normal = model_part->texture_height(0);
     }
-    if (texture_specular_) {
+    if (use_texture_specular_) {
       phong.texture_specular = model_part->texture_specular(0);
     }
-    if (texture_diffuse_) {
+    if (use_texture_diffuse_) {
       phong.texture_diffuse = model_part->texture_diffuse(0);
     }
     phong.shininess = shininess_;
     PhongShader(phong, context, model_part);
     model_part->OnRender(context);
+    phong.use_blinn_phong = use_blinn_phong_;
     
-    NormalShader({0.1, 1, show_normal_, show_TBN_, show_triangle_}, context, model_part);
+    NormalShader::Param normal_param{show_vertex_normal_, show_TBN_, show_triangle_,
+                                     show_texture_normal_, phong.texture_normal, 0.1, 1};
+    NormalShader(normal_param, context, model_part);
     model_part->OnRender(context);
   }
 

@@ -30,7 +30,7 @@ class PhongShader {
   struct Param {
     std::string shader_name = "phong";
     ShaderLightInfo light_info;
-    bool use_blinn_phong;
+    bool use_blinn_phong = false;
 
     glm::vec3 ambient = glm::vec3(0, 0, 0);
     glm::vec3 diffuse = glm::vec3(0, 0, 0);
@@ -66,11 +66,13 @@ class PbrShader {
 class NormalShader {
  public:
   struct Param {
-    float length = 0.4;
-    float width = 1.0;
-    bool show_normal = true;
+    bool show_vertex_normal = true;
     bool show_TBN = true;
     bool show_triangle = true;
+    bool show_texture_normal = true;
+    std::optional<engine::Texture> texture_normal;
+    float length = 0.4;
+    float width = 1.0;
   };
   NormalShader(const Param& param, Context* context, Object* object);
 };
@@ -81,4 +83,20 @@ class LinesShader {
     float line_width = 1.0;
   };
   LinesShader(const Param& param, Context* context, Lines* object);
+};
+
+class ColorShader {
+ public:
+  struct Param {
+    glm::vec4 color = glm::vec4(1, 0, 0, 1);
+  };
+  ColorShader(const Param& param, Context* context, Object* object);
+};
+
+class Texture0Shader {
+ public:
+  struct Param {
+    engine::Texture texture0;
+  };
+  Texture0Shader(const Param& param, Context* context, Object* object);
 };

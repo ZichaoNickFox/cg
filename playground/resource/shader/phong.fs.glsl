@@ -48,7 +48,9 @@ vec3 CalcLight(Light light) {
 
   vec3 normal = vec3(0, 0, 0);
   if (material.use_texture_normal) {
-    normal = world_TBN_ * texture(material.texture_normal0, texcoord_).xyz;
+    vec3 normal_from_texture = texture(material.texture_normal0, texcoord_).xyz;
+    normal_from_texture = normalize(normal_from_texture * 2.0 - 1.0);
+    normal = normalize(world_TBN_ * normal_from_texture);
   } else {
     normal = normalize(frag_world_normal_);
   }
@@ -70,6 +72,7 @@ vec3 CalcLight(Light light) {
   // ambient
   vec3 ambient_component = light.color * ambient;
 
+  // diffuse
   vec3 frag_2_light = normalize(light.pos - frag_world_pos_);
   float diff_factor = max(dot(normal, frag_2_light), 0.0);
   vec3 diffuse_component = light.color * diff_factor * diffuse;

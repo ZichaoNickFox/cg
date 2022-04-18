@@ -30,6 +30,8 @@ cc_library(
     "phong_scene.cc",
     "shadow_map_scene.h",
     "shadow_map_scene.cc",
+    "share_scene.h",
+    "share_scene.cc",
     "skybox_scene.h",
     "skybox_scene.cc",
     "triangle_scene.h",
