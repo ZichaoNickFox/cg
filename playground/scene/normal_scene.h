@@ -6,13 +6,13 @@
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
-#include "playground/materials.h"
 #include "playground/object/cube.h"
 #include "playground/object/lines.h"
 #include "playground/object/plane.h"
 #include "playground/object/point_light.h"
 #include "playground/object/sphere.h"
 #include "playground/scene.h"
+#include "playground/shaders.h"
 
 class NormalScene : public Scene {
  public:
@@ -22,7 +22,7 @@ class NormalScene : public Scene {
   void OnExit(Context* context);
 
  private:
-  glm::vec3 light_color_ = glm::vec3(1, 1, 1);
+  glm::vec4 light_color_ = glm::vec4(1, 1, 1, 1);
 
   bool use_blinn_phong_ = false;
   bool use_texture_normal_ = false;

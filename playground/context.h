@@ -5,7 +5,6 @@
 #include <glog/logging.h>
 
 #include "engine/camera.h"
-#include "engine/pass.h"
 #include "playground/io.h"
 #include "playground/mesh_repo.h"
 #include "playground/model_repo.h"
@@ -39,8 +38,8 @@ class Context {
   const Io& io() { return io_; }
   Io* mutable_io() { return &io_; }
 
-  void PushCamera(std::shared_ptr<engine::Camera> camera) { cameras_.push(camera); }
-  void PopCamera() { cameras_.pop(); }
+  void SetCamera(std::shared_ptr<engine::Camera> camera) { camera_ = camera; }
+  
   const engine::Camera& camera();
   engine::Camera* mutable_camera();
 
@@ -54,9 +53,6 @@ class Context {
   engine::Texture GetTexture(const std::string& name, bool flip_vertically = false, bool use_mipmap = false);
   std::shared_ptr<const engine::Mesh> GetMesh(const std::string& name);
   std::vector<ModelRepo::ModelPartData> GetModel(const std::string& name);
-
-  const Pass pass() const { return pass_; }
-  void SetPass(Pass pass) { pass_ = pass; }
 
   float light_attenuation_constant(int metre);
   float light_attenuation_linear(int metre);
@@ -85,14 +81,13 @@ class Context {
 
   Io io_;
 
-  std::stack<std::weak_ptr<engine::Camera>> cameras_;
+  // Move camera outside context
+  std::weak_ptr<engine::Camera> camera_;
 
   int frame_interval_;
   int fps_;
 
   glm::vec4 clear_color_;
-
-  Pass pass_;
 
   float camera_move_speed_ = 5;
   float camera_rotate_speed_ = 5;

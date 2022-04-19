@@ -19,7 +19,7 @@ void FullscreenQuad::OnRender(Context *context)
     glGenVertexArrays(1, &empty_vao_);
   }
   if (!material_.HasShader()) {
-    material_.PushShader(context->GetShader("fullscreen_quad"));
+    material_.SetShader(context->GetShader("fullscreen_quad"));
   }
   if (frame_buffer_) {
     material_.SetTexture("texture0", frame_buffer_->GetTexture(frame_buffer_texture_id_));

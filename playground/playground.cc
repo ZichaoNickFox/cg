@@ -4,7 +4,6 @@
 
 #include "playground/scene/AA_scene.h"
 #include "playground/scene/AA_test_scene.h"
-#include "playground/scene/cube_world_scene.h"
 #include "playground/scene/deferred_shading_scene.h"
 #include "playground/scene/forward_shading_scene.h"
 #include "playground/scene/gallery_scene.h"
@@ -13,13 +12,11 @@
 #include "playground/scene/normal_scene.h"
 #include "playground/scene/pbr_scene.h"
 #include "playground/scene/phong_scene.h"
-#include "playground/scene/shadow_map_scene.h"
 #include "playground/scene/share_scene.h"
 #include "playground/scene/skybox_scene.h"
-#include "playground/scene/triangle_scene.h"
 
 namespace {
-const std::string kDefaultScene = "ShareScene";
+const std::string kDefaultScene = "ForwardShadingScene";
 }
 
 void Playground::Init(const Context::Option& option) {
@@ -30,13 +27,10 @@ void Playground::Init(const Context::Option& option) {
 
 void Playground::InitScene() {
   scene_map_.insert(std::make_pair("GalleryScene", std::make_unique<GalleryScene>()));
-  scene_map_.insert(std::make_pair("TriangleScene", std::make_unique<TriangleScene>()));
-  scene_map_.insert(std::make_pair("CubeWorldScene", std::make_unique<CubeWorldScene>()));
   scene_map_.insert(std::make_pair("PhongScene", std::make_unique<PhongScene>()));
   scene_map_.insert(std::make_pair("ForwardShadingScene", std::make_unique<ForwardShadingScene>()));
   scene_map_.insert(std::make_pair("DeferredShadingScene", std::make_unique<DeferredShadingScene>()));
   scene_map_.insert(std::make_pair("SkyboxScene", std::make_unique<SkyboxScene>()));
-  scene_map_.insert(std::make_pair("ShadowMapScene", std::make_unique<ShadowMapScene>()));
   scene_map_.insert(std::make_pair("MrtScene", std::make_unique<MrtScene>()));
   scene_map_.insert(std::make_pair("AAScene", std::make_unique<AAScene>()));
   scene_map_.insert(std::make_pair("AATestScene", std::make_unique<AATestScene>()));

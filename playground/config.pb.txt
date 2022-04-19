@@ -49,9 +49,9 @@ shader_config {
 }
 
 shader_config {
-  name : "shadow_map";
-  vs_path : "playground/resource/shader/shadow_map.vs.glsl";
-  fs_path : "playground/resource/shader/shadow_map.fs.glsl";
+  name : "z_buffer";
+  vs_path : "playground/resource/shader/z_buffer.vs.glsl";
+  fs_path : "playground/resource/shader/z_buffer.fs.glsl";
 }
 
 shader_config {

@@ -7,6 +7,7 @@
 #include "imgui.h"
 #include <memory>
 
+#include "engine/pass.h"
 #include "engine/transform.h"
 #include "playground/scene/common.h"
 #include "playground/util.h"
@@ -18,7 +19,7 @@ void ForwardShadingScene::OnEnter(Context *context)
     glm::vec3 point_light_pos(util::RandFromTo(-5, 5), util::RandFromTo(0, 5), util::RandFromTo(-5, 5));
     point_lights_[i].mutable_transform()->SetTranslation(point_light_pos);
     point_lights_[i].mutable_transform()->SetScale(glm::vec3(0.2, 0.2, 0.2));
-    glm::vec3 color(util::RandFromTo(0, 1), util::RandFromTo(0, 1), util::RandFromTo(0, 1));
+    glm::vec4 color(util::RandFromTo(0, 1), util::RandFromTo(0, 1), util::RandFromTo(0, 1), 1.0);
     point_lights_[i].SetColor(color);
   }
 
@@ -34,7 +35,7 @@ void ForwardShadingScene::OnEnter(Context *context)
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(5.3, 4.3, -3.5));
   camera_->mutable_transform()->SetRotation(glm::quat(glm::vec3(2.7, 0.75, -3.1)));
-  context->PushCamera(camera_);
+  context->SetCamera(camera_);
 
   plane_.mutable_transform()->SetTranslation(glm::vec3(0, -1, 0));
   plane_.mutable_transform()->SetScale(glm::vec3(10, 0, 10));
@@ -72,15 +73,15 @@ void ForwardShadingScene::OnUpdate(Context *context)
   ImGui::Text("Camera Type");
   ImGui::SameLine();
   if (ImGui::Button("Perceptive Camera")) {
-    context->PopCamera();
+    camera_->SetType(engine::Camera::Perspective);
   }
   ImGui::SameLine();
   if (ImGui::Button("Orthographic Camera")) {
-    context->mutable_camera()->SetType(engine::Camera::Orthographic);
+    camera_->SetType(engine::Camera::Orthographic);
   }
   ImGui::SameLine();
   if (ImGui::Button("Orthographic Direction Light")) {
-    context->PushCamera(directional_light_.Test_GetCamera());
+    // context->SetCamera(directional_light_.Test_GetCamera());
   }
 
   for (int i = 0; i < point_lights_num_; ++i) {
@@ -94,43 +95,69 @@ void ForwardShadingScene::OnUpdate(Context *context)
 
 void ForwardShadingScene::OnRender(Context *context)
 {
-  directional_light_.ShadowMappingPassBegin(context);
-  RenderShadowMap(context);
-  directional_light_.ShadowMappingPassEnd(context);
+  engine::ZBufferPass z_buffer_pass({"depth_buffer", context->io().screen_width(), context->io().screen_height()},
+                                    directional_light_.transform());
+  RunZBufferPass(context, &z_buffer_pass);
 
-  glm::mat4 shadow_map_vp = directional_light_.GetShadowMapVP();
-  engine::Texture shadow_map_texture = directional_light_.GetShadowMapTexture();
-  RenderScene(context, shadow_map_vp, shadow_map_texture);
+  engine::ForwardPass forward_pass;
+  RunForwardPass(context, &forward_pass);
+
+  engine::ShadowPass shadow_pass(z_buffer_pass.camera_vp(), z_buffer_pass.z_buffer_texture());
+  RunShadowPass(context, &shadow_pass);
 }
 
-void ForwardShadingScene::RenderShadowMap(Context* context) {
+void ForwardShadingScene::RunZBufferPass(Context* context, engine::ZBufferPass* z_buffer_pass) {
+  z_buffer_pass->Begin();
+
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
-    cube->mutable_material()->PushShader(context->GetShader("shadow_map"));
+    ZBufferShader{context->GetShader("z_buffer"), z_buffer_pass->camera(), cube};
     cube->OnRender(context);
-    cube->mutable_material()->PopShader();
   }
-  plane_.mutable_material()->PushShader(context->GetShader("shadow_map"));
+  ZBufferShader{context->GetShader("z_buffer"), z_buffer_pass->camera(), &plane_};
   plane_.OnRender(context);
-  plane_.mutable_material()->PopShader();
+
+  z_buffer_pass->End();
 }
 
-void ForwardShadingScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
-                                       const engine::Texture& shadow_map_texture) {
+void ForwardShadingScene::RunForwardPass(Context* context, engine::ForwardPass* forward_pass) {
+  forward_pass->Begin();
+
   PhongShader::Param phong;
-  phong.light_info = shader_light_info_;
+  phong.light_info = point_lights_;
+  phong.ambient = context->material_property_ambient("gold");
+  phong.diffuse = context->material_property_diffuse("gold");
+  phong.specular = context->material_property_specular("gold");
+  phong.shininess = context->material_property_shininess("gold");
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
     PhongShader(phong, context, cube);
     cube->OnRender(context);
   }
   for (int i = 0; i < point_lights_num_; ++i) {
+    ColorShader({point_lights_[i].color()}, context, &point_lights_[i]);
     point_lights_[i].OnRender(context);
   }
+
+  LinesShader({}, context, &coord_);
   coord_.OnRender(context);
+
   PhongShader(phong, context, &plane_);
   plane_.OnRender(context);
+
+  LinesShader({}, context, directional_light_.mutable_lines());
+  Texture0Shader({context->GetTexture("directional_light")}, context, directional_light_.mutable_billboard());
   directional_light_.OnRender(context);
+
+  forward_pass->End();
+}
+
+void ForwardShadingScene::RunShadowPass(Context* context, engine::ShadowPass* shadow_pass) {
+  shadow_pass->Begin();
+
+
+
+  shadow_pass->End();
 }
 
 void ForwardShadingScene::OnExit(Context *context)
@@ -145,5 +172,5 @@ void ForwardShadingScene::OnExit(Context *context)
   coord_.OnDestory(context);
   plane_.OnDestory(context);
 
-  context->PopCamera();
+  context->SetCamera(nullptr);
 }

@@ -24,14 +24,14 @@ void AATestScene::OnEnter(Context *context)
   for (int i = 0; i < kCubeNum; ++i) {
     std::unique_ptr<Cube> cube = std::make_unique<Cube>();
     cube->mutable_transform()->SetTranslation(cube_positions_[i]);
-    cube->mutable_material()->PushShader(context->GetShader("aa_test_scene"));
+    cube->mutable_material()->SetShader(context->GetShader("aa_test_scene"));
     cubes_.push_back(std::move(cube));
   }
 
   glEnable(GL_DEPTH_TEST);
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(0, 0, 10));
-  context->PushCamera(camera_);
+  context->SetCamera(camera_);
 }
 
 void AATestScene::OnUpdate(Context *context)
@@ -51,12 +51,12 @@ void AATestScene::OnRender(Context *context)
   engine::Texture texture = ms_frame_buffer_.GetTexture();
 
   FullscreenQuad full_screen_quad;
-  full_screen_quad.mutable_material()->PushShader(context->GetShader("fullscreen_quad"));
+  full_screen_quad.mutable_material()->SetShader(context->GetShader("fullscreen_quad"));
   full_screen_quad.mutable_material()->SetTexture("texture0", texture);
   full_screen_quad.OnRender(context);
 }
 
 void AATestScene::OnExit(Context *context)
 {
-  context->PopCamera();
+  context->SetCamera(nullptr);
 }

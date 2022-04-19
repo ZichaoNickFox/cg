@@ -80,10 +80,10 @@ cc_library(
 )
 
 cc_library(
-  name = "materials",
+  name = "shaders",
   srcs = [
-    "materials.h",
-    "materials.cc",
+    "shaders.h",
+    "shaders.cc",
   ],
   deps = [
     "//engine:engine",

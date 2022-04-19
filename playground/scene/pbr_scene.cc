@@ -11,7 +11,7 @@
 
 void PbrScene::OnEnter(Context *context)
 {
-  const glm::vec3 kLightColor = glm::vec3(0.0, 1.0, 0.0);
+  const glm::vec4 kLightColor = glm::vec4(0.0, 1.0, 0.0, 1.0);
   const glm::vec3 kLightScale = glm::vec3(0.4, 0.4, 0.4);
 
   std::vector<glm::vec3> light_poses{glm::vec3(2, 2, 0), glm::vec3(2, 0, 2),
@@ -26,9 +26,8 @@ void PbrScene::OnEnter(Context *context)
   camera_->mutable_transform()->SetTranslation(glm::vec3(2.97, 3.95, 6.76));
   camera_->mutable_transform()->SetRotation(glm::quat(0.95, -0.21, 0.18, 0.04));
   camera_->SetFarClip(200);
-  context->PushCamera(camera_);
+  context->SetCamera(camera_);
 
-  skybox_.SetCubeMap(context->GetTexture("skybox"));
   skybox_.mutable_transform()->SetScale(glm::vec3(100, 100, 100));
 
   plane_.mutable_transform()->SetScale(glm::vec3(5.0, 5.0, 5.0));
@@ -91,6 +90,6 @@ void PbrScene::OnExit(Context *context)
   }
   coord_.OnDestory(context);
   skybox_.OnDestory(context);
-  context->PopCamera();
+  context->SetCamera(nullptr);
   plane_.OnDestory(context);
 }

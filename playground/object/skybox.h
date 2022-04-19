@@ -21,10 +21,6 @@ class Skybox : public Object {
 
   std::shared_ptr<const engine::Mesh> mesh(Context* context) const override { return context->GetMesh("cube"); }
 
-  void SetCubeMap(engine::Texture cube_map);
-  
  private: 
   engine::Material material_;
-  engine::Texture cube_map_;
-  bool has_cube_map_ = false;
 };

@@ -15,6 +15,22 @@
 #include "engine/material.h"
 
 namespace engine {
+struct MeshVertexComponent {
+  std::string name;
+  GLuint format;
+  GLuint type;
+  GLuint internal_type;
+  uint32_t size_in_float;
+  uint32_t size_in_byte;
+};
+static const std::unordered_map<std::string, MeshVertexComponent> kMeshVertexLayout = {
+  {"position", {"position", GL_RGB, GL_FLOAT, GL_RGB32F, 3, 12}},
+  {"normal", {"normal", GL_RGB, GL_FLOAT, GL_RGB32F, 3, 12}},
+  {"texcoord", {"texcoord", GL_RG, GL_FLOAT, GL_RG32F, 2, 8}},
+  {"tangent", {"tangent", GL_RGB, GL_FLOAT, GL_RGB32F, 3, 12}},
+  {"bitangent", {"bitangent", GL_RGB, GL_FLOAT, GL_RGB32F, 3, 12}},
+};
+
 class Mesh {
  public:
   void SetPositions(const std::vector<glm::vec3> &positions) { positions_ = positions; }

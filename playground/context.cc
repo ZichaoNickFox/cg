@@ -20,15 +20,13 @@ void Context::Init(const Option& option) {
 }
 
 const engine::Camera& Context::camera() {
-  CGCHECK(!cameras_.empty());
-  CGCHECK(!cameras_.top().expired());
-  return *cameras_.top().lock().get();
+  CGCHECK(!camera_.expired());
+  return *camera_.lock().get();
 }
 
 engine::Camera* Context::mutable_camera() {
-  CGCHECK(!cameras_.empty());
-  CGCHECK(!cameras_.top().expired());
-  return cameras_.top().lock().get();
+  CGCHECK(!camera_.expired());
+  return camera_.lock().get();
 }
 
 void Context::SetFrameInternal(int frame_interval) {

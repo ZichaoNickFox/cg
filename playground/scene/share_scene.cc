@@ -13,7 +13,7 @@
 
 void ShareScene::OnEnter(Context *context)
 {
-  const glm::vec3 kLightColor = glm::vec3(1.0, 1.0, 1.0);
+  const glm::vec4 kLightColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
   const glm::vec3 kLightPos = glm::vec3(5, 5, 0);
   const glm::vec3 kLightScale = glm::vec3(0.4, 0.4, 0.4);
   point_light_.mutable_transform()->SetTranslation(kLightPos);
@@ -27,7 +27,7 @@ void ShareScene::OnEnter(Context *context)
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(5.83, 4.11, 0.10));
   camera_->mutable_transform()->SetRotation(glm::quat(-0.64, 0.28, -0.65, -0.28));
-  context->PushCamera(camera_);
+  context->SetCamera(camera_);
 
   struct Data {
     std::vector<glm::vec3> points;
@@ -153,5 +153,5 @@ void ShareScene::OnExit(Context *context)
   plane_.OnDestory(context);
   sphere_.OnDestory(context);
   coord_.OnDestory(context);
-  context->PopCamera();
+  context->SetCamera(nullptr);
 }

@@ -11,13 +11,10 @@
 #include "engine/texture.h"
 
 namespace engine {
-
 class Material {
  public:
-  void PushShader(Shader shader);
-  void PopShader();
-  // bool HasShader() const { shader_datas_.size() > 0; }
-  bool HasShader() const { return bool(shader_data_); }
+  void SetShader(Shader shader);
+  bool HasShader() const { return shader_.has_value(); }
   const Shader& shader() const;
 
   void SetFloat(const std::string& location, float value);
@@ -32,26 +29,20 @@ class Material {
   void PrepareShader();
 
  private:
-  struct ShaderData {
-    ShaderData(const Shader& shader) { shader_ = shader; }
-    Shader shader_;
-    std::unordered_map<std::string, float> location_float_;
-    std::unordered_map<std::string, glm::mat4> location_mat4_;
-    struct TextureData {
-      int texture_unit;
-      Texture texture;
-    };
-    std::unordered_map<std::string, TextureData> location_texture_;
-    std::unordered_map<std::string, glm::vec4> location_vec4_;
-    std::unordered_map<std::string, glm::vec3> location_vec3_;
-    std::unordered_map<std::string, int> location_int_;
-    std::unordered_map<std::string, bool> location_bool_;
+  void Clear();
+
+  std::optional<Shader> shader_;
+
+  std::unordered_map<std::string, float> location_float_;
+  std::unordered_map<std::string, glm::mat4> location_mat4_;
+  struct TextureData {
+    int texture_unit;
+    Texture texture;
   };
-
-  const ShaderData& shader_data() const;
-  ShaderData* mutable_shader_data();
-  // std::stack<ShaderData> shader_datas_;
-  std::unique_ptr<ShaderData> shader_data_;
+  std::unordered_map<std::string, TextureData> location_texture_;
+  std::unordered_map<std::string, glm::vec4> location_vec4_;
+  std::unordered_map<std::string, glm::vec3> location_vec3_;
+  std::unordered_map<std::string, int> location_int_;
+  std::unordered_map<std::string, bool> location_bool_;
 };
-
 }

@@ -6,13 +6,13 @@
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
-#include "playground/materials.h"
 #include "playground/object/cube.h"
 #include "playground/object/lines.h"
 #include "playground/object/plane.h"
 #include "playground/object/point_light.h"
 #include "playground/object/sphere.h"
 #include "playground/scene.h"
+#include "playground/shaders.h"
 
 class ShareScene : public Scene {
  public:
@@ -26,7 +26,7 @@ class ShareScene : public Scene {
   glm::vec4 plane_color_1011_ = glm::vec4(1, 0, 0, 1);
   glm::vec4 sphere_color_1011_ = glm::vec4(0, 1, 0, 1);
   
-  glm::vec3 light_color_ = glm::vec3(1, 1, 1);
+  glm::vec4 light_color_ = glm::vec4(1, 1, 1, 1);
 
   bool use_blinn_phong_ = false;
   bool use_texture_normal_ = false;

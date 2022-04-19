@@ -19,11 +19,10 @@ void DeferredShadingScene::OnEnter(Context *context)
     glm::vec3 point_light_pos(util::RandFromTo(-5, 5), util::RandFromTo(0, 5), util::RandFromTo(-5, 5));
     point_lights_[i].mutable_transform()->SetTranslation(point_light_pos);
     point_lights_[i].mutable_transform()->SetScale(glm::vec3(0.2, 0.2, 0.2));
-    point_lights_[i].mutable_material()->PushShader(context->GetShader("point_light"));
+    point_lights_[i].mutable_material()->SetShader(context->GetShader("point_light"));
     point_lights_[i].SetColor(glm::vec4(util::RandFromTo(0, 1), util::RandFromTo(0, 1), util::RandFromTo(0, 1), 1.0));
   }
 
-  // http://www.barradeau.com/nicoptere/dump/materials.html
   cube_transforms_.push_back(engine::Transform(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
   cube_transforms_.push_back(engine::Transform(glm::vec3(1, 1, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
   cube_transforms_.push_back(engine::Transform(glm::vec3(2, 2, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
@@ -32,14 +31,14 @@ void DeferredShadingScene::OnEnter(Context *context)
     cubes_.push_back(Cube());
     Cube* cube = &cubes_[i];
     cube->SetTransform(cube_transforms_[i]);
-    cube->mutable_material()->PushShader(context->GetShader("phong_shadow"));
+    cube->mutable_material()->SetShader(context->GetShader("phong_shadow"));
   }
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(5.3, 4.3, -3.5));
   camera_->mutable_transform()->SetRotation(glm::quat(glm::vec3(2.7, 0.75, -3.1)));
-  context->PushCamera(camera_);
+  context->SetCamera(camera_);
 
-  plane_.mutable_material()->PushShader(context->GetShader("phong_shadow"));
+  plane_.mutable_material()->SetShader(context->GetShader("phong_shadow"));
   plane_.mutable_material()->SetVec3("material.ambient", context->material_property_ambient(material_name_));
   plane_.mutable_material()->SetVec3("material.diffuse", context->material_property_diffuse(material_name_));
   plane_.mutable_material()->SetVec3("material.specular", context->material_property_specular(material_name_));
@@ -58,7 +57,7 @@ void DeferredShadingScene::OnEnter(Context *context)
   glEnable(GL_DEPTH_TEST);
 
 /*
-  deferred_shading_quad_.mutable_material()->PushShader(context->GetShader("deferred_shading_lighting"));
+  deferred_shading_quad_.mutable_material()->SetShader(context->GetShader("deferred_shading_lighting"));
   deferred_shading_quad_.mutable_material()->SetInt("light_count", point_lights_num_);
   deferred_shading_quad_.mutable_material()->SetVec3("clear_color", context->clear_color());
   for (int i = 0; i < point_lights_num_; ++i) {
@@ -118,15 +117,15 @@ void DeferredShadingScene::OnUpdate(Context *context)
   ImGui::Text("Camera Type");
   ImGui::SameLine();
   if (ImGui::Button("Perceptive Camera")) {
-    context->PopCamera();
+    // context->SetCamera(nullptr);
   }
   ImGui::SameLine();
   if (ImGui::Button("Orthographic Camera")) {
-    context->mutable_camera()->SetType(engine::Camera::Orthographic);
+    // context->mutable_camera()->SetType(engine::Camera::Orthographic);
   }
   ImGui::SameLine();
   if (ImGui::Button("Orthographic Direction Light")) {
-    context->PushCamera(directional_light_.Test_GetCamera());
+    // context->SetCamera(directional_light_.Test_GetCamera());
   }
 
   for (int i = 0; i < point_lights_num_; ++i) {
@@ -200,17 +199,14 @@ void DeferredShadingScene::ForwardShading(Context* context, const glm::mat4& sha
 void DeferredShadingScene::DeferredShading(Context* context, const glm::mat4& shadow_map_vp,
                                            const engine::Texture& shadow_map_texture) {
   g_buffer_.Bind();
-  context->SetPass(pass::kPassDeferredShadingGeometry);
   engine::Shader deferred_shading_geometry = context->GetShader("deferred_shading_geometry");
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
-    cube->mutable_material()->PushShader(deferred_shading_geometry);
+    cube->mutable_material()->SetShader(deferred_shading_geometry);
     cube->OnRender(context);
-    cube->mutable_material()->PopShader();
   }
-  plane_.mutable_material()->PushShader(deferred_shading_geometry);
+  plane_.mutable_material()->SetShader(deferred_shading_geometry);
   plane_.OnRender(context);
-  plane_.mutable_material()->PopShader();
 
   g_buffer_.Unbind();
 
@@ -222,8 +218,6 @@ void DeferredShadingScene::DeferredShading(Context* context, const glm::mat4& sh
   deferred_shading_quad_.mutable_material()->SetTexture("texture_normal", texture_normal);
   deferred_shading_quad_.mutable_material()->SetTexture("texture_frag_world_pos", texture_frag_world_pos);
   deferred_shading_quad_.OnRender(context);
-
-  context->SetPass(pass::kPassForwardShading);
 
   g_buffer_.BlitDepth(nullptr);
 
@@ -244,5 +238,5 @@ void DeferredShadingScene::OnExit(Context *context)
   coord_.OnDestory(context);
   plane_.OnDestory(context);
 
-  context->PopCamera();
+  context->SetCamera(nullptr);
 }

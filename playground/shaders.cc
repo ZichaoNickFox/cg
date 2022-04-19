@@ -1,6 +1,7 @@
-#include "playground/materials.h"
+#include "playground/shaders.h"
 
 #include "engine/debug.h"
+#include "playground/object/point_light.h"
 #include "playground/util.h"
 
 ShaderLightInfo::ShaderLightInfo(const PointLight& point_light) {
@@ -41,7 +42,7 @@ void ShaderLightInfo::UpdateMaterial(Context* context, engine::Material* materia
 
 PhongShader::PhongShader(const Param& phong, Context* context, Object* object) {
   engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
-  material->PushShader(context->GetShader(phong.shader_name));
+  material->SetShader(context->GetShader("phong"));
 
   const engine::Camera& camera = context->camera();
   glm::mat4 project = camera.GetProjectMatrix();
@@ -90,7 +91,7 @@ PhongShader::PhongShader(const Param& phong, Context* context, Object* object) {
 
 PbrShader::PbrShader(const Param& pbr, Context* context, Object* object) {
   engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
-  material->PushShader(context->GetShader(pbr.shader_name));
+  material->SetShader(context->GetShader("pbr"));
 
   const engine::Camera& camera = context->camera();
   glm::mat4 project = camera.GetProjectMatrix();
@@ -111,7 +112,7 @@ PbrShader::PbrShader(const Param& pbr, Context* context, Object* object) {
 
 NormalShader::NormalShader(const Param& normal, Context* context, Object* object) {
   engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
-  material->PushShader(context->GetShader("normal"));
+  material->SetShader(context->GetShader("normal"));
   const engine::Camera& camera = context->camera();
   glm::mat4 project = camera.GetProjectMatrix();
   glm::mat4 view = camera.GetViewMatrix();
@@ -130,9 +131,9 @@ NormalShader::NormalShader(const Param& normal, Context* context, Object* object
   }
 }
 
-LinesShader::LinesShader(const Param& param, Context* context, Lines* lines) {
-  engine::Material* material = CGCHECK_NOTNULL(lines->mutable_material(0));
-  material->PushShader(context->GetShader("lines"));
+LinesShader::LinesShader(const Param& param, Context* context, Object* object) {
+  engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
+  material->SetShader(context->GetShader("lines"));
 
   const engine::Camera& camera = context->camera();
   glm::mat4 project = camera.GetProjectMatrix();
@@ -147,7 +148,7 @@ LinesShader::LinesShader(const Param& param, Context* context, Lines* lines) {
 
 ColorShader::ColorShader(const Param& param, Context* context, Object* object) {
   engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
-  material->PushShader(context->GetShader("color"));
+  material->SetShader(context->GetShader("color"));
 
   const engine::Camera& camera = context->camera();
   glm::mat4 project = camera.GetProjectMatrix();
@@ -161,7 +162,7 @@ ColorShader::ColorShader(const Param& param, Context* context, Object* object) {
 
 Texture0Shader::Texture0Shader(const Param& param, Context* context, Object* object) {
   engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
-  material->PushShader(context->GetShader("texture0"));
+  material->SetShader(context->GetShader("texture0"));
 
   const engine::Camera& camera = context->camera();
   glm::mat4 project = camera.GetProjectMatrix();
@@ -171,4 +172,29 @@ Texture0Shader::Texture0Shader(const Param& param, Context* context, Object* obj
   material->SetMat4("view", view);
   material->SetMat4("model", model);
   material->SetTexture("texture0", param.texture0);
+}
+
+ZBufferShader::ZBufferShader(const engine::Shader& z_buffer_shader, const engine::Camera& camera, Object* object) {
+  engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
+  material->SetShader(z_buffer_shader);
+
+  glm::mat4 project = camera.GetProjectMatrix();
+  glm::mat4 view = camera.GetViewMatrix();
+  glm::mat4 model = object->GetModelMatrix();
+  material->SetMat4("project", project);
+  material->SetMat4("view", view);
+  material->SetMat4("model", model);
+}
+
+SkyboxShader::SkyboxShader(const Param& param, Context* context, Object* object) {
+  engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
+  material->SetShader(context->GetShader("skybox"));
+
+  glm::mat4 project = context->camera().GetProjectMatrix();
+  glm::mat4 view = context->camera().GetViewMatrix();
+  glm::mat4 model = object->GetModelMatrix();
+  material->SetMat4("project", project);
+  material->SetMat4("view", view);
+  material->SetMat4("model", model); 
+  material->SetTexture("Texture0", param.cube_texture);
 }

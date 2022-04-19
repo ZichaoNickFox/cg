@@ -22,12 +22,10 @@ class DirectionalLight : public Object {
   engine::Material* mutable_material(int index = 0) override { return nullptr; }
   std::shared_ptr<const engine::Mesh> mesh(Context* context) const override { return nullptr; }
 
-  // TODO : remove after test
-  std::shared_ptr<engine::Camera> Test_GetCamera() const { return shadow_map_camera_; }
+  Billboard* mutable_billboard() { return &billboard_; }
+  Lines* mutable_lines() { return &lines_; }
 
  private:
-  std::shared_ptr<engine::Camera> shadow_map_camera_ = std::make_shared<engine::Camera>();
-
   static int directional_light_num_;
 
   static constexpr int kShadowMapWidth = 1024;

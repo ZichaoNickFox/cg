@@ -10,7 +10,7 @@
 
 void PhongScene::OnEnter(Context *context)
 {
-  const glm::vec3 kLightColor = glm::vec3(1.0, 1.0, 1.0);
+  const glm::vec4 kLightColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
   const glm::vec3 kLightPos = glm::vec3(2, 2, 0);
   const glm::vec3 kLightScale = glm::vec3(0.4, 0.4, 0.4);
   point_light_.mutable_transform()->SetTranslation(kLightPos);
@@ -23,7 +23,7 @@ void PhongScene::OnEnter(Context *context)
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(-4.8, 6.1, 5.8));
   camera_->mutable_transform()->SetRotation(glm::quat(0.88, -0.30, -0.32, -0.11));
-  context->PushCamera(camera_);
+  context->SetCamera(camera_);
 
   glEnable(GL_DEPTH_TEST);
 }
@@ -32,7 +32,7 @@ void PhongScene::OnUpdate(Context *context)
 {
   OnUpdateCommon _(context, "PhongScene");
 
-  ImGui::ColorEdit3("light_color", (float*)&light_color_);
+  ImGui::ColorEdit4("light_color", (float*)&light_color_);
   if (ImGui::Button("gold")) {
     material_property_name_ = "gold";
   }
@@ -61,6 +61,10 @@ void PhongScene::OnRender(Context *context)
   PhongShader::Param phong;
   phong.light_info = ShaderLightInfo({point_light_});
   phong.use_blinn_phong = use_blinn_phong_;
+  phong.ambient = context->material_property_ambient(material_property_name_);
+  phong.diffuse = context->material_property_diffuse(material_property_name_);
+  phong.specular = context->material_property_specular(material_property_name_);
+  phong.shininess = context->material_property_shininess(material_property_name_);
 
   PhongShader(phong, context, &cube_);
   cube_.OnRender(context);
@@ -76,5 +80,5 @@ void PhongScene::OnExit(Context *context)
   cube_.OnDestory(context);
   point_light_.OnDestory(context);
   plane_.OnDestory(context);
-  context->PopCamera();
+  context->SetCamera(nullptr);
 }

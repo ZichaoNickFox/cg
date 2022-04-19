@@ -2,10 +2,11 @@
 
 #include <optional>
 
+#include "engine/camera.h"
 #include "engine/material.h"
+#include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
-#include "playground/object/lines.h"
 #include "playground/object/object.h"
 #include "playground/object/point_light.h"
 
@@ -28,7 +29,6 @@ class ShaderLightInfo {
 class PhongShader {
  public:
   struct Param {
-    std::string shader_name = "phong";
     ShaderLightInfo light_info;
     bool use_blinn_phong = false;
 
@@ -47,7 +47,6 @@ class PhongShader {
 class PbrShader {
  public:
   struct Param {
-    std::string shader_name = "pbr";
     glm::vec3 albedo;
     float metallic;
     float roughness;
@@ -82,7 +81,7 @@ class LinesShader {
   struct Param {
     float line_width = 1.0;
   };
-  LinesShader(const Param& param, Context* context, Lines* object);
+  LinesShader(const Param& param, Context* context, Object* object);
 };
 
 class ColorShader {
@@ -99,4 +98,17 @@ class Texture0Shader {
     engine::Texture texture0;
   };
   Texture0Shader(const Param& param, Context* context, Object* object);
+};
+
+class ZBufferShader {
+ public:
+  ZBufferShader(const engine::Shader& z_buffer_shader, const engine::Camera& camera, Object* object);
+};
+
+class SkyboxShader {
+ public:
+  struct Param {
+    engine::Texture cube_texture;
+  };
+  SkyboxShader(const Param& param, Context* context, Object* object);
 };

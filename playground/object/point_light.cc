@@ -12,24 +12,7 @@ void PointLight::OnUpdate(Context *context) {
 
 void PointLight::OnRender(Context *context)
 {
-  if (!material_.HasShader()) {
-    material_.PushShader(context->GetShader("point_light"));
-  }
-  if (context->pass() != pass::kPassDeferredShadingLighting) {
-    const engine::Camera& camera = context->camera();
-    glm::mat4 project = camera.GetProjectMatrix();
-    glm::mat4 view = camera.GetViewMatrix();
-    glm::mat4 model = transform_.GetModelMatrix();
-    material_.SetMat4("project", project);
-    material_.SetMat4("view", view);
-    material_.SetMat4("model", model);
-  }
-
-  if (context->pass() != pass::kPassDeferredShadingGeometry) {
-    material_.SetVec3("light_color", color_);
-  }
   material_.PrepareShader();
-
   mesh(context)->Submit();
 }
 

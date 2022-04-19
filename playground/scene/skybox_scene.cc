@@ -16,10 +16,9 @@ void SkyboxScene::OnEnter(Context *context)
   const glm::vec3 kLightScale = glm::vec3(0.4, 0.4, 0.4);
   engine::Transform light_transform(kLightPos, glm::quat(glm::vec3(0, 0, 0)), kLightScale);
   light_.SetTransform(light_transform);
-  light_.mutable_material()->PushShader(context->GetShader("point_light"));
+  light_.mutable_material()->SetShader(context->GetShader("point_light"));
   light_.mutable_material()->SetVec3("light_color", kLightColor);
 
-  // http://www.barradeau.com/nicoptere/dump/materials.html
   cube_positions_.push_back(glm::vec3(0, 0, 0));
   cube_positions_.push_back(glm::vec3(1, 1, 1));
   cube_positions_.push_back(glm::vec3(2, 2, 1));
@@ -28,7 +27,7 @@ void SkyboxScene::OnEnter(Context *context)
     cubes_.push_back(Cube());
     Cube* cube = &cubes_[i];
     cube->mutable_transform()->SetTranslation(cube_positions_[i]);
-    cube->mutable_material()->PushShader(context->GetShader("phong"));
+    cube->mutable_material()->SetShader(context->GetShader("phong"));
     cube->mutable_material()->SetVec3("lights[0].color", kLightColor);
     cube->mutable_material()->SetVec3("lights[0].pos", kLightPos);
     cube->mutable_material()->SetFloat("lights[0].constant", context->light_attenuation_constant(100));
@@ -39,9 +38,9 @@ void SkyboxScene::OnEnter(Context *context)
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(-1.0, 1.5, 1.1));
   camera_->SetFarClip(200);
-  context->PushCamera(camera_);
+  context->SetCamera(camera_);
 
-  skybox_.mutable_material()->PushShader(context->GetShader("skybox"));
+  skybox_.mutable_material()->SetShader(context->GetShader("skybox"));
   skybox_.mutable_material()->SetTexture("texture0", context->GetTexture("skybox"));
   skybox_.mutable_transform()->SetScale(glm::vec3(100, 100, 100));
 
@@ -103,5 +102,5 @@ void SkyboxScene::OnExit(Context *context)
   light_.OnDestory(context);
   coord_.OnDestory(context);
   skybox_.OnDestory(context);
-  context->PopCamera();
+  context->SetCamera(nullptr);
 }

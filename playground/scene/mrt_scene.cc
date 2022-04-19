@@ -10,6 +10,7 @@
 
 #include "engine/transform.h"
 #include "playground/scene/common.h"
+#include "playground/shaders.h"
 #include "playground/texture_repo.h"
 #include "playground/util.h"
 
@@ -25,11 +26,10 @@ void MrtScene::OnEnter(Context *context)
     glm::vec3 point_light_pos(util::RandFromTo(-5, 5), util::RandFromTo(0, 5), util::RandFromTo(-5, 5));
     point_lights_[i].mutable_transform()->SetTranslation(point_light_pos);
     point_lights_[i].mutable_transform()->SetScale(glm::vec3(0.2, 0.2, 0.2));
-    point_lights_[i].mutable_material()->PushShader(context->GetShader("point_light"));
+    point_lights_[i].mutable_material()->SetShader(context->GetShader("point_light"));
     point_lights_[i].SetColor(glm::vec4(util::RandFromTo(0, 1), util::RandFromTo(0, 1), util::RandFromTo(0, 1), 1.0));
   }
 
-  // http://www.barradeau.com/nicoptere/dump/materials.html
   cube_transforms_.push_back(engine::Transform(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
   cube_transforms_.push_back(engine::Transform(glm::vec3(1, 1, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
   cube_transforms_.push_back(engine::Transform(glm::vec3(2, 2, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
@@ -38,14 +38,14 @@ void MrtScene::OnEnter(Context *context)
     cubes_.push_back(Cube());
     Cube* cube = &cubes_[i];
     cube->SetTransform(cube_transforms_[i]);
-    cube->mutable_material()->PushShader(context->GetShader("forward_shading"));
+    cube->mutable_material()->SetShader(context->GetShader("forward_shading"));
   }
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(5.3, 4.3, -3.5));
   camera_->mutable_transform()->SetRotation(glm::quat(glm::vec3(2.7, 0.75, -3.1)));
-  context->PushCamera(camera_);
+  context->SetCamera(camera_);
 
-  plane_.mutable_material()->PushShader(context->GetShader("forward_shading"));
+  plane_.mutable_material()->SetShader(context->GetShader("forward_shading"));
   plane_.mutable_material()->SetVec3("material.ambient", material_property_.ambient);
   plane_.mutable_material()->SetVec3("material.diffuse", material_property_.diffuse);
   plane_.mutable_material()->SetVec3("material.specular", material_property_.specular);
@@ -109,13 +109,11 @@ void MrtScene::RenderShadowMap(Context* context) {
   directional_light_.ShadowMappingPassBegin(context);
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
-    cube->mutable_material()->PushShader(context->GetShader("shadow_map"));
+    cube->mutable_material()->SetShader(context->GetShader("shadow_map"));
     cube->OnRender(context);
-    cube->mutable_material()->PopShader();
   }
-  plane_.mutable_material()->PushShader(context->GetShader("shadow_map"));
+  plane_.mutable_material()->SetShader(context->GetShader("shadow_map"));
   plane_.OnRender(context);
-  plane_.mutable_material()->PopShader();
   directional_light_.ShadowMappingPassEnd(context);
 }
 
@@ -141,7 +139,7 @@ void MrtScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
   mrt_frame_buffer_.Unbind();
 
   FullscreenQuad fullscreen_quad;
-  fullscreen_quad.mutable_material()->PushShader(context->GetShader("mrt_fusion"));
+  fullscreen_quad.mutable_material()->SetShader(context->GetShader("mrt_fusion"));
   fullscreen_quad.mutable_material()->SetTexture("scene", mrt_frame_buffer_.GetTexture(0));
   fullscreen_quad.mutable_material()->SetTexture("bright", mrt_frame_buffer_.GetTexture(1));
   fullscreen_quad.OnRender(context);
@@ -159,5 +157,5 @@ void MrtScene::OnExit(Context *context)
   coord_.OnDestory(context);
   plane_.OnDestory(context);
 
-  context->PopCamera();
+  context->SetCamera(nullptr);
 }

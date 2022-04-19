@@ -18,8 +18,8 @@ class PointLight : public Object {
   int material_num() const override { return 1; }
   engine::Material* mutable_material(int index = 0) override { return &material_; }
 
-  void SetColor(const glm::vec3& color) { color_ = color; }
-  glm::vec3 color() const { return color_; }
+  void SetColor(const glm::vec4& color) { color_ = color; }
+  glm::vec4 color() const { return color_; }
   float* mutable_color() { return reinterpret_cast<float*>(&color_); }
 
   void SetAttenuationMetre(int metre) { attenuation_metre_ = metre; }
@@ -28,7 +28,7 @@ class PointLight : public Object {
   std::shared_ptr<const engine::Mesh> mesh(Context* context) const override { return context->GetMesh("cube"); }
 
  private: 
-  glm::vec3 color_ = glm::vec3(1, 1, 1);
+  glm::vec4 color_ = glm::vec4(1, 1, 1, 1);
 
   int attenuation_metre_ = 100; // 7 / 13 / 20 / 32 / 50 / 65 / 100 / 160 / 200 / 325 / 600 / 3250
 

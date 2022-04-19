@@ -8,9 +8,9 @@
 #include <memory>
 #include <vector>
 
-#include "playground/materials.h"
 #include "playground/model_repo.h"
 #include "playground/scene/common.h"
+#include "playground/shaders.h"
 #include "playground/util.h"
 
 void ModelScene::OnEnter(Context *context)
@@ -20,7 +20,7 @@ void ModelScene::OnEnter(Context *context)
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(0.87, 4.87, 3.87));
   camera_->mutable_transform()->SetRotation(glm::quat(0.94, -0.14, 0.13, 0.014));
-  context->PushCamera(camera_);
+  context->SetCamera(camera_);
 
   nanosuit_.Init(context, "nanosuit1", "nanosuit");
   point_lights_.push_back(PointLight());
@@ -105,5 +105,5 @@ void ModelScene::OnRender(Context *context) {
 
 void ModelScene::OnExit(Context *context)
 {
-  context->PopCamera();
+  context->SetCamera(nullptr);
 }
