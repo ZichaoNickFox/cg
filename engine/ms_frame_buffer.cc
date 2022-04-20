@@ -23,13 +23,9 @@ void MSFrameBuffer::CheckSupportMSNum(GLuint fbo, int num) {
 }
 
 void MSFrameBuffer::Init(const Option& option) {
-  width_ = option.width;
-  height_ = option.height;
+  size_ = option.size;
   option_ = option;
 
-  // Frame buffer object
-  glGenFramebuffers(1, &fbo_);
-  SetFboNamePair(fbo_, option.name);
   glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
   CheckSupportMSNum(fbo_, option.ms_num);
 
@@ -38,8 +34,8 @@ void MSFrameBuffer::Init(const Option& option) {
     glGenTextures(1, textures_[i].mutable_id());
     CGCHECK(option.ms_num > 1) << " : If don't need MS, using color_frame_buffer";
     glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, textures_[i].id());
-    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, option.ms_num, GL_RGBA32F, option.width,
-        option.height, true);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, option.ms_num, GL_RGBA32F, option.size.x,
+        option.size.y, true);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D_MULTISAMPLE, textures_[i].id(), 0);
   }
 
@@ -48,8 +44,8 @@ void MSFrameBuffer::Init(const Option& option) {
   textures_.push_back(Texture());
   glGenTextures(1, textures_[option.mrt].mutable_id());
   glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, textures_[option.mrt].id());
-  glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, option.ms_num, GL_DEPTH_COMPONENT32F, option.width,
-      option.height, true);
+  glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, option.ms_num, GL_DEPTH_COMPONENT32F, option.size.x,
+      option.size.y, true);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D_MULTISAMPLE, textures_[option.mrt].id(), 0);
 
   GLenum frame_buffer_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -82,15 +78,19 @@ void MSFrameBuffer::OnUnbind() {
 
 }
 
-Texture MSFrameBuffer::GetTexture(int i) {
+Texture MSFrameBuffer::GetColorTexture(int i) {
   return textures_[i];
+}
+
+Texture MSFrameBuffer::GetDepthTexture(int i) {
+  return textures_.back();
 }
 
 void MSFrameBuffer::Blit(ColorFrameBuffer* color_frame_buffer) {
   glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo_);
   glBindFramebuffer(GL_DRAW_FRAMEBUFFER, color_frame_buffer->fbo());
-  glBlitFramebuffer(0, 0, option_.width, option_.height,
-                    0, 0, option_.width, option_.height,
+  glBlitFramebuffer(0, 0, option_.size.x, option_.size.y,
+                    0, 0, option_.size.x, option_.size.y,
                     GL_COLOR_BUFFER_BIT, GL_NEAREST);
 }
 }

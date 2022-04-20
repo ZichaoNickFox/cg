@@ -4,6 +4,16 @@
 #include "playground/object/point_light.h"
 #include "playground/util.h"
 
+ShaderShadowInfo::ShaderShadowInfo(const glm::mat4& light_vp, const engine::Texture& depth_texture) {
+  light_vp_ = light_vp;
+  shadow_map_ = depth_texture;
+}
+
+void ShaderShadowInfo::UpdateMaterial(Context* context, engine::Material* material) const {
+  // material->SetMat4("shadow_info.light_vp", light_vp_);
+  // material->SetTexture("shadow_info.depth_buffer", shadow_map_);
+}
+
 ShaderLightInfo::ShaderLightInfo(const PointLight& point_light) {
   Insert(point_light);
 }
@@ -85,6 +95,9 @@ PhongShader::PhongShader(const Param& phong, Context* context, Object* object) {
   }
 
   phong.light_info.UpdateMaterial(context, material);
+  if (phong.shadow_info) {
+    phong.shadow_info->UpdateMaterial(context, material);
+  }
 
   material->SetInt("blinn_phong", phong.use_blinn_phong);
 }
@@ -174,9 +187,9 @@ Texture0Shader::Texture0Shader(const Param& param, Context* context, Object* obj
   material->SetTexture("texture0", param.texture0);
 }
 
-ZBufferShader::ZBufferShader(const engine::Shader& z_buffer_shader, const engine::Camera& camera, Object* object) {
+DepthBufferShader::DepthBufferShader(const engine::Shader& depth_buffer_shader, const engine::Camera& camera, Object* object) {
   engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
-  material->SetShader(z_buffer_shader);
+  material->SetShader(depth_buffer_shader);
 
   glm::mat4 project = camera.GetProjectMatrix();
   glm::mat4 view = camera.GetViewMatrix();
@@ -197,4 +210,10 @@ SkyboxShader::SkyboxShader(const Param& param, Context* context, Object* object)
   material->SetMat4("view", view);
   material->SetMat4("model", model); 
   material->SetTexture("Texture0", param.cube_texture);
+}
+
+FullScreenQuadShader::FullScreenQuadShader(const Param& param, Context* context, Object* object) {
+  engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
+  material->SetShader(context->GetShader("fullscreen_quad"));
+  material->SetTexture("texture0", param.texture0); 
 }

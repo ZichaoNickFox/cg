@@ -1,6 +1,7 @@
 #pragma once
 
 #include <optional>
+#include <glm/glm.hpp>
 
 #include "engine/camera.h"
 #include "engine/material.h"
@@ -9,6 +10,18 @@
 #include "playground/context.h"
 #include "playground/object/object.h"
 #include "playground/object/point_light.h"
+
+class ShaderShadowInfo {
+ public:
+  ShaderShadowInfo() {}
+  ShaderShadowInfo(const glm::mat4& light_vp, const engine::Texture& depth_texture);
+
+  void UpdateMaterial(Context* context, engine::Material* material) const;
+
+ private:
+  glm::mat4 light_vp_;
+  engine::Texture shadow_map_;
+};
 
 class ShaderLightInfo {
  public:
@@ -29,7 +42,6 @@ class ShaderLightInfo {
 class PhongShader {
  public:
   struct Param {
-    ShaderLightInfo light_info;
     bool use_blinn_phong = false;
 
     glm::vec3 ambient = glm::vec3(0, 0, 0);
@@ -40,6 +52,9 @@ class PhongShader {
     std::optional<engine::Texture> texture_normal;
     std::optional<engine::Texture> texture_specular;
     std::optional<engine::Texture> texture_diffuse;
+
+    ShaderLightInfo light_info;
+    std::optional<ShaderShadowInfo> shadow_info;
   };
   PhongShader(const Param& param, Context* context, Object* object);
 };
@@ -100,9 +115,9 @@ class Texture0Shader {
   Texture0Shader(const Param& param, Context* context, Object* object);
 };
 
-class ZBufferShader {
+class DepthBufferShader {
  public:
-  ZBufferShader(const engine::Shader& z_buffer_shader, const engine::Camera& camera, Object* object);
+  DepthBufferShader(const engine::Shader& depth_buffer_shader, const engine::Camera& camera, Object* object);
 };
 
 class SkyboxShader {
@@ -111,4 +126,12 @@ class SkyboxShader {
     engine::Texture cube_texture;
   };
   SkyboxShader(const Param& param, Context* context, Object* object);
+};
+
+class FullScreenQuadShader {
+ public:
+  struct Param {
+    engine::Texture texture0;
+  };
+  FullScreenQuadShader(const Param& param, Context* context, Object* object);
 };

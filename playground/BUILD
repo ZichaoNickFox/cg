@@ -80,8 +80,10 @@ cc_library(
 )
 
 cc_library(
-  name = "shaders",
+  name = "pass",
   srcs = [
+    "pass.h",
+    "pass.cc",
     "shaders.h",
     "shaders.cc",
   ],

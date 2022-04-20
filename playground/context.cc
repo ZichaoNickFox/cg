@@ -17,6 +17,7 @@ void Context::Init(const Option& option) {
   material_property_config_ = config.material_property_config();
 
   clear_color_ = option.clear_color;
+  frame_buffer_size_ = option.frame_buffer_size;
 }
 
 const engine::Camera& Context::camera() {

@@ -7,30 +7,26 @@
 #include "engine/debug.h"
 
 namespace engine {
+FrameBuffer::FrameBuffer() {
+  glGenFramebuffers(1, &fbo_);
+}
 
-std::unordered_map<GLuint, std::string> FrameBuffer::fbo_names_ = {{0, "default"}};
+FrameBuffer::~FrameBuffer() {
+  glDeleteFramebuffers(1, &fbo_);
+}
 
 void FrameBuffer::Bind() {
-  CGCHECK(name_ != "") << "SetFboNamePair after gen fbo";
-  glGetIntegerv(GL_FRAMEBUFFER_BINDING, &resumption_fbo_);
   glGetIntegerv(GL_VIEWPORT, resumption_viewport_);
-  glViewport(0, 0, width_, height_);
-  CGLOG(ERROR, false) << "Binding Framebuffer : " << fbo_names_[fbo_] << "   Previous : " << fbo_names_[resumption_fbo_];
+  glGetIntegerv(GL_FRAMEBUFFER_BINDING, &resumption_fbo_);
+  glViewport(0, 0, size_.x, size_.y);
   glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
   OnBind();
   Clear();
 }
 
 void FrameBuffer::Unbind() {
-  CGLOG(ERROR, false) << "Unbinding Framebuffer : " << fbo_names_[fbo_] << "   Resuming : " << fbo_names_[resumption_fbo_];
   glBindFramebuffer(GL_FRAMEBUFFER, resumption_fbo_);
   glViewport(resumption_viewport_[0], resumption_viewport_[1], resumption_viewport_[2], resumption_viewport_[3]);
   OnUnbind();
-}
-
-void FrameBuffer::SetFboNamePair(GLuint fbo, const std::string& name) {
-  CGCHECK(fbo == fbo_) << "This func need to be called after gen fbo";
-  name_ = name;
-  fbo_names_[fbo] = name;
 }
 }

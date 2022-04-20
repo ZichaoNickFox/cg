@@ -31,8 +31,8 @@ void OnUpdateCommon::InspectCamera(Context* context) {
 void OnUpdateCommon::InSpectCursor(Context* context) {
   ImGui::Text("cursor pos x %lf", context->io().cursor_screen_pos_x());
   ImGui::Text("cursor pos y %lf", context->io().cursor_screen_pos_y());
-  ImGui::Text("cursor screen space x %lf", context->io().cursor_screen_pos_x() / context->io().screen_width());
-  ImGui::Text("cursor screen space y %lf", context->io().cursor_screen_pos_y() / context->io().screen_height());
+  ImGui::Text("cursor screen space x %lf", context->io().cursor_screen_pos_x() / context->io().screen_size().x);
+  ImGui::Text("cursor screen space y %lf", context->io().cursor_screen_pos_y() / context->io().screen_size().y);
 }
 
 void OnUpdateCommon::GuiFps(Context* context) {

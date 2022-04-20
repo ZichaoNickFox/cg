@@ -98,17 +98,16 @@ int main(int argc, char **argv)
   glm::vec4 clear_color = glm::vec4(0.45f, 0.55f, 0.60f, 1.00f);
   const std::string kConfigPath = "playground/config.pb.txt";
     
-  int framebuffer_width, framebuffer_height;
-  glfwGetFramebufferSize(window, &framebuffer_width, &framebuffer_height);
-  glViewport(0, 0, framebuffer_width, framebuffer_height);
+  glm::ivec2 frame_buffer_size;
+  glfwGetFramebufferSize(window, &frame_buffer_size.x, &frame_buffer_size.y);
+  glViewport(0, 0, frame_buffer_size.x, frame_buffer_size.y);
 
-  int screen_width, screen_height;
-  glfwGetWindowSize(window, &screen_width, &screen_height);
+  glm::ivec2 screen_size;
+  glfwGetWindowSize(window, &screen_size.x, &screen_size.y);
 
   Playground playground;
-  playground.Init({kConfigPath, clear_color});
-  playground.mutable_io()->SetScreenWidth(screen_width);
-  playground.mutable_io()->SetScreenHeight(screen_height);
+  playground.Init({kConfigPath, clear_color, frame_buffer_size});
+  playground.mutable_io()->SetScreenSize(screen_size);
 
   while (!glfwWindowShouldClose(window)) {
     playground.BeginFrame();

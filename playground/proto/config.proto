@@ -6,6 +6,7 @@ message ShaderConfig {
   string fs_path = 3;
   optional string gs_path = 4;
   optional string ts_path = 5;
+  repeated string depend_path = 6;
 }
 
 enum TextureType {

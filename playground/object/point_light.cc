@@ -4,8 +4,6 @@
 #include <glm/gtx/string_cast.hpp>
 #include "glog/logging.h"
 
-#include "engine/pass.h"
-
 void PointLight::OnUpdate(Context *context) {
 
 }

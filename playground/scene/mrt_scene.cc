@@ -16,9 +16,7 @@
 
 void MrtScene::OnEnter(Context *context)
 {
-  engine::ColorFrameBuffer::Option option{
-      "mrt_2_color_frame_buffer", context->io().screen_width(), context->io().screen_height(), 2,
-      {context->clear_color(), glm::vec4(0, 0, 0, 1)}};
+  engine::ColorFrameBuffer::Option option{context->frame_buffer_size(), 2, context->clear_color()};
   mrt_frame_buffer_.Init(option);
   
   for (int i = 0; i < point_lights_num_; ++i) {
@@ -100,13 +98,13 @@ void MrtScene::OnRender(Context *context)
 {
   RenderShadowMap(context);
 
-  glm::mat4 shadow_map_vp = directional_light_.GetShadowMapVP();
-  engine::Texture shadow_map_texture = directional_light_.GetShadowMapTexture();
-  RenderScene(context, shadow_map_vp, shadow_map_texture);
+  // glm::mat4 shadow_map_vp = directional_light_.GetShadowMapVP();
+  // engine::Texture shadow_map_texture = directional_light_.GetShadowMapTexture();
+  // RenderScene(context, shadow_map_vp, shadow_map_texture);
 }
 
 void MrtScene::RenderShadowMap(Context* context) {
-  directional_light_.ShadowMappingPassBegin(context);
+  // directional_light_.ShadowMappingPassBegin(context);
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
     cube->mutable_material()->SetShader(context->GetShader("shadow_map"));
@@ -114,7 +112,7 @@ void MrtScene::RenderShadowMap(Context* context) {
   }
   plane_.mutable_material()->SetShader(context->GetShader("shadow_map"));
   plane_.OnRender(context);
-  directional_light_.ShadowMappingPassEnd(context);
+  // directional_light_.ShadowMappingPassEnd(context);
 }
 
 void MrtScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
@@ -140,8 +138,8 @@ void MrtScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
 
   FullscreenQuad fullscreen_quad;
   fullscreen_quad.mutable_material()->SetShader(context->GetShader("mrt_fusion"));
-  fullscreen_quad.mutable_material()->SetTexture("scene", mrt_frame_buffer_.GetTexture(0));
-  fullscreen_quad.mutable_material()->SetTexture("bright", mrt_frame_buffer_.GetTexture(1));
+  fullscreen_quad.mutable_material()->SetTexture("scene", mrt_frame_buffer_.GetColorTexture(0));
+  fullscreen_quad.mutable_material()->SetTexture("bright", mrt_frame_buffer_.GetColorTexture(1));
   fullscreen_quad.OnRender(context);
 }
 

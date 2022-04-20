@@ -14,8 +14,7 @@
 
 class FullscreenQuad : public Object {
  public:
-  FullscreenQuad(){}
-  FullscreenQuad(engine::FrameBuffer* framebuffer, int frame_buffer_texture_id);
+  FullscreenQuad();
   void OnUpdate(Context *context) override;
   void OnRender(Context *context) override;
   void OnDestory(Context *context) override;
@@ -26,9 +25,6 @@ class FullscreenQuad : public Object {
   std::shared_ptr<const engine::Mesh> mesh(Context* context) const override { return nullptr; }
 
  private: 
-  engine::FrameBuffer* frame_buffer_ = nullptr;
-  int frame_buffer_texture_id_;
-  
   engine::Material material_;
-  GLuint empty_vao_ = std::numeric_limits<GLuint>::max();
+  GLuint empty_vao_;
 };

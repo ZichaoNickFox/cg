@@ -7,8 +7,9 @@
 #include "imgui.h"
 #include <memory>
 
-#include "engine/pass.h"
 #include "engine/transform.h"
+#include "playground/object/fullscreen_quad.h"
+#include "playground/pass.h"
 #include "playground/scene/common.h"
 #include "playground/util.h"
 
@@ -45,6 +46,9 @@ void ForwardShadingScene::OnEnter(Context *context)
   directional_light_.mutable_transform()->SetRotation(glm::quat(glm::vec3(2.48, -0.82, -3.09)));
   
   glEnable(GL_DEPTH_TEST);
+
+  depth_buffer_pass_.Init({context->frame_buffer_size()}, directional_light_.transform());
+  forward_pass_.Init({context->frame_buffer_size(), 1, context->clear_color()});
 }
 
 void ForwardShadingScene::OnUpdate(Context *context)
@@ -95,35 +99,35 @@ void ForwardShadingScene::OnUpdate(Context *context)
 
 void ForwardShadingScene::OnRender(Context *context)
 {
-  engine::ZBufferPass z_buffer_pass({"depth_buffer", context->io().screen_width(), context->io().screen_height()},
-                                    directional_light_.transform());
-  RunZBufferPass(context, &z_buffer_pass);
+  RunDepthBufferPass(context, &depth_buffer_pass_);
 
-  engine::ForwardPass forward_pass;
-  RunForwardPass(context, &forward_pass);
+  forward_pass_.Update(depth_buffer_pass_.shader_shadow_info());
+  RunForwardPass(context, &forward_pass_);
 
-  engine::ShadowPass shadow_pass(z_buffer_pass.camera_vp(), z_buffer_pass.z_buffer_texture());
-  RunShadowPass(context, &shadow_pass);
+  FullscreenQuad quad;
+  FullScreenQuadShader({forward_pass_.GetColorTexture()}, context, &quad);
+  quad.OnRender(context);
 }
 
-void ForwardShadingScene::RunZBufferPass(Context* context, engine::ZBufferPass* z_buffer_pass) {
-  z_buffer_pass->Begin();
+void ForwardShadingScene::RunDepthBufferPass(Context* context, DepthBufferPass* depth_buffer_pass) {
+  depth_buffer_pass->Begin();
 
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
-    ZBufferShader{context->GetShader("z_buffer"), z_buffer_pass->camera(), cube};
+    DepthBufferShader{context->GetShader("depth_buffer"), depth_buffer_pass->camera(), cube};
     cube->OnRender(context);
   }
-  ZBufferShader{context->GetShader("z_buffer"), z_buffer_pass->camera(), &plane_};
+  DepthBufferShader{context->GetShader("depth_buffer"), depth_buffer_pass->camera(), &plane_};
   plane_.OnRender(context);
 
-  z_buffer_pass->End();
+  depth_buffer_pass->End();
 }
 
-void ForwardShadingScene::RunForwardPass(Context* context, engine::ForwardPass* forward_pass) {
+void ForwardShadingScene::RunForwardPass(Context* context, ForwardPass* forward_pass) {
   forward_pass->Begin();
 
   PhongShader::Param phong;
+  phong.shadow_info = forward_pass->shader_shadow_info();
   phong.light_info = point_lights_;
   phong.ambient = context->material_property_ambient("gold");
   phong.diffuse = context->material_property_diffuse("gold");
@@ -152,10 +156,8 @@ void ForwardShadingScene::RunForwardPass(Context* context, engine::ForwardPass* 
   forward_pass->End();
 }
 
-void ForwardShadingScene::RunShadowPass(Context* context, engine::ShadowPass* shadow_pass) {
+void ForwardShadingScene::RunShadowPass(Context* context, ShadowPass* shadow_pass) {
   shadow_pass->Begin();
-
-
 
   shadow_pass->End();
 }

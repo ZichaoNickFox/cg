@@ -11,12 +11,10 @@
 
 void AATestScene::OnEnter(Context *context)
 {
-  engine::ColorFrameBuffer::Option option{
-      "test_scene", context->io().screen_width(), context->io().screen_height(), 1, {glm::vec4(1,0,0,1)}};
+  engine::ColorFrameBuffer::Option option{context->frame_buffer_size(), 1, {glm::vec4(1,0,0,1)}};
   color_frame_buffer_.Init(option);
 
-  engine::MSFrameBuffer::Option ms_option{
-      "ms_test_scene", context->io().screen_width(), context->io().screen_height(), 1, {glm::vec4(1,0,0,1)}, 4};
+  engine::MSFrameBuffer::Option ms_option{context->frame_buffer_size(), 1, {glm::vec4(1,0,0,1)}, 4};
   ms_frame_buffer_.Init(ms_option);
 
   cube_positions_[0] = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -48,7 +46,7 @@ void AATestScene::OnRender(Context *context)
   ms_frame_buffer_.Unbind();
   // ms_frame_buffer_.Blit(&color_frame_buffer_);
 
-  engine::Texture texture = ms_frame_buffer_.GetTexture();
+  engine::Texture texture = ms_frame_buffer_.GetColorTexture();
 
   FullscreenQuad full_screen_quad;
   full_screen_quad.mutable_material()->SetShader(context->GetShader("fullscreen_quad"));

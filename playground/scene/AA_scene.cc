@@ -15,14 +15,10 @@
 
 void AAScene::OnEnter(Context *context)
 {
-  engine::MSFrameBuffer::Option ms_fbo_option{
-      "mrt_2_ms_frame_buffer", context->io().screen_width(), context->io().screen_height(), 1,
-      {context->clear_color()/*, glm::vec4(0, 0, 0, 1)*/}, 4};
+  engine::MSFrameBuffer::Option ms_fbo_option{context->frame_buffer_size(), 1, {context->clear_color()}, 4};
   ms_frame_buffer_.Init(ms_fbo_option);
 
-  engine::ColorFrameBuffer::Option color_fbo_option{
-      "color_frame_buffer", context->io().screen_width(), context->io().screen_height(), 1,
-      {context->clear_color()/*, glm::vec4(0, 0, 0, 1)*/}};
+  engine::ColorFrameBuffer::Option color_fbo_option{context->frame_buffer_size(), 1, {context->clear_color()}};
   color_frame_buffer_.Init(color_fbo_option);
   
   for (int i = 0; i < point_lights_num_; ++i) {
@@ -82,13 +78,13 @@ void AAScene::OnRender(Context *context)
 {
   RenderShadowMap(context);
 
-  glm::mat4 shadow_map_vp = directional_light_.GetShadowMapVP();
-  engine::Texture shadow_map_texture = directional_light_.GetShadowMapTexture();
-  RenderScene(context, shadow_map_vp, shadow_map_texture);
+  // glm::mat4 shadow_map_vp = directional_light_.GetShadowMapVP();
+  // engine::Texture shadow_map_texture = directional_light_.GetShadowMapTexture();
+  // RenderScene(context, shadow_map_vp, shadow_map_texture);
 }
 
 void AAScene::RenderShadowMap(Context* context) {
-  directional_light_.ShadowMappingPassBegin(context);
+  // directional_light_.ShadowMappingPassBegin(context);
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
     cube->mutable_material()->SetShader(context->mutable_shader_repo()->GetOrLoadShader("shadow_map"));
@@ -96,7 +92,7 @@ void AAScene::RenderShadowMap(Context* context) {
   }
   plane_.mutable_material()->SetShader(context->mutable_shader_repo()->GetOrLoadShader("shadow_map"));
   plane_.OnRender(context);
-  directional_light_.ShadowMappingPassEnd(context);
+  // directional_light_.ShadowMappingPassEnd(context);
 }
 
 void AAScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
@@ -123,8 +119,8 @@ void AAScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
   // ms_frame_buffer_.Blit(&color_frame_buffer_);
 
   FullscreenQuad fullscreen_quad;
-  fullscreen_quad.mutable_material()->SetTexture("scene", ms_frame_buffer_.GetTexture(0));
-  fullscreen_quad.mutable_material()->SetTexture("bright", ms_frame_buffer_.GetTexture(1));
+  fullscreen_quad.mutable_material()->SetTexture("scene", ms_frame_buffer_.GetColorTexture(0));
+  fullscreen_quad.mutable_material()->SetTexture("bright", ms_frame_buffer_.GetColorTexture(1));
   // fullscreen_quad.mutable_material()->SetTexture("scene", color_frame_buffer_.GetTexture(0));
   // fullscreen_quad.mutable_material()->SetTexture("bright", color_frame_buffer_.GetTexture(1));
   fullscreen_quad.OnRender(context);

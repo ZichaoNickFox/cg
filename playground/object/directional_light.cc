@@ -7,10 +7,6 @@
 int DirectionalLight::directional_light_num_ = 0;
 
 void DirectionalLight::Init(Context* context) {
-  engine::DepthFrameBuffer::Option option{
-      util::Format("directional_light_{}_depth_buffer", directional_light_num_++),
-      kShadowMapWidth, kShadowMapHeight};
-  depth_frame_buffer_.Init(option);
   billboard_.Init(context, Billboard::Data{"directional_light"});
 }
 

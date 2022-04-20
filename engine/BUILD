@@ -28,8 +28,6 @@ cc_library(
     "ms_frame_buffer.cc",
     "mesh.h",
     "mesh.cc",
-    "pass.h",
-    "pass.cc",
     "shader.h",
     "shader.cc",
     "texture.h",

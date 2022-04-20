@@ -9,18 +9,17 @@ namespace engine {
 class ColorFrameBuffer : public FrameBuffer {
  public:
   struct Option {
-    std::string name;
-    int width;
-    int height;
+    glm::ivec2 size;
     int mrt;
-    std::vector<glm::vec4> clear_colors;
+    glm::vec4 clear_color;
   };
   void Init(const Option& option);
 
   void OnBind() override;
   void Clear() override;
   void OnUnbind() override;
-  Texture GetTexture(int i = 0) override;
+  Texture GetColorTexture(int i = 0);
+  Texture GetDepthTexture();
   
  private:
   Option option_;

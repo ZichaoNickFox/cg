@@ -24,16 +24,14 @@ static const std::vector<FrameBufferAttachment> kGBufferMRTLayout = {
 class GBuffer : public FrameBuffer {
  public:
   struct Option {
-    std::string name;
-    int width;
-    int height;
+    glm::ivec2 size;
   };
   void Init(const Option& option);
 
   void OnBind() override;
   void Clear() override;
   void OnUnbind() override;
-  Texture GetTexture(int i = 0) override;
+  Texture GetTexture(const std::string& layout);
 
   GLuint fbo() { return fbo_; }
   

@@ -2,13 +2,12 @@
 
 #include <set>
 #include <string>
+#include "glm/glm.hpp"
 
 class Io {
  public:
-  void SetScreenWidth(int screen_width) { screen_width_ = screen_width; }
-  void SetScreenHeight(int screen_height) { screen_height_ = screen_height; }
-  int screen_width() const { return screen_width_; }
-  int screen_height() const { return screen_height_; }
+  void SetScreenSize(const glm::ivec2& screen_size) { screen_size_ = screen_size; }
+  glm::ivec2 screen_size() const { return screen_size_; }
 
   void FeedKeyInput(const std::string& key);
   bool HadKeyInput(const std::string& key) const { return key_input_.find(key) != key_input_.end(); }
@@ -20,9 +19,9 @@ class Io {
   double GetCursorDeltaX() const { return cursor_pos_x_ - last_cursor_pos_x_; }
   double GetCursorDeltaY() const { return cursor_pos_y_ - last_cursor_pos_y_; }
   double cursor_screen_pos_x() const { return cursor_pos_x_; } 
-  double cursor_screen_pos_y() const { return screen_height_ - cursor_pos_y_; }
-  double normalized_cursor_screen_pos_x() const { return cursor_screen_pos_x() / screen_width_; }
-  double normalized_cursor_screen_pos_y() const { return cursor_screen_pos_y() / screen_height_; }
+  double cursor_screen_pos_y() const { return screen_size_.y - cursor_pos_y_; }
+  double normalized_cursor_screen_pos_x() const { return cursor_screen_pos_x() / screen_size_.x; }
+  double normalized_cursor_screen_pos_y() const { return cursor_screen_pos_y() / screen_size_.y; }
   bool left_button_pressed() const { return left_button_pressed_; }
   bool right_button_pressed() const { return right_button_pressed_; }
   bool gui_captured_cursor() const { return gui_captured_cursor_; }
@@ -36,6 +35,5 @@ class Io {
   bool left_button_pressed_ = false;
   bool right_button_pressed_ = false;
   bool gui_captured_cursor_ = false;
-  int screen_width_ = 0;
-  int screen_height_ = 0;
+  glm::ivec2 screen_size_;
 };

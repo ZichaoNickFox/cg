@@ -9,7 +9,6 @@
 #include <vector>
 #include <memory>
 
-#include "engine/pass.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "engine/material.h"

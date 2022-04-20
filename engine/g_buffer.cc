@@ -5,17 +5,12 @@
 #include <memory>
 
 #include "engine/debug.h"
-#include "engine/pass.h"
 
 namespace engine {
 void GBuffer::Init(const Option& option) {
-  width_ = option.width;
-  height_ = option.height;
+  size_ = option.size;
   option_ = option;
 
-  // Frame buffer object
-  glGenFramebuffers(1, &fbo_);
-  SetFboNamePair(fbo_, option.name);
   glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
 
   for (int i = 0; i < kGBufferMRTLayout.size(); ++i) {
@@ -24,7 +19,7 @@ void GBuffer::Init(const Option& option) {
     glGenTextures(1, textures_[i].mutable_id());
     
     glBindTexture(GL_TEXTURE_2D, textures_[i].id());
-    glTexImage2D(GL_TEXTURE_2D, 0, attachment.internal_type, option.width, option.height, 0,
+    glTexImage2D(GL_TEXTURE_2D, 0, attachment.internal_type, option.size.x, option.size.y, 0,
         attachment.format, attachment.type, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, attachment.texture_param_min_filter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, attachment.texture_param_mag_filter);
@@ -60,8 +55,14 @@ void GBuffer::OnUnbind() {
 
 }
 
-Texture GBuffer::GetTexture(int i) {
-  return textures_[i];
+Texture GBuffer::GetTexture(const std::string& layout) {
+  for (int i = 0; i < kGBufferMRTLayout.size(); ++i) {
+    if (kGBufferMRTLayout[i].name == layout) {
+      return textures_[i];
+    }
+  }
+  CGCHECK(false) << "Cannot find layout in GBUffer : " << layout;
+  return Texture();
 }
 
 void GBuffer::BlitDepth(DepthFrameBuffer* depth_frame_buffer) {
@@ -71,8 +72,8 @@ void GBuffer::BlitDepth(DepthFrameBuffer* depth_frame_buffer) {
   } else {
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, depth_frame_buffer->fbo());
   }
-  glBlitFramebuffer(0, 0, option_.width, option_.height,
-                    0, 0, option_.width, option_.height,
+  glBlitFramebuffer(0, 0, option_.size.x, option_.size.y,
+                    0, 0, option_.size.x, option_.size.y,
                     GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 }
 }

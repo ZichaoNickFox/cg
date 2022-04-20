@@ -51,7 +51,7 @@ void DeferredShadingScene::OnEnter(Context *context)
   directional_light_.mutable_transform()->SetTranslation(glm::vec3(-5, 6.3, -4.6));
   directional_light_.mutable_transform()->SetRotation(glm::quat(glm::vec3(2.48, -0.82, -3.09)));
 
-  engine::GBuffer::Option option{"deferred_shading", context->io().screen_width(), context->io().screen_height()};
+  engine::GBuffer::Option option{context->frame_buffer_size()};
   g_buffer_.Init(option);
   
   glEnable(GL_DEPTH_TEST);
@@ -159,15 +159,13 @@ void DeferredShadingScene::OnUpdate(Context *context)
 
 void DeferredShadingScene::OnRender(Context *context)
 {
-  directional_light_.ShadowMappingPassBegin(context);
   RenderShadowMap(context);
-  directional_light_.ShadowMappingPassEnd(context);
 
-  glm::mat4 shadow_map_vp = directional_light_.GetShadowMapVP();
-  engine::Texture shadow_map_texture = directional_light_.GetShadowMapTexture();
+  // glm::mat4 shadow_map_vp = directional_light_.GetShadowMapVP();
+  // engine::Texture shadow_map_texture = directional_light_.GetShadowMapTexture();
 
   // ForwardShading(context, shadow_map_vp, shadow_map_texture);
-  DeferredShading(context, shadow_map_vp, shadow_map_texture);
+  // DeferredShading(context, shadow_map_vp, shadow_map_texture);
 }
 
 void DeferredShadingScene::RenderShadowMap(Context* context) {
@@ -210,10 +208,10 @@ void DeferredShadingScene::DeferredShading(Context* context, const glm::mat4& sh
 
   g_buffer_.Unbind();
 
-  engine::Texture texture_position = g_buffer_.GetTexture(0);
-  engine::Texture texture_normal = g_buffer_.GetTexture(1);
-  engine::Texture texture_texcoord = g_buffer_.GetTexture(2);
-  engine::Texture texture_frag_world_pos = g_buffer_.GetTexture(3);
+  engine::Texture texture_position = g_buffer_.GetTexture("position");
+  engine::Texture texture_normal = g_buffer_.GetTexture("normal");
+  engine::Texture texture_texcoord = g_buffer_.GetTexture("texcoord");
+  engine::Texture texture_frag_world_pos = g_buffer_.GetTexture("frag_world_pos");
 
   deferred_shading_quad_.mutable_material()->SetTexture("texture_normal", texture_normal);
   deferred_shading_quad_.mutable_material()->SetTexture("texture_frag_world_pos", texture_frag_world_pos);

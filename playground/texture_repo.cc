@@ -173,10 +173,10 @@ void ParseImageFormat(const std::string& fileName, int* SOILfmt, GLint* internal
 }
 
 // failed return 0
-void SaveTexture2D(const std::string& path_with_ext, GLuint tex, bool multiple_sample) {
+void SaveTexture2D(const std::string& path_with_ext, const engine::Texture& texture, bool multiple_sample) {
   CGLOG(INFO) << "[texture::SaveTexture2D] path : " << path_with_ext;
   GLuint target = multiple_sample ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
-  glBindTexture(target, tex);
+  glBindTexture(target, texture.id());
 
   int width = -1, height = -1, internal_format = -1;
   glGetTexLevelParameteriv(target, 0, GL_TEXTURE_WIDTH, &width);
@@ -230,8 +230,8 @@ Texture LoadCubeMap(const std::vector<std::string>& path) {
   return ret;
 }
 
-int SaveCubeMap(const std::vector<std::string>& path_with_exts, GLuint tex) {
-  glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
+int SaveCubeMap(const std::vector<std::string>& path_with_exts, GLuint texture) {
+  glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
 
   for(int i = 0; i < 6; ++i){
     int width = -1, height = -1, internal_format = -1;

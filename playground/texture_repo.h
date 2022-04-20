@@ -22,7 +22,7 @@ class TextureRepo {
 
 namespace texture {
   engine::Texture LoadTexture2D(const std::string& fileName, bool flip_vertically = false, bool useMipmap = false);
-  void SaveTexture2D(const std::string& fullPath, GLuint tex, bool multiple_sample = false);
+  void SaveTexture2D(const std::string& fullPath, const engine::Texture& texture, bool multiple_sample = false);
   void SaveTexture2D(const std::string& fullPath, int width, int height, int channels, const unsigned char *const data);
   
   engine::Texture LoadCubeMap(const std::vector<std::string>& path);

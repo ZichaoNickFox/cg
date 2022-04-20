@@ -10,10 +10,6 @@
 class DirectionalLight : public Object {
  public:
   void Init(Context* context);
-  void ShadowMappingPassBegin(Context* context);
-  void ShadowMappingPassEnd(Context* context);
-  engine::Texture GetShadowMapTexture() { return depth_frame_buffer_.GetTexture(); }
-  glm::mat4 GetShadowMapVP();
 
   void OnUpdate(Context *context) override;
   void OnRender(Context* context) override;
@@ -28,9 +24,6 @@ class DirectionalLight : public Object {
  private:
   static int directional_light_num_;
 
-  static constexpr int kShadowMapWidth = 1024;
-  static constexpr int kShadowMapHeight = 1024;
-  engine::DepthFrameBuffer depth_frame_buffer_;
   Billboard billboard_;
   Lines lines_;
 };

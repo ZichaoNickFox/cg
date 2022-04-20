@@ -17,6 +17,7 @@ class Context {
   struct Option {
     std::string config_path;
     glm::vec4 clear_color;
+    glm::vec2 frame_buffer_size;
   };
   void Init(const Option& option);
 
@@ -68,6 +69,8 @@ class Context {
   float camera_move_speed() { return camera_move_speed_; }
   float camera_rotate_speed() { return camera_rotate_speed_; }
 
+  const glm::ivec2& frame_buffer_size() const { return frame_buffer_size_; }
+
  private:
   std::string current_scene_;
   std::string next_scene_;
@@ -91,4 +94,6 @@ class Context {
 
   float camera_move_speed_ = 5;
   float camera_rotate_speed_ = 5;
+
+  glm::ivec2 frame_buffer_size_;
 };

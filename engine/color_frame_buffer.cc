@@ -8,13 +8,9 @@
 
 namespace engine {
 void ColorFrameBuffer::Init(const Option& option) {
-  width_ = option.width;
-  height_ = option.height;
+  size_ = option.size;
   option_ = option;
 
-  // Frame buffer object
-  glGenFramebuffers(1, &fbo_);
-  SetFboNamePair(fbo_, option.name);
   glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
 
   for (int i = 0; i < option.mrt; ++i) {
@@ -22,7 +18,7 @@ void ColorFrameBuffer::Init(const Option& option) {
     glGenTextures(1, textures_[i].mutable_id());
     
     glBindTexture(GL_TEXTURE_2D, textures_[i].id());
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, option.width, option.height, 0, GL_RGBA, GL_FLOAT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, option.size.x, option.size.y, 0, GL_RGBA, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -36,7 +32,7 @@ void ColorFrameBuffer::Init(const Option& option) {
   textures_.push_back(Texture());
   glGenTextures(1, textures_[option.mrt].mutable_id());
   glBindTexture(GL_TEXTURE_2D, textures_[option.mrt].id());
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, option.width, option.height, 0, GL_DEPTH_COMPONENT,
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, option.size.x, option.size.y, 0, GL_DEPTH_COMPONENT,
       GL_FLOAT, NULL);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -49,7 +45,7 @@ void ColorFrameBuffer::Init(const Option& option) {
     CGCHECK(false) << "Frame Buffer Status Error : State - " << frame_buffer_status;
   }
 
-  glBindFramebuffer(GL_FRAMEBUFFER,0); 
+  glBindFramebuffer(GL_FRAMEBUFFER, 0); 
 }
 
 void ColorFrameBuffer::OnBind() {
@@ -62,19 +58,19 @@ void ColorFrameBuffer::OnBind() {
 
 void ColorFrameBuffer::Clear() {
   glClear(GL_DEPTH_BUFFER_BIT);
-  CGCHECK(option_.clear_colors.size() == option_.mrt) << "Option's clear_color size need EQ to mrt";
   for (int i = 0; i < option_.mrt; ++i) {
-    float clear_colors[] = {option_.clear_colors[i].x, option_.clear_colors[i].y, option_.clear_colors[i].z,
-        option_.clear_colors[i].w};
-    glClearBufferfv(GL_COLOR, i, clear_colors);
+    glClearBufferfv(GL_COLOR, i, &option_.clear_color.x);
   }
 }
 
 void ColorFrameBuffer::OnUnbind() {
-
 }
 
-Texture ColorFrameBuffer::GetTexture(int i) {
+Texture ColorFrameBuffer::GetColorTexture(int i) {
   return textures_[i];
+}
+
+Texture ColorFrameBuffer::GetDepthTexture() {
+  return textures_.back();
 }
 }

@@ -1,12 +1,11 @@
 #pragma once
 
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
-
 #include "GL/glew.h"
 #include "glm/glm.hpp"
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <iostream>
 
 #include "engine/debug.h"
 
@@ -16,7 +15,7 @@ class Shader
 public:
   Shader() {}  
   Shader(const std::string& name, const std::string& vs, const std::string& fs,
-         const std::string& gs = "", const std::string& ts = "");
+         const std::string& gs = "", const std::string& ts = ""/*, const std::vector<std:string>& depends*/);
   Shader& operator=(const Shader& other);
 
   void Use() const;
@@ -31,7 +30,9 @@ public:
   const std::string& name() { return name_; }
 
 private:
-  void CheckCompileErrors(unsigned int shader, const std::string& type);
+  GLuint CompileShader(const std::string& code, GLuint shader_type);
+  void LinkShader(GLuint program, const std::vector<GLuint>& objects);
+
   GLint GetUniformLocation(const std::string& name) const;
   GLuint id_;
   std::string name_;

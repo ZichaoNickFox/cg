@@ -21,6 +21,9 @@ shader_config {
   name : "phong";
   vs_path : "playground/resource/shader/phong.vs.glsl";
   fs_path : "playground/resource/shader/phong.fs.glsl";
+  depend_path : [
+    "playground/resource/shader/phong_depend.glsl"
+  ]
 }
 
 shader_config {
@@ -49,9 +52,9 @@ shader_config {
 }
 
 shader_config {
-  name : "z_buffer";
-  vs_path : "playground/resource/shader/z_buffer.vs.glsl";
-  fs_path : "playground/resource/shader/z_buffer.fs.glsl";
+  name : "depth_buffer";
+  vs_path : "playground/resource/shader/depth_buffer.vs.glsl";
+  fs_path : "playground/resource/shader/depth_buffer.fs.glsl";
 }
 
 shader_config {
