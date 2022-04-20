@@ -13,9 +13,13 @@ namespace engine {
 class Shader
 {
 public:
+  struct CodePart {
+    std::string glsl_path;
+    std::string code;
+  };
   Shader() {}  
-  Shader(const std::string& name, const std::string& vs, const std::string& fs,
-         const std::string& gs = "", const std::string& ts = ""/*, const std::vector<std:string>& depends*/);
+  Shader(const std::string& name, const std::vector<CodePart>& vs, const std::vector<CodePart>& fs,
+         const std::vector<CodePart>& gs, const std::vector<CodePart>& ts);
   Shader& operator=(const Shader& other);
 
   void Use() const;
@@ -30,7 +34,7 @@ public:
   const std::string& name() { return name_; }
 
 private:
-  GLuint CompileShader(const std::string& code, GLuint shader_type);
+  GLuint CompileShader(const std::vector<CodePart>& code, GLuint shader_type);
   void LinkShader(GLuint program, const std::vector<GLuint>& objects);
 
   GLint GetUniformLocation(const std::string& name) const;

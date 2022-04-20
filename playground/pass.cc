@@ -2,7 +2,7 @@
 
 void DepthBufferPass::Init(const engine::DepthFrameBuffer::Option& depth_frame_buffer_option,
                            const engine::Transform& camera_transform) {
-  camera_->SetType(engine::Camera::Perspective);
+  camera_->SetType(engine::Camera::Orthographic);
   camera_->SetTransform(camera_transform);
   depth_frame_buffer_.Init(depth_frame_buffer_option);
 }

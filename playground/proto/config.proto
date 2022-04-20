@@ -2,11 +2,10 @@ syntax = "proto3";
 
 message ShaderConfig {
   string name = 1;
-  string vs_path = 2;
-  string fs_path = 3;
-  optional string gs_path = 4;
-  optional string ts_path = 5;
-  repeated string depend_path = 6;
+  repeated string vs_path = 2;
+  repeated string fs_path = 4;
+  repeated string gs_path = 6;
+  repeated string ts_path = 7;
 }
 
 enum TextureType {

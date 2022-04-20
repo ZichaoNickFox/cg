@@ -1,42 +1,21 @@
-#version 330 core
-
 out vec4 FragColor;
 
-struct Material {
-  bool use_texture_normal;
-  bool use_texture_ambient;
-  bool use_texture_specular;
-  bool use_texture_diffuse;
-  vec3 ambient;
-  vec3 diffuse;
-  vec3 specular;
-  sampler2D texture_normal0;
-  sampler2D texture_ambient0;
-  sampler2D texture_specular0;
-  sampler2D texture_diffuse0;
-
-  float shininess;
-};
 uniform Material material;
 
-struct Light {
-  vec3 color;
-  vec3 pos;
-  float constant;   // attenuation
-  float linear;     // attenuation
-  float quadratic;  // attenuation
-};
 uniform int light_count;
 uniform Light lights[200];
 
 uniform vec3 view_pos;
 uniform bool blinn_phong;
 
+uniform ShadowInfo shadow_info;
+uniform bool use_shadowing = false;
+in vec4 frag_shadow_pos_;
+
 in mat3 world_TBN_;
 in vec2 texcoord_;
 in vec3 frag_world_pos_;
 in vec3 frag_world_normal_;
-in mat4 model_;
 
 vec3 CalcLight(Light light) {
   vec3 ambient = vec3(0, 0, 0);
@@ -69,31 +48,32 @@ vec3 CalcLight(Light light) {
     specular = material.specular;
   }
 
-  // ambient
-  vec3 ambient_component = light.color * ambient;
+  PhongModelInput phong_model_input;
+  phong_model_input.light_color = light.color;
+  phong_model_input.light_pos_ws = light.pos;
+  phong_model_input.light_quadratic = light.quadratic;
+  phong_model_input.light_linear = light.linear;
+  phong_model_input.light_constant = light.constant;
+  phong_model_input.ambient = ambient;
+  phong_model_input.diffuse = diffuse;
+  phong_model_input.normal = normal;
+  phong_model_input.specular = specular;
+  phong_model_input.shininess = material.shininess;
+  phong_model_input.frag_pos_ws = frag_world_pos_;
+  phong_model_input.view_pos_ws = view_pos;
+  phong_model_input.blinn_phong = blinn_phong;
+  return PhongModel(phong_model_input);
+}
 
-  // diffuse
-  vec3 frag_2_light = normalize(light.pos - frag_world_pos_);
-  float diff_factor = max(dot(normal, frag_2_light), 0.0);
-  vec3 diffuse_component = light.color * diff_factor * diffuse;
-
-  // specular
-  vec3 frag_2_view = normalize(view_pos - frag_world_pos_);
-  vec3 reflect_dir = reflect(-frag_2_light, normal);
-  vec3 half_dir = normalize(frag_2_light + frag_2_view);
-  float spec_factor = 0.0;
-  if (blinn_phong) {
-    spec_factor = pow(max(dot(normal, half_dir), 0.0), material.shininess * 2.0);
+float CalcShadow() {
+  if (use_shadowing) {
+    ShadowModelInput shadow_model_input;
+    shadow_model_input.frag_shadow_pos_light_space = frag_shadow_pos_;
+    shadow_model_input.depth_in_texture = texture(shadow_info.texture_depth, GetShadowMapTexcoord(frag_shadow_pos_)).r;
+    return ShadowModel(shadow_model_input);
   } else {
-    spec_factor = pow(max(dot(frag_2_view, reflect_dir), 0.0), material.shininess);
+    return 1.0;
   }
-  vec3 specular_component = light.color * spec_factor * specular;
-
-  float dist = length(light.pos - frag_world_pos_);
-  float attenuation = 1.0 / (dist * dist * light.quadratic + dist * light.linear + light.constant);
-
-  vec3 result = (ambient_component + diffuse_component + specular_component) * attenuation;
-  return result;
 }
 
 void main()
@@ -103,5 +83,8 @@ void main()
   for (int i = 0; i < light_count; ++i) {
     light_result += CalcLight(lights[i]);
   }
-  FragColor = vec4(light_result, 0.5);
+
+  // shadowing
+  float shadow_factor = CalcShadow();
+  FragColor = vec4(light_result * shadow_factor, 1.0);
 }

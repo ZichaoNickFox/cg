@@ -4,14 +4,15 @@
 #include "playground/object/point_light.h"
 #include "playground/util.h"
 
-ShaderShadowInfo::ShaderShadowInfo(const glm::mat4& light_vp, const engine::Texture& depth_texture) {
-  light_vp_ = light_vp;
-  shadow_map_ = depth_texture;
+ShaderShadowInfo::ShaderShadowInfo(const glm::mat4& light_space_vp, const engine::Texture& depth_texture) {
+  light_space_vp_ = light_space_vp;
+  texture_depth = depth_texture;
 }
 
 void ShaderShadowInfo::UpdateMaterial(Context* context, engine::Material* material) const {
-  // material->SetMat4("shadow_info.light_vp", light_vp_);
-  // material->SetTexture("shadow_info.depth_buffer", shadow_map_);
+  material->SetBool("use_shadowing", true);
+  material->SetMat4("shadow_info.light_space_vp", light_space_vp_);
+  material->SetTexture("shadow_info.texture_depth", texture_depth);
 }
 
 ShaderLightInfo::ShaderLightInfo(const PointLight& point_light) {
@@ -187,12 +188,13 @@ Texture0Shader::Texture0Shader(const Param& param, Context* context, Object* obj
   material->SetTexture("texture0", param.texture0);
 }
 
-DepthBufferShader::DepthBufferShader(const engine::Shader& depth_buffer_shader, const engine::Camera& camera, Object* object) {
+DepthBufferShader::DepthBufferShader(const engine::Shader& depth_buffer_shader,
+                                     std::shared_ptr<const engine::Camera> camera, Object* object) {
   engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
   material->SetShader(depth_buffer_shader);
 
-  glm::mat4 project = camera.GetProjectMatrix();
-  glm::mat4 view = camera.GetViewMatrix();
+  glm::mat4 project = camera->GetProjectMatrix();
+  glm::mat4 view = camera->GetViewMatrix();
   glm::mat4 model = object->GetModelMatrix();
   material->SetMat4("project", project);
   material->SetMat4("view", view);

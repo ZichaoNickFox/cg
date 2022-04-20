@@ -7,19 +7,18 @@
 #include "engine/debug.h"
 
 namespace engine {
-
 Shader& Shader::operator=(const Shader& other) {
   id_ = other.id_;
   name_ = other.name_;
   return *this;
 }
 
-Shader::Shader(const std::string& name, const std::string& vs, const std::string& fs,
-               const std::string& gs, const std::string& ts/*, const std::vector<std::string>& depends*/) {
+Shader::Shader(const std::string& name, const std::vector<CodePart>& vs, const std::vector<CodePart>& fs,
+               const std::vector<CodePart>& gs, const std::vector<CodePart>& ts) {
   name_ = name;
 
-  bool has_gs = gs != "";
-  bool has_ts = ts != "";
+  bool has_gs = gs.size() > 0;
+  bool has_ts = ts.size() > 0;
   GLuint vertex_shader_object, fragment_shader_object, geometry_shader_object, tessellation_shader_object;
   vertex_shader_object = CompileShader(vs, GL_VERTEX_SHADER);
   fragment_shader_object = CompileShader(fs, GL_FRAGMENT_SHADER);
@@ -29,14 +28,6 @@ Shader::Shader(const std::string& name, const std::string& vs, const std::string
   if (has_ts) {
     tessellation_shader_object = CompileShader(ts, GL_TESS_CONTROL_SHADER);
   }
-/*
-  for (const std::string& depend : depends) {
-    const char* depend_code = depend.data();
-    tessellation = glCreateShader(GL_TESS_CONTROL_SHADER);
-    glShaderSource(tessellation, 1, &ts_code, NULL);
-    glCompileShader(tessellation);
-  }
-*/
 
   id_ = glCreateProgram();
   std::vector<GLuint> objects{vertex_shader_object, fragment_shader_object};
@@ -45,32 +36,64 @@ Shader::Shader(const std::string& name, const std::string& vs, const std::string
   LinkShader(id_, objects);
 }
 
-GLuint Shader::CompileShader(const std::string& code, GLuint shader_type) {
+namespace {
+// TODO : use util's
+bool StartsWith(const std::string& str, const std::string& start_with) {
+  return str.rfind(start_with, 0) == 0;
+}
+void CorrectCompileMessage(const std::vector<Shader::CodePart>& code_parts, std::string* gl_log) {
+  const std::string starting = "ERROR: 0:";
+  int source_line_num = 0;
+  if (StartsWith(*gl_log, starting)) {
+    gl_log->erase(0, starting.size());
+    int line_end = gl_log->find_first_of(":");
+    std::string str_line_num = gl_log->substr(0, line_end);
+    source_line_num = std::atoi(str_line_num.c_str());
+    gl_log->erase(0, line_end);
+  }
+  int line_sum = 1;
+  for (const Shader::CodePart& code_part : code_parts) {
+    int line_num_in_file = 1;
+    for (char c : code_part.code) {
+      if (c == '\n') {
+        line_sum++;
+        line_num_in_file ++;
+        if (line_sum == source_line_num) {
+          *gl_log = code_part.glsl_path + " " + std::to_string(line_num_in_file) + *gl_log;
+          LOG(ERROR) << *gl_log;
+          return;
+        }
+      }
+    }
+  }
+} 
+}
+GLuint Shader::CompileShader(const std::vector<CodePart>& code_parts, GLuint shader_type) {
   GLuint object = glCreateShader(shader_type);
-  const char* code_data = code.data();
-  glShaderSource(object, 1, &code_data, NULL);
+  const char* code_data[code_parts.size()];
+  for (int i = 0; i < code_parts.size(); ++i) {
+    const CodePart& code_part = code_parts[i];
+    code_data[i] = code_part.code.data();
+  }
+
+  glShaderSource(object, code_parts.size(), code_data, NULL);
   glCompileShader(object);
 
-  std::map<GLuint, std::string> shader_type_2_name = {
-    {GL_VERTEX_SHADER, "vs"},
-    {GL_FRAGMENT_SHADER, "fs"},
-    {GL_GEOMETRY_SHADER, "gs"},
-    {GL_TESS_CONTROL_SHADER, "ts"}
-  };
   int success;
   char info_log[1024];
   glGetShaderiv(object, GL_COMPILE_STATUS, &success);
   if (!success)
   {
     glGetShaderInfoLog(object, 1024, NULL, info_log);
-    CGCHECK(false) << ": " << name_ << "." << shader_type_2_name[shader_type] << " compile error : " << info_log;
+    std::string correct_compile_message(info_log);
+    CorrectCompileMessage(code_parts, &correct_compile_message);
+    CGCHECK(false) << " compile error : " << correct_compile_message;
   }
   
   return object;
 }
 
 void Shader::LinkShader(GLuint program, const std::vector<GLuint>& objects) {
-
   for (GLuint object : objects) {
     glAttachShader(program, object);
   }

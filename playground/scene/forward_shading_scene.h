@@ -24,7 +24,6 @@ class ForwardShadingScene : public Scene {
  private:
   void RunDepthBufferPass(Context* context, DepthBufferPass* depth_buffer_pass);
   void RunForwardPass(Context* context, ForwardPass* forward_pass);
-  void RunShadowPass(Context* context, ShadowPass* shadow_pass);
 
   std::string material_name_ = "gold";
 

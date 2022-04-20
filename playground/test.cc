@@ -18,4 +18,11 @@ TEST(engine_test, util)
   EXPECT_EQ(util::FileName("target.png"), "target");
   EXPECT_EQ(util::FileName("target"), "target");
   EXPECT_EQ(util::FileName("a/target"), "target");
+
+  EXPECT_TRUE(util::StartsWith("abc", "a"));
+  EXPECT_TRUE(util::StartsWith("abc", "ab"));
+  EXPECT_TRUE(util::StartsWith("abc", "abc"));
+  EXPECT_TRUE(util::EndsWith("abc", "c"));
+  EXPECT_TRUE(util::EndsWith("abc", "bc"));
+  EXPECT_TRUE(util::EndsWith("abc", "abc"));
 }

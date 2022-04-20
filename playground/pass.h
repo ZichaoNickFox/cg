@@ -22,7 +22,8 @@ class DepthBufferPass : public Pass {
   void Begin() override;
   void End() override;
 
-  const engine::Camera& camera() { return *camera_.get(); }
+  std::shared_ptr<engine::Camera> mutable_camera() const { return camera_; }
+  std::shared_ptr<const engine::Camera> camera() const { return camera_; }
   glm::mat4 camera_vp() { return camera_->GetProjectMatrix() * camera_->GetViewMatrix(); }
   engine::Texture GetDepthTexture() { return depth_frame_buffer_.GetDepthTexture(); }
   ShaderShadowInfo shader_shadow_info() { return ShaderShadowInfo{camera_vp(), GetDepthTexture()}; }
@@ -35,15 +36,16 @@ class DepthBufferPass : public Pass {
 class ForwardPass : public Pass {
  public:
   void Init(const engine::ColorFrameBuffer::Option& option);
-  void Update(const ShaderShadowInfo& shader_shadow_info) { shader_shadow_info_ = shader_shadow_info; }
+  void Update(const ShaderShadowInfo& prepass_shadow_info) { prepass_shadow_info_ = prepass_shadow_info; }
   void Begin() override;
   void End() override;
-  engine::Texture GetDepthTexture() { return color_frame_buffer_.GetDepthTexture(); }
+
+  const ShaderShadowInfo& prepass_shadow_info() { return prepass_shadow_info_; }
   engine::Texture GetColorTexture(int i = 0) { return color_frame_buffer_.GetColorTexture(i); }
-  const ShaderShadowInfo& shader_shadow_info() { return shader_shadow_info_; }
+  engine::Texture GetDepthTexture() { return color_frame_buffer_.GetDepthTexture(); }
 
  private:
-  ShaderShadowInfo shader_shadow_info_;
+  ShaderShadowInfo prepass_shadow_info_;
   engine::ColorFrameBuffer color_frame_buffer_;
 };
 

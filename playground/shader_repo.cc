@@ -19,31 +19,37 @@ Shader ShaderRepo::GetOrLoadShader(const std::string& name) {
   CGCHECK(shaders_.count(name) > 0) << "No shader name : " << name;
   ShaderData* shader_data = &shaders_.at(name);
   if (shader_data->loaded == false) {
-    std::string vs;
-    std::string fs;
-    std::string gs;
-    std::string ts;
-    bool has_gs = shader_data->config.has_gs_path();
-    bool has_ts = shader_data->config.has_ts_path();
-    util::ReadFileToString(shader_data->config.vs_path(), &vs); 
-    util::ReadFileToString(shader_data->config.fs_path(), &fs); 
-    if (has_gs) {
-      util::ReadFileToString(shader_data->config.gs_path(), &gs); 
+    std::vector<Shader::CodePart> vs(shader_data->config.vs_path_size());
+    std::vector<Shader::CodePart> fs(shader_data->config.fs_path_size());
+    std::vector<Shader::CodePart> gs(shader_data->config.gs_path_size());
+    std::vector<Shader::CodePart> ts(shader_data->config.ts_path_size());
+    for (int i = 0; i < vs.size(); ++i) {
+      const std::string path = shader_data->config.vs_path(i);
+      vs[i].glsl_path = path;
+      util::ReadFileToString(path, &vs[i].code); 
+      CGCHECK(vs[i].code.size() > 0) << " vs path error : " << path;
     }
-    if (has_ts) {
-      util::ReadFileToString(shader_data->config.ts_path(), &ts); 
+    for (int i = 0; i < fs.size(); ++i) {
+      const std::string path = shader_data->config.fs_path(i);
+      fs[i].glsl_path = path;
+      util::ReadFileToString(path, &fs[i].code); 
+      CGCHECK(fs[i].code.size() > 0) << " fs path error : " << path;
     }
-    CGCHECK(vs.size() > 0) << "Load vs failed : " << name;
-    CGCHECK(fs.size() > 0) << "Load fs failed : " << name;
-    if (has_gs) {
-      CGCHECK(gs.size() > 0) << "Load gs failed : " << name;
+    for (int i = 0; i < gs.size(); ++i) {
+      const std::string path = shader_data->config.gs_path(i);
+      gs[i].glsl_path = path;
+      util::ReadFileToString(path, &gs[i].code); 
+      CGCHECK(gs[i].code.size() > 0) << " gs path error : " << path;
     }
-    if (has_ts) {
-      CGCHECK(ts.size() > 0) << "Load ts failed : " << name;
+    for (int i = 0; i < ts.size(); ++i) {
+      const std::string path = shader_data->config.ts_path(i);
+      ts[i].glsl_path = path;
+      util::ReadFileToString(path, &ts[i].code); 
+      CGCHECK(ts[i].code.size() > 0) << " ts path error : " << path;
     }
     CGLOG(ERROR) << "Compiling shader " << name;
-    shader_data->loaded = true;
     shader_data->shader = Shader(name, vs, fs, gs, ts);
+    shader_data->loaded = true;
   }
   return shader_data->shader;
 }

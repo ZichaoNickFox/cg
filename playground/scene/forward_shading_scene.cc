@@ -77,15 +77,17 @@ void ForwardShadingScene::OnUpdate(Context *context)
   ImGui::Text("Camera Type");
   ImGui::SameLine();
   if (ImGui::Button("Perceptive Camera")) {
+    context->SetCamera(camera_);
     camera_->SetType(engine::Camera::Perspective);
   }
   ImGui::SameLine();
   if (ImGui::Button("Orthographic Camera")) {
+    context->SetCamera(camera_);
     camera_->SetType(engine::Camera::Orthographic);
   }
   ImGui::SameLine();
   if (ImGui::Button("Orthographic Direction Light")) {
-    // context->SetCamera(directional_light_.Test_GetCamera());
+    context->SetCamera(depth_buffer_pass_.mutable_camera());
   }
 
   for (int i = 0; i < point_lights_num_; ++i) {
@@ -127,7 +129,7 @@ void ForwardShadingScene::RunForwardPass(Context* context, ForwardPass* forward_
   forward_pass->Begin();
 
   PhongShader::Param phong;
-  phong.shadow_info = forward_pass->shader_shadow_info();
+  phong.shadow_info = forward_pass->prepass_shadow_info();
   phong.light_info = point_lights_;
   phong.ambient = context->material_property_ambient("gold");
   phong.diffuse = context->material_property_diffuse("gold");
@@ -154,12 +156,6 @@ void ForwardShadingScene::RunForwardPass(Context* context, ForwardPass* forward_
   directional_light_.OnRender(context);
 
   forward_pass->End();
-}
-
-void ForwardShadingScene::RunShadowPass(Context* context, ShadowPass* shadow_pass) {
-  shadow_pass->Begin();
-
-  shadow_pass->End();
 }
 
 void ForwardShadingScene::OnExit(Context *context)

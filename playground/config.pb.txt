@@ -1,127 +1,218 @@
 shader_config {
   name : "triangle";
-  vs_path : "playground/resource/shader/triangle.vs.glsl";
-  fs_path : "playground/resource/shader/triangle.fs.glsl";
+  vs_path : [
+    "playground/resource/shader/triangle.vs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/triangle.fs.glsl"
+  ];
 }
 
 shader_config {
   name : "texture0";
-  vs_path : "playground/resource/shader/texture0.vs.glsl";
-  fs_path : "playground/resource/shader/texture0.fs.glsl";
+  vs_path : [
+    "playground/resource/shader/texture0.vs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/texture0.fs.glsl"
+  ];
 }
 
 shader_config {
   name : "normal";
-  vs_path : "playground/resource/shader/normal.vs.glsl";
-  gs_path : "playground/resource/shader/normal.gs.glsl";
-  fs_path : "playground/resource/shader/normal.fs.glsl";
+  vs_path : [
+    "playground/resource/shader/normal.vs.glsl"
+  ];
+  gs_path : [
+    "playground/resource/shader/normal.gs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/normal.fs.glsl"
+  ];
 }
 
 shader_config {
   name : "phong";
-  vs_path : "playground/resource/shader/phong.vs.glsl";
-  fs_path : "playground/resource/shader/phong.fs.glsl";
-  depend_path : [
-    "playground/resource/shader/phong_depend.glsl"
+  vs_path : [
+    "playground/resource/shader/version.glsl",
+    "playground/resource/shader/shadow_info.glsl",
+    "playground/resource/shader/phong.vs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/version.glsl",
+    "playground/resource/shader/light_info.glsl",
+    "playground/resource/shader/material.glsl",
+    "playground/resource/shader/shadow_info.glsl",
+    "playground/resource/shader/phong_model.glsl",
+    "playground/resource/shader/shadow_model.glsl",
+    "playground/resource/shader/phong.fs.glsl"
   ]
 }
 
 shader_config {
   name : "phong_shadow";
-  vs_path : "playground/resource/shader/phong_shadow.vs.glsl";
-  fs_path : "playground/resource/shader/phong_shadow.fs.glsl";
+  vs_path : [
+    "playground/resource/shader/phong_shadow.vs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/phong_shadow.fs.glsl"
+  ];
 }
 
 shader_config {
   name : "point_light";
-  vs_path : "playground/resource/shader/point_light.vs.glsl";
-  fs_path : "playground/resource/shader/point_light.fs.glsl";
+  vs_path : [
+    "playground/resource/shader/point_light.vs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/point_light.fs.glsl"
+  ];
 }
 
 shader_config {
   name : "lines";
-  vs_path : "playground/resource/shader/lines.vs.glsl";
-  gs_path : "playground/resource/shader/lines.gs.glsl";
-  fs_path : "playground/resource/shader/lines.fs.glsl";
+  vs_path : [
+    "playground/resource/shader/lines.vs.glsl"
+  ];
+  gs_path : [
+    "playground/resource/shader/lines.gs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/lines.fs.glsl"
+  ];
 }
 
 shader_config {
   name : "skybox";
-  vs_path : "playground/resource/shader/skybox.vs.glsl";
-  fs_path : "playground/resource/shader/skybox.fs.glsl";
+  vs_path : [
+    "playground/resource/shader/skybox.vs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/skybox.fs.glsl"
+  ];
 }
 
 shader_config {
   name : "depth_buffer";
-  vs_path : "playground/resource/shader/depth_buffer.vs.glsl";
-  fs_path : "playground/resource/shader/depth_buffer.fs.glsl";
+  vs_path : [
+    "playground/resource/shader/depth_buffer.vs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/depth_buffer.fs.glsl"
+  ];
 }
 
 shader_config {
   name : "mrt_fusion";
-  vs_path : "playground/resource/shader/mrt_fusion.vs.glsl";
-  fs_path : "playground/resource/shader/mrt_fusion.fs.glsl";
+  vs_path : [
+    "playground/resource/shader/mrt_fusion.vs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/mrt_fusion.fs.glsl"
+  ];
 }
 
 shader_config {
   name : "aa_test_scene";
-  vs_path : "playground/resource/shader/aa_test_scene.vs.glsl";
-  fs_path : "playground/resource/shader/aa_test_scene.fs.glsl";
+  vs_path : [
+    "playground/resource/shader/aa_test_scene.vs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/aa_test_scene.fs.glsl"
+  ];
 }
 
 shader_config {
   name : "fullscreen_quad";
-  vs_path : "playground/resource/shader/fullscreen_quad.vs.glsl";
-  fs_path : "playground/resource/shader/fullscreen_quad.fs.glsl";
+  vs_path : [
+    "playground/resource/shader/fullscreen_quad.vs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/fullscreen_quad.fs.glsl"
+  ];
 }
 
 shader_config {
   name : "nanosuit";
-  vs_path : "playground/resource/shader/nanosuit.vs.glsl";
-  fs_path : "playground/resource/shader/nanosuit.fs.glsl";
+  vs_path : [
+    "playground/resource/shader/nanosuit.vs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/nanosuit.fs.glsl"
+  ];
 }
 
 shader_config {
   name : "model_test";
-  vs_path : "playground/resource/shader/model_test.vs.glsl";
-  fs_path : "playground/resource/shader/model_test.fs.glsl";
+  vs_path : [
+    "playground/resource/shader/model_test.vs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/model_test.fs.glsl"
+  ];
 }
 
 shader_config {
   name : "deferred_shading_geometry";
-  vs_path : "playground/resource/shader/deferred_shading_geometry.vs.glsl";
-  fs_path : "playground/resource/shader/deferred_shading_geometry.fs.glsl";
+  vs_path : [
+    "playground/resource/shader/deferred_shading_geometry.vs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/deferred_shading_geometry.fs.glsl"
+  ];
 }
 
 shader_config {
   name : "deferred_shading_lighting";
-  vs_path : "playground/resource/shader/deferred_shading_lighting.vs.glsl";
-  fs_path : "playground/resource/shader/deferred_shading_lighting.fs.glsl";
+  vs_path : [
+    "playground/resource/shader/deferred_shading_lighting.vs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/deferred_shading_lighting.fs.glsl"
+  ];
 }
 
 shader_config {
   name : "pbr";
-  vs_path : "playground/resource/shader/pbr.vs.glsl";
-  fs_path : "playground/resource/shader/pbr.fs.glsl";
+  vs_path : [
+    "playground/resource/shader/pbr.vs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/pbr.fs.glsl"
+  ];
 }
 
 shader_config {
   name : "test";
-  vs_path : "playground/resource/shader/test.vs.glsl";
-  fs_path : "playground/resource/shader/test.fs.glsl";
+  vs_path : [
+    "playground/resource/shader/test.vs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/test.fs.glsl"
+  ];
 }
 
 shader_config {
   name : "TBN";
-  vs_path : "playground/resource/shader/TBN.vs.glsl";
-  gs_path : "playground/resource/shader/TBN.gs.glsl";
-  fs_path : "playground/resource/shader/TBN.fs.glsl";
+  vs_path : [
+    "playground/resource/shader/TBN.vs.glsl"
+  ];
+  gs_path : [
+    "playground/resource/shader/TBN.gs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/TBN.fs.glsl"
+  ];
 }
 
 shader_config {
   name : "color";
-  vs_path : "playground/resource/shader/color.vs.glsl";
-  fs_path : "playground/resource/shader/color.fs.glsl";
+  vs_path : [
+    "playground/resource/shader/color.vs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/color.fs.glsl"
+  ];
 }
 
 texture_config {

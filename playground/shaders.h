@@ -14,13 +14,13 @@
 class ShaderShadowInfo {
  public:
   ShaderShadowInfo() {}
-  ShaderShadowInfo(const glm::mat4& light_vp, const engine::Texture& depth_texture);
+  ShaderShadowInfo(const glm::mat4& light_space_vp, const engine::Texture& texture_depth);
 
   void UpdateMaterial(Context* context, engine::Material* material) const;
 
  private:
-  glm::mat4 light_vp_;
-  engine::Texture shadow_map_;
+  glm::mat4 light_space_vp_;
+  engine::Texture texture_depth;
 };
 
 class ShaderLightInfo {
@@ -42,8 +42,6 @@ class ShaderLightInfo {
 class PhongShader {
  public:
   struct Param {
-    bool use_blinn_phong = false;
-
     glm::vec3 ambient = glm::vec3(0, 0, 0);
     glm::vec3 diffuse = glm::vec3(0, 0, 0);
     glm::vec3 specular = glm::vec3(0, 0, 0);
@@ -52,6 +50,8 @@ class PhongShader {
     std::optional<engine::Texture> texture_normal;
     std::optional<engine::Texture> texture_specular;
     std::optional<engine::Texture> texture_diffuse;
+
+    bool use_blinn_phong = false;
 
     ShaderLightInfo light_info;
     std::optional<ShaderShadowInfo> shadow_info;
@@ -117,7 +117,8 @@ class Texture0Shader {
 
 class DepthBufferShader {
  public:
-  DepthBufferShader(const engine::Shader& depth_buffer_shader, const engine::Camera& camera, Object* object);
+  DepthBufferShader(const engine::Shader& depth_buffer_shader,
+                    std::shared_ptr<const engine::Camera> camera, Object* object);
 };
 
 class SkyboxShader {

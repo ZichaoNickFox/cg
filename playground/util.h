@@ -16,6 +16,7 @@ std::string GetFileExt(const std::string& file_name);
 std::string FileName(const std::string& path);
 
 // string
+bool StartsWith(const std::string& str, const std::string& start_with);
 bool EndsWith(const std::string& str, const std::string& end_with);
 template<typename ...Args>
 std::string Format(const char* fmt, const Args&... args) {

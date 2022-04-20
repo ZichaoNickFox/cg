@@ -35,9 +35,13 @@ std::string FileName(const std::string& path) {
   return res;
 }
 
-bool EndsWith(const std::string& str, const std::string& ending) {
-  if (str.length() >= ending.length()) {
-    return (0 == str.compare (str.length() - ending.length(), ending.length(), ending));
+bool StartsWith(const std::string& str, const std::string& start_with) {
+  return str.rfind(start_with, 0) == 0;
+}
+
+bool EndsWith(const std::string& str, const std::string& end_with) {
+  if (str.length() >= end_with.length()) {
+    return (0 == str.compare (str.length() - end_with.length(), end_with.length(), end_with));
   } else {
     return false;
   }

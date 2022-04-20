@@ -1,5 +1,3 @@
-#version 330 core
-
 layout (location = 0) in vec3 pos;
 layout (location = 1) in vec3 normal;
 layout (location = 2) in vec2 texcoord;
@@ -14,7 +12,10 @@ out vec2 texcoord_;
 out vec3 frag_world_pos_;
 out vec3 frag_world_normal_;
 out mat3 world_TBN_;
-out mat4 model_;
+
+uniform ShadowInfo shadow_info;
+uniform bool use_shadowing = false;
+out vec4 frag_shadow_pos_;
 
 void main()
 {
@@ -26,7 +27,9 @@ void main()
   world_TBN_[1] = normalize(vec3(model * vec4(bitangent, 0.0)));
   world_TBN_[2] = normalize(vec3(model * vec4(normal, 0.0)));
 
-  model_ = model;
-
   gl_Position = project * view * model * vec4(pos, 1.0);
+
+  if (use_shadowing) {
+    frag_shadow_pos_ = shadow_info.light_space_vp * model * vec4(pos, 1.0);
+  }
 }
