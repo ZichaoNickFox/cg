@@ -16,7 +16,7 @@
 #include "playground/scene/skybox_scene.h"
 
 namespace {
-const std::string kDefaultScene = "ShareScene";
+const std::string kDefaultScene = "PhongScene";
 }
 
 void Playground::Init(const Context::Option& option) {

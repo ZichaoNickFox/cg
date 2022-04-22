@@ -72,6 +72,7 @@ void PhongScene::OnRender(Context *context)
   PhongShader(phong, context, &plane_);
   plane_.OnRender(context);
 
+  ColorShader({glm::vec4{1, 1, 1, 1}}, context, &point_light_);
   point_light_.OnRender(context);
 }
 

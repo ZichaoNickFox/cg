@@ -2,9 +2,6 @@ out vec4 FragColor;
 
 uniform PhongMaterial phong_material;
 
-uniform int light_count;
-uniform Light lights[200];
-
 uniform vec3 view_pos;
 uniform bool blinn_phong;
 
@@ -17,7 +14,7 @@ in vec2 texcoord_;
 in vec3 frag_world_pos_;
 in vec3 frag_world_normal_;
 
-vec3 CalcLight(Light light) {
+vec3 CalcLight() {
   vec3 ambient = vec3(0, 0, 0);
   if (phong_material.use_texture_ambient) {
     ambient = texture(phong_material.texture_ambient0, texcoord_).xyz;
@@ -49,11 +46,6 @@ vec3 CalcLight(Light light) {
   }
 
   PhongModelInput phong_model_input;
-  phong_model_input.light_color = light.color;
-  phong_model_input.light_pos_ws = light.pos;
-  phong_model_input.light_quadratic = light.quadratic;
-  phong_model_input.light_linear = light.linear;
-  phong_model_input.light_constant = light.constant;
   phong_model_input.ambient = ambient;
   phong_model_input.diffuse = diffuse;
   phong_model_input.normal = normal;
@@ -79,10 +71,7 @@ float CalcShadow() {
 void main()
 {
   // lighting
-  vec3 light_result = vec3(0.0, 0.0, 0.0);
-  for (int i = 0; i < light_count; ++i) {
-    light_result += CalcLight(lights[i]);
-  }
+  vec3 light_result = CalcLight();
 
   // shadowing
   float shadow_factor = CalcShadow();
