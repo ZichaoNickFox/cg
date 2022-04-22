@@ -16,7 +16,7 @@
 #include "playground/scene/skybox_scene.h"
 
 namespace {
-const std::string kDefaultScene = "ForwardShadingScene";
+const std::string kDefaultScene = "ShareScene";
 }
 
 void Playground::Init(const Context::Option& option) {

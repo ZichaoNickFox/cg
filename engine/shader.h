@@ -33,6 +33,8 @@ public:
 
   const std::string& name() { return name_; }
 
+  void Clear();
+
 private:
   GLuint CompileShader(const std::vector<CodePart>& code, GLuint shader_type);
   void LinkShader(GLuint program, const std::vector<GLuint>& objects);

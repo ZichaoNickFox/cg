@@ -63,36 +63,36 @@ PhongShader::PhongShader(const Param& phong, Context* context, Object* object) {
   material->SetMat4("model", object->GetModelMatrix());
   material->SetVec3("view_pos", context->camera().transform().translation());
 
-  material->SetVec3("material.ambient", phong.ambient);
-  material->SetVec3("material.diffuse", phong.diffuse);
-  material->SetVec3("material.specular", phong.specular);
-  material->SetFloat("material.shininess", phong.shininess);
+  material->SetVec3("phong_material.ambient", phong.ambient);
+  material->SetVec3("phong_material.diffuse", phong.diffuse);
+  material->SetVec3("phong_material.specular", phong.specular);
+  material->SetFloat("phong_material.shininess", phong.shininess);
   if (phong.texture_normal) {
-    material->SetBool("material.use_texture_normal", true);
-    material->SetTexture("material.texture_normal0", phong.texture_normal.value());
+    material->SetBool("phong_material.use_texture_normal", true);
+    material->SetTexture("phong_material.texture_normal0", phong.texture_normal.value());
   } else {
-    material->SetBool("material.use_texture_normal", false);
+    material->SetBool("phong_material.use_texture_normal", false);
   }
 
   if (phong.texture_specular) {
-    material->SetBool("material.use_texture_specular", true);
-    material->SetTexture("material.texture_specular0", phong.texture_specular.value());
+    material->SetBool("phong_material.use_texture_specular", true);
+    material->SetTexture("phong_material.texture_specular0", phong.texture_specular.value());
   } else {
-    material->SetBool("material.use_texture_specular", false);
+    material->SetBool("phong_material.use_texture_specular", false);
   }
   
   if (phong.texture_ambient) {
-    material->SetBool("material.use_texture_ambient", true);
-    material->SetTexture("material.texture_ambient0", phong.texture_ambient.value());
+    material->SetBool("phong_material.use_texture_ambient", true);
+    material->SetTexture("phong_material.texture_ambient0", phong.texture_ambient.value());
   } else {
-    material->SetBool("material.use_texture_ambient", false);
+    material->SetBool("phong_material.use_texture_ambient", false);
   }
   
   if (phong.texture_diffuse) {
-    material->SetBool("material.use_texture_diffuse", true);
-    material->SetTexture("material.texture_diffuse0", phong.texture_diffuse.value());
+    material->SetBool("phong_material.use_texture_diffuse", true);
+    material->SetTexture("phong_material.texture_diffuse0", phong.texture_diffuse.value());
   } else {
-    material->SetBool("material.use_texture_diffuse", false);
+    material->SetBool("phong_material.use_texture_diffuse", false);
   }
 
   phong.light_info.UpdateMaterial(context, material);
@@ -115,13 +115,36 @@ PbrShader::PbrShader(const Param& pbr, Context* context, Object* object) {
   material->SetMat4("model", object->GetModelMatrix());
   material->SetVec3("view_pos", context->camera().transform().translation());
 
-  material->SetVec3("material.albedo", pbr.albedo);
-  material->SetFloat("material.roughness", pbr.roughness);
-  material->SetFloat("material.metallic", pbr.metallic);
+  material->SetVec3("pbr_material.albedo", pbr.albedo);
+  material->SetFloat("pbr_material.roughness", pbr.roughness);
+  material->SetFloat("pbr_material.metallic", pbr.metallic);
+  material->SetFloat("pbr_material.ao", pbr.ao);
 
-  material->SetFloat("ao", pbr.ao);
+  if (pbr.texture_normal) {
+    CGCHECK(pbr.texture_normal);
+    material->SetBool("pbr_material.use_texture_normal", true);
+    material->SetTexture("pbr_material.texture_normal0", pbr.texture_normal.value());
+  }
+  if (pbr.texture_albedo) {
+    CGCHECK(pbr.texture_albedo);
+    material->SetBool("pbr_material.use_texture_albedo", true);
+    material->SetTexture("pbr_material.texture_albedo0", pbr.texture_albedo.value());
+  }
+  if (pbr.texture_metallic) {
+    CGCHECK(pbr.texture_metallic);
+    material->SetBool("pbr_material.use_texture_metallic", true);
+    material->SetTexture("pbr_material.texture_metallic0", pbr.texture_metallic.value());
+  }
+  if (pbr.texture_roughness) {
+    CGCHECK(pbr.texture_roughness);
+    material->SetBool("pbr_material.use_texture_roughness", true);
+    material->SetTexture("pbr_material.texture_roughness0", pbr.texture_roughness.value());
+  }
 
   pbr.light_info.UpdateMaterial(context, material);
+  if (pbr.shadow_info) {
+    pbr.shadow_info->UpdateMaterial(context, material);
+  }
 }
 
 NormalShader::NormalShader(const Param& normal, Context* context, Object* object) {
@@ -211,7 +234,7 @@ SkyboxShader::SkyboxShader(const Param& param, Context* context, Object* object)
   material->SetMat4("project", project);
   material->SetMat4("view", view);
   material->SetMat4("model", model); 
-  material->SetTexture("Texture0", param.cube_texture);
+  material->SetTexture("texture0", param.cube_texture);
 }
 
 FullScreenQuadShader::FullScreenQuadShader(const Param& param, Context* context, Object* object) {

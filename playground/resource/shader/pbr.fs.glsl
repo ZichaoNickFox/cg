@@ -1,104 +1,66 @@
-#version 330 core
-
 out vec4 FragColor;
 
 in vec3 frag_world_pos_;
 in vec3 normal_;
 
-struct Light {
-  vec3 color;
-  vec3 pos;
-  float constant;   // attenuation
-  float linear;     // attenuation
-  float quadratic;  // attenuation
-};
-uniform int light_count;
-uniform Light lights[200];
-
 uniform vec3 view_pos;
-
-struct Material {
-  vec3 albedo;
-  float metallic;
-  float roughness;
-};
-uniform Material material;
+uniform PbrMaterial pbr_material;
 
 uniform float ao;
 
-const float PI = 3.1415926;
+uniform sampler2D texture_albedo;
 
-float D_GGX_TR(vec3 N, vec3 H, float roughness) {
-  float a = roughness * roughness;
-  float a2 = a * a;
-  float NdotH = max(dot(N, H), 0.0);
-  float NdotH2 = NdotH * NdotH;
+in mat3 world_TBN_;
 
-  float nom = a2;
-  float denom = (NdotH * (a2 - 1.0) + 1.0);
-  denom = PI * denom * denom;
+in vec2 texcoord_;
 
-  return nom / denom;
-}
+uniform ShadowInfo shadow_info;
+uniform bool use_shadowing = false;
+in vec4 frag_shadow_pos_;
 
-float GeometrySchlickGGX(float NdotV, float roughness) {
-  float r = (roughness + 1.0);
-  float k = (r * r) / 8.0;
-
-  float nom = NdotV;
-  float denom = NdotV * (1.0 - k) + k;
-  return nom / denom;
-}
-
-float GeometrySmith(vec3 N, vec3 V, vec3 L, float k) {
-  float NdotV = max(dot(N, V), 0.0);
-  float NdotL = max(dot(N, L), 0.0);
-  float ggx1 = GeometrySchlickGGX(NdotV, k);
-  float ggx2 = GeometrySchlickGGX(NdotL, k);
-  return ggx1 * ggx2;
-}
-
-vec3 FresnelSchlink(float cosTheta, vec3 F0) {
-  return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+float CalcShadow() {
+  if (use_shadowing) {
+    ShadowModelInput shadow_model_input;
+    shadow_model_input.frag_shadow_pos_light_space = frag_shadow_pos_;
+    shadow_model_input.depth_in_texture = texture(shadow_info.texture_depth, GetShadowMapTexcoord(frag_shadow_pos_)).r;
+    return ShadowModel(shadow_model_input);
+  } else {
+    return 1.0;
+  }
 }
 
 void main()
 {
-  vec3 N = normalize(normal_);
-  vec3 V = normalize(view_pos - frag_world_pos_);
-
-  vec3 F0 = vec3(0.04);
-  F0 = mix(F0, material.albedo, material.metallic);
-
-  vec3 Lo = vec3(0.0);
-  for (int i = 0; i < light_count; ++i) {
-    vec3 L = normalize(lights[i].pos - frag_world_pos_);
-    vec3 H = normalize(V + L);
-    float distance = length(lights[i].pos - frag_world_pos_);
-    float attenuation = 1.0 / (distance * distance) * lights[i].quadratic
-        + distance * lights[i].linear + distance * lights[i].constant;
-    vec3 radiance = lights[i].color * attenuation;
-
-    vec3 F = FresnelSchlink(max(dot(H, V), 0.0), F0);
-
-    float NDF = D_GGX_TR(N, H, material.roughness);
-    float G = GeometrySmith(N, V, L, material.roughness);
-
-    vec3 nominator = NDF * G * F;
-    float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.001;
-    vec3 specular = nominator / denominator;
-
-    vec3 kS = F;
-    vec3 kD = vec3(1.0) - kS;
-    kD *= 1.0 - material.metallic;
-
-    float NdotL = max(dot(N, L), 0.0);
-    Lo += (kD * material.albedo / PI + specular) * radiance * NdotL;
+  vec3 N = vec3(0, 0, 0);
+  if (pbr_material.use_texture_normal) {
+    vec3 normal_from_texture = texture(pbr_material.texture_normal0, texcoord_).xyz;
+    normal_from_texture = normalize(normal_from_texture * 2.0 - 1.0);
+    N = normalize(world_TBN_ * normal_from_texture);
+  } else {
+    N = normalize(normal_);
   }
-  vec3 ambient = vec3(0.03) * material.albedo * ao;
-  vec3 color = ambient + Lo;
+
+  vec3 albedo = vec3(0, 0, 0);
+  if (pbr_material.use_texture_albedo) {
+    albedo = texture(pbr_material.texture_albedo0, texcoord_).xyz;
+  } else {
+    albedo = pbr_material.albedo;
+  }
+
+  PbrModelInput pbr_model_input;
+  pbr_model_input.view_pos = view_pos;
+  pbr_model_input.frag_world_pos = frag_world_pos_;
+  pbr_model_input.albedo = albedo;
+  pbr_model_input.roughness = pbr_material.roughness;
+  pbr_model_input.metallic = pbr_material.metallic;
+  pbr_model_input.ao = pbr_material.ao;
+  pbr_model_input.normal = N;
+
+  vec3 color = PbrModel(pbr_model_input);
   color = color / (color + vec3(1.0));
   color = pow(color, vec3(1.0 / 2.2));
 
-  FragColor = vec4(color, 1);
+  // shadowing
+  float shadow_factor = CalcShadow();
+  FragColor = vec4(color * shadow_factor, 1.0);
 }

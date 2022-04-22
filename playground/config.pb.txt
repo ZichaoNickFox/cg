@@ -41,7 +41,7 @@ shader_config {
   fs_path : [
     "playground/resource/shader/version.glsl",
     "playground/resource/shader/light_info.glsl",
-    "playground/resource/shader/material.glsl",
+    "playground/resource/shader/phong_material.glsl",
     "playground/resource/shader/shadow_info.glsl",
     "playground/resource/shader/phong_model.glsl",
     "playground/resource/shader/shadow_model.glsl",
@@ -175,9 +175,17 @@ shader_config {
 shader_config {
   name : "pbr";
   vs_path : [
+    "playground/resource/shader/version.glsl",
+    "playground/resource/shader/shadow_info.glsl",
     "playground/resource/shader/pbr.vs.glsl"
   ];
   fs_path : [
+    "playground/resource/shader/version.glsl",
+    "playground/resource/shader/shadow_info.glsl",
+    "playground/resource/shader/shadow_model.glsl",
+    "playground/resource/shader/pbr_material.glsl",
+    "playground/resource/shader/light_info.glsl",
+    "playground/resource/shader/pbr_model.glsl",
     "playground/resource/shader/pbr.fs.glsl"
   ];
 }

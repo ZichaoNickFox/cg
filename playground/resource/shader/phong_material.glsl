@@ -1,4 +1,4 @@
-struct Material {
+struct PhongMaterial {
   bool use_texture_normal;
   bool use_texture_ambient;
   bool use_texture_specular;

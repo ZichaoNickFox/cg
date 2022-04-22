@@ -62,17 +62,18 @@ class PhongShader {
 class PbrShader {
  public:
   struct Param {
-    glm::vec3 albedo;
-    float metallic;
-    float roughness;
-    float ao;
-    ShaderLightInfo light_info;
+    glm::vec3 albedo = glm::vec3(1, 0, 0);
+    float metallic = 0.5;
+    float roughness = 0.5;
+    float ao = 0;
 
     std::optional<engine::Texture> texture_normal;
     std::optional<engine::Texture> texture_albedo;
     std::optional<engine::Texture> texture_metallic;
     std::optional<engine::Texture> texture_roughness;
 
+    ShaderLightInfo light_info;
+    std::optional<ShaderShadowInfo> shadow_info;
   };
   PbrShader(const Param& param, Context* context, Object* object);
 };

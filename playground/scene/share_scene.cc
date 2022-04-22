@@ -8,13 +8,13 @@
 #include <memory>
 
 #include "engine/transform.h"
+#include "playground/object/fullscreen_quad.h"
 #include "playground/scene/common.h"
 #include "playground/util.h"
 
 void ShareScene::OnEnter(Context *context)
 {
-  const glm::vec4 kLightColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
-  const glm::vec3 kLightPos = glm::vec3(5, 5, 0);
+  const glm::vec3 kLightPos = glm::vec3(5, 3, 0);
   const glm::vec3 kLightScale = glm::vec3(0.4, 0.4, 0.4);
   point_light_.mutable_transform()->SetTranslation(kLightPos);
   point_light_.mutable_transform()->SetScale(kLightScale);
@@ -25,9 +25,12 @@ void ShareScene::OnEnter(Context *context)
 
   sphere_.mutable_transform()->SetTranslation(glm::vec3(3, 1, 0));
 
-  camera_->mutable_transform()->SetTranslation(glm::vec3(5.83, 4.11, 0.10));
-  camera_->mutable_transform()->SetRotation(glm::quat(-0.64, 0.28, -0.65, -0.28));
+  camera_->mutable_transform()->SetTranslation(glm::vec3(5.95, 5.34, 2.24));
+  camera_->mutable_transform()->SetRotation(glm::quat(-0.81, 0.36, -0.40, -0.17));
   context->SetCamera(camera_);
+
+  directional_light_.mutable_transform()->SetTranslation(kLightPos);
+  directional_light_.mutable_transform()->SetRotation(glm::quat(-0.67, 0.16, -0.70, -0.15));
 
   struct Data {
     std::vector<glm::vec3> points;
@@ -41,6 +44,9 @@ void ShareScene::OnEnter(Context *context)
   line_.SetMesh(line_data);
 
   glEnable(GL_DEPTH_TEST);
+
+  depth_buffer_pass_.Init({context->frame_buffer_size()}, directional_light_.transform());
+  forward_pass_.Init({context->frame_buffer_size(), 1, context->clear_color()});
 }
 
 void ShareScene::OnUpdate(Context *context)
@@ -50,8 +56,7 @@ void ShareScene::OnUpdate(Context *context)
     step_ = 1011;
   }
   if (step_ == 1011) {
-    ImGui::ColorEdit3("plane_color_101.1", (float *)&plane_color_1011_);
-    ImGui::ColorEdit3("sphere_color_101.1", (float*)&sphere_color_1011_);
+    step_ = 1011;
   }
   if (ImGui::Button("101.2 texcoord")) {
     step_ = 1012;
@@ -62,14 +67,18 @@ void ShareScene::OnUpdate(Context *context)
   if (ImGui::Button("101.4 normal texture")) {
     step_ = 1014;
   }
-  if (ImGui::Button("101.5")) {
+  if (ImGui::Button("101.5 Shadow")) {
     step_ = 1015;
   }
-  if (ImGui::Button("101.6")) {
+  if (ImGui::Button("101.6 pbr")) {
     step_ = 1016;
   }
   if (ImGui::Button("101.7")) {
     step_ = 1017;
+  }
+  if (step_ == 1016) {
+    ImGui::SliderFloat("metallic", &metallic_, 0.0, 1.0);
+    ImGui::SliderFloat("roughness", &roughness_, 0.0, 1.0);
   }
 
 
@@ -107,44 +116,139 @@ void ShareScene::OnUpdate(Context *context)
 
 void ShareScene::OnRender(Context *context)
 {
-  if (step_ == 1011) {
-    ColorShader({plane_color_1011_}, context, &plane_);
-    ColorShader({sphere_color_1011_}, context, &sphere_);
-    sphere_.OnRender(context);
-    plane_.OnRender(context);
-  } else if (step_ == 1012) {
-    Texture0Shader({context->GetTexture("brickwall")}, context, &plane_);
-    Texture0Shader({context->GetTexture("brickwall")}, context, &sphere_);
-    sphere_.OnRender(context);
-    plane_.OnRender(context);
-  } else if (step_ > 1012) {
-    PhongShader::Param phong_param;
-    phong_param.light_info = ShaderLightInfo(point_light_);
-    phong_param.use_blinn_phong = use_blinn_phong_;
-    if (use_texture_normal_) {
-      phong_param.texture_normal = context->GetTexture("brickwall_normal");
+  if (step_ < 1015) {
+    if (step_ == 1011) {
+      ColorShader({plane_color_1011_}, context, &plane_);
+      ColorShader({sphere_color_1011_}, context, &sphere_);
+      sphere_.OnRender(context);
+      plane_.OnRender(context);
+    } else if (step_ == 1012) {
+      Texture0Shader({context->GetTexture("brickwall")}, context, &plane_);
+      Texture0Shader({context->GetTexture("brickwall")}, context, &sphere_);
+      sphere_.OnRender(context);
+      plane_.OnRender(context);
+    } else if (step_ > 1012) {
+      PhongShader::Param phong_param;
+      phong_param.light_info = ShaderLightInfo(point_light_);
+      phong_param.use_blinn_phong = use_blinn_phong_;
+      if (use_texture_normal_) {
+        phong_param.texture_normal = context->GetTexture("brickwall_normal");
+      }
+      phong_param.texture_diffuse = context->GetTexture("brickwall");
+      phong_param.shininess = 10;
+      phong_param.specular = glm::vec3(0.5,0.5,0.5);
+      PhongShader(phong_param, context, &sphere_);
+      PhongShader(phong_param, context, &plane_);
+
+      sphere_.OnRender(context);
+      plane_.OnRender(context);
+
+      NormalShader::Param normal_param{show_vertex_normal_, show_TBN_, show_triangle_,
+                                      show_texture_normal_, context->GetTexture("brickwall_normal"), 0.1};
+      NormalShader(normal_param, context, &sphere_);
+      NormalShader(normal_param, context, &plane_);
+
+      sphere_.OnRender(context);
+      plane_.OnRender(context);
     }
-    phong_param.texture_diffuse = context->GetTexture("brickwall");
-    phong_param.shininess = shininess_;
-    PhongShader(phong_param, context, &sphere_);
-    PhongShader(phong_param, context, &plane_);
 
-    sphere_.OnRender(context);
-    plane_.OnRender(context);
+    LinesShader lines({1.0}, context, &coord_); 
+    coord_.OnRender(context);
 
-    NormalShader::Param normal_param{show_vertex_normal_, show_TBN_, show_triangle_,
-                                     show_texture_normal_, context->GetTexture("brickwall_normal"), 0.1};
-    NormalShader(normal_param, context, &sphere_);
-    NormalShader(normal_param, context, &plane_);
+    ColorShader({kLightColor}, context, &point_light_);
+    point_light_.OnRender(context);
+  } else if (step_ == 1015) {
+    RunDepthBufferPass(context, &depth_buffer_pass_);
 
-    sphere_.OnRender(context);
-    plane_.OnRender(context);
-  } 
+    forward_pass_.Update(depth_buffer_pass_.shader_shadow_info());
+    RunForwardPass(context, &forward_pass_);
 
-  LinesShader lines({1.0}, context, &coord_); 
-  coord_.OnRender(context);
+    FullscreenQuad quad;
+    FullScreenQuadShader({forward_pass_.GetColorTexture()}, context, &quad);
+    quad.OnRender(context);
+  } else if (step_ == 1016) {
+    RunDepthBufferPass2(context, &depth_buffer_pass_);
 
+    forward_pass_.Update(depth_buffer_pass_.shader_shadow_info());
+    RunForwardPass2(context, &forward_pass_);
+
+    FullscreenQuad quad;
+    FullScreenQuadShader({forward_pass_.GetColorTexture()}, context, &quad);
+    quad.OnRender(context);
+  }
+}
+
+void ShareScene::RunDepthBufferPass(Context* context, DepthBufferPass* depth_buffer_pass) {
+  depth_buffer_pass->Begin();
+
+  DepthBufferShader{context->GetShader("depth_buffer"), depth_buffer_pass->camera(), &sphere_};
+  sphere_.OnRender(context);
+  DepthBufferShader{context->GetShader("depth_buffer"), depth_buffer_pass->camera(), &plane_};
+  plane_.OnRender(context);
+
+  depth_buffer_pass->End();
+}
+
+void ShareScene::RunForwardPass(Context* context, ForwardPass* forward_pass) {
+  forward_pass->Begin();
+
+  PhongShader::Param phong;
+  phong.shadow_info = forward_pass->prepass_shadow_info();
+  phong.light_info = {point_light_};
+  phong.texture_normal = context->GetTexture("brickwall_normal");
+  phong.texture_diffuse = context->GetTexture("brickwall");
+  phong.shininess = 10;
+  phong.specular = glm::vec3(0.5,0.5,0.5);
+  PhongShader(phong, context, &sphere_);
+  sphere_.OnRender(context);
+  PhongShader(phong, context, &plane_);
+  plane_.OnRender(context);
+
+  LinesShader({}, context, directional_light_.mutable_lines());
+  Texture0Shader({context->GetTexture("directional_light")}, context, directional_light_.mutable_billboard());
+  directional_light_.OnRender(context);
+
+  ColorShader({kLightColor}, context, &point_light_);
   point_light_.OnRender(context);
+
+  forward_pass->End();
+}
+
+void ShareScene::RunDepthBufferPass2(Context* context, DepthBufferPass* depth_buffer_pass) {
+  depth_buffer_pass->Begin();
+
+  DepthBufferShader{context->GetShader("depth_buffer"), depth_buffer_pass->camera(), &sphere_};
+  sphere_.OnRender(context);
+  DepthBufferShader{context->GetShader("depth_buffer"), depth_buffer_pass->camera(), &plane_};
+  plane_.OnRender(context);
+
+  depth_buffer_pass->End();
+}
+
+void ShareScene::RunForwardPass2(Context* context, ForwardPass* forward_pass) {
+  forward_pass->Begin();
+
+  PbrShader::Param pbr;
+  pbr.texture_albedo = context->GetTexture("brickwall");
+  pbr.texture_normal = context->GetTexture("brickwall_normal");
+  pbr.metallic = metallic_;
+  pbr.roughness = roughness_;
+  pbr.albedo = albedo_;
+  pbr.light_info = ShaderLightInfo({point_light_});
+  pbr.shadow_info = forward_pass->prepass_shadow_info();
+  PbrShader(pbr, context, &sphere_);
+  sphere_.OnRender(context);
+  PbrShader(pbr, context, &plane_);
+  plane_.OnRender(context);
+
+  LinesShader({}, context, directional_light_.mutable_lines());
+  Texture0Shader({context->GetTexture("directional_light")}, context, directional_light_.mutable_billboard());
+  directional_light_.OnRender(context);
+
+  ColorShader({kLightColor}, context, &point_light_);
+  point_light_.OnRender(context);
+
+  forward_pass->End();
 }
 
 void ShareScene::OnExit(Context *context)

@@ -155,4 +155,8 @@ GLint Shader::GetUniformLocation(const std::string& location_name) const {
   }
   return res;
 }
+
+void Shader::Clear() {
+  // TODO clear all uniforms
+}
 }

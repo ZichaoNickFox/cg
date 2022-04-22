@@ -92,5 +92,6 @@ void Material::Clear() {
   location_vec3_.clear();
   location_int_.clear();
   location_bool_.clear();
+  shader_->Clear();
 }
 }

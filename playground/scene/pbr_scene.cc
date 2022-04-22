@@ -43,6 +43,7 @@ void PbrScene::OnUpdate(Context *context)
   ImGui::ColorEdit3("albedo", (float*)&albedo_);
   
   for (int i = 0; i < light_num; ++i) {
+    ColorShader({}, context, &point_lights_[i]);
     point_lights_[i].OnUpdate(context);
     point_lights_[i].SetColor(light_color_);
   }
@@ -65,7 +66,6 @@ void PbrScene::OnRender(Context *context)
     point_lights_[i].OnRender(context);
   }
 
-
   PbrShader::Param pbr;
   pbr.albedo = albedo_;
   pbr.metallic = metallic;
@@ -77,6 +77,7 @@ void PbrScene::OnRender(Context *context)
   sphere_.OnRender(context);
 
   coord_.OnRender(context);
+  SkyboxShader({context->GetTexture("skybox")}, context, &skybox_);
   skybox_.OnRender(context);
 
   PbrShader(pbr, context, &plane_);
