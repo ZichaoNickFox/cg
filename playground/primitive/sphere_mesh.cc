@@ -124,12 +124,11 @@ void SphereMesh::FillTexcoord(const std::vector<glm::vec3>& triangles, std::vect
     if (pole_index != -1) {
       float texcoordx_other_index0 = (pole_index + 1) % 3;
       float texcoordx_other_index1 = (pole_index + 2) % 3;
-      float texcoordx_other0 = CalcTexcoordx(triangles[texcoordx_other_index0]);
-      float texcoordx_other1 = CalcTexcoordx(triangles[texcoordx_other_index1]);
+      float texcoordx_other0 = CalcTexcoordx(triangles[triangle_index + texcoordx_other_index0]);
+      float texcoordx_other1 = CalcTexcoordx(triangles[triangle_index + texcoordx_other_index1]);
       texcoordxs[texcoordx_other_index0] = texcoordx_other0;
       texcoordxs[texcoordx_other_index1] = texcoordx_other1;
-      texcoordxs[pole_index] =
-          CalcAverageOfTexcoords(texcoordx_other0, texcoordx_other1);
+      texcoordxs[pole_index] = CalcAverageOfTexcoords(texcoordx_other0, texcoordx_other1);
     } else {
       texcoordxs[0] = CalcTexcoordx(triangles[triangle_index + 0]);
       texcoordxs[1] = CalcTexcoordx(triangles[triangle_index + 1]);
@@ -151,8 +150,8 @@ void SphereMesh::FillTexcoord(const std::vector<glm::vec3>& triangles, std::vect
     if (*texcoordx0 > *texcoordx1) {
       std::swap(texcoordx0, texcoordx1);
     }
-    CGCHECK(*texcoordx0 <= *texcoordx1 && *texcoordx1 <= *texcoordx2 && *texcoordx0 >= 0 && *texcoordx1 >=0 && *texcoordx2 >=0)
-        << *texcoordx0 << " " << *texcoordx1 << " " << *texcoordx2 << " ";
+    CGCHECK(*texcoordx0 <= *texcoordx1 && *texcoordx1 <= *texcoordx2 && *texcoordx0 >= 0 && *texcoordx1 >=0
+        && *texcoordx2 >=0) << *texcoordx0 << " " << *texcoordx1 << " " << *texcoordx2 << " ";
     if (*texcoordx2 - *texcoordx1 > kTexcoordXThreshold) {
       *texcoordx1 += 1.0;
       *texcoordx0 += 1.0;
@@ -169,10 +168,10 @@ void SphereMesh::FillTexcoord(const std::vector<glm::vec3>& triangles, std::vect
     // Step 2 End
 
     for (int i = 0; i < 3; ++i) {
-      float phi = asin(triangles[triangle_index + i].y);
-      // float clamp_theta = (theta < 0 ? 2 * M_PI + theta : theta) / (2 * M_PI);
-      phi = (phi + 1.0) / 2.0;
-      texcoords->at(triangle_index + i) = glm::vec2(texcoordxs[i], phi);
+      float theta = asin(triangles[triangle_index + i].y);
+      theta = theta / (M_PI / 2.0);
+      theta = (theta + 1.0) / 2.0;
+      texcoords->at(triangle_index + i) = glm::vec2(texcoordxs[i], theta);
     }
   }
 }
