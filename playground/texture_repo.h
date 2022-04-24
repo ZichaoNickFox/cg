@@ -9,6 +9,7 @@ class TextureRepo {
  public:
   void Init(const Config& config);
   engine::Texture GetOrLoadTexture(const std::string& name, bool flip_vertically = false, bool use_mipmap = false);
+  void SaveTexture(const std::string& name, const engine::Texture& texture);
 
  private:
   struct State {
@@ -21,7 +22,8 @@ class TextureRepo {
 };
 
 namespace texture {
-  engine::Texture LoadTexture2D(const std::string& fileName, bool flip_vertically = false, bool useMipmap = false);
+  engine::Texture LoadTexture2D(const std::string& fileName, bool flip_vertically = true,
+                                bool useMipmap = false, bool equirectangular = false);
   void SaveTexture2D(const std::string& fullPath, const engine::Texture& texture, bool multiple_sample = false);
   void SaveTexture2D(const std::string& fullPath, int width, int height, int channels, const unsigned char *const data);
   

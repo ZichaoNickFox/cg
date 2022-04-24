@@ -12,6 +12,8 @@ cc_library(
     "common.cc",
     "deferred_shading_scene.h",
     "deferred_shading_scene.cc",
+    "equirectangular_2_cubemap_scene.h",
+    "equirectangular_2_cubemap_scene.cc",
     "forward_shading_scene.h",
     "forward_shading_scene.cc",
     "gallery_scene.h",

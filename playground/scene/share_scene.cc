@@ -164,7 +164,7 @@ void ShareScene::OnRender(Context *context)
     RunForwardPass(context, &forward_pass_);
 
     FullscreenQuad quad;
-    FullScreenQuadShader({forward_pass_.GetColorTexture()}, context, &quad);
+    FullscreenQuadShader({forward_pass_.GetColorTexture()}, context, &quad);
     quad.OnRender(context);
   } else if (step_ == 1016) {
     RunDepthBufferPass2(context, &depth_buffer_pass_);
@@ -173,7 +173,7 @@ void ShareScene::OnRender(Context *context)
     RunForwardPass2(context, &forward_pass_);
 
     FullscreenQuad quad;
-    FullScreenQuadShader({forward_pass_.GetColorTexture()}, context, &quad);
+    FullscreenQuadShader({forward_pass_.GetColorTexture()}, context, &quad);
     quad.OnRender(context);
   }
 }

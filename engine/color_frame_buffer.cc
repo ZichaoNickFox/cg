@@ -18,7 +18,7 @@ void ColorFrameBuffer::Init(const Option& option) {
     glGenTextures(1, textures_[i].mutable_id());
     
     glBindTexture(GL_TEXTURE_2D, textures_[i].id());
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, option.size.x, option.size.y, 0, GL_RGBA, GL_FLOAT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, option.size.x, option.size.y, 0, GL_RGBA, GL_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

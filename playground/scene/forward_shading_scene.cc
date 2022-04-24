@@ -107,7 +107,7 @@ void ForwardShadingScene::OnRender(Context *context)
   RunForwardPass(context, &forward_pass_);
 
   FullscreenQuad quad;
-  FullScreenQuadShader({forward_pass_.GetColorTexture()}, context, &quad);
+  FullscreenQuadShader({forward_pass_.GetColorTexture()}, context, &quad);
   quad.OnRender(context);
 }
 

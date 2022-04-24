@@ -25,4 +25,9 @@ TEST(engine_test, util)
   EXPECT_TRUE(util::EndsWith("abc", "c"));
   EXPECT_TRUE(util::EndsWith("abc", "bc"));
   EXPECT_TRUE(util::EndsWith("abc", "abc"));
+  EXPECT_TRUE(util::EndsWith("abc", "c"));
+
+  EXPECT_EQ(util::FileDir("abc.png"), "");
+  EXPECT_EQ(util::FileDir("/abc.png"), "");
+  EXPECT_EQ(util::FileDir("a/abc.png"), "a");
 }

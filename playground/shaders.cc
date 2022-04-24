@@ -237,8 +237,33 @@ SkyboxShader::SkyboxShader(const Param& param, Context* context, Object* object)
   material->SetTexture("texture0", param.cube_texture);
 }
 
-FullScreenQuadShader::FullScreenQuadShader(const Param& param, Context* context, Object* object) {
+FullscreenQuadShader::FullscreenQuadShader(const Param& param, Context* context, Object* object) {
   engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
   material->SetShader(context->GetShader("fullscreen_quad"));
   material->SetTexture("texture0", param.texture0); 
+}
+
+Equirectanglular2CubemapShader::Equirectanglular2CubemapShader(const Param& param, Context* context, Object* object) {
+  engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
+  material->SetShader(context->GetShader("equirectangular_2_cubemap"));
+
+  glm::mat4 model = object->GetModelMatrix();
+  glm::mat4 view = param.camera->GetViewMatrix();
+  glm::mat4 project = param.camera->GetProjectMatrix();
+  material->SetMat4("model", model); 
+  material->SetMat4("view", view);
+  material->SetMat4("project", project);
+  material->SetTexture("texture0", param.texture0); 
+}
+
+TexcoordShader::TexcoordShader(const Param& param, Context* context, Object* object) {
+  engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
+  material->SetShader(context->GetShader("texcoord"));
+
+  glm::mat4 model = object->GetModelMatrix();
+  glm::mat4 view = context->camera().GetViewMatrix();
+  glm::mat4 project = context->camera().GetProjectMatrix();
+  material->SetMat4("model", model); 
+  material->SetMat4("view", view);
+  material->SetMat4("project", project);
 }

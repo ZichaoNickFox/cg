@@ -1,5 +1,6 @@
 #include "playground/util.h"
 
+#include <filesystem>
 #include <fstream>
 #include <glog/logging.h>
 #include <limits>
@@ -33,6 +34,22 @@ std::string FileName(const std::string& path) {
     res = res.substr(0, dot_pos);
   }
   return res;
+}
+
+std::string FileDir(const std::string& path) {
+  std::string res = path;
+  int slash_pos = path.find_last_of('/');
+  if (slash_pos == std::string::npos) {
+    return "";
+  } else {
+    return path.substr(0, slash_pos);
+  }
+}
+
+void MakeDir(const std::string& dir) {
+  if (!std::filesystem::exists(dir)) {
+    CGCHECK(std::filesystem::create_directory(dir));
+  }
 }
 
 bool StartsWith(const std::string& str, const std::string& start_with) {

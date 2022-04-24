@@ -130,10 +130,25 @@ class SkyboxShader {
   SkyboxShader(const Param& param, Context* context, Object* object);
 };
 
-class FullScreenQuadShader {
+class FullscreenQuadShader {
  public:
   struct Param {
     engine::Texture texture0;
   };
-  FullScreenQuadShader(const Param& param, Context* context, Object* object);
+  FullscreenQuadShader(const Param& param, Context* context, Object* object);
+};
+
+class Equirectanglular2CubemapShader {
+ public:
+  struct Param {
+    engine::Texture texture0;
+    engine::Camera* camera = nullptr;
+  };
+  Equirectanglular2CubemapShader(const Param& param, Context* context, Object* object);
+};
+
+class TexcoordShader {
+ public:
+  struct Param {};
+  TexcoordShader(const Param& param, Context* context, Object* object);
 };

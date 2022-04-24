@@ -223,6 +223,28 @@ shader_config {
   ];
 }
 
+shader_config {
+  name : "equirectangular_2_cubemap";
+  vs_path : [
+    "playground/resource/shader/equirectangular_2_cubemap.vs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/version.glsl",
+    "playground/resource/shader/equirectangular.glsl",
+    "playground/resource/shader/equirectangular_2_cubemap.fs.glsl"
+  ];
+}
+
+shader_config {
+  name : "texcoord";
+  vs_path : [
+    "playground/resource/shader/texcoord.vs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/texcoord.fs.glsl"
+  ];
+}
+
 texture_config {
   name : "opengl0";
   paths : "playground/resource/texture/opengl0.jpeg";
@@ -280,6 +302,41 @@ texture_config {
   paths : "playground/resource/texture/skybox/front.jpg";
   paths : "playground/resource/texture/skybox/back.jpg";
   texture_type : CubeMap;
+}
+
+texture_config {
+  name : "equirectangular";
+  paths : "playground/resource/texture/equirectangular/Tropical_Beach_8k.jpg";
+}
+
+texture_config {
+  name : "skybox2_left";
+  paths : "playground/resource/texture/skybox2/left.png";
+}
+
+texture_config {
+  name : "skybox2_right";
+  paths : "playground/resource/texture/skybox2/right.png";
+}
+
+texture_config {
+  name : "skybox2_up";
+  paths : "playground/resource/texture/skybox2/up.png";
+}
+
+texture_config {
+  name : "skybox2_down";
+  paths : "playground/resource/texture/skybox2/down.png";
+}
+
+texture_config {
+  name : "skybox2_front";
+  paths : "playground/resource/texture/skybox2/front.png";
+}
+
+texture_config {
+  name : "skybox2_back";
+  paths : "playground/resource/texture/skybox2/back.png";
 }
 
 model_config {

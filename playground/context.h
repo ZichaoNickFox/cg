@@ -51,7 +51,9 @@ class Context {
   const glm::vec4 clear_color() const { return clear_color_; }
 
   engine::Shader GetShader(const std::string& name);
-  engine::Texture GetTexture(const std::string& name, bool flip_vertically = false, bool use_mipmap = false);
+  engine::Texture GetTexture(const std::string& name, bool flip_vertically = false, bool use_mipmap = false,
+                             bool equirectangular = false);
+  void SaveTexture(const std::string& name, const engine::Texture& texture);
   std::shared_ptr<const engine::Mesh> GetMesh(const std::string& name);
   std::vector<ModelRepo::ModelPartData> GetModel(const std::string& name);
 

@@ -37,9 +37,36 @@ Texture TextureRepo::GetOrLoadTexture(const std::string& name, bool flip_vertica
   return state->texture;
 }
 
+void TextureRepo::SaveTexture(const std::string& name, const engine::Texture& texture) {
+  State* state = &textures_[name];
+  const std::string& path = state->paths[0];
+  texture::SaveTexture2D(path, texture);
+}
+
+namespace {
+void FlipVertically(GLubyte* pixels, int width, int height, int channel, int byte_per_channel) {
+  int byte_per_pixel = channel * byte_per_channel;
+  int byte_per_line = width * byte_per_pixel;
+  int h1 = height - 1;
+  int h2 = 0;
+  while (h2 < h1) {
+    int h1_first_type = h1 * byte_per_line;
+    int h2_first_type = h2 * byte_per_line;
+    for (int byte_in_line = 0; byte_in_line < byte_per_line; ++ byte_in_line) {
+      std::swap(pixels[h1_first_type + byte_in_line], pixels[h2_first_type + byte_in_line]);
+    }
+    h2++;
+    h1--;
+  }
+}
+void TryMakeDir(const std::string& path_with_ext) {
+  std::string file_dir = util::FileDir(path_with_ext);
+  util::MakeDir(file_dir);
+}
+}
 namespace texture {
 
-Texture LoadTexture2D(const std::string& path_with_ext, bool flip_vertically, bool useMipmap) {
+Texture LoadTexture2D(const std::string& path_with_ext, bool flip_vertically, bool useMipmap, bool equirectangular) {
   // OpenGL uv (0,0) is at left bottom
   // Texture uv (0,0) is at left top
   // So flip vertical uv
@@ -52,13 +79,23 @@ Texture LoadTexture2D(const std::string& path_with_ext, bool flip_vertically, bo
   GLint internal_format;
   ParseImageFormat(path_with_ext, &SOILfmt, &internal_format);
 
-  int width,height;
-  unsigned char* image = SOIL_load_image(path_with_ext.c_str(), &width, &height, 0, SOILfmt);
-  if (!image) {
-    CGCHECK(false) << util::Format("cannot load image {}", path_with_ext);
+  if (equirectangular) {
+    int width, height, nr_components;
+    float* image = stbi_loadf(path_with_ext.c_str(), &width, &height, &nr_components, 0);
+    glBindTexture(GL_TEXTURE_2D, id);
+    glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, internal_format, GL_FLOAT, image);
+    free(image);
+  } else {
+    unsigned char* image = nullptr;
+    int width, height, nr_components;
+    image = SOIL_load_image(path_with_ext.c_str(), &width, &height, 0, SOILfmt);
+    if (!image) {
+      CGCHECK(false) << util::Format("cannot load image {}", path_with_ext);
+    }
+    glBindTexture(GL_TEXTURE_2D, id);
+    glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, internal_format, GL_UNSIGNED_BYTE, image);
+    SOIL_free_image_data(image);
   }
-  glBindTexture(GL_TEXTURE_2D, id);
-  glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, internal_format, GL_UNSIGNED_BYTE, image);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   if(useMipmap){
@@ -70,7 +107,6 @@ Texture LoadTexture2D(const std::string& path_with_ext, bool flip_vertically, bo
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   }
   glBindTexture(GL_TEXTURE_2D, 0);
-  SOIL_free_image_data(image);
   return Texture(id, Texture::Texture2D, util::FileName(path_with_ext));
 }
 
@@ -155,10 +191,10 @@ void GetInternalFormatSize(int internal_format, int* channel, int* byte_per_chan
   *type = info.type;
 }
 
-void ParseImageFormat(const std::string& fileName, int* SOILfmt, GLint* internal_format) {
+void ParseImageFormat(const std::string& file_name, int* SOILfmt, GLint* internal_format) {
   // GL Format
   // https://community.khronos.org/t/gl-rgb-gl-rgba-gl-rgb8-what-is-what/41879
-  std::string file_ext = util::GetFileExt(fileName);
+  std::string file_ext = util::GetFileExt(file_name);
   if(file_ext == "png") {
     *SOILfmt = SOIL_LOAD_RGBA;
     *internal_format = GL_RGBA;
@@ -185,18 +221,19 @@ void SaveTexture2D(const std::string& path_with_ext, const engine::Texture& text
   
   int channel = -1, byte_per_channel = -1, format = -1, type = -1;
   GetInternalFormatSize(internal_format, &channel, &byte_per_channel, &format, &type);
-  GLubyte* pixels = new GLubyte[width * height * channel * byte_per_channel];
+  GLubyte pixels[width * height * channel * byte_per_channel];
 
   // https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glGetTexImage.xhtml
   glGetTexImage(target, 0, format, type, pixels);
+  FlipVertically(pixels, width, height, channel, byte_per_channel);
 
   CGCHECK(width > 0) << "Widget must > 0";
   CGCHECK(height > 0) << "Height must > 0";
 
   CGCHECK(VarifyChannel(path_with_ext, channel)); 
-	CGCHECK(SOIL_save_image(path_with_ext.c_str(), SOIL_SAVE_TYPE_PNG, width, height, channel, pixels));
 
-  delete[] pixels;
+  TryMakeDir(path_with_ext);
+	CGCHECK(SOIL_save_image(path_with_ext.c_str(), SOIL_SAVE_TYPE_PNG, width, height, channel, pixels));
 }
 
 Texture LoadCubeMap(const std::vector<std::string>& path) {
@@ -205,7 +242,7 @@ Texture LoadCubeMap(const std::vector<std::string>& path) {
   
   Texture ret(textureId, Texture::CubeMap);
   glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
-  for(GLuint i =0 ; i < 6; ++i) {
+  for(GLuint i = 0; i < 6; ++i) {
     int SOILfmt;
     GLint internal_format;
     ParseImageFormat(path[i], &SOILfmt, &internal_format);
@@ -241,13 +278,14 @@ int SaveCubeMap(const std::vector<std::string>& path_with_exts, GLuint texture) 
 
     int channel = -1, byte_per_channel = -1, format = -1, type = -1;
     GetInternalFormatSize(internal_format, &channel, &byte_per_channel, &format, &type);
-    GLubyte* pixels = new GLubyte[width * height * channel * byte_per_channel];
+    GLubyte pixels[width * height * channel * byte_per_channel];
 
     // https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glGetTexImage.xhtml
     glGetTexImage(GL_TEXTURE_2D, 0, format, type, pixels);
+    FlipVertically(pixels, width, height, channel, byte_per_channel);
 
+    TryMakeDir(path_with_exts[i]);
     SaveTexture2D(path_with_exts[i], width, height, channel, pixels);
-    delete[] pixels;
   }
   glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
   return true;
@@ -262,7 +300,7 @@ Texture Copy(GLuint source) {
 
   int channel = -1, byte_per_channel = -1, format = -1, type = -1;
   GetInternalFormatSize(internal_format, &channel, &byte_per_channel, &format, &type);
-  GLubyte* pixels = new GLubyte[width * height * channel * byte_per_channel];
+  GLubyte pixels[width * height * channel * byte_per_channel];
   // https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glGetTexImage.xhtml
   glGetTexImage(GL_TEXTURE_2D, 0, format, type, pixels);
 
