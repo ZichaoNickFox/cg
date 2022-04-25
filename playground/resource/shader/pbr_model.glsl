@@ -1,3 +1,4 @@
+uniform samplerCube irradiancemap;
 uniform int light_count;
 uniform Light lights[200];
 
@@ -49,7 +50,7 @@ vec3 FresnelSchlink(float cosTheta, vec3 F0) {
 }
 
 vec3 PbrModel(PbrModelInput param) {
-  vec3 N = param.normal;
+  vec3 N = normalize(param.normal);
   vec3 V = normalize(param.view_pos - param.frag_world_pos);
 
   vec3 F0 = vec3(0.04);
@@ -82,7 +83,11 @@ vec3 PbrModel(PbrModelInput param) {
     float NdotL = max(dot(N, L), 0.0);
     Lo += (kD * param.albedo / PI + specular) * radiance * NdotL;
   }
-  vec3 ambient = vec3(0.03) * param.albedo * param.ao;
+  vec3 ambient_KS = FresnelSchlink(max(dot(N, V), 0.0), F0);
+  vec3 ambient_KD = vec3(1.0) - ambient_KS;
+  ambient_KD *= 1.0 - param.metallic;
+  vec3 irradiance = texture(irradiancemap, N).rgb;
+  vec3 ambient = ambient_KD * irradiance * param.albedo * param.ao;
   vec3 color = ambient + Lo;
   return color;
 }

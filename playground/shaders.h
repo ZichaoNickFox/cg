@@ -65,15 +65,18 @@ class PbrShader {
     glm::vec3 albedo = glm::vec3(1, 0, 0);
     float metallic = 0.5;
     float roughness = 0.5;
-    float ao = 0;
+    glm::vec3 ao = glm::vec3(1.0, 1.0, 1.0);
 
     std::optional<engine::Texture> texture_normal;
     std::optional<engine::Texture> texture_albedo;
     std::optional<engine::Texture> texture_metallic;
     std::optional<engine::Texture> texture_roughness;
+    std::optional<engine::Texture> texture_ao;
 
     ShaderLightInfo light_info;
     std::optional<ShaderShadowInfo> shadow_info;
+
+    engine::Texture irradiancemap;
   };
   PbrShader(const Param& param, Context* context, Object* object);
 };
@@ -125,7 +128,7 @@ class DepthBufferShader {
 class SkyboxShader {
  public:
   struct Param {
-    engine::Texture cube_texture;
+    engine::Texture cubemap;
   };
   SkyboxShader(const Param& param, Context* context, Object* object);
 };
@@ -151,4 +154,13 @@ class TexcoordShader {
  public:
   struct Param {};
   TexcoordShader(const Param& param, Context* context, Object* object);
+};
+
+class Cubemap2IrradiancemapShader {
+ public:
+  struct Param {
+    engine::Texture cubemap;
+    engine::Camera* camera = nullptr;
+  };
+  Cubemap2IrradiancemapShader(const Param& param, Context* context, Object* object);
 };

@@ -80,7 +80,7 @@ PhongShader::PhongShader(const Param& phong, Context* context, Object* object) {
   } else {
     material->SetBool("phong_material.use_texture_specular", false);
   }
-  
+
   if (phong.texture_ambient) {
     material->SetBool("phong_material.use_texture_ambient", true);
     material->SetTexture("phong_material.texture_ambient0", phong.texture_ambient.value());
@@ -118,28 +118,44 @@ PbrShader::PbrShader(const Param& pbr, Context* context, Object* object) {
   material->SetVec3("pbr_material.albedo", pbr.albedo);
   material->SetFloat("pbr_material.roughness", pbr.roughness);
   material->SetFloat("pbr_material.metallic", pbr.metallic);
-  material->SetFloat("pbr_material.ao", pbr.ao);
+  material->SetVec3("pbr_material.ao", pbr.ao);
 
-  if (pbr.texture_normal) {
-    CGCHECK(pbr.texture_normal);
+  if (pbr.texture_normal.has_value()) {
     material->SetBool("pbr_material.use_texture_normal", true);
     material->SetTexture("pbr_material.texture_normal0", pbr.texture_normal.value());
+  } else {
+    material->SetBool("pbr_material.use_texture_normal", false);
   }
-  if (pbr.texture_albedo) {
-    CGCHECK(pbr.texture_albedo);
+
+  if (pbr.texture_albedo.has_value()) {
     material->SetBool("pbr_material.use_texture_albedo", true);
     material->SetTexture("pbr_material.texture_albedo0", pbr.texture_albedo.value());
+  } else {
+    material->SetBool("pbr_material.use_texture_albedo", false);
   }
-  if (pbr.texture_metallic) {
-    CGCHECK(pbr.texture_metallic);
+
+  if (pbr.texture_metallic.has_value()) {
     material->SetBool("pbr_material.use_texture_metallic", true);
     material->SetTexture("pbr_material.texture_metallic0", pbr.texture_metallic.value());
+  } else {
+    material->SetBool("pbr_material.use_texture_metallic", false);
   }
-  if (pbr.texture_roughness) {
-    CGCHECK(pbr.texture_roughness);
+
+  if (pbr.texture_roughness.has_value()) {
     material->SetBool("pbr_material.use_texture_roughness", true);
     material->SetTexture("pbr_material.texture_roughness0", pbr.texture_roughness.value());
+  } else {
+    material->SetBool("pbr_material.use_texture_roughness", false);
   }
+
+  if (pbr.texture_ao.has_value()) {
+    material->SetBool("pbr_material.use_texture_ao", true);
+    material->SetTexture("pbr_material.texture_ao0", pbr.texture_ao.value());
+  } else {
+    material->SetBool("pbr_material.use_texture_ao", false);
+  }
+
+  material->SetTexture("irradiancemap", pbr.irradiancemap);
 
   pbr.light_info.UpdateMaterial(context, material);
   if (pbr.shadow_info) {
@@ -234,7 +250,7 @@ SkyboxShader::SkyboxShader(const Param& param, Context* context, Object* object)
   material->SetMat4("project", project);
   material->SetMat4("view", view);
   material->SetMat4("model", model); 
-  material->SetTexture("texture0", param.cube_texture);
+  material->SetTexture("texture0", param.cubemap);
 }
 
 FullscreenQuadShader::FullscreenQuadShader(const Param& param, Context* context, Object* object) {
@@ -266,4 +282,17 @@ TexcoordShader::TexcoordShader(const Param& param, Context* context, Object* obj
   material->SetMat4("model", model); 
   material->SetMat4("view", view);
   material->SetMat4("project", project);
+}
+
+Cubemap2IrradiancemapShader::Cubemap2IrradiancemapShader(const Param& param, Context* context, Object* object) {
+  engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
+  material->SetShader(context->GetShader("cubemap_2_irradiancemap"));
+
+  glm::mat4 model = object->GetModelMatrix();
+  glm::mat4 view = param.camera->GetViewMatrix();
+  glm::mat4 project = param.camera->GetProjectMatrix();
+  material->SetMat4("model", model); 
+  material->SetMat4("view", view);
+  material->SetMat4("project", project); 
+  material->SetTexture("cubemap", param.cubemap);
 }

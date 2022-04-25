@@ -19,7 +19,7 @@ class Material {
 
   void SetFloat(const std::string& location, float value);
   void SetMat4(const std::string& location, const glm::mat4& value);
-  // return texture unit
+  // return texture unit, force0 for force pass 0 to uniform samplers
   int SetTexture(const std::string& location, Texture value);
   void SetVec4(const std::string& location, const glm::vec4& value);
   void SetVec3(const std::string& location, const glm::vec3& value);

@@ -1,4 +1,4 @@
-#include "playground/scene/equirectangular_2_cubemap_scene.h"
+#include "playground/scene/equirectangular_2_cubemap_tool_scene.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -11,7 +11,7 @@
 #include "playground/scene/common.h"
 #include "playground/texture_repo.h"
 
-void Equirectangular2CubemapScene::OnEnter(Context *context)
+void Equirectangular2CubemapToolScene::OnEnter(Context *context)
 {
   camera_->mutable_transform()->SetTranslation(glm::vec3(2.97, 3.95, 6.76));
   camera_->mutable_transform()->SetRotation(glm::quat(0.89, -0.21, 0.38, 0.09));
@@ -32,18 +32,16 @@ void Equirectangular2CubemapScene::OnEnter(Context *context)
   color_frame_buffer_.Init(option);
 }
 
-void Equirectangular2CubemapScene::OnUpdate(Context *context)
+void Equirectangular2CubemapToolScene::OnUpdate(Context *context)
 {
-  OnUpdateCommon _(context, "Equirectangular2CubemapScene");
+  OnUpdateCommon _(context, "Equirectangular2CubemapToolScene");
 
   cube_.OnUpdate(context);
 }
 
-void Equirectangular2CubemapScene::OnRender(Context *context)
+void Equirectangular2CubemapToolScene::OnRender(Context *context)
 {
   for (int i = 0; i < 6; ++i) {
-    Equirectanglular2CubemapShader({context->GetTexture("equirectangular", true, false, true), camera_.get()},
-                                   context, &cube_);
     color_frame_buffer_.Bind();
     Equirectanglular2CubemapShader({context->GetTexture("equirectangular", true, false, true), &cubemap_cameras_[i]},
                                    context, &cube_);
@@ -55,7 +53,7 @@ void Equirectangular2CubemapScene::OnRender(Context *context)
   exit(0);
 }
 
-void Equirectangular2CubemapScene::OnExit(Context *context)
+void Equirectangular2CubemapToolScene::OnExit(Context *context)
 {
   cube_.OnDestory(context);
 }

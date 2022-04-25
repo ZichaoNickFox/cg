@@ -8,7 +8,7 @@ class Texture {
  public:
   enum Type{
     Texture2D = 0,
-    CubeMap = 1,
+    Cubemap = 1,
   };
 
   Texture() {}

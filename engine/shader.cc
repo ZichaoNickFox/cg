@@ -1,6 +1,7 @@
 #include "shader.h"
 
 #include "glm/gtc/type_ptr.hpp"
+#include "glm/gtx/string_cast.hpp"
 #include <glog/logging.h>
 #include <map>
 
@@ -114,38 +115,46 @@ void Shader::LinkShader(GLuint program, const std::vector<GLuint>& objects) {
 }
 
 void Shader::Use() const {
-  CGLOG(ERROR, false) << "Use shader : " << name_;
+  CGCHECKGL();
+  CGLOG(ERROR, false) << "Use shader : " << name_ << " " << id_;
   glUseProgram(id_);
+  CGCHECKGL() << "Use shader error in shader : id=" << id_ << " name=\"" << name_ << "\"";
 }
 
 void Shader::SetBool(const std::string &location_name, bool value) const {
   GLint location = GetUniformLocation(location_name);
   glUniform1i(location, (int)value);
+  CGCHECKGL() << location_name << " " << value;
 }
 
 void Shader::SetInt(const std::string &location_name, int value) const {
   GLint location = GetUniformLocation(location_name);
   glUniform1i(location, value);
+  CGCHECKGL() << location_name << " " << value;
 }
 
 void Shader::SetFloat(const std::string &location_name, float value) const {
   GLint location = GetUniformLocation(location_name);
   glUniform1f(location, value);
+  CGCHECKGL() << location_name << " " << value;
 }
 
 void Shader::SetMat4(const std::string &location_name, const glm::mat4& value) const {
   GLint location = GetUniformLocation(location_name);
   glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+  CGCHECKGL() << location_name << " " << glm::to_string(value);
 }
 
 void Shader::SetVec4(const std::string &location_name, const glm::vec4& value) const {
   GLint location = GetUniformLocation(location_name);
-  glUniform4fv(location, 1, (GLfloat*)&value);
+  glUniform4fv(location, 1, glm::value_ptr(value));
+  CGCHECKGL() << location_name << " " << glm::to_string(value);
 }
 
 void Shader::SetVec3(const std::string &location_name, const glm::vec3& value) const {
   GLint location = GetUniformLocation(location_name);
-  glUniform3fv(location, 1, (GLfloat*)&value);
+  glUniform3fv(location, 1, glm::value_ptr(value));
+  CGCHECKGL() << location_name << " " << glm::to_string(value);
 }
 
 GLint Shader::GetUniformLocation(const std::string& location_name) const {
@@ -153,6 +162,7 @@ GLint Shader::GetUniformLocation(const std::string& location_name) const {
   if (res == -1 || res == GL_INVALID_VALUE || res == GL_INVALID_OPERATION) {
     CGCHECK(false) << "Cannot find uniform location '" << location_name << "' in shader '" << name_ << "'";
   }
+  CGCHECKGL() << "\"" << location_name << "\" in shader \"" << name_ << "\"";
   return res;
 }
 

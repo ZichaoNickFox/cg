@@ -13,7 +13,7 @@
 #include "playground/scene.h"
 #include "playground/shaders.h"
 
-class Equirectangular2CubemapScene : public Scene {
+class Equirectangular2CubemapToolScene : public Scene {
  public:
   void OnEnter(Context* context);
   void OnUpdate(Context* context);
@@ -25,13 +25,13 @@ class Equirectangular2CubemapScene : public Scene {
   Cube cube_;
 
   engine::Camera cubemap_cameras_[6];
-  std::vector<std::string> name_ = {"skybox2_left", "skybox2_right", "skybox2_up", "skybox2_down",
+  std::vector<std::string> name_ = {"skybox2_right", "skybox2_left", "skybox2_top", "skybox2_bottom",
                                     "skybox2_front", "skybox2_back"};
   std::vector<glm::quat> rotations_ = {
     glm::angleAxis(float(M_PI) / 2.0f, glm::vec3(0.0f, 1.0f, 0.0f)), // left
     glm::angleAxis(float(M_PI) / 2.0f, glm::vec3(0.0f, -1.0f, 0.0f)), // right
-    glm::angleAxis(float(M_PI) / 2.0f, glm::vec3(1.0f, 0.0f, 0.0f)), // up
-    glm::angleAxis(float(M_PI) / 2.0f, glm::vec3(-1.0f, 0.0f, 0.0f)), // down
+    glm::angleAxis(float(M_PI) / 2.0f, glm::vec3(1.0f, 0.0f, 0.0f)), // top
+    glm::angleAxis(float(M_PI) / 2.0f, glm::vec3(-1.0f, 0.0f, 0.0f)), // bottom
     glm::angleAxis(float(M_PI), glm::vec3(0.0f, 1.0f, 0.0f)), // front
     glm::quat(), // back
   };

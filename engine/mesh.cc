@@ -99,6 +99,7 @@ void Mesh::SetupEBO() {
 }
 
 void Mesh::Submit() const {
+  CGCHECKGL();
   bool use_ebo = indices_.size() > 0;
   glBindVertexArray(vao_);
   if (use_ebo) {
@@ -109,6 +110,7 @@ void Mesh::Submit() const {
     glDrawArrays(GL_TRIANGLES, 0, positions_.size());
   }
   glBindVertexArray(0);
+  CGCHECKGL();
 }
 
 bool Mesh::Intersect(const glm::vec3& origin_ls, const glm::vec3& dir_ls,

@@ -26,7 +26,7 @@ Texture TextureRepo::GetOrLoadTexture(const std::string& name, bool flip_vertica
     if (state->texture_type == Texture::Texture2D) {
       CGCHECK(state->paths.size() == 1) << "Texture2D has 1 texture : " << name;
       state->texture = texture::LoadTexture2D(state->paths[0], flip_vertically, use_mipmap);
-    } else if (state->texture_type == Texture::CubeMap) {
+    } else if (state->texture_type == Texture::Cubemap) {
       state->texture = texture::LoadCubeMap(state->paths);
     } else {
       CGCHECK(false) << "Unsupported Texture Type";
@@ -240,7 +240,7 @@ Texture LoadCubeMap(const std::vector<std::string>& path) {
   GLuint textureId;
   glGenTextures(1, &textureId);
   
-  Texture ret(textureId, Texture::CubeMap);
+  Texture ret(textureId, Texture::Cubemap);
   glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
   for(GLuint i = 0; i < 6; ++i) {
     int SOILfmt;

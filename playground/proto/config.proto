@@ -10,7 +10,7 @@ message ShaderConfig {
 
 enum TextureType {
   Texture2D = 0;
-  CubeMap = 1;
+  Cubemap = 1;
 }
 
 message TextureConfig {

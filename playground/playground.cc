@@ -4,8 +4,9 @@
 
 #include "playground/scene/AA_scene.h"
 #include "playground/scene/AA_test_scene.h"
+#include "playground/scene/cubemap_2_irradiancemap_tool_scene.h"
 #include "playground/scene/deferred_shading_scene.h"
-#include "playground/scene/equirectangular_2_cubemap_scene.h"
+#include "playground/scene/equirectangular_2_cubemap_tool_scene.h"
 #include "playground/scene/forward_shading_scene.h"
 #include "playground/scene/gallery_scene.h"
 #include "playground/scene/model_scene.h"
@@ -17,7 +18,7 @@
 #include "playground/scene/skybox_scene.h"
 
 namespace {
-const std::string kDefaultScene = "Equirectangular2CubemapScene";
+const std::string kDefaultScene = "PbrScene";
 }
 
 void Playground::Init(const Context::Option& option) {
@@ -39,7 +40,8 @@ void Playground::InitScene() {
   scene_map_.insert(std::make_pair("PbrScene", std::make_unique<PbrScene>()));
   scene_map_.insert(std::make_pair("NormalScene", std::make_unique<NormalScene>()));
   scene_map_.insert(std::make_pair("ShareScene", std::make_unique<ShareScene>()));
-  scene_map_.insert(std::make_pair("Equirectangular2CubemapScene", std::make_unique<Equirectangular2CubemapScene>()));
+  scene_map_.insert(std::make_pair("Equirectangular2CubemapToolScene", std::make_unique<Equirectangular2CubemapToolScene>()));
+  scene_map_.insert(std::make_pair("Cubemap2IrradiancemapToolScene", std::make_unique<Cubemap2IrradiancemapToolScene>()));
 }
 
 void Playground::BeginFrame() {

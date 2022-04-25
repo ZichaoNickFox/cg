@@ -31,6 +31,8 @@ class PbrScene : public Scene {
   Coord coord_;
   Skybox skybox_;
   Plane plane_;
+  Cube cube_;
+
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
 
   float metallic = 0.5;

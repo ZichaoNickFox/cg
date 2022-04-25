@@ -176,13 +176,10 @@ shader_config {
   name : "pbr";
   vs_path : [
     "playground/resource/shader/version.glsl",
-    "playground/resource/shader/shadow_info.glsl",
     "playground/resource/shader/pbr.vs.glsl"
   ];
   fs_path : [
     "playground/resource/shader/version.glsl",
-    "playground/resource/shader/shadow_info.glsl",
-    "playground/resource/shader/shadow_model.glsl",
     "playground/resource/shader/pbr_material.glsl",
     "playground/resource/shader/light_info.glsl",
     "playground/resource/shader/pbr_model.glsl",
@@ -245,6 +242,16 @@ shader_config {
   ];
 }
 
+shader_config {
+  name : "cubemap_2_irradiancemap";
+  vs_path : [
+    "playground/resource/shader/cubemap_2_irradiancemap.vs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/cubemap_2_irradiancemap.fs.glsl"
+  ];
+}
+
 texture_config {
   name : "opengl0";
   paths : "playground/resource/texture/opengl0.jpeg";
@@ -301,7 +308,7 @@ texture_config {
   paths : "playground/resource/texture/skybox/bottom.jpg";
   paths : "playground/resource/texture/skybox/front.jpg";
   paths : "playground/resource/texture/skybox/back.jpg";
-  texture_type : CubeMap;
+  texture_type : Cubemap;
 }
 
 texture_config {
@@ -320,13 +327,13 @@ texture_config {
 }
 
 texture_config {
-  name : "skybox2_up";
-  paths : "playground/resource/texture/skybox2/up.png";
+  name : "skybox2_top";
+  paths : "playground/resource/texture/skybox2/top.png";
 }
 
 texture_config {
-  name : "skybox2_down";
-  paths : "playground/resource/texture/skybox2/down.png";
+  name : "skybox2_bottom";
+  paths : "playground/resource/texture/skybox2/bottom.png";
 }
 
 texture_config {
@@ -337,6 +344,58 @@ texture_config {
 texture_config {
   name : "skybox2_back";
   paths : "playground/resource/texture/skybox2/back.png";
+}
+
+texture_config {
+  name : "skybox2";
+  paths : "playground/resource/texture/skybox2/right.png";
+  paths : "playground/resource/texture/skybox2/left.png";
+  paths : "playground/resource/texture/skybox2/top.png";
+  paths : "playground/resource/texture/skybox2/bottom.png";
+  paths : "playground/resource/texture/skybox2/front.png";
+  paths : "playground/resource/texture/skybox2/back.png";
+  texture_type : Cubemap;
+}
+
+texture_config {
+  name : "irradiancemap";
+  paths : "playground/resource/texture/irradiancemap/right.png";
+  paths : "playground/resource/texture/irradiancemap/left.png";
+  paths : "playground/resource/texture/irradiancemap/top.png";
+  paths : "playground/resource/texture/irradiancemap/bottom.png";
+  paths : "playground/resource/texture/irradiancemap/front.png";
+  paths : "playground/resource/texture/irradiancemap/back.png";
+  texture_type : Cubemap;
+}
+
+texture_config {
+  name : "irradiancemap_right";
+  paths : "playground/resource/texture/irradiancemap/right.png";
+}
+
+texture_config {
+  name : "irradiancemap_left";
+  paths : "playground/resource/texture/irradiancemap/left.png";
+}
+
+texture_config {
+  name : "irradiancemap_top";
+  paths : "playground/resource/texture/irradiancemap/top.png";
+}
+
+texture_config {
+  name : "irradiancemap_bottom";
+  paths : "playground/resource/texture/irradiancemap/bottom.png";
+}
+
+texture_config {
+  name : "irradiancemap_front";
+  paths : "playground/resource/texture/irradiancemap/front.png";
+}
+
+texture_config {
+  name : "irradiancemap_back";
+  paths : "playground/resource/texture/irradiancemap/back.png";
 }
 
 model_config {
