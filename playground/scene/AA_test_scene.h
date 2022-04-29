@@ -8,7 +8,7 @@
 #include "engine/transform.h"
 #include "playground/context.h"
 #include "playground/object/cube.h"
-#include "playground/object/fullscreen_quad.h"
+#include "playground/object/empty_object.h"
 #include "playground/scene.h"
 
 // TODO : I don't know why cannot use

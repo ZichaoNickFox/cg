@@ -233,12 +233,12 @@ shader_config {
 }
 
 shader_config {
-  name : "pbr_irradiance_map_generator";
+  name : "pbr_irradiance_cubemap_generator";
   vs_path : [
-    "playground/resource/shader/pbr_irradiance_map_generator.vs.glsl"
+    "playground/resource/shader/pbr_irradiance_cubemap_generator.vs.glsl"
   ];
   fs_path : [
-    "playground/resource/shader/pbr_irradiance_map_generator.fs.glsl"
+    "playground/resource/shader/pbr_irradiance_cubemap_generator.fs.glsl"
   ];
 }
 
@@ -252,6 +252,30 @@ shader_config {
     "playground/resource/shader/version.glsl",
     "playground/resource/shader/sample.glsl",
     "playground/resource/shader/sample.fs.glsl"
+  ];
+}
+
+shader_config {
+  name : "pbr_prefiltered_color_cubemap_generator";
+  vs_path : [
+    "playground/resource/shader/pbr_prefiltered_color_cubemap_generator.vs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/version.glsl",
+    "playground/resource/shader/sample.glsl",
+    "playground/resource/shader/pbr_prefiltered_color_cubemap_generator.fs.glsl"
+  ];
+}
+
+shader_config {
+  name : "pbr_BRDF_integration_map_generator";
+  vs_path : [
+    "playground/resource/shader/pbr_BRDF_integration_map_generator.vs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/version.glsl",
+    "playground/resource/shader/sample.glsl",
+    "playground/resource/shader/pbr_BRDF_integration_map_generator.fs.glsl"
   ];
 }
 
@@ -305,8 +329,8 @@ texture_config {
 
 texture_config {
   name : "skybox";
-  paths : "playground/resource/texture/skybox/right.jpg";
   paths : "playground/resource/texture/skybox/left.jpg";
+  paths : "playground/resource/texture/skybox/right.jpg";
   paths : "playground/resource/texture/skybox/top.jpg";
   paths : "playground/resource/texture/skybox/bottom.jpg";
   paths : "playground/resource/texture/skybox/front.jpg";
@@ -316,12 +340,67 @@ texture_config {
 
 texture_config {
   name : "pbr_environment_cubemap";
-  paths : "playground/resource/texture/pbr_enviroment_map/right.png";
-  paths : "playground/resource/texture/pbr_enviroment_map/left.png";
-  paths : "playground/resource/texture/pbr_enviroment_map/top.png";
-  paths : "playground/resource/texture/pbr_enviroment_map/bottom.png";
-  paths : "playground/resource/texture/pbr_enviroment_map/front.png";
-  paths : "playground/resource/texture/pbr_enviroment_map/back.png";
+  paths : "playground/resource/texture/pbr_enviroment_cubemap/left.png";
+  paths : "playground/resource/texture/pbr_enviroment_cubemap/right.png";
+  paths : "playground/resource/texture/pbr_enviroment_cubemap/top.png";
+  paths : "playground/resource/texture/pbr_enviroment_cubemap/bottom.png";
+  paths : "playground/resource/texture/pbr_enviroment_cubemap/front.png";
+  paths : "playground/resource/texture/pbr_enviroment_cubemap/back.png";
+  texture_type : Cubemap;
+}
+
+texture_config {
+  name : "pbr_prefiltered_color_cubemap_level_0";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_0/left.png";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_0/right.png";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_0/top.png";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_0/bottom.png";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_0/front.png";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_0/back.png";
+  texture_type : Cubemap;
+}
+
+texture_config {
+  name : "pbr_prefiltered_color_cubemap_level_1";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_1/left.png";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_1/right.png";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_1/top.png";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_1/bottom.png";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_1/front.png";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_1/back.png";
+  texture_type : Cubemap;
+}
+
+texture_config {
+  name : "pbr_prefiltered_color_cubemap_level_2";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_2/left.png";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_2/right.png";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_2/top.png";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_2/bottom.png";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_2/front.png";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_2/back.png";
+  texture_type : Cubemap;
+}
+
+texture_config {
+  name : "pbr_prefiltered_color_cubemap_level_3";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_3/left.png";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_3/right.png";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_3/top.png";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_3/bottom.png";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_3/front.png";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_3/back.png";
+  texture_type : Cubemap;
+}
+
+texture_config {
+  name : "pbr_prefiltered_color_cubemap_level_4";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_4/left.png";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_4/right.png";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_4/top.png";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_4/bottom.png";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_4/front.png";
+  paths : "playground/resource/texture/pbr_prefiltered_color_cubemap_level_4/back.png";
   texture_type : Cubemap;
 }
 
@@ -332,13 +411,19 @@ texture_config {
 
 texture_config {
   name : "pbr_irradiance_cubemap";
-  paths : "playground/resource/texture/pbr_irradiance_map/right.png";
-  paths : "playground/resource/texture/pbr_irradiance_map/left.png";
-  paths : "playground/resource/texture/pbr_irradiance_map/top.png";
-  paths : "playground/resource/texture/pbr_irradiance_map/bottom.png";
-  paths : "playground/resource/texture/pbr_irradiance_map/front.png";
-  paths : "playground/resource/texture/pbr_irradiance_map/back.png";
+  paths : "playground/resource/texture/pbr_irradiance_cubemap/right.png";
+  paths : "playground/resource/texture/pbr_irradiance_cubemap/left.png";
+  paths : "playground/resource/texture/pbr_irradiance_cubemap/top.png";
+  paths : "playground/resource/texture/pbr_irradiance_cubemap/bottom.png";
+  paths : "playground/resource/texture/pbr_irradiance_cubemap/front.png";
+  paths : "playground/resource/texture/pbr_irradiance_cubemap/back.png";
   texture_type : Cubemap;
+}
+
+texture_config {
+  name : "pbr_BRDF_integration_map";
+  paths : "playground/resource/texture/pbr_BRDF_integration_map.png";
+  texture_type : Texture2D;
 }
 
 model_config {

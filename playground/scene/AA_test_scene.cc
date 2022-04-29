@@ -48,7 +48,7 @@ void AATestScene::OnRender(Context *context)
 
   engine::Texture texture = ms_frame_buffer_.GetColorTexture();
 
-  FullscreenQuad full_screen_quad;
+  EmptyObject full_screen_quad;
   full_screen_quad.mutable_material()->SetShader(context->GetShader("fullscreen_quad"));
   full_screen_quad.mutable_material()->SetTexture("texture0", texture);
   full_screen_quad.OnRender(context);

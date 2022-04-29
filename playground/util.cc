@@ -114,4 +114,8 @@ float FloatEq(float value, float target) {
   return value < target + std::numeric_limits<float>::epsilon()
       && value > target - std::numeric_limits<float>::epsilon();
 }
+
+inline glm::ivec2 operator*(const glm::ivec2& left, double value) {
+  return glm::ivec2(left.x * value, left.y * value);
+}
 } // namespace util

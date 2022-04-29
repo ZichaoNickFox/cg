@@ -118,7 +118,7 @@ void AAScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
 
   // ms_frame_buffer_.Blit(&color_frame_buffer_);
 
-  FullscreenQuad fullscreen_quad;
+  EmptyObject fullscreen_quad;
   fullscreen_quad.mutable_material()->SetTexture("scene", ms_frame_buffer_.GetColorTexture(0));
   fullscreen_quad.mutable_material()->SetTexture("bright", ms_frame_buffer_.GetColorTexture(1));
   // fullscreen_quad.mutable_material()->SetTexture("scene", color_frame_buffer_.GetTexture(0));

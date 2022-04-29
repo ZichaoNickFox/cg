@@ -8,6 +8,7 @@
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
+#include "playground/object/empty_object.h"
 #include "playground/object/object.h"
 #include "playground/object/point_light.h"
 
@@ -138,7 +139,7 @@ class FullscreenQuadShader {
   struct Param {
     engine::Texture texture0;
   };
-  FullscreenQuadShader(const Param& param, Context* context, Object* object);
+  FullscreenQuadShader(const Param& param, Context* context, EmptyObject* empty_object);
 };
 
 class PbrEnvironmentCubemapGerneratorShader {
@@ -159,7 +160,7 @@ class TexcoordShader {
 class PbrIrradianceCubemapGeneratorShader {
  public:
   struct Param {
-    engine::Texture cubemap;
+    engine::Texture environment_map;
     engine::Camera* camera = nullptr;
   };
   PbrIrradianceCubemapGeneratorShader(const Param& param, Context* context, Object* object);
@@ -170,4 +171,20 @@ class SampleShader {
   struct Param {
   };
   SampleShader(const Param& param, Context* context, Object* object);
+};
+
+class PbrPrefilteredColorCubemapGeneratorShader {
+ public:
+  struct Param {
+    engine::Texture environment_map;
+    engine::Camera* camera = nullptr;
+    float roughness = 0.1;
+  };
+  PbrPrefilteredColorCubemapGeneratorShader(const Param& param, Context* context, Object* object);
+};
+
+class PbrBRDFIntegrationMapGeneratorShader {
+ public:
+  struct Param {};
+  PbrBRDFIntegrationMapGeneratorShader(const Param& param, Context* context, EmptyObject* empty_object);
 };

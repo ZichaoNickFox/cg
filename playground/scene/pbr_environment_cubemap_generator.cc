@@ -28,7 +28,7 @@ void PbrEnvironmentCubemapGenerator::OnEnter(Context *context)
   engine::ColorFrameBuffer::Option option;
   option.clear_color = context->clear_color();
   option.mrt = 1;
-  option.size = glm::ivec2{512, 512};
+  option.size = glm::ivec2{1024, 1024};
   color_frame_buffer_.Init(option);
 }
 

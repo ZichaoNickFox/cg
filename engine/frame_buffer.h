@@ -11,7 +11,7 @@ namespace engine {
 class FrameBuffer {
 public:
   FrameBuffer();
-  ~FrameBuffer();
+  virtual ~FrameBuffer();
   void Bind();
   void Unbind();
 

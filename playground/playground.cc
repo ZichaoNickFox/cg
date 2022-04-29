@@ -11,7 +11,9 @@
 #include "playground/scene/mrt_scene.h"
 #include "playground/scene/normal_scene.h"
 #include "playground/scene/pbr_environment_cubemap_generator.h"
+#include "playground/scene/pbr_BRDF_integration_map_generator.h"
 #include "playground/scene/pbr_irradiance_cubemap_generator.h"
+#include "playground/scene/pbr_prefiltered_color_cubemap_generator.h"
 #include "playground/scene/pbr_scene.h"
 #include "playground/scene/phong_scene.h"
 #include "playground/scene/sample_scene.h"
@@ -19,7 +21,7 @@
 #include "playground/scene/skybox_scene.h"
 
 namespace {
-const std::string kDefaultScene = "PbrIrradianceCubemapGenerator";
+const std::string kDefaultScene = "PbrBRDFIntegrationMapGenerator";
 }
 
 void Playground::Init(const Context::Option& option) {
@@ -44,6 +46,8 @@ void Playground::InitScene() {
   scene_map_.insert(std::make_pair("PbrEnvironmentCubemapGenerator", std::make_unique<PbrEnvironmentCubemapGenerator>()));
   scene_map_.insert(std::make_pair("PbrIrradianceCubemapGenerator", std::make_unique<PbrIrradianceCubemapGenerator>()));
   scene_map_.insert(std::make_pair("SampleScene", std::make_unique<SampleScene>()));
+  scene_map_.insert(std::make_pair("PbrPrefilteredColorCubemapGenerator", std::make_unique<PbrPrefilteredColorCubemapGenerator>()));
+  scene_map_.insert(std::make_pair("PbrBRDFIntegrationMapGenerator", std::make_unique<PbrBRDFIntegrationMapGenerator>()));
 }
 
 void Playground::BeginFrame() {

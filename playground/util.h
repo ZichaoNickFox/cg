@@ -50,4 +50,8 @@ int64_t DurationMillisecond(const Time& from, const Time& to);
 float RandFromTo(float from, float to);
 
 float FloatEq(float value, float target);
+
+// glm
+glm::ivec2 operator*(const glm::ivec2& left, double value);
+
 }

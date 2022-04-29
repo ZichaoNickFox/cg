@@ -9,7 +9,7 @@
 #include "engine/texture.h"
 #include "playground/context.h"
 #include "playground/object/cube.h"
-#include "playground/object/fullscreen_quad.h"
+#include "playground/object/empty_object.h"
 #include "playground/scene.h"
 #include "playground/shaders.h"
 
@@ -26,9 +26,9 @@ class PbrIrradianceCubemapGenerator : public Scene {
 
   engine::Camera cubemap_cameras_[6];
   std::vector<glm::quat> rotations_ = {
-    glm::angleAxis(float(M_PI) / 2.0f, glm::vec3(0.0f, -1.0f, 0.0f)), // right
     glm::angleAxis(float(M_PI) / 2.0f, glm::vec3(0.0f, 1.0f, 0.0f)), // left
-    glm::angleAxis(float(M_PI) / 2.0f, glm::vec3(1.0f, 0.0f, 0.0f)), // up
+    glm::angleAxis(float(M_PI) / 2.0f, glm::vec3(0.0f, -1.0f, 0.0f)), // right
+    glm::angleAxis(float(M_PI) / 2.0f, glm::vec3(1.0f, 0.0f, 0.0f)), // top
     glm::angleAxis(float(M_PI) / 2.0f, glm::vec3(-1.0f, 0.0f, 0.0f)), // bottom
     glm::angleAxis(float(M_PI), glm::vec3(0.0f, 1.0f, 0.0f)), // front
     glm::quat(), // back

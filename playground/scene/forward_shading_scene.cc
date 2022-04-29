@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "engine/transform.h"
-#include "playground/object/fullscreen_quad.h"
+#include "playground/object/empty_object.h"
 #include "playground/pass.h"
 #include "playground/scene/common.h"
 #include "playground/util.h"
@@ -106,7 +106,7 @@ void ForwardShadingScene::OnRender(Context *context)
   forward_pass_.Update(depth_buffer_pass_.shader_shadow_info());
   RunForwardPass(context, &forward_pass_);
 
-  FullscreenQuad quad;
+  EmptyObject quad;
   FullscreenQuadShader({forward_pass_.GetColorTexture()}, context, &quad);
   quad.OnRender(context);
 }

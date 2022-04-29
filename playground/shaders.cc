@@ -253,8 +253,8 @@ SkyboxShader::SkyboxShader(const Param& param, Context* context, Object* object)
   material->SetTexture("texture0", param.cubemap);
 }
 
-FullscreenQuadShader::FullscreenQuadShader(const Param& param, Context* context, Object* object) {
-  engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
+FullscreenQuadShader::FullscreenQuadShader(const Param& param, Context* context, EmptyObject* empty_object) {
+  engine::Material* material = CGCHECK_NOTNULL(empty_object->mutable_material(0));
   material->SetShader(context->GetShader("fullscreen_quad"));
   material->SetTexture("texture0", param.texture0); 
 }
@@ -286,7 +286,7 @@ TexcoordShader::TexcoordShader(const Param& param, Context* context, Object* obj
 
 PbrIrradianceCubemapGeneratorShader::PbrIrradianceCubemapGeneratorShader(const Param& param, Context* context, Object* object) {
   engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
-  material->SetShader(context->GetShader("pbr_irradiance_map_generator"));
+  material->SetShader(context->GetShader("pbr_irradiance_cubemap_generator"));
 
   glm::mat4 model = object->GetModelMatrix();
   glm::mat4 view = param.camera->GetViewMatrix();
@@ -294,7 +294,7 @@ PbrIrradianceCubemapGeneratorShader::PbrIrradianceCubemapGeneratorShader(const P
   material->SetMat4("model", model); 
   material->SetMat4("view", view);
   material->SetMat4("project", project); 
-  material->SetTexture("cubemap", param.cubemap);
+  material->SetTexture("cubemap", param.environment_map);
 }
 
 SampleShader::SampleShader(const Param& param, Context* context, Object* object) {
@@ -307,4 +307,26 @@ SampleShader::SampleShader(const Param& param, Context* context, Object* object)
   material->SetMat4("model", model); 
   material->SetMat4("view", view);
   material->SetMat4("project", project); 
+}
+
+PbrPrefilteredColorCubemapGeneratorShader::PbrPrefilteredColorCubemapGeneratorShader(
+    const Param& param, Context* context, Object* object) {
+  engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
+  material->SetShader(context->GetShader("pbr_prefiltered_color_cubemap_generator"));
+
+  glm::mat4 model = object->GetModelMatrix();
+  glm::mat4 view = param.camera->GetViewMatrix();
+  glm::mat4 project = param.camera->GetProjectMatrix();
+  material->SetMat4("model", model); 
+  material->SetMat4("view", view);
+  material->SetMat4("project", project); 
+  material->SetTexture("environment_map", param.environment_map); 
+  material->SetFloat("roughness", param.roughness); 
+}
+
+PbrBRDFIntegrationMapGeneratorShader::PbrBRDFIntegrationMapGeneratorShader(const Param& param, Context* context,
+                                                                           EmptyObject* empty_object) {
+  engine::Material* material = empty_object->mutable_material();
+  material->SetShader(context->GetShader("pbr_BRDF_integration_map_generator"));
+  material->PrepareShader();
 }

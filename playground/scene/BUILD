@@ -12,6 +12,8 @@ cc_library(
     "common.cc",
     "pbr_environment_cubemap_generator.h",
     "pbr_environment_cubemap_generator.cc",
+    "pbr_BRDF_integration_map_generator.h",
+    "pbr_BRDF_integration_map_generator.cc",
     "pbr_irradiance_cubemap_generator.h",
     "pbr_irradiance_cubemap_generator.cc",
     "pbr_prefiltered_color_cubemap_generator.h",

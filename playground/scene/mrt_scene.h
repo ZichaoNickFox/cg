@@ -7,7 +7,7 @@
 #include "playground/context.h"
 #include "playground/object/cube.h"
 #include "playground/object/directional_light.h"
-#include "playground/object/fullscreen_quad.h"
+#include "playground/object/empty_object.h"
 #include "playground/object/lines.h"
 #include "playground/object/plane.h"
 #include "playground/object/point_light.h"

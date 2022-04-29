@@ -136,7 +136,7 @@ void MrtScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
   directional_light_.OnRender(context);
   mrt_frame_buffer_.Unbind();
 
-  FullscreenQuad fullscreen_quad;
+  EmptyObject fullscreen_quad;
   fullscreen_quad.mutable_material()->SetShader(context->GetShader("mrt_fusion"));
   fullscreen_quad.mutable_material()->SetTexture("scene", mrt_frame_buffer_.GetColorTexture(0));
   fullscreen_quad.mutable_material()->SetTexture("bright", mrt_frame_buffer_.GetColorTexture(1));

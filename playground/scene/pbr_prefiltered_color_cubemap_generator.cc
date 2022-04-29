@@ -10,6 +10,7 @@
 #include "playground/object/sphere.h"
 #include "playground/scene/common.h"
 #include "playground/texture_repo.h"
+#include "playground/util.h"
 
 void PbrPrefilteredColorCubemapGenerator::OnEnter(Context *context)
 {
@@ -19,17 +20,19 @@ void PbrPrefilteredColorCubemapGenerator::OnEnter(Context *context)
 
   glEnable(GL_DEPTH_TEST);
 
-  for (int i = 0; i < 6; ++i) {
-    cubemap_cameras_[i].mutable_transform()->SetRotation(rotations_[i]);
-    cubemap_cameras_[i].SetPerspectiveFov(90.0);
-    cubemap_cameras_[i].SetAspect(1);
+  for (int face = 0; face < 6; ++face) {
+    cubemap_cameras_[face].mutable_transform()->SetRotation(rotations_[face]);
+    cubemap_cameras_[face].SetPerspectiveFov(90.0);
+    cubemap_cameras_[face].SetAspect(1);
   }
 
-  engine::ColorFrameBuffer::Option option;
-  option.clear_color = context->clear_color();
-  option.mrt = 1;
-  option.size = glm::ivec2{512, 512};
-  color_frame_buffer_.Init(option);
+  for (int level = 0; level < kMipmapMaxLevel; ++level) {
+    engine::ColorFrameBuffer::Option option;
+    option.clear_color = context->clear_color();
+    option.mrt = 1;
+    option.size = kMipmapLevel0Size * static_cast<float>(std::pow(0.5, level));
+    color_frame_buffers_[level].Init(option);
+  }
 }
 
 void PbrPrefilteredColorCubemapGenerator::OnUpdate(Context *context)
@@ -41,13 +44,17 @@ void PbrPrefilteredColorCubemapGenerator::OnUpdate(Context *context)
 
 void PbrPrefilteredColorCubemapGenerator::OnRender(Context *context)
 {
-  for (int i = 0; i < 6; ++i) {
-    color_frame_buffer_.Bind();
-    PbrIrradianceCubemapGeneratorShader({context->GetTexture("pbr_environment_cubemap"), &cubemap_cameras_[i]}, context, &cube_);
-    cube_.OnRender(context);
-    color_frame_buffer_.Unbind();
-
-    context->SaveTexture(name_[i], color_frame_buffer_.GetColorTexture());
+  for (int level = 0; level < kMipmapMaxLevel; ++level) {
+    for (int face = 0; face < 6; ++face) {
+      float roughness = std::pow(0.5, kMipmapMaxLevel - level - 1);
+      color_frame_buffers_[level].Bind();
+      PbrPrefilteredColorCubemapGeneratorShader({context->GetTexture("pbr_environment_cubemap"),
+                                                &cubemap_cameras_[face], roughness}, context, &cube_);
+      cube_.OnRender(context);
+      color_frame_buffers_[level].Unbind();
+      context->SaveCubemap(kCubemapNamePrefix + std::to_string(level), face,
+                           color_frame_buffers_[level].GetColorTexture());
+    }
   }
   exit(0);
 }

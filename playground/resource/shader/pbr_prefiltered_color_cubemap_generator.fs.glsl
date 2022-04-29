@@ -1,17 +1,17 @@
-#version 410 core
-
 uniform samplerCube environment_map;
+uniform float roughness;
+
 out vec4 FragColor;
 in vec3 local_pos_;
 
 const float pi = 3.1415926;
 
 void main() {
-  vec3 N = normalize(local_pos);
+  vec3 N = normalize(local_pos_);
   vec3 R = N;
   vec3 V = N;
 
-  const int sample_num = 1024u;
+  const int sample_num = 1024;
   float total_weight = 0.0;
   vec3 prefiltered_color = vec3(0.0);
   for (uint i = 0; i < sample_num; ++i) {

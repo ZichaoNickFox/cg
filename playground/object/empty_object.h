@@ -12,9 +12,9 @@
 #include "playground/object/lines.h"
 #include "playground/object/object.h"
 
-class FullscreenQuad : public Object {
+class EmptyObject : public Object {
  public:
-  FullscreenQuad();
+  EmptyObject();
   void OnUpdate(Context *context) override;
   void OnRender(Context *context) override;
   void OnDestory(Context *context) override;
