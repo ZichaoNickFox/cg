@@ -43,6 +43,14 @@ void TextureRepo::SaveTexture(const std::string& name, const engine::Texture& te
   texture::SaveTexture2D(path, texture);
 }
 
+void TextureRepo::SaveCubemap(const std::string& name, int face, const engine::Texture& cubemap_face_texture2d) {
+  State* state = &textures_[name];
+  CGCHECK(state->paths.size() == 6);
+  CGCHECK(face < 6 && face >= 0);
+  const std::string& path = state->paths[face];
+  texture::SaveTexture2D(path, cubemap_face_texture2d);
+}
+
 namespace {
 void FlipVertically(GLubyte* pixels, int width, int height, int channel, int byte_per_channel) {
   int byte_per_pixel = channel * byte_per_channel;
@@ -110,7 +118,7 @@ Texture LoadTexture2D(const std::string& path_with_ext, bool flip_vertically, bo
   return Texture(id, Texture::Texture2D, util::FileName(path_with_ext));
 }
 
-Texture CreateFromData( GLubyte* data, int width, int height, bool useMipmap) {
+Texture CreateTexture2d( GLubyte* data, int width, int height, bool useMipmap) {
   GLuint ret;
   glGenTextures(1, &ret);
   glBindTexture(GL_TEXTURE_2D, ret);
@@ -267,7 +275,8 @@ Texture LoadCubeMap(const std::vector<std::string>& path) {
   return ret;
 }
 
-int SaveCubeMap(const std::vector<std::string>& path_with_exts, GLuint texture) {
+int SaveCubemap(const std::vector<std::string>& path_with_exts, GLuint texture) {
+  void SaveCubemap(const std::string& name, const std::vector<engine::Texture>& cubemap);
   glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
 
   for(int i = 0; i < 6; ++i){

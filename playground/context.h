@@ -54,6 +54,8 @@ class Context {
   engine::Texture GetTexture(const std::string& name, bool flip_vertically = false, bool use_mipmap = false,
                              bool equirectangular = false);
   void SaveTexture(const std::string& name, const engine::Texture& texture);
+  void SaveCubemap(const std::string& name, int face, const engine::Texture& cubemap_face_texture2d);
+
   std::shared_ptr<const engine::Mesh> GetMesh(const std::string& name);
   std::vector<ModelRepo::ModelPartData> GetModel(const std::string& name);
 

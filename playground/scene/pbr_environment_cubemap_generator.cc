@@ -1,4 +1,4 @@
-#include "playground/scene/cubemap_2_irradiancemap_tool_scene.h"
+#include "playground/scene/pbr_environment_cubemap_generator.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -11,7 +11,7 @@
 #include "playground/scene/common.h"
 #include "playground/texture_repo.h"
 
-void Cubemap2IrradiancemapToolScene::OnEnter(Context *context)
+void PbrEnvironmentCubemapGenerator::OnEnter(Context *context)
 {
   camera_->mutable_transform()->SetTranslation(glm::vec3(2.97, 3.95, 6.76));
   camera_->mutable_transform()->SetRotation(glm::quat(0.89, -0.21, 0.38, 0.09));
@@ -32,27 +32,27 @@ void Cubemap2IrradiancemapToolScene::OnEnter(Context *context)
   color_frame_buffer_.Init(option);
 }
 
-void Cubemap2IrradiancemapToolScene::OnUpdate(Context *context)
+void PbrEnvironmentCubemapGenerator::OnUpdate(Context *context)
 {
-  OnUpdateCommon _(context, "Cubemap2IrradianceToolScene");
+  OnUpdateCommon _(context, "PbrEnvironmentCubemapGenerator");
 
   cube_.OnUpdate(context);
 }
 
-void Cubemap2IrradiancemapToolScene::OnRender(Context *context)
-{
+void PbrEnvironmentCubemapGenerator::OnRender(Context *context) {
   for (int i = 0; i < 6; ++i) {
     color_frame_buffer_.Bind();
-    Cubemap2IrradiancemapShader({context->GetTexture("skybox2"), &cubemap_cameras_[i]}, context, &cube_);
+    PbrEnvironmentCubemapGerneratorShader({context->GetTexture("tropical_equirectangular", true, false, true), &cubemap_cameras_[i]},
+                                          context, &cube_);
     cube_.OnRender(context);
     color_frame_buffer_.Unbind();
 
-    context->SaveTexture(name_[i], color_frame_buffer_.GetColorTexture());
+    context->SaveCubemap("pbr_environment_cubemap", i, color_frame_buffer_.GetColorTexture());
   }
   exit(0);
 }
 
-void Cubemap2IrradiancemapToolScene::OnExit(Context *context)
+void PbrEnvironmentCubemapGenerator::OnExit(Context *context)
 {
   cube_.OnDestory(context);
 }

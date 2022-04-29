@@ -10,6 +10,7 @@ class TextureRepo {
   void Init(const Config& config);
   engine::Texture GetOrLoadTexture(const std::string& name, bool flip_vertically = false, bool use_mipmap = false);
   void SaveTexture(const std::string& name, const engine::Texture& texture);
+  void SaveCubemap(const std::string& name, int face, const engine::Texture& cubemap_face_texture2d);
 
  private:
   struct State {
@@ -28,12 +29,13 @@ namespace texture {
   void SaveTexture2D(const std::string& fullPath, int width, int height, int channels, const unsigned char *const data);
   
   engine::Texture LoadCubeMap(const std::vector<std::string>& path);
-  int SaveCubeMap( const std::vector<std::string>& fullPaths, GLuint tex);
+  int SaveCubemap(const std::vector<std::string>& fullPaths, GLuint tex);
 
   void ParseImageFormat(const std::string& fileName, int* SOILfmt, GLint* internal_format);
   bool VarifyChannel(const std::string& fileName, int channel);
   void RemoveFromGL(GLuint in);
-  engine::Texture CreateFromData( GLubyte* data, int width, int height, bool useMipmap = false);
+
+  engine::Texture CreateTexture2d(GLubyte* data, int width, int height, bool useMipmap = false);
 
   void GetInternalFormatSize(int internal_format, int* channel, int* format, int* type);
 

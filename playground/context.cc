@@ -48,6 +48,10 @@ void Context::SaveTexture(const std::string& name, const engine::Texture& textur
   texture_repo_.SaveTexture(name, texture);
 }
 
+void Context::SaveCubemap(const std::string& name, int face, const engine::Texture& cubumap_face_texture2d) {
+  texture_repo_.SaveCubemap(name, face, cubumap_face_texture2d);
+}
+
 std::shared_ptr<const engine::Mesh> Context::GetMesh(const std::string& name) {
   return mesh_repo_.GetOrLoadMesh(name);
 }
@@ -75,7 +79,7 @@ glm::vec4 Context::material_property_ambient(const std::string& name) {
   CGCHECK(material_property_config_.count(name) > 0) << " : " << name;
   return glm::vec4(material_property_config_[name].ambient(0),
                    material_property_config_[name].ambient(1),
-                   material_property_config_[name].ambient(2),
+                  material_property_config_[name].ambient(2),
                    material_property_config_[name].ambient(3));
 }
 

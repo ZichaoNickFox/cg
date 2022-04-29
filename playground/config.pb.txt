@@ -188,16 +188,6 @@ shader_config {
 }
 
 shader_config {
-  name : "test";
-  vs_path : [
-    "playground/resource/shader/test.vs.glsl"
-  ];
-  fs_path : [
-    "playground/resource/shader/test.fs.glsl"
-  ];
-}
-
-shader_config {
   name : "TBN";
   vs_path : [
     "playground/resource/shader/TBN.vs.glsl"
@@ -221,14 +211,14 @@ shader_config {
 }
 
 shader_config {
-  name : "equirectangular_2_cubemap";
+  name : "pbr_environment_cubemap_generator";
   vs_path : [
-    "playground/resource/shader/equirectangular_2_cubemap.vs.glsl"
+    "playground/resource/shader/pbr_environment_cubemap_generator.vs.glsl"
   ];
   fs_path : [
     "playground/resource/shader/version.glsl",
-    "playground/resource/shader/equirectangular.glsl",
-    "playground/resource/shader/equirectangular_2_cubemap.fs.glsl"
+    "playground/resource/shader/sample.glsl",
+    "playground/resource/shader/pbr_environment_cubemap_generator.fs.glsl"
   ];
 }
 
@@ -243,12 +233,25 @@ shader_config {
 }
 
 shader_config {
-  name : "cubemap_2_irradiancemap";
+  name : "pbr_irradiance_map_generator";
   vs_path : [
-    "playground/resource/shader/cubemap_2_irradiancemap.vs.glsl"
+    "playground/resource/shader/pbr_irradiance_map_generator.vs.glsl"
   ];
   fs_path : [
-    "playground/resource/shader/cubemap_2_irradiancemap.fs.glsl"
+    "playground/resource/shader/pbr_irradiance_map_generator.fs.glsl"
+  ];
+}
+
+shader_config {
+  name : "sample";
+  vs_path : [
+    "playground/resource/shader/version.glsl",
+    "playground/resource/shader/sample.vs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/version.glsl",
+    "playground/resource/shader/sample.glsl",
+    "playground/resource/shader/sample.fs.glsl"
   ];
 }
 
@@ -312,90 +315,30 @@ texture_config {
 }
 
 texture_config {
-  name : "equirectangular";
+  name : "pbr_environment_cubemap";
+  paths : "playground/resource/texture/pbr_enviroment_map/right.png";
+  paths : "playground/resource/texture/pbr_enviroment_map/left.png";
+  paths : "playground/resource/texture/pbr_enviroment_map/top.png";
+  paths : "playground/resource/texture/pbr_enviroment_map/bottom.png";
+  paths : "playground/resource/texture/pbr_enviroment_map/front.png";
+  paths : "playground/resource/texture/pbr_enviroment_map/back.png";
+  texture_type : Cubemap;
+}
+
+texture_config {
+  name : "tropical_equirectangular";
   paths : "playground/resource/texture/equirectangular/Tropical_Beach_8k.jpg";
 }
 
 texture_config {
-  name : "skybox2_left";
-  paths : "playground/resource/texture/skybox2/left.png";
-}
-
-texture_config {
-  name : "skybox2_right";
-  paths : "playground/resource/texture/skybox2/right.png";
-}
-
-texture_config {
-  name : "skybox2_top";
-  paths : "playground/resource/texture/skybox2/top.png";
-}
-
-texture_config {
-  name : "skybox2_bottom";
-  paths : "playground/resource/texture/skybox2/bottom.png";
-}
-
-texture_config {
-  name : "skybox2_front";
-  paths : "playground/resource/texture/skybox2/front.png";
-}
-
-texture_config {
-  name : "skybox2_back";
-  paths : "playground/resource/texture/skybox2/back.png";
-}
-
-texture_config {
-  name : "skybox2";
-  paths : "playground/resource/texture/skybox2/right.png";
-  paths : "playground/resource/texture/skybox2/left.png";
-  paths : "playground/resource/texture/skybox2/top.png";
-  paths : "playground/resource/texture/skybox2/bottom.png";
-  paths : "playground/resource/texture/skybox2/front.png";
-  paths : "playground/resource/texture/skybox2/back.png";
+  name : "pbr_irradiance_cubemap";
+  paths : "playground/resource/texture/pbr_irradiance_map/right.png";
+  paths : "playground/resource/texture/pbr_irradiance_map/left.png";
+  paths : "playground/resource/texture/pbr_irradiance_map/top.png";
+  paths : "playground/resource/texture/pbr_irradiance_map/bottom.png";
+  paths : "playground/resource/texture/pbr_irradiance_map/front.png";
+  paths : "playground/resource/texture/pbr_irradiance_map/back.png";
   texture_type : Cubemap;
-}
-
-texture_config {
-  name : "irradiancemap";
-  paths : "playground/resource/texture/irradiancemap/right.png";
-  paths : "playground/resource/texture/irradiancemap/left.png";
-  paths : "playground/resource/texture/irradiancemap/top.png";
-  paths : "playground/resource/texture/irradiancemap/bottom.png";
-  paths : "playground/resource/texture/irradiancemap/front.png";
-  paths : "playground/resource/texture/irradiancemap/back.png";
-  texture_type : Cubemap;
-}
-
-texture_config {
-  name : "irradiancemap_right";
-  paths : "playground/resource/texture/irradiancemap/right.png";
-}
-
-texture_config {
-  name : "irradiancemap_left";
-  paths : "playground/resource/texture/irradiancemap/left.png";
-}
-
-texture_config {
-  name : "irradiancemap_top";
-  paths : "playground/resource/texture/irradiancemap/top.png";
-}
-
-texture_config {
-  name : "irradiancemap_bottom";
-  paths : "playground/resource/texture/irradiancemap/bottom.png";
-}
-
-texture_config {
-  name : "irradiancemap_front";
-  paths : "playground/resource/texture/irradiancemap/front.png";
-}
-
-texture_config {
-  name : "irradiancemap_back";
-  paths : "playground/resource/texture/irradiancemap/back.png";
 }
 
 model_config {

@@ -1,10 +1,10 @@
 #include "playground/util.h"
 
-#include <filesystem>
 #include <fstream>
 #include <glog/logging.h>
 #include <limits>
 #include <string>
+#include <sys/stat.h>
 
 namespace util {
 
@@ -46,9 +46,27 @@ std::string FileDir(const std::string& path) {
   }
 }
 
+// S_IRWXU	00700权限，代表该文件所有者拥有读，写和执行操作的权限
+// S_IRUSR(S_IREAD)	00400权限，代表该文件所有者拥有可读的权限
+// S_IWUSR(S_IWRITE)	00200权限，代表该文件所有者拥有可写的权限
+// S_IXUSR(S_IEXEC)	00100权限，代表该文件所有者拥有执行的权限
+// S_IRWXG	00070权限，代表该文件用户组拥有读，写和执行操作的权限
+// S_IRGRP	00040权限，代表该文件用户组拥有可读的权限
+// S_IWGRP	00020权限，代表该文件用户组拥有可写的权限
+// S_IXGRP	00010权限，代表该文件用户组拥有执行的权限
+// S_IRWXO	00007权限，代表其他用户拥有读，写和执行操作的权限
+// S_IROTH	00004权限，代表其他用户拥有可读的权限
+// S_IWOTH	00002权限，代表其他用户拥有可写的权限
+// S_IXOTH	00001权限，代表其他用户拥有执行的权限
 void MakeDir(const std::string& dir) {
-  if (!std::filesystem::exists(dir)) {
-    CGCHECK(std::filesystem::create_directory(dir));
+  struct stat info;
+  if (stat(dir.c_str(), &info) != 0) {
+    mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+
+    int result = mkdir(dir.c_str(), mode);
+    if(result != 0) {
+      CGCHECK(false) << result;
+    }
   }
 }
 

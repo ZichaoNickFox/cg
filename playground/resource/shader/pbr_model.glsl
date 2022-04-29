@@ -1,4 +1,4 @@
-uniform samplerCube irradiancemap;
+uniform samplerCube texture_irradiance_map;
 uniform int light_count;
 uniform Light lights[200];
 
@@ -86,7 +86,7 @@ vec3 PbrModel(PbrModelInput param) {
   vec3 ambient_KS = FresnelSchlink(max(dot(N, V), 0.0), F0);
   vec3 ambient_KD = vec3(1.0) - ambient_KS;
   ambient_KD *= 1.0 - param.metallic;
-  vec3 irradiance = texture(irradiancemap, N).rgb;
+  vec3 irradiance = texture(texture_irradiance_map, N).rgb;
   vec3 ambient = ambient_KD * irradiance * param.albedo * param.ao;
   vec3 color = ambient + Lo;
   return color;

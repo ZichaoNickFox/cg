@@ -71,13 +71,13 @@ void PbrScene::OnRender(Context *context)
   pbr.metallic = metallic;
   pbr.roughness = roughness;
   pbr.light_info = ShaderLightInfo(point_lights_);
-  pbr.irradiancemap = context->GetTexture("irradiancemap");
+  pbr.texture_irradiance_map = context->GetTexture("pbr_irradiance_map");
 
   PbrShader(pbr, context, &sphere_);
   sphere_.OnRender(context);
 
   coord_.OnRender(context);
-  SkyboxShader({context->GetTexture("skybox2")}, context, &skybox_);
+  SkyboxShader({context->GetTexture("pbr_environment_cubemap")}, context, &skybox_);
   skybox_.OnRender(context);
 
   PbrShader(pbr, context, &plane_);

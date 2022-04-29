@@ -76,7 +76,7 @@ class PbrShader {
     ShaderLightInfo light_info;
     std::optional<ShaderShadowInfo> shadow_info;
 
-    engine::Texture irradiancemap;
+    engine::Texture texture_irradiance_map;
   };
   PbrShader(const Param& param, Context* context, Object* object);
 };
@@ -141,13 +141,13 @@ class FullscreenQuadShader {
   FullscreenQuadShader(const Param& param, Context* context, Object* object);
 };
 
-class Equirectanglular2CubemapShader {
+class PbrEnvironmentCubemapGerneratorShader {
  public:
   struct Param {
     engine::Texture texture0;
     engine::Camera* camera = nullptr;
   };
-  Equirectanglular2CubemapShader(const Param& param, Context* context, Object* object);
+  PbrEnvironmentCubemapGerneratorShader(const Param& param, Context* context, Object* object);
 };
 
 class TexcoordShader {
@@ -156,11 +156,18 @@ class TexcoordShader {
   TexcoordShader(const Param& param, Context* context, Object* object);
 };
 
-class Cubemap2IrradiancemapShader {
+class PbrIrradianceCubemapGeneratorShader {
  public:
   struct Param {
     engine::Texture cubemap;
     engine::Camera* camera = nullptr;
   };
-  Cubemap2IrradiancemapShader(const Param& param, Context* context, Object* object);
+  PbrIrradianceCubemapGeneratorShader(const Param& param, Context* context, Object* object);
+};
+
+class SampleShader {
+ public:
+  struct Param {
+  };
+  SampleShader(const Param& param, Context* context, Object* object);
 };

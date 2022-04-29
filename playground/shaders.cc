@@ -155,7 +155,7 @@ PbrShader::PbrShader(const Param& pbr, Context* context, Object* object) {
     material->SetBool("pbr_material.use_texture_ao", false);
   }
 
-  material->SetTexture("irradiancemap", pbr.irradiancemap);
+  material->SetTexture("texture_irradiance_map", pbr.texture_irradiance_map);
 
   pbr.light_info.UpdateMaterial(context, material);
   if (pbr.shadow_info) {
@@ -259,9 +259,9 @@ FullscreenQuadShader::FullscreenQuadShader(const Param& param, Context* context,
   material->SetTexture("texture0", param.texture0); 
 }
 
-Equirectanglular2CubemapShader::Equirectanglular2CubemapShader(const Param& param, Context* context, Object* object) {
+PbrEnvironmentCubemapGerneratorShader::PbrEnvironmentCubemapGerneratorShader(const Param& param, Context* context, Object* object) {
   engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
-  material->SetShader(context->GetShader("equirectangular_2_cubemap"));
+  material->SetShader(context->GetShader("pbr_environment_cubemap_generator"));
 
   glm::mat4 model = object->GetModelMatrix();
   glm::mat4 view = param.camera->GetViewMatrix();
@@ -284,9 +284,9 @@ TexcoordShader::TexcoordShader(const Param& param, Context* context, Object* obj
   material->SetMat4("project", project);
 }
 
-Cubemap2IrradiancemapShader::Cubemap2IrradiancemapShader(const Param& param, Context* context, Object* object) {
+PbrIrradianceCubemapGeneratorShader::PbrIrradianceCubemapGeneratorShader(const Param& param, Context* context, Object* object) {
   engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
-  material->SetShader(context->GetShader("cubemap_2_irradiancemap"));
+  material->SetShader(context->GetShader("pbr_irradiance_map_generator"));
 
   glm::mat4 model = object->GetModelMatrix();
   glm::mat4 view = param.camera->GetViewMatrix();
@@ -295,4 +295,16 @@ Cubemap2IrradiancemapShader::Cubemap2IrradiancemapShader(const Param& param, Con
   material->SetMat4("view", view);
   material->SetMat4("project", project); 
   material->SetTexture("cubemap", param.cubemap);
+}
+
+SampleShader::SampleShader(const Param& param, Context* context, Object* object) {
+  engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
+  material->SetShader(context->GetShader("sample"));
+
+  glm::mat4 model = object->GetModelMatrix();
+  glm::mat4 view = context->camera().GetViewMatrix();
+  glm::mat4 project = context->camera().GetProjectMatrix();
+  material->SetMat4("model", model); 
+  material->SetMat4("view", view);
+  material->SetMat4("project", project); 
 }

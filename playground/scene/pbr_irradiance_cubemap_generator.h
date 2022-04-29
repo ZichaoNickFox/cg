@@ -13,7 +13,7 @@
 #include "playground/scene.h"
 #include "playground/shaders.h"
 
-class Cubemap2IrradiancemapToolScene : public Scene {
+class PbrIrradianceCubemapGenerator : public Scene {
  public:
   void OnEnter(Context* context);
   void OnUpdate(Context* context);
@@ -25,8 +25,6 @@ class Cubemap2IrradiancemapToolScene : public Scene {
   Cube cube_;
 
   engine::Camera cubemap_cameras_[6];
-  std::vector<std::string> name_ = {"irradiancemap_left", "irradiancemap_right", "irradiancemap_top",
-                                    "irradiancemap_bottom", "irradiancemap_front", "irradiancemap_back"};
   std::vector<glm::quat> rotations_ = {
     glm::angleAxis(float(M_PI) / 2.0f, glm::vec3(0.0f, -1.0f, 0.0f)), // right
     glm::angleAxis(float(M_PI) / 2.0f, glm::vec3(0.0f, 1.0f, 0.0f)), // left

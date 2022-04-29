@@ -1,4 +1,4 @@
-#include "playground/scene/equirectangular_2_cubemap_tool_scene.h"
+#include "playground/scene/pbr_prefiltered_color_cubemap_generator.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -11,7 +11,7 @@
 #include "playground/scene/common.h"
 #include "playground/texture_repo.h"
 
-void Equirectangular2CubemapToolScene::OnEnter(Context *context)
+void PbrPrefilteredColorCubemapGenerator::OnEnter(Context *context)
 {
   camera_->mutable_transform()->SetTranslation(glm::vec3(2.97, 3.95, 6.76));
   camera_->mutable_transform()->SetRotation(glm::quat(0.89, -0.21, 0.38, 0.09));
@@ -32,19 +32,18 @@ void Equirectangular2CubemapToolScene::OnEnter(Context *context)
   color_frame_buffer_.Init(option);
 }
 
-void Equirectangular2CubemapToolScene::OnUpdate(Context *context)
+void PbrPrefilteredColorCubemapGenerator::OnUpdate(Context *context)
 {
-  OnUpdateCommon _(context, "Equirectangular2CubemapToolScene");
+  OnUpdateCommon _(context, "PbrIrradianceCubemapGenerator");
 
   cube_.OnUpdate(context);
 }
 
-void Equirectangular2CubemapToolScene::OnRender(Context *context)
+void PbrPrefilteredColorCubemapGenerator::OnRender(Context *context)
 {
   for (int i = 0; i < 6; ++i) {
     color_frame_buffer_.Bind();
-    Equirectanglular2CubemapShader({context->GetTexture("equirectangular", true, false, true), &cubemap_cameras_[i]},
-                                   context, &cube_);
+    PbrIrradianceCubemapGeneratorShader({context->GetTexture("pbr_environment_cubemap"), &cubemap_cameras_[i]}, context, &cube_);
     cube_.OnRender(context);
     color_frame_buffer_.Unbind();
 
@@ -53,7 +52,7 @@ void Equirectangular2CubemapToolScene::OnRender(Context *context)
   exit(0);
 }
 
-void Equirectangular2CubemapToolScene::OnExit(Context *context)
+void PbrPrefilteredColorCubemapGenerator::OnExit(Context *context)
 {
   cube_.OnDestory(context);
 }
