@@ -155,7 +155,9 @@ PbrShader::PbrShader(const Param& pbr, Context* context, Object* object) {
     material->SetBool("pbr_material.use_texture_ao", false);
   }
 
-  material->SetTexture("texture_irradiance_map", pbr.texture_irradiance_map);
+  material->SetTexture("texture_irradiance_cubemap", pbr.texture_irradiance_cubemap);
+  material->SetTexture("texture_prefiltered_color_cubemap", pbr.texture_prefiltered_color_cubemap);
+  material->SetTexture("texture_BRDF_integrate_map", pbr.texture_BRDF_integrate_map);
 
   pbr.light_info.UpdateMaterial(context, material);
   if (pbr.shadow_info) {
@@ -213,9 +215,9 @@ ColorShader::ColorShader(const Param& param, Context* context, Object* object) {
   material->SetVec4("color", param.color);
 }
 
-Texture0Shader::Texture0Shader(const Param& param, Context* context, Object* object) {
+TextureShader::TextureShader(const Param& param, Context* context, Object* object) {
   engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
-  material->SetShader(context->GetShader("texture0"));
+  material->SetShader(context->GetShader("texture"));
 
   const engine::Camera& camera = context->camera();
   glm::mat4 project = camera.GetProjectMatrix();
@@ -225,6 +227,23 @@ Texture0Shader::Texture0Shader(const Param& param, Context* context, Object* obj
   material->SetMat4("view", view);
   material->SetMat4("model", model);
   material->SetTexture("texture0", param.texture0);
+}
+
+Texture2DLodShader::Texture2DLodShader(const Param& param, Context* context, Object* object) {
+  engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
+  material->SetShader(context->GetShader("texture2d_lod"));
+
+  const engine::Camera& camera = context->camera();
+  glm::mat4 project = camera.GetProjectMatrix();
+  glm::mat4 view = camera.GetViewMatrix();
+  glm::mat4 model = object->GetModelMatrix();
+  material->SetMat4("project", project);
+  material->SetMat4("view", view);
+  material->SetMat4("model", model);
+  if (param.texture2D0.has_value()) {
+    material->SetTexture("texture2D0", param.texture2D0.value());
+  }
+  material->SetVec3("view_pos_ws", param.view_pos_ws);
 }
 
 DepthBufferShader::DepthBufferShader(const engine::Shader& depth_buffer_shader,

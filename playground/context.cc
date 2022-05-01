@@ -39,9 +39,9 @@ engine::Shader Context::GetShader(const std::string& name) {
   return shader_repo_.GetOrLoadShader(name);
 }
 
-engine::Texture Context::GetTexture(const std::string& name, bool flip_vertically, bool use_mipmap,
+engine::Texture Context::GetTexture(const std::string& name, bool flip_vertically, int mipmap_level_count,
                                     bool equirectangular) {
-  return texture_repo_.GetOrLoadTexture(name, flip_vertically, use_mipmap);
+  return texture_repo_.GetOrLoadTexture(name, flip_vertically, mipmap_level_count);
 }
 
 void Context::SaveTexture(const std::string& name, const engine::Texture& texture) {
@@ -50,6 +50,14 @@ void Context::SaveTexture(const std::string& name, const engine::Texture& textur
 
 void Context::SaveCubemap(const std::string& name, int face, const engine::Texture& cubumap_face_texture2d) {
   texture_repo_.SaveCubemap(name, face, cubumap_face_texture2d);
+}
+
+void Context::CreateTexture2D(const std::string& name, const texture::CreateTexture2DParam& param) {
+  texture_repo_.CreateTexture2D(name, param);
+}
+
+void Context::CreateCubemap(const std::string& name, const texture::CreateCubemapParam& param) {
+  texture_repo_.CreateCubemap(name, param);
 }
 
 std::shared_ptr<const engine::Mesh> Context::GetMesh(const std::string& name) {

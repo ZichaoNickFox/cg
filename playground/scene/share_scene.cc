@@ -123,8 +123,8 @@ void ShareScene::OnRender(Context *context)
       sphere_.OnRender(context);
       plane_.OnRender(context);
     } else if (step_ == 1012) {
-      Texture0Shader({context->GetTexture("brickwall")}, context, &plane_);
-      Texture0Shader({context->GetTexture("brickwall")}, context, &sphere_);
+      TextureShader({context->GetTexture("brickwall")}, context, &plane_);
+      TextureShader({context->GetTexture("brickwall")}, context, &sphere_);
       sphere_.OnRender(context);
       plane_.OnRender(context);
     } else if (step_ > 1012) {
@@ -205,7 +205,7 @@ void ShareScene::RunForwardPass(Context* context, ForwardPass* forward_pass) {
   plane_.OnRender(context);
 
   LinesShader({}, context, directional_light_.mutable_lines());
-  Texture0Shader({context->GetTexture("directional_light")}, context, directional_light_.mutable_billboard());
+  TextureShader({context->GetTexture("directional_light")}, context, directional_light_.mutable_billboard());
   directional_light_.OnRender(context);
 
   ColorShader({kLightColor}, context, &point_light_);
@@ -242,7 +242,7 @@ void ShareScene::RunForwardPass2(Context* context, ForwardPass* forward_pass) {
   plane_.OnRender(context);
 
   LinesShader({}, context, directional_light_.mutable_lines());
-  Texture0Shader({context->GetTexture("directional_light")}, context, directional_light_.mutable_billboard());
+  TextureShader({context->GetTexture("directional_light")}, context, directional_light_.mutable_billboard());
   directional_light_.OnRender(context);
 
   ColorShader({kLightColor}, context, &point_light_);

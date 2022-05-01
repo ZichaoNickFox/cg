@@ -51,9 +51,12 @@ class Context {
   const glm::vec4 clear_color() const { return clear_color_; }
 
   engine::Shader GetShader(const std::string& name);
-  engine::Texture GetTexture(const std::string& name, bool flip_vertically = false, bool use_mipmap = false,
+
+  engine::Texture GetTexture(const std::string& name, bool flip_vertically = false, int mipmap_level_count = 1,
                              bool equirectangular = false);
   void SaveTexture(const std::string& name, const engine::Texture& texture);
+  void CreateTexture2D(const std::string& name, const texture::CreateTexture2DParam& param);
+  void CreateCubemap(const std::string& name, const texture::CreateCubemapParam& param);
   void SaveCubemap(const std::string& name, int face, const engine::Texture& cubemap_face_texture2d);
 
   std::shared_ptr<const engine::Mesh> GetMesh(const std::string& name);

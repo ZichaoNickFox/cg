@@ -1,4 +1,6 @@
-uniform samplerCube texture_irradiance_map;
+uniform samplerCube texture_irradiance_cubemap;
+uniform samplerCube texture_prefiltered_color_cubemap;
+uniform sampler2D texture_BRDF_integration_map;
 uniform int light_count;
 uniform Light lights[200];
 
@@ -14,40 +16,6 @@ struct PbrModelInput {
   vec3 ao;
   vec3 normal;
 };
-
-float D_GGX_TR(vec3 N, vec3 H, float roughness) {
-  float a = roughness * roughness;
-  float a2 = a * a;
-  float NdotH = max(dot(N, H), 0.0);
-  float NdotH2 = NdotH * NdotH;
-
-  float nom = a2;
-  float denom = (NdotH * (a2 - 1.0) + 1.0);
-  denom = PI * denom * denom;
-
-  return nom / denom;
-}
-
-float GeometrySchlickGGX(float NdotV, float roughness) {
-  float r = (roughness + 1.0);
-  float k = (r * r) / 8.0;
-
-  float nom = NdotV;
-  float denom = NdotV * (1.0 - k) + k;
-  return nom / denom;
-}
-
-float GeometrySmith(vec3 N, vec3 V, vec3 L, float k) {
-  float NdotV = max(dot(N, V), 0.0);
-  float NdotL = max(dot(N, L), 0.0);
-  float ggx1 = GeometrySchlickGGX(NdotV, k);
-  float ggx2 = GeometrySchlickGGX(NdotL, k);
-  return ggx1 * ggx2;
-}
-
-vec3 FresnelSchlink(float cosTheta, vec3 F0) {
-  return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
-}
 
 vec3 PbrModel(PbrModelInput param) {
   vec3 N = normalize(param.normal);
@@ -83,10 +51,17 @@ vec3 PbrModel(PbrModelInput param) {
     float NdotL = max(dot(N, L), 0.0);
     Lo += (kD * param.albedo / PI + specular) * radiance * NdotL;
   }
-  vec3 ambient_KS = FresnelSchlink(max(dot(N, V), 0.0), F0);
+  vec3 R = normalize(reflect(-V, N));
+  const float MAX_REFLECTED_LOD = 4.0;
+  vec3 prefiltered_color = textureLod(texture_prefiltered_color_cubemap, R, roughness * MAX_REFLECTED_LOD).rgb;
+  vec3 ambient_F = FresnelSchlinkRoughness(max(dot(N, V), 0.0), F0, roughness);
+
+  vec3 ambient_KS = ambient_F;
   vec3 ambient_KD = vec3(1.0) - ambient_KS;
-  ambient_KD *= 1.0 - param.metallic;
-  vec3 irradiance = texture(texture_irradiance_map, N).rgb;
+
+  vec2 BRDF_integrate = texture(texture_BRDF_integration_map, vec2(max(dot(N, V), 0.0), roughness)).rg;
+  vec3 ambient_specular = prefiltered_color * (F * BRDF_integrate.x + BRDF_integrate.y);
+  vec3 irradiance = texture(texture_irradiance_cubemap, N).rgb;
   vec3 ambient = ambient_KD * irradiance * param.albedo * param.ao;
   vec3 color = ambient + Lo;
   return color;

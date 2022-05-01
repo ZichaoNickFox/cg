@@ -5,12 +5,37 @@
 #include "engine/texture.h"
 #include "playground/proto/config.pb.h"
 
+namespace texture {
+struct CreateTexture2DParam {
+  int levels = 1;
+  int width;
+  int height;
+  std::vector<GLubyte*> datas;
+  int internal_format = GL_RGBA8;
+  int format = GL_RGBA;
+  int type = GL_UNSIGNED_BYTE;
+};
+struct CreateCubemapParam {
+  int levels = 1;
+  int width;
+  int height;
+  std::vector<std::array<GLubyte*, 6>> datas;
+  int internal_format = GL_RGBA8;
+  int format = GL_RGBA;
+  int type = GL_UNSIGNED_BYTE;
+};
+engine::Texture LoadTexture2D(const std::string& path_with_ext, bool flip_vertically = true,
+                              int mipmap_level_count = 1, bool equirectangular = false);
+}
+
 class TextureRepo {
  public:
   void Init(const Config& config);
-  engine::Texture GetOrLoadTexture(const std::string& name, bool flip_vertically = false, bool use_mipmap = false);
+  engine::Texture GetOrLoadTexture(const std::string& name, bool flip_vertically = false, int mipmap_level_count = 1);
   void SaveTexture(const std::string& name, const engine::Texture& texture);
   void SaveCubemap(const std::string& name, int face, const engine::Texture& cubemap_face_texture2d);
+  void CreateTexture2D(const std::string& name, const texture::CreateTexture2DParam& param);
+  void CreateCubemap(const std::string& name, const texture::CreateCubemapParam& param);
 
  private:
   struct State {
@@ -21,23 +46,3 @@ class TextureRepo {
   };
   std::unordered_map<std::string, State> textures_;
 };
-
-namespace texture {
-  engine::Texture LoadTexture2D(const std::string& fileName, bool flip_vertically = true,
-                                bool useMipmap = false, bool equirectangular = false);
-  void SaveTexture2D(const std::string& fullPath, const engine::Texture& texture, bool multiple_sample = false);
-  void SaveTexture2D(const std::string& fullPath, int width, int height, int channels, const unsigned char *const data);
-  
-  engine::Texture LoadCubeMap(const std::vector<std::string>& path);
-  int SaveCubemap(const std::vector<std::string>& fullPaths, GLuint tex);
-
-  void ParseImageFormat(const std::string& fileName, int* SOILfmt, GLint* internal_format);
-  bool VarifyChannel(const std::string& fileName, int channel);
-  void RemoveFromGL(GLuint in);
-
-  engine::Texture CreateTexture2d(GLubyte* data, int width, int height, bool useMipmap = false);
-
-  void GetInternalFormatSize(int internal_format, int* channel, int* format, int* type);
-
-  engine::Texture Copy(GLuint source);
-}

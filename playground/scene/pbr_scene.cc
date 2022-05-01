@@ -71,7 +71,9 @@ void PbrScene::OnRender(Context *context)
   pbr.metallic = metallic;
   pbr.roughness = roughness;
   pbr.light_info = ShaderLightInfo(point_lights_);
-  pbr.texture_irradiance_map = context->GetTexture("pbr_irradiance_cubemap");
+  pbr.texture_irradiance_cubemap = context->GetTexture("pbr_irradiance_cubemap");
+  pbr.texture_prefiltered_color_cubemap = context->GetTexture("pbr_prefiltered_color_cubemap");
+  pbr.texture_BRDF_integrate_map = context->GetTexture("pbr_BRDF_integration_map");
 
   PbrShader(pbr, context, &sphere_);
   sphere_.OnRender(context);

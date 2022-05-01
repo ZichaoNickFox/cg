@@ -6,7 +6,6 @@
 #include "playground/scene/AA_test_scene.h"
 #include "playground/scene/deferred_shading_scene.h"
 #include "playground/scene/forward_shading_scene.h"
-#include "playground/scene/gallery_scene.h"
 #include "playground/scene/model_scene.h"
 #include "playground/scene/mrt_scene.h"
 #include "playground/scene/normal_scene.h"
@@ -19,9 +18,10 @@
 #include "playground/scene/sample_scene.h"
 #include "playground/scene/share_scene.h"
 #include "playground/scene/skybox_scene.h"
+#include "playground/scene/texture_lod_scene.h"
 
 namespace {
-const std::string kDefaultScene = "PbrBRDFIntegrationMapGenerator";
+const std::string kDefaultScene = "TextureLodScene";
 }
 
 void Playground::Init(const Context::Option& option) {
@@ -31,7 +31,6 @@ void Playground::Init(const Context::Option& option) {
 }
 
 void Playground::InitScene() {
-  scene_map_.insert(std::make_pair("GalleryScene", std::make_unique<GalleryScene>()));
   scene_map_.insert(std::make_pair("PhongScene", std::make_unique<PhongScene>()));
   scene_map_.insert(std::make_pair("ForwardShadingScene", std::make_unique<ForwardShadingScene>()));
   scene_map_.insert(std::make_pair("DeferredShadingScene", std::make_unique<DeferredShadingScene>()));
@@ -48,6 +47,7 @@ void Playground::InitScene() {
   scene_map_.insert(std::make_pair("SampleScene", std::make_unique<SampleScene>()));
   scene_map_.insert(std::make_pair("PbrPrefilteredColorCubemapGenerator", std::make_unique<PbrPrefilteredColorCubemapGenerator>()));
   scene_map_.insert(std::make_pair("PbrBRDFIntegrationMapGenerator", std::make_unique<PbrBRDFIntegrationMapGenerator>()));
+  scene_map_.insert(std::make_pair("TextureLodScene", std::make_unique<TextureLodScene>()));
 }
 
 void Playground::BeginFrame() {

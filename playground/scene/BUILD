@@ -22,8 +22,6 @@ cc_library(
     "deferred_shading_scene.cc",
     "forward_shading_scene.h",
     "forward_shading_scene.cc",
-    "gallery_scene.h",
-    "gallery_scene.cc",
     "mrt_scene.h",
     "mrt_scene.cc",
     "model_scene.h",
@@ -40,6 +38,8 @@ cc_library(
     "share_scene.cc",
     "skybox_scene.h",
     "skybox_scene.cc",
+    "texture_lod_scene.h",
+    "texture_lod_scene.cc",
   ],
   deps = [
     "//engine:engine",

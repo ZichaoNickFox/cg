@@ -73,11 +73,12 @@ class PbrShader {
     std::optional<engine::Texture> texture_metallic;
     std::optional<engine::Texture> texture_roughness;
     std::optional<engine::Texture> texture_ao;
+    engine::Texture texture_irradiance_cubemap;
+    engine::Texture texture_prefiltered_color_cubemap;
+    engine::Texture texture_BRDF_integrate_map;
 
     ShaderLightInfo light_info;
     std::optional<ShaderShadowInfo> shadow_info;
-
-    engine::Texture texture_irradiance_map;
   };
   PbrShader(const Param& param, Context* context, Object* object);
 };
@@ -112,12 +113,21 @@ class ColorShader {
   ColorShader(const Param& param, Context* context, Object* object);
 };
 
-class Texture0Shader {
+class TextureShader {
  public:
   struct Param {
     engine::Texture texture0;
   };
-  Texture0Shader(const Param& param, Context* context, Object* object);
+  TextureShader(const Param& param, Context* context, Object* object);
+};
+
+class Texture2DLodShader {
+ public:
+  struct Param {
+    std::optional<engine::Texture> texture2D0;
+    glm::vec3 view_pos_ws;
+  };
+  Texture2DLodShader(const Param& param, Context* context, Object* object);
 };
 
 class DepthBufferShader {

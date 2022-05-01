@@ -9,12 +9,22 @@ shader_config {
 }
 
 shader_config {
-  name : "texture0";
+  name : "texture";
   vs_path : [
-    "playground/resource/shader/texture0.vs.glsl"
+    "playground/resource/shader/texture.vs.glsl"
   ];
   fs_path : [
-    "playground/resource/shader/texture0.fs.glsl"
+    "playground/resource/shader/texture.fs.glsl"
+  ];
+}
+
+shader_config {
+  name : "texture2d_lod";
+  vs_path : [
+    "playground/resource/shader/texture2d_lod.vs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/texture2d_lod.fs.glsl"
   ];
 }
 
@@ -182,6 +192,9 @@ shader_config {
     "playground/resource/shader/version.glsl",
     "playground/resource/shader/pbr_material.glsl",
     "playground/resource/shader/light_info.glsl",
+    "playground/resource/shader/pbr_NDF.glsl",
+    "playground/resource/shader/pbr_geometry.glsl",
+    "playground/resource/shader/pbr_fresnel.glsl",
     "playground/resource/shader/pbr_model.glsl",
     "playground/resource/shader/pbr.fs.glsl"
   ];

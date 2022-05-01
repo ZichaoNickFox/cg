@@ -152,7 +152,7 @@ void ForwardShadingScene::RunForwardPass(Context* context, ForwardPass* forward_
   plane_.OnRender(context);
 
   LinesShader({}, context, directional_light_.mutable_lines());
-  Texture0Shader({context->GetTexture("directional_light")}, context, directional_light_.mutable_billboard());
+  TextureShader({context->GetTexture("directional_light")}, context, directional_light_.mutable_billboard());
   directional_light_.OnRender(context);
 
   forward_pass->End();
