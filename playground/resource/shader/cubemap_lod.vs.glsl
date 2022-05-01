@@ -7,12 +7,12 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 project;
 
-out vec2 texcoord_;
 out vec3 frag_pos_ws_;
+out vec3 frag_pos_ls_;
 
 void main()
 {
   frag_pos_ws_ = vec3(model * vec4(pos, 1.0));
-  texcoord_ = texcoord;
+  frag_pos_ls_ = pos;
   gl_Position = project * view * model * vec4(pos, 1.0);
 }

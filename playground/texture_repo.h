@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <unordered_map>
 
 #include "engine/texture.h"
@@ -19,7 +20,7 @@ struct CreateCubemapParam {
   int levels = 1;
   int width;
   int height;
-  std::vector<std::array<GLubyte*, 6>> datas;
+  std::array<std::vector<GLubyte*>, 6> datas;
   int internal_format = GL_RGBA8;
   int format = GL_RGBA;
   int type = GL_UNSIGNED_BYTE;

@@ -29,6 +29,16 @@ shader_config {
 }
 
 shader_config {
+  name : "cubemap_lod";
+  vs_path : [
+    "playground/resource/shader/cubemap_lod.vs.glsl"
+  ];
+  fs_path : [
+    "playground/resource/shader/cubemap_lod.fs.glsl"
+  ];
+}
+
+shader_config {
   name : "normal";
   vs_path : [
     "playground/resource/shader/normal.vs.glsl"

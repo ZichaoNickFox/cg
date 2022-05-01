@@ -240,9 +240,22 @@ Texture2DLodShader::Texture2DLodShader(const Param& param, Context* context, Obj
   material->SetMat4("project", project);
   material->SetMat4("view", view);
   material->SetMat4("model", model);
-  if (param.texture2D0.has_value()) {
-    material->SetTexture("texture2D0", param.texture2D0.value());
-  }
+  material->SetTexture("texture2D0", param.texture2D0);
+  material->SetVec3("view_pos_ws", param.view_pos_ws);
+}
+
+CubemapLodShader::CubemapLodShader(const Param& param, Context* context, Object* object) {
+  engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
+  material->SetShader(context->GetShader("cubemap_lod"));
+
+  const engine::Camera& camera = context->camera();
+  glm::mat4 project = camera.GetProjectMatrix();
+  glm::mat4 view = camera.GetViewMatrix();
+  glm::mat4 model = object->GetModelMatrix();
+  material->SetMat4("project", project);
+  material->SetMat4("view", view);
+  material->SetMat4("model", model);
+  material->SetTexture("texture_cubemap", param.cubemap);
   material->SetVec3("view_pos_ws", param.view_pos_ws);
 }
 

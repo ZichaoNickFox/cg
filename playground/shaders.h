@@ -124,10 +124,19 @@ class TextureShader {
 class Texture2DLodShader {
  public:
   struct Param {
-    std::optional<engine::Texture> texture2D0;
+    engine::Texture texture2D0;
     glm::vec3 view_pos_ws;
   };
   Texture2DLodShader(const Param& param, Context* context, Object* object);
+};
+
+class CubemapLodShader {
+ public:
+  struct Param {
+    engine::Texture cubemap;
+    glm::vec3 view_pos_ws;
+  };
+  CubemapLodShader(const Param& param, Context* context, Object* object);
 };
 
 class DepthBufferShader {

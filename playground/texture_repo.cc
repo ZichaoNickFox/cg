@@ -123,27 +123,26 @@ Texture CreateTexture2D(const texture::CreateTexture2DParam& param) {
 
 Texture CreateCubemap(const texture::CreateCubemapParam& param) {
   GLuint ret;
-  /*
   glGenTextures(1, &ret);
-  glBindTexture(GL_TEXTURE_2D, ret);
-  glTexStorage2D(GL_TEXTURE_2D, param.levels, param.internal_format, param.width, param.height);
-  for (int level = 0; level < param.levels; ++level) {
-    glTexSubImage2D(GL_TEXTURE_2D, level, 0, 0, param.width >> level, param.height >> level,
-                    param.format, param.type, param.datas[level]);
+  glBindTexture(GL_TEXTURE_CUBE_MAP, ret);
+  glTexStorage2D(GL_TEXTURE_CUBE_MAP, param.levels, param.internal_format, param.width, param.height);
+  for (GLuint texture_unit = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+       texture_unit <= GL_TEXTURE_CUBE_MAP_NEGATIVE_Z; ++texture_unit) {
+    for (int level = 0; level < param.levels; ++level) {
+      glTexSubImage2D(texture_unit, level, 0, 0, param.width >> level, param.height >> level, param.format,
+                      param.type, param.datas[texture_unit - GL_TEXTURE_CUBE_MAP_POSITIVE_X][level]);
+    }
   }
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_REPEAT);
   if(param.levels > 1){
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
   } else {
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   }
-  glBindTexture(GL_TEXTURE_2D, 0);
-  CGCHECKGL();
-  */
-  return Texture(ret, Texture::Texture2D);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+  return Texture(ret, Texture::Cubemap);
 }
 
 bool VarifyChannel(const std::string& path, int channel) {
