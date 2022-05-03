@@ -8,7 +8,7 @@
 #include "engine/texture.h"
 
 namespace engine {
-struct ResetTexture2DParam {
+struct CreateTexture2DParam {
   int level_num;
   int width;
   int height;
@@ -17,7 +17,7 @@ struct ResetTexture2DParam {
   int format = GL_RGBA;
   int type = GL_UNSIGNED_BYTE;
 };
-struct ResetCubemapParam {
+struct CreateCubemapParam {
   int level_num;
   int width;
   int height;
@@ -26,16 +26,17 @@ struct ResetCubemapParam {
   int format = GL_RGBA;
   int type = GL_UNSIGNED_BYTE;
 };
-engine::Texture LoadModelTexture2D(const std::string& full_path, bool flip_vertically = false);
+engine::Texture LoadModelTexture2D(const std::string& full_path, bool flip_vertically = true);
 
 class TextureRepo {
  public:
   void Init(const Config& config);
-  engine::Texture GetOrLoadTexture(const std::string& name, bool flip_vertically = false);
+  Texture GetOrLoadTexture(const std::string& name, bool flip_vertically = true);
   void SaveTexture2D(const std::string& name);
   void SaveCubemap(const std::string& name);
-  void ResetTexture2D(const std::string& name, const ResetTexture2DParam& param);
-  void ResetCubemap(const std::string& name, const ResetCubemapParam& param);
+  void ResetTexture2D(const std::string& name, const CreateTexture2DParam& param);
+  void ResetCubemap(const std::string& name, const CreateCubemapParam& param);
+  Texture CreateTempTexture2D(const CreateTexture2DParam& param);
 
  private:
   struct State {

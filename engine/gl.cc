@@ -19,7 +19,7 @@ void glTexImage2D_(GLenum target, GLint level, GLint internalformat, GLsizei wid
 }
 
 void glTexSubImage2D_(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width,
-                     GLsizei height, GLenum format, GLenum type, const void *pixels) {
+                      GLsizei height, GLenum format, GLenum type, const void *pixels) {
   glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
   CGCHECKGL();
 }
@@ -34,7 +34,7 @@ void glBindTexture_(GLenum target, GLuint texture) {
   CGCHECKGL();
 }
 
-void glGetTexLevelParameteriv_ (GLenum target, GLint level, GLenum pname, GLint *params) {
+void glGetTexLevelParameteriv_(GLenum target, GLint level, GLenum pname, GLint *params) {
   glGetTexLevelParameteriv(target, level, pname, params);
   CGCHECKGL();
 }
@@ -46,6 +46,67 @@ void glTexStorage2D_(GLenum target, GLsizei levels, GLenum internalformat, GLsiz
 
 void glDeleteTextures_(GLsizei n, const GLuint *textures) {
   glDeleteTextures(n, textures);
+  CGCHECKGL();
+}
+
+void glGenFramebuffers_(GLsizei n, GLuint *ids) {
+  glGenFramebuffers(n, ids);
+  CGCHECKGL();
+}
+
+void glFramebufferTexture2D_(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level) {
+  glFramebufferTexture2D(target, attachment, textarget, texture, level);
+  CGCHECKGL();
+}
+
+void glBindFramebuffer_(GLenum target, GLuint framebuffer) {
+  glBindFramebuffer(target, framebuffer);
+  CGCHECKGL();
+}
+
+GLenum glCheckFramebufferStatus_(GLenum target) {
+  GLenum res = glCheckFramebufferStatus(target);
+  CGCHECKGL();
+  return res;
+}
+
+void glDrawBuffers_(GLsizei n, const GLenum *bufs) {
+  glDrawBuffers(n, bufs);
+  CGCHECKGL();
+}
+
+void glClear_(GLbitfield mask) {
+  glClear(mask);
+  CGCHECKGL();
+}
+
+void glClearColor_(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha) {
+  glClearColor(red, green, blue, alpha);
+  CGCHECKGL();
+}
+
+void glClearBufferiv_(GLenum buffer, GLint drawbuffer, const GLint * value) {
+  glClearBufferiv(buffer, drawbuffer, value);
+  CGCHECKGL();
+}
+
+void glClearBufferuiv_(GLenum buffer, GLint drawbuffer, const GLuint * value) {
+  glClearBufferuiv(buffer, drawbuffer, value);
+  CGCHECKGL();
+}
+
+void glClearBufferfv_(GLenum buffer, GLint drawbuffer, const GLfloat * value) {
+  glClearBufferfv(buffer, drawbuffer, value);
+  CGCHECKGL();
+}
+
+void glClearBufferfi_(GLenum buffer, GLint drawbuffer, GLfloat depth, GLint stencil) {
+  glClearBufferfi(buffer, drawbuffer, depth, stencil);
+  CGCHECKGL();
+}
+
+void glDeleteFramebuffers_(GLsizei n, const GLuint * framebuffers) {
+  glDeleteFramebuffers(n, framebuffers);
   CGCHECKGL();
 }
 

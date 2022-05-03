@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 
 #include "engine/camera.h"
-#include "engine/frame_buffer/color_frame_buffer.h"
+#include "engine/framebuffer/color_framebuffer.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
@@ -34,5 +34,5 @@ class PbrEnvironmentCubemapGenerator : public Scene {
     glm::quat(), // back
   };
 
-  engine::ColorFrameBuffer color_frame_buffer_;
+  engine::ColorFramebuffer color_framebuffer_;
 };

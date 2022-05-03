@@ -12,7 +12,7 @@
 namespace util {
 // file
 void ReadFileToString(const std::string& path, std::string* content);
-std::string GetFileExt(const std::string& file_name);
+std::string FileExt(const std::string& file_name);
 std::string FileName(const std::string& path);
 std::string FileDir(const std::string& path);
 void MakeDir(const std::string& dir);

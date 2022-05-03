@@ -98,21 +98,21 @@ int main(int argc, char **argv)
   glm::vec4 clear_color = glm::vec4(0.45f, 0.55f, 0.60f, 1.00f);
   const std::string kConfigPath = "playground/config.pb.txt";
     
-  glm::ivec2 frame_buffer_size;
-  glfwGetFramebufferSize(window, &frame_buffer_size.x, &frame_buffer_size.y);
-  glViewport(0, 0, frame_buffer_size.x, frame_buffer_size.y);
+  glm::ivec2 framebuffer_size;
+  glfwGetFramebufferSize(window, &framebuffer_size.x, &framebuffer_size.y);
+  glViewport(0, 0, framebuffer_size.x, framebuffer_size.y);
 
   glm::ivec2 screen_size;
   glfwGetWindowSize(window, &screen_size.x, &screen_size.y);
 
   Playground playground;
-  playground.Init({kConfigPath, clear_color, frame_buffer_size});
+  playground.Init({kConfigPath, clear_color, framebuffer_size});
   playground.mutable_io()->SetScreenSize(screen_size);
 
   while (!glfwWindowShouldClose(window)) {
     playground.BeginFrame();
-    glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    glClearColor_(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+    glClear_(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     glfwPollEvents();
 

@@ -17,6 +17,20 @@ void glTexParameteri_(GLenum target, GLenum pname, GLint param);
 void glTexStorage2D_(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
 void glDeleteTextures_(GLsizei n, const GLuint *textures);
 
+// Framebuffer
+void glGenFramebuffers_(GLsizei n, GLuint *ids);
+void glFramebufferTexture2D_(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+void glBindFramebuffer_(GLenum target, GLuint framebuffer);
+GLenum glCheckFramebufferStatus_(GLenum target);
+void glDrawBuffers_(GLsizei n, const GLenum *bufs);
+void glClear_(GLbitfield mask);
+void glClearColor_(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
+void glClearBufferiv_(GLenum buffer, GLint drawbuffer, const GLint * value);
+void glClearBufferuiv_(GLenum buffer, GLint drawbuffer, const GLuint * value);
+void glClearBufferfv_(GLenum buffer, GLint drawbuffer, const GLfloat * value);
+void glClearBufferfi_(GLenum buffer, GLint drawbuffer, GLfloat depth, GLint stencil);
+void glDeleteFramebuffers_(GLsizei n, const GLuint * framebuffers);
+
 // Shader
 GLuint glCreateShader_(GLenum shaderType);
 void glShaderSource_(GLuint shader, GLsizei count, const GLchar **string, const GLint *length);

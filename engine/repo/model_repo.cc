@@ -3,8 +3,6 @@
 #include <assimp/postprocess.h>
 #include <glog/logging.h>
 #include <set>
-#include "SOIL2/SOIL2.h"
-#include "SOIL2/stb_image.h"
 
 #include "engine/debug.h"
 #include "engine/repo/texture_repo.h"

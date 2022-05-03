@@ -27,12 +27,12 @@ void PbrPrefilteredColorCubemapGenerator::OnEnter(Context *context)
   }
 
   for (int level = 0; level < kMipmapMaxLevel; ++level) {
-    engine::ColorFrameBuffer::Option option;
+    engine::ColorFramebuffer::Option option;
     option.clear_color = context->clear_color();
     option.mrt = 1;
     int size = kLevel0Size * static_cast<float>(std::pow(0.5, level));
     option.size = glm::ivec2(size, size);
-    color_frame_buffers_[level].Init(option);
+    color_framebuffers_[level].Init(option);
   }
 }
 
@@ -47,19 +47,20 @@ void PbrPrefilteredColorCubemapGenerator::OnRender(Context *context)
 {
   // TODO why * 4 * 4?
   engine::CubemapData data(kMipmapMaxLevel, kLevel0Size * kLevel0Size * 4 * 4);
+  
   for (int level = 0; level < kMipmapMaxLevel; ++level) {
     for (int face = 0; face < 6; ++face) {
       float roughness = std::pow(0.5, kMipmapMaxLevel - level - 1);
-      color_frame_buffers_[level].Bind();
+      color_framebuffers_[level].Bind();
       PbrPrefilteredColorCubemapGeneratorShader({context->GetTexture("pbr_environment_cubemap"),
                                                 &cubemap_cameras_[face], roughness}, context, &cube_);
       cube_.OnRender(context);
-      color_frame_buffers_[level].Unbind();
+      color_framebuffers_[level].Unbind();
 
-      *data.mutable_vector(face, level) = color_frame_buffers_[level].GetColorTextureData(0);
+      *data.mutable_vector(face, level) = color_framebuffers_[level].GetColorTextureData(0);
     }
   }
-  engine::ResetCubemapParam param{kMipmapMaxLevel, kLevel0Size, kLevel0Size, &data};
+  engine::CreateCubemapParam param{kMipmapMaxLevel, kLevel0Size, kLevel0Size, &data};
   context->ResetCubemap("pbr_prefiltered_color_cubemap", param);
   context->SaveCubemap("pbr_prefiltered_color_cubemap");
   exit(0);

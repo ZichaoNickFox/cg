@@ -4,9 +4,9 @@
 
 TEST(engine_test, util)
 {
-  EXPECT_EQ(util::GetFileExt("a.txt"), "txt");
-  EXPECT_EQ(util::GetFileExt("a.fs.glsl"), "glsl");
-  EXPECT_EQ(util::GetFileExt("a"), "");
+  EXPECT_EQ(util::FileExt("a.txt"), "txt");
+  EXPECT_EQ(util::FileExt("a.fs.glsl"), "glsl");
+  EXPECT_EQ(util::FileExt("a"), "");
 
   for (int i = 0; i < 10000000; ++i) {
     float rand_value = util::RandFromTo(-10.0, 10.0);

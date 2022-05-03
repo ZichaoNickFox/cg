@@ -1,8 +1,8 @@
 #pragma once
 
 #include "engine/camera.h"
-#include "engine/frame_buffer/depth_frame_buffer.h"
-#include "engine/frame_buffer/g_buffer.h"
+#include "engine/framebuffer/depth_framebuffer.h"
+#include "engine/framebuffer/gbuffer.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
@@ -39,7 +39,7 @@ class DeferredShadingScene : public Scene {
   Plane plane_;
   DirectionalLight directional_light_;
 
-  engine::GBuffer g_buffer_;
+  engine::GBuffer gbuffer_;
 
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
  

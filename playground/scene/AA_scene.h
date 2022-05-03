@@ -1,8 +1,8 @@
 #pragma once
 
 #include "engine/camera.h"
-#include "engine/frame_buffer/color_frame_buffer.h"
-#include "engine/frame_buffer/ms_frame_buffer.h"
+#include "engine/framebuffer/color_framebuffer.h"
+#include "engine/framebuffer/ms_framebuffer.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
@@ -51,6 +51,6 @@ class AAScene : public Scene {
 
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
 
-  engine::MSFrameBuffer ms_frame_buffer_;
-  engine::ColorFrameBuffer color_frame_buffer_;
+  engine::MSFramebuffer ms_framebuffer_;
+  engine::ColorFramebuffer color_framebuffer_;
 };

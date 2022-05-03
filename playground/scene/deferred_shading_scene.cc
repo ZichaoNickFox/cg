@@ -7,7 +7,7 @@
 #include "imgui.h"
 #include <memory>
 
-#include "engine/frame_buffer/g_buffer.h"
+#include "engine/framebuffer/gbuffer.h"
 #include "engine/transform.h"
 #include "playground/scene/common.h"
 #include "engine/util.h"
@@ -51,8 +51,8 @@ void DeferredShadingScene::OnEnter(Context *context)
   directional_light_.mutable_transform()->SetTranslation(glm::vec3(-5, 6.3, -4.6));
   directional_light_.mutable_transform()->SetRotation(glm::quat(glm::vec3(2.48, -0.82, -3.09)));
 
-  engine::GBuffer::Option option{context->frame_buffer_size()};
-  g_buffer_.Init(option);
+  engine::GBuffer::Option option{context->framebuffer_size()};
+  gbuffer_.Init(option);
   
   glEnable(GL_DEPTH_TEST);
 
@@ -196,7 +196,7 @@ void DeferredShadingScene::ForwardShading(Context* context, const glm::mat4& sha
 
 void DeferredShadingScene::DeferredShading(Context* context, const glm::mat4& shadow_map_vp,
                                            const engine::Texture& shadow_map_texture) {
-  g_buffer_.Bind();
+  gbuffer_.Bind();
   engine::Shader deferred_shading_geometry = context->GetShader("deferred_shading_geometry");
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
@@ -206,18 +206,18 @@ void DeferredShadingScene::DeferredShading(Context* context, const glm::mat4& sh
   plane_.mutable_material()->SetShader(deferred_shading_geometry);
   plane_.OnRender(context);
 
-  g_buffer_.Unbind();
+  gbuffer_.Unbind();
 
-  engine::Texture texture_position = g_buffer_.GetTexture("position");
-  engine::Texture texture_normal = g_buffer_.GetTexture("normal");
-  engine::Texture texture_texcoord = g_buffer_.GetTexture("texcoord");
-  engine::Texture texture_frag_world_pos = g_buffer_.GetTexture("frag_world_pos");
+  engine::Texture texture_position = gbuffer_.GetTexture("position");
+  engine::Texture texture_normal = gbuffer_.GetTexture("normal");
+  engine::Texture texture_texcoord = gbuffer_.GetTexture("texcoord");
+  engine::Texture texture_frag_world_pos = gbuffer_.GetTexture("frag_world_pos");
 
   deferred_shading_quad_.mutable_material()->SetTexture("texture_normal", texture_normal);
   deferred_shading_quad_.mutable_material()->SetTexture("texture_frag_world_pos", texture_frag_world_pos);
   deferred_shading_quad_.OnRender(context);
 
-  g_buffer_.BlitDepth(nullptr);
+  gbuffer_.BlitDepth(nullptr);
 
   for (int i = 0; i < point_lights_num_; ++i) {
     point_lights_[i].OnRender(context);

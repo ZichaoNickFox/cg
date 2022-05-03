@@ -15,11 +15,11 @@
 
 void AAScene::OnEnter(Context *context)
 {
-  engine::MSFrameBuffer::Option ms_fbo_option{context->frame_buffer_size(), 1, {context->clear_color()}, 4};
-  ms_frame_buffer_.Init(ms_fbo_option);
+  engine::MSFramebuffer::Option ms_fbo_option{context->framebuffer_size(), 1, {context->clear_color()}, 4};
+  ms_framebuffer_.Init(ms_fbo_option);
 
-  engine::ColorFrameBuffer::Option color_fbo_option{context->frame_buffer_size(), 1, {context->clear_color()}};
-  color_frame_buffer_.Init(color_fbo_option);
+  engine::ColorFramebuffer::Option color_fbo_option{context->framebuffer_size(), 1, {context->clear_color()}};
+  color_framebuffer_.Init(color_fbo_option);
   
   for (int i = 0; i < point_lights_num_; ++i) {
     point_lights_.push_back(PointLight());
@@ -97,7 +97,7 @@ void AAScene::RenderShadowMap(Context* context) {
 
 void AAScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
                            const engine::Texture& shadow_map_texture) {
-  ms_frame_buffer_.Bind();
+  ms_framebuffer_.Bind();
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
     cube->mutable_material()->SetTexture("shadow_map_texture", shadow_map_texture);
@@ -114,15 +114,15 @@ void AAScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
   plane_.OnRender(context);
 
   directional_light_.OnRender(context);
-  ms_frame_buffer_.Unbind();
+  ms_framebuffer_.Unbind();
 
-  // ms_frame_buffer_.Blit(&color_frame_buffer_);
+  // ms_framebuffer_.Blit(&color_framebuffer_);
 
   EmptyObject fullscreen_quad;
-  fullscreen_quad.mutable_material()->SetTexture("scene", ms_frame_buffer_.GetColorTexture(0));
-  fullscreen_quad.mutable_material()->SetTexture("bright", ms_frame_buffer_.GetColorTexture(1));
-  // fullscreen_quad.mutable_material()->SetTexture("scene", color_frame_buffer_.GetTexture(0));
-  // fullscreen_quad.mutable_material()->SetTexture("bright", color_frame_buffer_.GetTexture(1));
+  fullscreen_quad.mutable_material()->SetTexture("scene", ms_framebuffer_.GetColorTexture(0));
+  fullscreen_quad.mutable_material()->SetTexture("bright", ms_framebuffer_.GetColorTexture(1));
+  // fullscreen_quad.mutable_material()->SetTexture("scene", color_framebuffer_.GetTexture(0));
+  // fullscreen_quad.mutable_material()->SetTexture("bright", color_framebuffer_.GetTexture(1));
   fullscreen_quad.OnRender(context);
 }
 

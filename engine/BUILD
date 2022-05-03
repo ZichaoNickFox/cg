@@ -53,7 +53,6 @@ cc_library(
     "//engine/primitive:primitive",
     "//engine:util",
     "@imgui//:imgui",
-    "@SOIL2//:SOIL2",
   ],
   linkopts = [
     "-lfmt",

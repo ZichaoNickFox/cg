@@ -19,11 +19,11 @@ void TextureLodScene::OnEnter(Context *context) {
 
   glEnable(GL_DEPTH_TEST);
 
-  engine::ColorFrameBuffer::Option option;
+  engine::ColorFramebuffer::Option option;
   option.clear_color = context->clear_color();
   option.mrt = 1;
   option.size = glm::ivec2{kLevel0Size, kLevel0Size};
-  color_frame_buffer_.Init(option);
+  color_framebuffer_.Init(option);
 
   InitTexture2DLod(context);
   InitCubemapLod(context);

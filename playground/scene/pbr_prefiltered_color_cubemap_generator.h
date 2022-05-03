@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 
 #include "engine/camera.h"
-#include "engine/frame_buffer/color_frame_buffer.h"
+#include "engine/framebuffer/color_framebuffer.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
@@ -37,5 +37,5 @@ class PbrPrefilteredColorCubemapGenerator : public Scene {
   static constexpr int kLevel0Size = 512;
   static constexpr int kMipmapMaxLevel = 5;
   static constexpr char kCubemapNamePrefix[] = "pbr_prefiltered_color_cubemap_level_";
-  engine::ColorFrameBuffer color_frame_buffers_[kMipmapMaxLevel];
+  engine::ColorFramebuffer color_framebuffers_[kMipmapMaxLevel];
 };

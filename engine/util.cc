@@ -15,7 +15,7 @@ void ReadFileToString(const std::string& path, std::string* content) {
   input_file.close();
 }
 
-std::string GetFileExt(const std::string& file_name) {
+std::string FileExt(const std::string& file_name) {
   int pos = file_name.find_last_of('.');
   if (pos == std::string::npos) {
     return "";

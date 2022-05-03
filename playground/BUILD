@@ -63,7 +63,6 @@ cc_library(
     "//engine/proto:cc_config_proto",
     "//engine/repo:repo",
     "//engine:util",
-    "@SOIL2//:SOIL2",
   ],
   linkopts = [
     "-lfmt",
@@ -81,7 +80,7 @@ cc_library(
   deps = [
     "//engine:engine",
     "//engine:util",
-    "//engine/frame_buffer:frame_buffer",
+    "//engine/framebuffer:framebuffer",
     "//playground:context",
     "//playground/object:object",
   ]

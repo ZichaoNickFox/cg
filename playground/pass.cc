@@ -1,30 +1,30 @@
 #include "playground/pass.h"
 
-void DepthBufferPass::Init(const engine::DepthFrameBuffer::Option& depth_frame_buffer_option,
+void DepthBufferPass::Init(const engine::DepthFramebuffer::Option& depth_framebuffer_option,
                            const engine::Transform& camera_transform) {
   camera_->SetType(engine::Camera::Orthographic);
   camera_->SetTransform(camera_transform);
-  depth_frame_buffer_.Init(depth_frame_buffer_option);
+  depth_framebuffer_.Init(depth_framebuffer_option);
 }
 
 void DepthBufferPass::Begin() {
-  depth_frame_buffer_.Bind();
+  depth_framebuffer_.Bind();
 }
 
 void DepthBufferPass::End() {
-  depth_frame_buffer_.Unbind();
+  depth_framebuffer_.Unbind();
 }
 
-void ForwardPass::Init(const engine::ColorFrameBuffer::Option& option) {
-  color_frame_buffer_.Init(option);
+void ForwardPass::Init(const engine::ColorFramebuffer::Option& option) {
+  color_framebuffer_.Init(option);
 }
 
 void ForwardPass::Begin() {
-  color_frame_buffer_.Bind();
+  color_framebuffer_.Bind();
 }
 
 void ForwardPass::End() {
-  color_frame_buffer_.Unbind();
+  color_framebuffer_.Unbind();
 }
 
 void ShadowPass::Init(const glm::mat4& camera_vp, const engine::Texture& GetDepthTexture,

@@ -17,7 +17,7 @@ class Context {
   struct Option {
     std::string config_path;
     glm::vec4 clear_color;
-    glm::vec2 frame_buffer_size;
+    glm::vec2 framebuffer_size;
   };
   void Init(const Option& option);
 
@@ -53,10 +53,11 @@ class Context {
   engine::Shader GetShader(const std::string& name);
 
   engine::Texture GetTexture(const std::string& name, bool flip_vertically = false, bool equirectangular = false);
-  void ResetTexture2D(const std::string& name, const engine::ResetTexture2DParam& param);
-  void ResetCubemap(const std::string& name, const engine::ResetCubemapParam& param);
+  void ResetTexture2D(const std::string& name, const engine::CreateTexture2DParam& param);
+  void ResetCubemap(const std::string& name, const engine::CreateCubemapParam& param);
   void SaveTexture2D(const std::string& name);
   void SaveCubemap(const std::string& name);
+  engine::Texture CreateTempTexture2D(const engine::CreateTexture2DParam& param);
 
   std::shared_ptr<const engine::Mesh> GetMesh(const std::string& name);
   std::vector<engine::ModelRepo::ModelPartData> GetModel(const std::string& name);
@@ -75,7 +76,7 @@ class Context {
   float camera_move_speed() { return camera_move_speed_; }
   float camera_rotate_speed() { return camera_rotate_speed_; }
 
-  const glm::ivec2& frame_buffer_size() const { return frame_buffer_size_; }
+  const glm::ivec2& framebuffer_size() const { return framebuffer_size_; }
 
  private:
   std::string current_scene_;
@@ -101,5 +102,5 @@ class Context {
   float camera_move_speed_ = 5;
   float camera_rotate_speed_ = 5;
 
-  glm::ivec2 frame_buffer_size_;
+  glm::ivec2 framebuffer_size_;
 };

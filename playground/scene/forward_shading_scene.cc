@@ -47,8 +47,8 @@ void ForwardShadingScene::OnEnter(Context *context)
   
   glEnable(GL_DEPTH_TEST);
 
-  depth_buffer_pass_.Init({context->frame_buffer_size()}, directional_light_.transform());
-  forward_pass_.Init({context->frame_buffer_size(), 1, context->clear_color()});
+  depth_buffer_pass_.Init({context->framebuffer_size()}, directional_light_.transform());
+  forward_pass_.Init({context->framebuffer_size(), 1, context->clear_color()});
 }
 
 void ForwardShadingScene::OnUpdate(Context *context)

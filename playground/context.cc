@@ -17,7 +17,7 @@ void Context::Init(const Option& option) {
   material_property_config_ = util::ProtoMap2UnorderedMap(config.material_property_config());
 
   clear_color_ = option.clear_color;
-  frame_buffer_size_ = option.frame_buffer_size;
+  framebuffer_size_ = option.framebuffer_size;
 }
 
 const engine::Camera& Context::camera() {
@@ -51,12 +51,16 @@ void Context::SaveCubemap(const std::string& name) {
   texture_repo_.SaveCubemap(name);
 }
 
-void Context::ResetTexture2D(const std::string& name, const engine::ResetTexture2DParam& param) {
+void Context::ResetTexture2D(const std::string& name, const engine::CreateTexture2DParam& param) {
   texture_repo_.ResetTexture2D(name, param);
 }
 
-void Context::ResetCubemap(const std::string& name, const engine::ResetCubemapParam& param) {
+void Context::ResetCubemap(const std::string& name, const engine::CreateCubemapParam& param) {
   texture_repo_.ResetCubemap(name, param);
+}
+
+engine::Texture Context::CreateTempTexture2D(const engine::CreateTexture2DParam& param) {
+  return texture_repo_.CreateTempTexture2D(param);
 }
 
 std::shared_ptr<const engine::Mesh> Context::GetMesh(const std::string& name) {

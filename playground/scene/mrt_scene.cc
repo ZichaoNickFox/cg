@@ -16,8 +16,8 @@
 
 void MrtScene::OnEnter(Context *context)
 {
-  engine::ColorFrameBuffer::Option option{context->frame_buffer_size(), 2, context->clear_color()};
-  mrt_frame_buffer_.Init(option);
+  engine::ColorFramebuffer::Option option{context->framebuffer_size(), 2, context->clear_color()};
+  mrt_framebuffer_.Init(option);
   
   for (int i = 0; i < point_lights_num_; ++i) {
     point_lights_.push_back(PointLight());
@@ -117,7 +117,7 @@ void MrtScene::RenderShadowMap(Context* context) {
 
 void MrtScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
                            const engine::Texture& shadow_map_texture) {
-  mrt_frame_buffer_.Bind();
+  mrt_framebuffer_.Bind();
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
     cube->mutable_material()->SetTexture("shadow_map_texture", shadow_map_texture);
@@ -134,12 +134,12 @@ void MrtScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
   plane_.OnRender(context);
 
   directional_light_.OnRender(context);
-  mrt_frame_buffer_.Unbind();
+  mrt_framebuffer_.Unbind();
 
   EmptyObject fullscreen_quad;
   fullscreen_quad.mutable_material()->SetShader(context->GetShader("mrt_fusion"));
-  fullscreen_quad.mutable_material()->SetTexture("scene", mrt_frame_buffer_.GetColorTexture(0));
-  fullscreen_quad.mutable_material()->SetTexture("bright", mrt_frame_buffer_.GetColorTexture(1));
+  fullscreen_quad.mutable_material()->SetTexture("scene", mrt_framebuffer_.GetColorTexture(0));
+  fullscreen_quad.mutable_material()->SetTexture("bright", mrt_framebuffer_.GetColorTexture(1));
   fullscreen_quad.OnRender(context);
 }
 

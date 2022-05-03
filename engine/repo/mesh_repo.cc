@@ -6,8 +6,6 @@
 #include <glog/logging.h>
 #include <math.h>
 #include <set>
-#include "SOIL2/SOIL2.h"
-#include "SOIL2/stb_image.h"
 
 #include "engine/debug.h"
 #include "engine/primitive/cube_mesh.h"

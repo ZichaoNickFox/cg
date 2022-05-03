@@ -3,7 +3,7 @@
 #include <limits>
 
 #include "engine/camera.h"
-#include "engine/frame_buffer/frame_buffer.h"
+#include "engine/framebuffer/framebuffer.h"
 #include "engine/material.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
