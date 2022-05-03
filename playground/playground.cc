@@ -21,13 +21,12 @@
 #include "playground/scene/texture_lod_scene.h"
 
 namespace {
-const std::string kDefaultScene = "PbrPrefilteredColorCubemapGenerator";
+const std::string kDefaultScene = "ModelScene";
 }
 
 void Playground::Init(const Context::Option& option) {
   InitScene();
   context_.Init(option);
-  SwitchScene(kDefaultScene, true);
 }
 
 void Playground::InitScene() {
@@ -56,15 +55,14 @@ void Playground::BeginFrame() {
 }
 
 void Playground::Update() {
-  if (context_.current_scene() != context_.next_scene()) {
-    SwitchScene(context_.next_scene());
-  }
-  const std::unique_ptr<Scene>& scene = scene_map_[context_.current_scene()];
+  SwitchScene(kDefaultScene);
+
+  const std::unique_ptr<Scene>& scene = scene_map_[current_scene_];
   scene->OnUpdate(&context_);
 }
 
 void Playground::Render() {
-  const std::unique_ptr<Scene>& scene = scene_map_[context_.current_scene()];
+  const std::unique_ptr<Scene>& scene = scene_map_[current_scene_];
   scene->OnRender(&context_);
 }
 
@@ -76,16 +74,14 @@ void Playground::EndFrame() {
   CGLOG(ERROR, false) << "end--------end---------end";
 }
 
-void Playground::SwitchScene(const std::string& scene, bool ignore_current_scene) {
-  CGCHECK(scene_map_.count(scene) > 0) << " Cannot find scene : " << scene;
-  if (!ignore_current_scene) {
-    const std::unique_ptr<Scene>& current_scene = scene_map_[context_.current_scene()];
-    current_scene->OnExit(&context_);
+void Playground::SwitchScene(const std::string& next_scene) {
+  if (next_scene == current_scene_) {
+    return;
+  }
+  if (current_scene_ != "") {
+    CGCHECK_NOTNULL(scene_map_[current_scene_])->OnExit(&context_);
   }
 
-  context_.SetCurrentScene(scene);
-  context_.SetNextScene(scene);
-
-  const std::unique_ptr<Scene>& next_scene = scene_map_[scene];
-  next_scene->OnEnter(&context_);
+  CGCHECK_NOTNULL(scene_map_[next_scene])->OnEnter(&context_);
+  current_scene_ = next_scene;
 }

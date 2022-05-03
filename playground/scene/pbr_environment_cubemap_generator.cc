@@ -11,7 +11,7 @@
 #include "playground/object/sphere.h"
 #include "playground/scene/common.h"
 
-constexpr int kEnvironmentCubemapSize = 512;
+constexpr int kEnvironmentCubemapSize = 2048;
 
 void PbrEnvironmentCubemapGenerator::OnEnter(Context *context)
 {

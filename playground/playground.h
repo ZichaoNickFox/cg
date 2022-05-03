@@ -19,7 +19,7 @@ class Playground {
   void Render();
   void EndFrame();
 
-  void SwitchScene(const std::string& scene, bool ignore_current_scene = false);
+  void SwitchScene(const std::string& scene);
   Io* mutable_io() { return context_.mutable_io(); }
   const Io& io() { return context_.io(); }
  
@@ -27,6 +27,7 @@ class Playground {
   void InitScene();
 
   std::unordered_map<std::string, std::unique_ptr<Scene>> scene_map_;
+  std::string current_scene_;
 
   Context context_;
 

@@ -1,6 +1,14 @@
 #include "engine/gl.h"
 
-#define CGCHECKGL() int error = glGetError(); if (error != 0) { CGCHECK(false) << error; }
+void glEnable_(GLenum cap) {
+  glEnable(cap);
+  CGCHECKGL();
+}
+
+void glDisable_(GLenum cap) {
+  glDisable(cap);
+  CGCHECKGL();
+}
 
 void glGenTextures_(GLsizei n, GLuint *textures) {
   glGenTextures(n, textures);
@@ -334,5 +342,15 @@ void glUniformMatrix3x4fv_(GLint location, GLsizei count, GLboolean transpose, c
 
 void glUniformMatrix4x3fv_(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value) {
   glUniformMatrix4x3fv(location, count, transpose, value);
+  CGCHECKGL();
+}
+
+void glCullFace_(GLenum mode) {
+  glCullFace(mode);
+  CGCHECKGL();
+}
+
+void glFrontFace_(GLenum mode) {
+  glFrontFace(mode);
   CGCHECKGL();
 }

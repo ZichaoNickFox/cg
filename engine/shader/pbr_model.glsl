@@ -53,16 +53,16 @@ vec3 PbrModel(PbrModelInput param) {
   }
   vec3 R = normalize(reflect(-V, N));
   const float MAX_REFLECTED_LOD = 4.0;
-  vec3 prefiltered_color = textureLod(texture_prefiltered_color_cubemap, R, roughness * MAX_REFLECTED_LOD).rgb;
-  vec3 ambient_F = FresnelSchlinkRoughness(max(dot(N, V), 0.0), F0, roughness);
+  vec3 prefiltered_color = textureLod(texture_prefiltered_color_cubemap, R, param.roughness * MAX_REFLECTED_LOD).rgb;
+  vec3 ambient_F = FresnelSchlinkRoughness(max(dot(N, V), 0.0), F0, param.roughness);
 
   vec3 ambient_KS = ambient_F;
   vec3 ambient_KD = vec3(1.0) - ambient_KS;
 
-  vec2 BRDF_integrate = texture(texture_BRDF_integration_map, vec2(max(dot(N, V), 0.0), roughness)).rg;
-  vec3 ambient_specular = prefiltered_color * (F * BRDF_integrate.x + BRDF_integrate.y);
+  vec2 BRDF_integrate = texture(texture_BRDF_integration_map, vec2(max(dot(N, V), 0.0), param.roughness)).rg;
+  vec3 ambient_specular = prefiltered_color * (ambient_F * BRDF_integrate.x + BRDF_integrate.y);
   vec3 irradiance = texture(texture_irradiance_cubemap, N).rgb;
-  vec3 ambient = ambient_KD * irradiance * param.albedo * param.ao;
+  vec3 ambient = (ambient_KD * irradiance * param.albedo + ambient_specular) * param.ao;
   vec3 color = ambient + Lo;
   return color;
 }

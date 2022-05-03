@@ -75,7 +75,7 @@ class PbrShader {
     std::optional<engine::Texture> texture_ao;
     engine::Texture texture_irradiance_cubemap;
     engine::Texture texture_prefiltered_color_cubemap;
-    engine::Texture texture_BRDF_integrate_map;
+    engine::Texture texture_BRDF_integration_map;
 
     ShaderLightInfo light_info;
     std::optional<ShaderShadowInfo> shadow_info;

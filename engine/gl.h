@@ -4,6 +4,12 @@
 
 #include "engine/debug.h"
 
+#define CGCHECKGL() int error = glGetError(); CGCHECK(error == 0) << error;
+
+// Common
+void glEnable_(GLenum cap);
+void glDisable_(GLenum cap);
+
 // Texture
 void glGenTextures_(GLsizei n, GLuint *textures);
 void glGetTexImage_(GLenum target, GLint level, GLenum format, GLenum type, void * pixels);
@@ -77,3 +83,7 @@ void glUniformMatrix2x4fv_(GLint location, GLsizei count, GLboolean transpose, c
 void glUniformMatrix4x2fv_(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value);
 void glUniformMatrix3x4fv_(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value);
 void glUniformMatrix4x3fv_(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value);
+
+// Cull face
+void glCullFace_(GLenum mode);
+void glFrontFace_(GLenum mode);

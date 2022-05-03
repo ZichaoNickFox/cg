@@ -21,12 +21,6 @@ class Context {
   };
   void Init(const Option& option);
 
-  void SetCurrentScene(const std::string& current_scene) { current_scene_ = current_scene; }
-  const std::string& current_scene() const { return current_scene_; }
-
-  void SetNextScene(const std::string& next_scene) { next_scene_ = next_scene; }
-  const std::string& next_scene() const { return next_scene_; }
-
   const engine::ShaderRepo& shader_repo() { return shader_repo_; }
   const engine::TextureRepo& texture_repo() { return texture_repo_; }
   const engine::MeshRepo& resh_repo() { return mesh_repo_; }
@@ -79,9 +73,6 @@ class Context {
   const glm::ivec2& framebuffer_size() const { return framebuffer_size_; }
 
  private:
-  std::string current_scene_;
-  std::string next_scene_;
-  
   engine::ShaderRepo shader_repo_;
   engine::TextureRepo texture_repo_;
   engine::MeshRepo mesh_repo_;

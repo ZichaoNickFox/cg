@@ -8,15 +8,15 @@
 #include <memory>
 #include <vector>
 
+#include "engine/gl.h"
 #include "engine/repo/model_repo.h"
+#include "engine/util.h"
 #include "playground/scene/common.h"
 #include "playground/shaders.h"
-#include "engine/util.h"
 
 void ModelScene::OnEnter(Context *context)
 {
   glEnable(GL_DEPTH_TEST);
-  glEnable(GL_BLEND_COLOR);
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(0.87, 4.87, 3.87));
   camera_->mutable_transform()->SetRotation(glm::quat(0.94, -0.14, 0.13, 0.014));
@@ -24,9 +24,7 @@ void ModelScene::OnEnter(Context *context)
 
   nanosuit_.Init(context, "nanosuit1", "nanosuit");
   point_lights_.push_back(PointLight());
-  // point_lights_.push_back(PointLight());
   point_lights_[0].mutable_transform()->SetTranslation(glm::vec3(0, 3, -5));
-  // point_lights_[1].mutable_transform()->SetTranslation(glm::vec3(-6, 3, 0));
 }
 
 void ModelScene::OnUpdate(Context *context)
@@ -36,7 +34,6 @@ void ModelScene::OnUpdate(Context *context)
   nanosuit_.ModelInspector();
 
   point_lights_[0].SetAttenuationMetre(600);
-  // point_lights_[1].SetAttenuationMetre(600);
   
   ImGui::Checkbox("texture_ambient", &use_texture_ambient_);
   ImGui::Checkbox("texture_diffuse", &use_texture_diffuse_);
@@ -54,6 +51,23 @@ void ModelScene::OnUpdate(Context *context)
   
   ImGui::ColorEdit3("light color", point_lights_[0].mutable_color());
 
+  ImGui::Separator();
+  ImGui::Checkbox("Cull", &enable_cull_face_);
+  if (ImGui::Button("Back")) {
+    call_face_ = GL_BACK;
+  }
+  if (ImGui::Button("Front")) {
+    call_face_ = GL_FRONT;
+  }
+  if (ImGui::Button("Front And Back")) {
+    call_face_ = GL_FRONT_AND_BACK;
+  }
+  if (ImGui::Button("CW")) {
+    cw_ = GL_CW;
+  }
+  if (ImGui::Button("CCW")) {
+    cw_ = GL_CCW;
+  }
 
   glm::quat rotate = glm::angleAxis(rotate_speed_, glm::vec3(0, 1, 0));
   for (int i = 0; i < nanosuit_.model_part_num(); ++i) {
@@ -63,6 +77,14 @@ void ModelScene::OnUpdate(Context *context)
 }
 
 void ModelScene::OnRender(Context *context) {
+  if (enable_cull_face_) {
+    glEnable_(GL_CULL_FACE);
+  } else {
+    glDisable_(GL_CULL_FACE);
+  }
+  glCullFace_(call_face_);
+  glFrontFace_(cw_);
+
   PhongShader::Param phong;
   phong.light_info = ShaderLightInfo(point_lights_);
   for (int i = 0; i < nanosuit_.model_part_num(); ++i) {
@@ -96,8 +118,8 @@ void ModelScene::OnRender(Context *context) {
     model_part->OnRender(context);
   }
 
+  ColorShader({point_lights_[0].color()}, context, &point_lights_[0]);
   point_lights_[0].OnRender(context);
-  // point_lights_[1].OnRender(context);
 
   LinesShader lines_shader({10.0}, context, &coord_);
   coord_.OnRender(context);

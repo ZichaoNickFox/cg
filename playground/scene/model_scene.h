@@ -37,5 +37,9 @@ class ModelScene : public Scene {
   Model nanosuit_;
   std::vector<PointLight> point_lights_;
 
+  bool enable_cull_face_ = false;
+  int call_face_ = GL_BACK;
+  int cw_ = GL_CW;
+
   Coord coord_;
 };

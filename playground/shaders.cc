@@ -157,7 +157,7 @@ PbrShader::PbrShader(const Param& pbr, Context* context, Object* object) {
 
   material->SetTexture("texture_irradiance_cubemap", pbr.texture_irradiance_cubemap);
   material->SetTexture("texture_prefiltered_color_cubemap", pbr.texture_prefiltered_color_cubemap);
-  material->SetTexture("texture_BRDF_integrate_map", pbr.texture_BRDF_integrate_map);
+  material->SetTexture("texture_BRDF_integration_map", pbr.texture_BRDF_integration_map);
 
   pbr.light_info.UpdateMaterial(context, material);
   if (pbr.shadow_info) {

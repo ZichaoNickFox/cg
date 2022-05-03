@@ -6,7 +6,8 @@ float D_GGX_TR(vec3 N, vec3 H, float roughness) {
 
   float nom = a2;
   float denom = (NdotH * (a2 - 1.0) + 1.0);
-  denom = PI * denom * denom;
+  const float pi = 3.1415926;
+  denom = pi * denom * denom;
 
   return nom / denom;
 }
