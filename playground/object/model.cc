@@ -2,8 +2,8 @@
 
 #include "imgui.h"
 
-#include "playground/model_repo.h"
-#include "playground/util.h"
+#include "engine/repo/model_repo.h"
+#include "engine/util.h"
 
 void ModelPart::OnUpdate(Context *context) {
 
@@ -56,8 +56,8 @@ std::optional<engine::Texture> ModelPart::texture_height(int i) const {
 }
 
 void Model::Init(Context* context, const std::string& object_name, const std::string& model_name) {
-  std::vector<ModelRepo::ModelPartData> model_parts_data = context->GetModel(model_name);
-  for (const ModelRepo::ModelPartData& model_part_data : model_parts_data) {
+  std::vector<engine::ModelRepo::ModelPartData> model_parts_data = context->GetModel(model_name);
+  for (const engine::ModelRepo::ModelPartData& model_part_data : model_parts_data) {
     model_parts_.push_back(ModelPart(model_part_data));
   }
 }
@@ -67,7 +67,7 @@ void Model::ModelInspector() {
     ImGui::PushID("Mesh Parts");
     for (int i = 0; i < model_part_num(); ++i) {
       ModelPart* model_part = &model_parts_[i];
-      const ModelRepo::ModelPartData& model_part_data = model_part->model_part_data();
+      const engine::ModelRepo::ModelPartData& model_part_data = model_part->model_part_data();
       if (ImGui::TreeNode(util::Format("{}", model_part_data.mesh->name()).c_str())) {
         ImGui::PushID(model_part_data.mesh->name().c_str());
         ImGui::Checkbox(util::Format("hidden{}", i).c_str(), model_part->mutable_hidden());

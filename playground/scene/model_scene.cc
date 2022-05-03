@@ -8,10 +8,10 @@
 #include <memory>
 #include <vector>
 
-#include "playground/model_repo.h"
+#include "engine/repo/model_repo.h"
 #include "playground/scene/common.h"
 #include "playground/shaders.h"
-#include "playground/util.h"
+#include "engine/util.h"
 
 void ModelScene::OnEnter(Context *context)
 {

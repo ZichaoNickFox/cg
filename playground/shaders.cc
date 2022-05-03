@@ -2,17 +2,17 @@
 
 #include "engine/debug.h"
 #include "playground/object/point_light.h"
-#include "playground/util.h"
+#include "engine/util.h"
 
-ShaderShadowInfo::ShaderShadowInfo(const glm::mat4& light_space_vp, const engine::Texture& depth_texture) {
+ShaderShadowInfo::ShaderShadowInfo(const glm::mat4& light_space_vp, engine::Texture depth_texture) {
   light_space_vp_ = light_space_vp;
-  texture_depth = depth_texture;
+  texture_depth_ = depth_texture;
 }
 
 void ShaderShadowInfo::UpdateMaterial(Context* context, engine::Material* material) const {
   material->SetBool("use_shadowing", true);
   material->SetMat4("shadow_info.light_space_vp", light_space_vp_);
-  material->SetTexture("shadow_info.texture_depth", texture_depth);
+  material->SetTexture("shadow_info.texture_depth", texture_depth_);
 }
 
 ShaderLightInfo::ShaderLightInfo(const PointLight& point_light) {
@@ -240,6 +240,7 @@ Texture2DLodShader::Texture2DLodShader(const Param& param, Context* context, Obj
   material->SetMat4("project", project);
   material->SetMat4("view", view);
   material->SetMat4("model", model);
+  CGCHECK(param.texture2D0.type() == engine::Texture::Texture2D);
   material->SetTexture("texture2D0", param.texture2D0);
   material->SetVec3("view_pos_ws", param.view_pos_ws);
 }
@@ -255,6 +256,7 @@ CubemapLodShader::CubemapLodShader(const Param& param, Context* context, Object*
   material->SetMat4("project", project);
   material->SetMat4("view", view);
   material->SetMat4("model", model);
+  CGCHECK(param.cubemap.type() == engine::Texture::Cubemap);
   material->SetTexture("texture_cubemap", param.cubemap);
   material->SetVec3("view_pos_ws", param.view_pos_ws);
 }

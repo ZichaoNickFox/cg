@@ -6,10 +6,12 @@
 #include "imgui.h"
 #include <memory>
 
+#include "engine/repo/texture_repo.h"
 #include "engine/transform.h"
 #include "playground/object/sphere.h"
 #include "playground/scene/common.h"
-#include "playground/texture_repo.h"
+
+constexpr int kEnvironmentCubemapSize = 1024;
 
 void PbrEnvironmentCubemapGenerator::OnEnter(Context *context)
 {
@@ -28,7 +30,7 @@ void PbrEnvironmentCubemapGenerator::OnEnter(Context *context)
   engine::ColorFrameBuffer::Option option;
   option.clear_color = context->clear_color();
   option.mrt = 1;
-  option.size = glm::ivec2{1024, 1024};
+  option.size = glm::ivec2{kEnvironmentCubemapSize, kEnvironmentCubemapSize};
   color_frame_buffer_.Init(option);
 }
 
@@ -40,15 +42,19 @@ void PbrEnvironmentCubemapGenerator::OnUpdate(Context *context)
 }
 
 void PbrEnvironmentCubemapGenerator::OnRender(Context *context) {
-  for (int i = 0; i < 6; ++i) {
+  engine::CubemapData data(1, kEnvironmentCubemapSize);
+  for (int face = 0; face < 6; ++face) {
     color_frame_buffer_.Bind();
-    PbrEnvironmentCubemapGerneratorShader({context->GetTexture("tropical_equirectangular", true, false, true), &cubemap_cameras_[i]},
+    PbrEnvironmentCubemapGerneratorShader({context->GetTexture("tropical_equirectangular"), &cubemap_cameras_[face]},
                                           context, &cube_);
     cube_.OnRender(context);
     color_frame_buffer_.Unbind();
 
-    context->SaveCubemap("pbr_environment_cubemap", i, color_frame_buffer_.GetColorTexture());
+    *data.mutable_vector(face, 0) = color_frame_buffer_.GetColorTextureData(0);
   }
+  engine::ResetCubemapParam param{1, kEnvironmentCubemapSize, kEnvironmentCubemapSize, &data};
+  context->ResetCubemap("pbr_environment_cubemap", param);
+  context->SaveCubemap("pbr_environment_cubemap");
   exit(0);
 }
 

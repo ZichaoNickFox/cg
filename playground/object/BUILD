@@ -29,6 +29,8 @@ cc_library(
   ],
   deps = [
     "//engine:engine",
+    "//engine/frame_buffer:frame_buffer",
+    "//engine/repo:repo",
     "//playground:context",
   ],
   linkopts = [

@@ -7,10 +7,10 @@
 #include "imgui.h"
 #include <memory>
 
-#include "engine/g_buffer.h"
+#include "engine/frame_buffer/g_buffer.h"
 #include "engine/transform.h"
 #include "playground/scene/common.h"
-#include "playground/util.h"
+#include "engine/util.h"
 
 void DeferredShadingScene::OnEnter(Context *context)
 {

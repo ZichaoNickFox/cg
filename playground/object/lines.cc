@@ -4,7 +4,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include "glog/logging.h"
 
-#include "playground/util.h"
+#include "engine/util.h"
 
 void Lines::SetMesh(const Mesh& data) {
   Clear();

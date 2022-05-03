@@ -9,25 +9,25 @@ cc_library (
 )
 
 cc_library(
+  name = "mesh",
+  srcs = [
+    "mesh.h",
+    "mesh.cc",
+  ],
+  deps = [
+    "//engine:debug",
+  ],
+)
+
+cc_library(
   name = "engine",
   srcs = [
     "camera.h",
     "camera.cc",
-    "color_frame_buffer.h",
-    "color_frame_buffer.cc",
-    "depth_frame_buffer.h",
-    "depth_frame_buffer.cc",
-    "frame_buffer.h",
-    "frame_buffer.cc",
-    "frame_buffer_attachment.h",
-    "g_buffer.h",
-    "g_buffer.cc",
+    "io.h",
+    "io.cc",
     "material.h",
     "material.cc",
-    "ms_frame_buffer.h",
-    "ms_frame_buffer.cc",
-    "mesh.h",
-    "mesh.cc",
     "shader.h",
     "shader.cc",
     "texture.h",
@@ -37,10 +37,29 @@ cc_library(
   ],
   deps = [
     "//engine:debug",
+    "//engine/primitive:primitive",
+    "//engine:util",
     "@imgui//:imgui",
+    "@SOIL2//:SOIL2",
   ],
   linkopts = [
     "-lfmt",
     "-lGLEW",
+  ],
+)
+
+cc_library(
+  name = "util",
+  srcs = [
+    "util.h",
+    "util.cc",
+  ],
+  deps = [
+    "//engine:debug",
+    # TODO : for compile success
+    "//engine/proto:cc_config_proto",
+  ],
+  linkopts = [
+    "-lglog"
   ],
 )

@@ -8,10 +8,10 @@
 #include <memory>
 
 #include "engine/transform.h"
+#include "engine/util.h"
 #include "playground/object/empty_object.h"
 #include "playground/pass.h"
 #include "playground/scene/common.h"
-#include "playground/util.h"
 
 void ForwardShadingScene::OnEnter(Context *context)
 {

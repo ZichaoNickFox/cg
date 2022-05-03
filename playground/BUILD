@@ -32,8 +32,8 @@ cc_library(
   ],
   deps = [
     "//engine:engine",
+    "//engine/proto:cc_config_proto",
     "//playground:scene",
-    "//playground/proto:cc_config_proto",
     "//playground/scene:scenes",
   ],
   linkopts = [
@@ -56,22 +56,13 @@ cc_library(
   srcs = [
     "context.h",
     "context.cc",
-    "io.h",
-    "io.cc",
-    "mesh_repo.h",
-    "mesh_repo.cc",
-    "model_repo.h",
-    "model_repo.cc",
-    "shader_repo.h",
-    "shader_repo.cc",
-    "texture_repo.h",
-    "texture_repo.cc",
   ],
   deps = [
     "//engine:engine",
-    "//playground:util",
-    "//playground/primitive:primitives",
-    "//playground/proto:cc_config_proto",
+    "//engine/primitive:primitive",
+    "//engine/proto:cc_config_proto",
+    "//engine/repo:repo",
+    "//engine:util",
     "@SOIL2//:SOIL2",
   ],
   linkopts = [
@@ -89,26 +80,11 @@ cc_library(
   ],
   deps = [
     "//engine:engine",
+    "//engine:util",
+    "//engine/frame_buffer:frame_buffer",
     "//playground:context",
     "//playground/object:object",
-    "//playground:util",
   ]
-)
-
-cc_library(
-  name = "util",
-  srcs = [
-    "util.h",
-    "util.cc",
-  ],
-  deps = [
-    "//engine:debug",
-    # TODO : for compile success
-    "//playground/proto:cc_config_proto",
-  ],
-  linkopts = [
-    "-lglog"
-  ],
 )
 
 cc_test (

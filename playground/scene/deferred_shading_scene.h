@@ -1,8 +1,8 @@
 #pragma once
 
 #include "engine/camera.h"
-#include "engine/depth_frame_buffer.h"
-#include "engine/g_buffer.h"
+#include "engine/frame_buffer/depth_frame_buffer.h"
+#include "engine/frame_buffer/g_buffer.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"

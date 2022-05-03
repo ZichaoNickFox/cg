@@ -1,7 +1,7 @@
 #include "playground/context.h"
 
 #include "engine/debug.h"
-#include "playground/util.h"
+#include "engine/util.h"
 
 void Context::Init(const Option& option) {
   std::string content;
@@ -13,8 +13,8 @@ void Context::Init(const Option& option) {
   texture_repo_.Init(config);
   mesh_repo_.Init(config);
   model_repo_.Init(config);
-  light_attenuation_config_ = config.light_attenuation_config();
-  material_property_config_ = config.material_property_config();
+  light_attenuation_config_ = util::ProtoMap2UnorderedMap(config.light_attenuation_config());
+  material_property_config_ = util::ProtoMap2UnorderedMap(config.material_property_config());
 
   clear_color_ = option.clear_color;
   frame_buffer_size_ = option.frame_buffer_size;
@@ -39,32 +39,31 @@ engine::Shader Context::GetShader(const std::string& name) {
   return shader_repo_.GetOrLoadShader(name);
 }
 
-engine::Texture Context::GetTexture(const std::string& name, bool flip_vertically, int mipmap_level_count,
-                                    bool equirectangular) {
-  return texture_repo_.GetOrLoadTexture(name, flip_vertically, mipmap_level_count);
+engine::Texture Context::GetTexture(const std::string& name, bool flip_vertically, bool equirectangular) {
+  return texture_repo_.GetOrLoadTexture(name, flip_vertically);
 }
 
-void Context::SaveTexture(const std::string& name, const engine::Texture& texture) {
-  texture_repo_.SaveTexture(name, texture);
+void Context::SaveTexture2D(const std::string& name) {
+  texture_repo_.SaveTexture2D(name);
 }
 
-void Context::SaveCubemap(const std::string& name, int face, const engine::Texture& cubumap_face_texture2d) {
-  texture_repo_.SaveCubemap(name, face, cubumap_face_texture2d);
+void Context::SaveCubemap(const std::string& name) {
+  texture_repo_.SaveCubemap(name);
 }
 
-void Context::CreateTexture2D(const std::string& name, const texture::CreateTexture2DParam& param) {
-  texture_repo_.CreateTexture2D(name, param);
+void Context::ResetTexture2D(const std::string& name, const engine::ResetTexture2DParam& param) {
+  texture_repo_.ResetTexture2D(name, param);
 }
 
-void Context::CreateCubemap(const std::string& name, const texture::CreateCubemapParam& param) {
-  texture_repo_.CreateCubemap(name, param);
+void Context::ResetCubemap(const std::string& name, const engine::ResetCubemapParam& param) {
+  texture_repo_.ResetCubemap(name, param);
 }
 
 std::shared_ptr<const engine::Mesh> Context::GetMesh(const std::string& name) {
   return mesh_repo_.GetOrLoadMesh(name);
 }
 
-std::vector<ModelRepo::ModelPartData> Context::GetModel(const std::string& name) {
+std::vector<engine::ModelRepo::ModelPartData> Context::GetModel(const std::string& name) {
   return model_repo_.GetOrLoadModel(name);
 }
 

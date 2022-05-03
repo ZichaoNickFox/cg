@@ -5,14 +5,14 @@
 #include <vector>
 
 #include "engine/mesh.h"
+#include "engine/repo/model_repo.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
-#include "playground/model_repo.h"
 #include "playground/object/object.h"
 
 class ModelPart : public Object {
  public:
-  ModelPart(const ModelRepo::ModelPartData& model_part_data) : model_part_data_(model_part_data) {}
+  ModelPart(const engine::ModelRepo::ModelPartData& model_part_data) : model_part_data_(model_part_data) {}
   void OnUpdate(Context *context) override;
   void OnRender(Context *context) override;
   void OnDestory(Context *context) override;
@@ -25,7 +25,7 @@ class ModelPart : public Object {
   std::optional<engine::Texture> texture_ambient(int i = 0) const;
   std::optional<engine::Texture> texture_height(int i = 0) const;
 
-  const ModelRepo::ModelPartData& model_part_data() const { return model_part_data_; }
+  const engine::ModelRepo::ModelPartData& model_part_data() const { return model_part_data_; }
 
   bool hidden() { return hidden_; }
   void SetHidden(bool hidden) { hidden_ = hidden; }
@@ -36,7 +36,7 @@ class ModelPart : public Object {
  private:
   bool hidden_ = false;
 
-  ModelRepo::ModelPartData model_part_data_;
+  engine::ModelRepo::ModelPartData model_part_data_;
   engine::Material material_;
 };
 

@@ -15,13 +15,13 @@
 class ShaderShadowInfo {
  public:
   ShaderShadowInfo() {}
-  ShaderShadowInfo(const glm::mat4& light_space_vp, const engine::Texture& texture_depth);
+  ShaderShadowInfo(const glm::mat4& light_space_vp, engine::Texture texture_depth);
 
   void UpdateMaterial(Context* context, engine::Material* material) const;
 
  private:
   glm::mat4 light_space_vp_;
-  engine::Texture texture_depth;
+  engine::Texture texture_depth_;
 };
 
 class ShaderLightInfo {

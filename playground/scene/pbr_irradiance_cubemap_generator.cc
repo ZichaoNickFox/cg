@@ -6,10 +6,12 @@
 #include "imgui.h"
 #include <memory>
 
+#include "engine/repo/texture_repo.h"
 #include "engine/transform.h"
 #include "playground/object/sphere.h"
 #include "playground/scene/common.h"
-#include "playground/texture_repo.h"
+
+constexpr int kLevel0Size = 512;
 
 void PbrIrradianceCubemapGenerator::OnEnter(Context *context) {
   camera_->mutable_transform()->SetTranslation(glm::vec3(2.97, 3.95, 6.76));
@@ -27,7 +29,7 @@ void PbrIrradianceCubemapGenerator::OnEnter(Context *context) {
   engine::ColorFrameBuffer::Option option;
   option.clear_color = context->clear_color();
   option.mrt = 1;
-  option.size = glm::ivec2{512, 512};
+  option.size = glm::ivec2{kLevel0Size, kLevel0Size};
   color_frame_buffer_.Init(option);
 }
 
@@ -38,6 +40,7 @@ void PbrIrradianceCubemapGenerator::OnUpdate(Context *context) {
 }
 
 void PbrIrradianceCubemapGenerator::OnRender(Context *context) {
+  engine::CubemapData data(3, kLevel0Size * kLevel0Size * 4 * 4);
   for (int i = 0; i < 6; ++i) {
     color_frame_buffer_.Bind();
     PbrIrradianceCubemapGeneratorShader({context->GetTexture("pbr_environment_cubemap"),
@@ -45,8 +48,11 @@ void PbrIrradianceCubemapGenerator::OnRender(Context *context) {
     cube_.OnRender(context);
     color_frame_buffer_.Unbind();
 
-    context->SaveCubemap("pbr_irradiance_cubemap", i, color_frame_buffer_.GetColorTexture());
+    *data.mutable_vector(i, 0) = color_frame_buffer_.GetColorTextureData(0);
   }
+  engine::ResetCubemapParam param{1, kLevel0Size, kLevel0Size, &data};
+  context->ResetCubemap("pbr_irradiance_cubemap", param);
+  context->SaveCubemap("pbr_irradiance_cubemap");
   exit(0);
 }
 

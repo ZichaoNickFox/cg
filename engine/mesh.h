@@ -9,10 +9,6 @@
 #include <vector>
 #include <memory>
 
-#include "engine/shader.h"
-#include "engine/texture.h"
-#include "engine/material.h"
-
 namespace engine {
 struct MeshVertexComponent {
   std::string name;

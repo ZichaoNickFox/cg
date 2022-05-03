@@ -5,12 +5,12 @@
 #include <glog/logging.h>
 
 #include "engine/camera.h"
-#include "playground/io.h"
-#include "playground/mesh_repo.h"
-#include "playground/model_repo.h"
-#include "playground/proto/config.pb.h"
-#include "playground/shader_repo.h"
-#include "playground/texture_repo.h"
+#include "engine/io.h"
+#include "engine/proto/config.pb.h"
+#include "engine/repo/mesh_repo.h"
+#include "engine/repo/model_repo.h"
+#include "engine/repo/shader_repo.h"
+#include "engine/repo/texture_repo.h"
 
 class Context {
  public:
@@ -27,14 +27,14 @@ class Context {
   void SetNextScene(const std::string& next_scene) { next_scene_ = next_scene; }
   const std::string& next_scene() const { return next_scene_; }
 
-  const ShaderRepo& shader_repo() { return shader_repo_; }
-  const TextureRepo& texture_repo() { return texture_repo_; }
-  const MeshRepo& resh_repo() { return mesh_repo_; }
-  const ModelRepo& model_repo() { return model_repo_; }
-  ShaderRepo* mutable_shader_repo() { return &shader_repo_; }
-  TextureRepo* mutable_texture_repo() { return &texture_repo_; }
-  MeshRepo* mutable_mesh_repo() { return &mesh_repo_; }
-  ModelRepo* mutable_model_repo() { return &model_repo_; }
+  const engine::ShaderRepo& shader_repo() { return shader_repo_; }
+  const engine::TextureRepo& texture_repo() { return texture_repo_; }
+  const engine::MeshRepo& resh_repo() { return mesh_repo_; }
+  const engine::ModelRepo& model_repo() { return model_repo_; }
+  engine::ShaderRepo* mutable_shader_repo() { return &shader_repo_; }
+  engine::TextureRepo* mutable_texture_repo() { return &texture_repo_; }
+  engine::MeshRepo* mutable_mesh_repo() { return &mesh_repo_; }
+  engine::ModelRepo* mutable_model_repo() { return &model_repo_; }
 
   const Io& io() { return io_; }
   Io* mutable_io() { return &io_; }
@@ -52,15 +52,14 @@ class Context {
 
   engine::Shader GetShader(const std::string& name);
 
-  engine::Texture GetTexture(const std::string& name, bool flip_vertically = false, int mipmap_level_count = 1,
-                             bool equirectangular = false);
-  void SaveTexture(const std::string& name, const engine::Texture& texture);
-  void CreateTexture2D(const std::string& name, const texture::CreateTexture2DParam& param);
-  void CreateCubemap(const std::string& name, const texture::CreateCubemapParam& param);
-  void SaveCubemap(const std::string& name, int face, const engine::Texture& cubemap_face_texture2d);
+  engine::Texture GetTexture(const std::string& name, bool flip_vertically = false, bool equirectangular = false);
+  void ResetTexture2D(const std::string& name, const engine::ResetTexture2DParam& param);
+  void ResetCubemap(const std::string& name, const engine::ResetCubemapParam& param);
+  void SaveTexture2D(const std::string& name);
+  void SaveCubemap(const std::string& name);
 
   std::shared_ptr<const engine::Mesh> GetMesh(const std::string& name);
-  std::vector<ModelRepo::ModelPartData> GetModel(const std::string& name);
+  std::vector<engine::ModelRepo::ModelPartData> GetModel(const std::string& name);
 
   float light_attenuation_constant(int metre);
   float light_attenuation_linear(int metre);
@@ -82,12 +81,12 @@ class Context {
   std::string current_scene_;
   std::string next_scene_;
   
-  ShaderRepo shader_repo_;
-  TextureRepo texture_repo_;
-  MeshRepo mesh_repo_;
-  ModelRepo model_repo_;
-  google::protobuf::Map<google::protobuf::int32, LightAttenuationConfig> light_attenuation_config_;
-  google::protobuf::Map<google::protobuf::string, MaterialProperty> material_property_config_;
+  engine::ShaderRepo shader_repo_;
+  engine::TextureRepo texture_repo_;
+  engine::MeshRepo mesh_repo_;
+  engine::ModelRepo model_repo_;
+  std::unordered_map<int, LightAttenuationConfig> light_attenuation_config_;
+  std::unordered_map<std::string, MaterialProperty> material_property_config_;
 
   Io io_;
 
