@@ -1,10 +1,10 @@
 #include "engine/frame_buffer/g_buffer.h"
 
-#include "GL/glew.h"
 #include "glog/logging.h"
 #include <memory>
 
 #include "engine/debug.h"
+#include "engine/gl.h"
 
 namespace engine {
 void GBuffer::Init(const Option& option) {
@@ -18,13 +18,13 @@ void GBuffer::Init(const Option& option) {
     textures_.push_back(Texture());
     glGenTextures(1, textures_[i].mutable_id());
     
-    glBindTexture(GL_TEXTURE_2D, textures_[i].id());
+    glBindTexture_(GL_TEXTURE_2D, textures_[i].id());
     glTexImage2D(GL_TEXTURE_2D, 0, attachment.internal_type, option.size.x, option.size.y, 0,
         attachment.format, attachment.type, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, attachment.texture_param_min_filter);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, attachment.texture_param_mag_filter);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, attachment.texture_param_wrap_s);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, attachment.texture_param_wrap_t);
+    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, attachment.texture_param_min_filter);
+    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, attachment.texture_param_mag_filter);
+    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, attachment.texture_param_wrap_s);
+    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, attachment.texture_param_wrap_t);
 
     glFramebufferTexture2D(GL_FRAMEBUFFER, attachment.attachment_unit, GL_TEXTURE_2D, textures_[i].id(), 0);
   }

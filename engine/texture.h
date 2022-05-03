@@ -3,7 +3,8 @@
 #include <array>
 #include <string>
 #include <vector>
-#include "GL/glew.h"
+
+#include "engine/gl.h"
 
 namespace engine {
 void FlipVertically(GLubyte* pixels, int width, int height, int channel, int byte_per_channel);

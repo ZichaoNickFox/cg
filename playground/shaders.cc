@@ -303,7 +303,7 @@ PbrEnvironmentCubemapGerneratorShader::PbrEnvironmentCubemapGerneratorShader(con
   material->SetMat4("model", model); 
   material->SetMat4("view", view);
   material->SetMat4("project", project);
-  material->SetTexture("texture0", param.texture0); 
+  material->SetTexture("texture2D0", param.texture2D0); 
 }
 
 TexcoordShader::TexcoordShader(const Param& param, Context* context, Object* object) {

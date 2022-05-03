@@ -70,22 +70,22 @@ void CorrectCompileMessage(const std::vector<Shader::CodePart>& code_parts, std:
 } 
 }
 GLuint Shader::CompileShader(const std::vector<CodePart>& code_parts, GLuint shader_type) {
-  GLuint object = glCreateShader(shader_type);
+  GLuint object = glCreateShader_(shader_type);
   const char* code_data[code_parts.size()];
   for (int i = 0; i < code_parts.size(); ++i) {
     const CodePart& code_part = code_parts[i];
     code_data[i] = code_part.code.data();
   }
 
-  glShaderSource(object, code_parts.size(), code_data, NULL);
-  glCompileShader(object);
+  glShaderSource_(object, code_parts.size(), code_data, NULL);
+  glCompileShader_(object);
 
   int success;
   char info_log[1024];
-  glGetShaderiv(object, GL_COMPILE_STATUS, &success);
+  glGetShaderiv_(object, GL_COMPILE_STATUS, &success);
   if (!success)
   {
-    glGetShaderInfoLog(object, 1024, NULL, info_log);
+    glGetShaderInfoLog_(object, 1024, NULL, info_log);
     std::string correct_compile_message(info_log);
     CorrectCompileMessage(code_parts, &correct_compile_message);
     CGCHECK(false) << " compile error : " << correct_compile_message;
@@ -96,73 +96,64 @@ GLuint Shader::CompileShader(const std::vector<CodePart>& code_parts, GLuint sha
 
 void Shader::LinkShader(GLuint program, const std::vector<GLuint>& objects) {
   for (GLuint object : objects) {
-    glAttachShader(program, object);
+    glAttachShader_(program, object);
   }
-  glLinkProgram(program);
+  glLinkProgram_(program);
 
   int success;
   char info_log[1024];
-  glGetProgramiv(program, GL_LINK_STATUS, &success);
+  glGetProgramiv_(program, GL_LINK_STATUS, &success);
   if (!success)
   {
-    glGetProgramInfoLog(program, 1024, NULL, info_log);
+    glGetProgramInfoLog_(program, 1024, NULL, info_log);
     CGCHECK(false) << name_ << " : Program link error :" << info_log;
   }
 
   for (GLuint object : objects) {
-    glDeleteShader(object);
+    glDeleteShader_(object);
   }
 }
 
 void Shader::Use() const {
-  CGCHECKGL();
   CGLOG(ERROR, false) << "Use shader : " << name_ << " " << id_;
-  glUseProgram(id_);
-  CGCHECKGL() << "Use shader error in shader : id=" << id_ << " name=\"" << name_ << "\"";
+  glUseProgram_(id_);
 }
 
 void Shader::SetBool(const std::string &location_name, bool value) const {
   GLint location = GetUniformLocation(location_name);
-  glUniform1i(location, (int)value);
-  CGCHECKGL() << location_name << " " << value;
+  glUniform1i_(location, (int)value);
 }
 
 void Shader::SetInt(const std::string &location_name, int value) const {
   GLint location = GetUniformLocation(location_name);
-  glUniform1i(location, value);
-  CGCHECKGL() << location_name << " " << value;
+  glUniform1i_(location, value);
 }
 
 void Shader::SetFloat(const std::string &location_name, float value) const {
   GLint location = GetUniformLocation(location_name);
-  glUniform1f(location, value);
-  CGCHECKGL() << location_name << " " << value;
+  glUniform1f_(location, value);
 }
 
 void Shader::SetMat4(const std::string &location_name, const glm::mat4& value) const {
   GLint location = GetUniformLocation(location_name);
-  glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
-  CGCHECKGL() << location_name << " " << glm::to_string(value);
+  glUniformMatrix4fv_(location, 1, GL_FALSE, glm::value_ptr(value));
 }
 
 void Shader::SetVec4(const std::string &location_name, const glm::vec4& value) const {
   GLint location = GetUniformLocation(location_name);
-  glUniform4fv(location, 1, glm::value_ptr(value));
-  CGCHECKGL() << location_name << " " << glm::to_string(value);
+  glUniform4fv_(location, 1, glm::value_ptr(value));
 }
 
 void Shader::SetVec3(const std::string &location_name, const glm::vec3& value) const {
   GLint location = GetUniformLocation(location_name);
-  glUniform3fv(location, 1, glm::value_ptr(value));
-  CGCHECKGL() << location_name << " " << glm::to_string(value);
+  glUniform3fv_(location, 1, glm::value_ptr(value));
 }
 
 GLint Shader::GetUniformLocation(const std::string& location_name) const {
-  GLint res = glGetUniformLocation(id_, location_name.c_str());
+  GLint res = glGetUniformLocation_(id_, location_name.c_str());
   if (res == -1 || res == GL_INVALID_VALUE || res == GL_INVALID_OPERATION) {
     CGCHECK(false) << "Cannot find uniform location '" << location_name << "' in shader '" << name_ << "'";
   }
-  CGCHECKGL() << "\"" << location_name << "\" in shader \"" << name_ << "\"";
   return res;
 }
 

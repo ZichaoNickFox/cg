@@ -1,11 +1,11 @@
 #include "engine/frame_buffer/ms_frame_buffer.h"
 
-#include "GL/glew.h"
 #include "glog/logging.h"
 #include <memory>
 
-#include "engine/frame_buffer/color_frame_buffer.h"
 #include "engine/debug.h"
+#include "engine/frame_buffer/color_frame_buffer.h"
+#include "engine/gl.h"
 
 namespace engine {
 void MSFrameBuffer::CheckSupportMSNum(GLuint fbo, int num) {
@@ -33,7 +33,7 @@ void MSFrameBuffer::Init(const Option& option) {
     textures_.push_back(Texture());
     glGenTextures(1, textures_[i].mutable_id());
     CGCHECK(option.ms_num > 1) << " : If don't need MS, using color_frame_buffer";
-    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, textures_[i].id());
+    glBindTexture_(GL_TEXTURE_2D_MULTISAMPLE, textures_[i].id());
     glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, option.ms_num, GL_RGBA32F, option.size.x,
         option.size.y, true);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D_MULTISAMPLE, textures_[i].id(), 0);
@@ -43,7 +43,7 @@ void MSFrameBuffer::Init(const Option& option) {
   // Attention :ms_color_buffer must work with ms_depth_buffer
   textures_.push_back(Texture());
   glGenTextures(1, textures_[option.mrt].mutable_id());
-  glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, textures_[option.mrt].id());
+  glBindTexture_(GL_TEXTURE_2D_MULTISAMPLE, textures_[option.mrt].id());
   glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, option.ms_num, GL_DEPTH_COMPONENT32F, option.size.x,
       option.size.y, true);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D_MULTISAMPLE, textures_[option.mrt].id(), 0);

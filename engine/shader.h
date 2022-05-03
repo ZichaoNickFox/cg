@@ -1,6 +1,5 @@
 #pragma once
 
-#include "GL/glew.h"
 #include "glm/glm.hpp"
 #include <fstream>
 #include <sstream>
@@ -8,6 +7,7 @@
 #include <iostream>
 
 #include "engine/debug.h"
+#include "engine/gl.h"
 
 namespace engine {
 class Shader

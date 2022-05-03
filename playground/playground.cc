@@ -21,7 +21,7 @@
 #include "playground/scene/texture_lod_scene.h"
 
 namespace {
-const std::string kDefaultScene = "TextureLodScene";
+const std::string kDefaultScene = "PbrEnvironmentCubemapGenerator";
 }
 
 void Playground::Init(const Context::Option& option) {

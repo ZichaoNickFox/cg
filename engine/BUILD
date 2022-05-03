@@ -2,10 +2,21 @@ package(default_visibility=["//visibility:public"])
 load("@rules_cc//cc:defs.bzl", "cc_binary")
 
 cc_library (
+  name = "gl",
+  srcs = [
+    "gl.h",
+    "gl.cc"
+  ],
+  deps = [
+    "//engine:debug",
+  ],
+)
+
+cc_library (
   name = "debug",
   srcs = [
     "debug.h"
-  ]
+  ],
 )
 
 cc_library(
@@ -16,6 +27,7 @@ cc_library(
   ],
   deps = [
     "//engine:debug",
+    "//engine:gl",
   ],
 )
 
@@ -37,6 +49,7 @@ cc_library(
   ],
   deps = [
     "//engine:debug",
+    "//engine:gl",
     "//engine/primitive:primitive",
     "//engine:util",
     "@imgui//:imgui",
@@ -56,6 +69,7 @@ cc_library(
   ],
   deps = [
     "//engine:debug",
+    "//engine:gl",
     # TODO : for compile success
     "//engine/proto:cc_config_proto",
   ],

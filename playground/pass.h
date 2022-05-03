@@ -1,11 +1,11 @@
 #pragma once
 
-#include "GL/glew.h"
 #include <unordered_map>
 
 #include "engine/camera.h"
 #include "engine/frame_buffer/color_frame_buffer.h"
 #include "engine/frame_buffer/depth_frame_buffer.h"
+#include "engine/gl.h"
 #include "engine/texture.h"
 #include "playground/shaders.h"
 

@@ -164,7 +164,7 @@ class FullscreenQuadShader {
 class PbrEnvironmentCubemapGerneratorShader {
  public:
   struct Param {
-    engine::Texture texture0;
+    engine::Texture texture2D0;
     engine::Camera* camera = nullptr;
   };
   PbrEnvironmentCubemapGerneratorShader(const Param& param, Context* context, Object* object);

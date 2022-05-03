@@ -1,10 +1,10 @@
 #include "engine/frame_buffer/frame_buffer.h"
 
-#include "GL/glew.h"
 #include "glog/logging.h"
 #include "assert.h"
 
 #include "engine/debug.h"
+#include "engine/gl.h"
 
 namespace engine {
 FrameBuffer::FrameBuffer() {

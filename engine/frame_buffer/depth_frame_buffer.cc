@@ -1,8 +1,8 @@
 #include "engine/frame_buffer/depth_frame_buffer.h"
 
-#include "GL/glew.h"
 #include "glog/logging.h"
 
+#include "engine/gl.h"
 #include "engine/texture.h"
 
 namespace engine {
@@ -13,13 +13,13 @@ void DepthFrameBuffer::Init(const Option& option) {
 
   textures_.push_back(Texture());
   CHECK(textures_.size() == 1) << "Depth should only have 1 texture";
-  glBindTexture(GL_TEXTURE_2D, textures_[0].id());
+  glBindTexture_(GL_TEXTURE_2D, textures_[0].id());
   glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, option.size.x, option.size.y, 0, GL_DEPTH_COMPONENT,
       GL_FLOAT, NULL);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, textures_[0].id(), 0);
   glDrawBuffer(GL_NONE);

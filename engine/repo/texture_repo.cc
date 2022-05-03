@@ -35,17 +35,17 @@ Texture LoadTexture2D(const std::unordered_map<std::string, std::string>& paths,
   stbi_set_flip_vertically_on_load(flip_vertically);
 
   GLuint id;
-  glGenTextures(1, &id);
-  glBindTexture(GL_TEXTURE_2D, id);
+  glGenTextures_(1, &id);
+  glBindTexture_(GL_TEXTURE_2D, id);
   if (equirectangular) {
     int width, height, nr_components;
     // For width, height
     CGCHECK(stbi_loadf(GetTexture2DPath(paths, 0).c_str(), &width, &height, &nr_components, 0));
-    glTexStorage2D(GL_TEXTURE_2D, level_num, GL_RGBA16F, width, height);
+    glTexStorage2D_(GL_TEXTURE_2D, level_num, GL_RGBA16F, width, height);
     for (int level = 0; level < level_num; ++level) {
       float* image = stbi_loadf(GetTexture2DPath(paths, level).c_str(), &width, &height, &nr_components, 0);
       CGCHECK(image);
-      glTexSubImage2D(GL_TEXTURE_2D, level, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, image);
+      glTexSubImage2D_(GL_TEXTURE_2D, level, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, image);
       free(image);
     }
   } else {
@@ -53,25 +53,25 @@ Texture LoadTexture2D(const std::unordered_map<std::string, std::string>& paths,
     std::string path = GetTexture2DPath(paths, 0);
     // For width, height
     CGCHECK(SOIL_load_image(path.c_str(), &width, &height, 0, 4));
-    glTexStorage2D(GL_TEXTURE_2D, level_num, GL_RGBA8, width, height);
+    glTexStorage2D_(GL_TEXTURE_2D, level_num, GL_RGBA8, width, height);
     for (int level = 0; level < level_num; ++level) {
       unsigned char* image = SOIL_load_image(GetTexture2DPath(paths, level).c_str(), &width, &height, 0, 4);
       CGCHECK(image);
-      glTexSubImage2D(GL_TEXTURE_2D, level, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+      glTexSubImage2D_(GL_TEXTURE_2D, level, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
       free(image);
     }
   }
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   if(level_num > 1){
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_MIPMAP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_MIPMAP);
+    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_MIPMAP);
+    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_MIPMAP);
   } else {
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   }
 
-  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindTexture_(GL_TEXTURE_2D, 0);
   return Texture(id, Texture::Texture2D);
 }
 
@@ -82,48 +82,47 @@ void TryMakeDir(const std::string& path_with_ext) {
 
 Texture ResetTexture2DImpl(const ResetTexture2DParam& param) {
   GLuint ret;
-  glGenTextures(1, &ret);
-  glBindTexture(GL_TEXTURE_2D, ret);
-  glTexStorage2D(GL_TEXTURE_2D, param.level_num, param.internal_format, param.width, param.height);
+  glGenTextures_(1, &ret);
+  glBindTexture_(GL_TEXTURE_2D, ret);
+  glTexStorage2D_(GL_TEXTURE_2D, param.level_num, param.internal_format, param.width, param.height);
   for (int level = 0; level < param.level_num; ++level) {
-    glTexSubImage2D(GL_TEXTURE_2D, level, 0, 0, param.width >> level, param.height >> level,
+    glTexSubImage2D_(GL_TEXTURE_2D, level, 0, 0, param.width >> level, param.height >> level,
                     param.format, param.type, param.data->mutable_data(level));
   }
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   if(param.level_num > 1){
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   } else {
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   }
-  glBindTexture(GL_TEXTURE_2D, 0);
-  CGCHECKGL();
+  glBindTexture_(GL_TEXTURE_2D, 0);
   return Texture(ret, Texture::Texture2D);
 }
 
 Texture ResetCubemapImpl(const ResetCubemapParam& param) {
   GLuint ret;
-  glGenTextures(1, &ret);
-  glBindTexture(GL_TEXTURE_CUBE_MAP, ret);
-  glTexStorage2D(GL_TEXTURE_CUBE_MAP, param.level_num, param.internal_format, param.width, param.height);
-  for (GLuint texture_unit = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
-      texture_unit <= GL_TEXTURE_CUBE_MAP_NEGATIVE_Z; ++texture_unit) {
+  glGenTextures_(1, &ret);
+  glBindTexture_(GL_TEXTURE_CUBE_MAP, ret);
+  glTexStorage2D_(GL_TEXTURE_CUBE_MAP, param.level_num, param.internal_format, param.width, param.height);
+  for (GLuint texture_unit_offset = 0; texture_unit_offset <= 6; ++texture_unit_offset) {
     for (int level = 0; level < param.level_num; ++level) {
-      glTexSubImage2D(texture_unit, level, 0, 0, param.width >> level, param.height >> level, param.format,
-                      param.type, param.data->mutable_data(texture_unit - GL_TEXTURE_CUBE_MAP_POSITIVE_X, level));
+      glTexSubImage2D_(GL_TEXTURE_CUBE_MAP_POSITIVE_X + texture_unit_offset, level, 0, 0,
+                      param.width >> level, param.height >> level, param.format,
+                      param.type, param.data->mutable_data(texture_unit_offset, level));
     }
   }
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri_(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri_(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_REPEAT);
   if (param.level_num > 1) {
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri_(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
   } else {
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri_(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   }
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+  glTexParameteri_(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glBindTexture_(GL_TEXTURE_CUBE_MAP, 0);
   return Texture(ret, Texture::Cubemap);
 }
 
@@ -151,26 +150,26 @@ bool VarifyChannel(const std::string& path, int channel) {
 }
 
 void RemoveFromGL(GLuint in) {
-  glDeleteTextures(1, &in);
+  glDeleteTextures_(1, &in);
 }
 
 void SaveTexture2DImpl(const std::unordered_map<std::string, std::string>& paths,
                        const engine::Texture& texture, int level_num, bool multiple_sample = false) {
   GLuint target = multiple_sample ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
-  glBindTexture(target, texture.id());
+  glBindTexture_(target, texture.id());
 
   for (int level = 0; level < level_num; ++level) {
     std::string path = GetTexture2DPath(paths, level);
     int width = -1, height = -1, internal_format = -1;
-    glGetTexLevelParameteriv(target, level, GL_TEXTURE_WIDTH, &width);
-    glGetTexLevelParameteriv(target, level, GL_TEXTURE_HEIGHT, &height);
-    glGetTexLevelParameteriv(target, level, GL_TEXTURE_INTERNAL_FORMAT, &internal_format);
+    glGetTexLevelParameteriv_(target, level, GL_TEXTURE_WIDTH, &width);
+    glGetTexLevelParameteriv_(target, level, GL_TEXTURE_HEIGHT, &height);
+    glGetTexLevelParameteriv_(target, level, GL_TEXTURE_INTERNAL_FORMAT, &internal_format);
     
     int channel = -1, byte_per_channel = -1, format = -1, type = -1;
     GetInternalFormatSize(internal_format, &channel, &byte_per_channel, &format, &type);
     GLubyte pixels[width * height * channel * byte_per_channel];
 
-    glGetTexImage(target, level, format, type, pixels);
+    glGetTexImage_(target, level, format, type, pixels);
     FlipVertically(pixels, width, height, channel, byte_per_channel);
 
     CGCHECK(width > 0) << "Widget must > 0";
@@ -185,10 +184,10 @@ void SaveTexture2DImpl(const std::unordered_map<std::string, std::string>& paths
 
 Texture LoadCubeMap(const std::unordered_map<std::string, std::string>& paths, int level_num) {
   GLuint textureId;
-  glGenTextures(1, &textureId);
+  glGenTextures_(1, &textureId);
   
   Texture ret(textureId, Texture::Cubemap);
-  glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
+  glBindTexture_(GL_TEXTURE_CUBE_MAP, textureId);
 
   std::string key = "level0_left";
   CGCHECK(paths.count(key) > 0) << " Cannot find key " << key;
@@ -200,7 +199,7 @@ Texture LoadCubeMap(const std::unordered_map<std::string, std::string>& paths, i
     CGCHECK(false) << util::Format("cannot load image {}", value);
   }
 
-  glTexStorage2D(GL_TEXTURE_CUBE_MAP, level_num, GL_RGBA8, base_width, base_height);
+  glTexStorage2D_(GL_TEXTURE_CUBE_MAP, level_num, GL_RGBA8, base_width, base_height);
   for(int texture_unit_offset = 0; texture_unit_offset < 6; ++texture_unit_offset) {
     for (int level = 0; level < level_num; ++level) {
       std::string cubemap_path = GetCubemapPath(paths, level, texture_unit_offset);
@@ -213,16 +212,16 @@ Texture LoadCubeMap(const std::unordered_map<std::string, std::string>& paths, i
           " size should be " << (base_width >> level) << " rather than " << width;
       CGCHECK(height == (base_height >> level)) << " level " << level <<
           " size should be " << (base_height >> level) << " rather than " << height;
-      glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + texture_unit_offset, level,
+      glTexSubImage2D_(GL_TEXTURE_CUBE_MAP_POSITIVE_X + texture_unit_offset, level,
           internal_format, width, height, 0, format, type, image);
       SOIL_free_image_data(image);
     }
   }
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+  glTexParameteri_(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri_(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri_(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri_(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri_(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
   glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
@@ -230,21 +229,21 @@ Texture LoadCubeMap(const std::unordered_map<std::string, std::string>& paths, i
 }
 
 int SaveCubemapImpl(const std::unordered_map<std::string, std::string>& paths, GLuint texture, int level_num) {
-  glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
+  glBindTexture_(GL_TEXTURE_CUBE_MAP, texture);
 
   for(int texture_unit_offset = 0; texture_unit_offset < 6; ++texture_unit_offset){
     for (int level = 0; level < level_num; ++level) {
       int width = -1, height = -1, internal_format = -1;
-      glGetTexLevelParameteriv(GL_TEXTURE_CUBE_MAP_POSITIVE_X + texture_unit_offset, level, GL_TEXTURE_WIDTH, &width);
-      glGetTexLevelParameteriv(GL_TEXTURE_CUBE_MAP_POSITIVE_X + texture_unit_offset, level, GL_TEXTURE_HEIGHT, &height);
-      glGetTexLevelParameteriv(GL_TEXTURE_CUBE_MAP_POSITIVE_X + texture_unit_offset, level, GL_TEXTURE_INTERNAL_FORMAT,
+      glGetTexLevelParameteriv_(GL_TEXTURE_CUBE_MAP_POSITIVE_X + texture_unit_offset, level, GL_TEXTURE_WIDTH, &width);
+      glGetTexLevelParameteriv_(GL_TEXTURE_CUBE_MAP_POSITIVE_X + texture_unit_offset, level, GL_TEXTURE_HEIGHT, &height);
+      glGetTexLevelParameteriv_(GL_TEXTURE_CUBE_MAP_POSITIVE_X + texture_unit_offset, level, GL_TEXTURE_INTERNAL_FORMAT,
                                &internal_format);
 
       int channel = -1, byte_per_channel = -1, format = -1, type = -1;
       GetInternalFormatSize(internal_format, &channel, &byte_per_channel, &format, &type);
       GLubyte pixels[width * height * channel * byte_per_channel];
 
-      glGetTexImage(GL_TEXTURE_2D, level, format, type, pixels);
+      glGetTexImage_(GL_TEXTURE_2D, level, format, type, pixels);
       FlipVertically(pixels, width, height, channel, byte_per_channel);
 
       std::string file_path = GetCubemapPath(paths, level, texture_unit_offset);
@@ -252,7 +251,7 @@ int SaveCubemapImpl(const std::unordered_map<std::string, std::string>& paths, G
       CGCHECK(SOIL_save_image(file_path.c_str(), SOIL_SAVE_TYPE_PNG, width, height, channel, pixels));
     }
   }
-  glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+  glBindTexture_(GL_TEXTURE_CUBE_MAP, 0);
   return true;
 }
 
@@ -324,19 +323,19 @@ Texture LoadModelTexture2D(const std::string& full_path, bool flip_vertically) {
   stbi_set_flip_vertically_on_load(flip_vertically);
 
   GLuint id;
-  glGenTextures(1, &id);
-  glBindTexture(GL_TEXTURE_2D, id);
+  glGenTextures_(1, &id);
+  glBindTexture_(GL_TEXTURE_2D, id);
   int width, height;
   unsigned char* image = SOIL_load_image(full_path.c_str(), &width, &height, 0, 4);
   CGCHECK(image);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+  glTexImage2D_(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
   SOIL_free_image_data(image);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindTexture_(GL_TEXTURE_2D, 0);
   return Texture(id, Texture::Texture2D);
 }
 } // namespace engine

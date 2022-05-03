@@ -1,7 +1,8 @@
 #pragma once
 
 #include <string>
-#include "GL/glew.h"
+
+#include "engine/gl.h"
 
 namespace engine {
 struct FrameBufferAttachment {

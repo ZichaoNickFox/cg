@@ -42,7 +42,8 @@ void PbrEnvironmentCubemapGenerator::OnUpdate(Context *context)
 }
 
 void PbrEnvironmentCubemapGenerator::OnRender(Context *context) {
-  engine::CubemapData data(1, kEnvironmentCubemapSize);
+  // TODO : why * 4 * 4 not * 4
+  engine::CubemapData data(1, kEnvironmentCubemapSize * kEnvironmentCubemapSize * 4 * 4);
   for (int face = 0; face < 6; ++face) {
     color_frame_buffer_.Bind();
     PbrEnvironmentCubemapGerneratorShader({context->GetTexture("tropical_equirectangular"), &cubemap_cameras_[face]},
