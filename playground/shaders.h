@@ -145,12 +145,12 @@ class DepthBufferShader {
                     std::shared_ptr<const engine::Camera> camera, Object* object);
 };
 
-class SkyboxShader {
+class CubemapShader {
  public:
   struct Param {
     engine::Texture cubemap;
   };
-  SkyboxShader(const Param& param, Context* context, Object* object);
+  CubemapShader(const Param& param, Context* context, Object* object);
 };
 
 class FullscreenQuadShader {

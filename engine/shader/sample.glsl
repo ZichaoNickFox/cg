@@ -16,19 +16,22 @@ vec2 Hammersley(uint i, uint N) {
 
 //---------------------------------------------------------------------
 
-// sphere local_pos to uv
-// local_pos must sphere
-// Using cube inscribed sphere is OK. It means each normalize texcoord
 vec2 SpherePos2UV(vec3 local_pos) {
+  // Normalize is need
+  // Local_pos.y maybe [-0.5 - 0.5] depends on mesh
+  // After normalize, local_pos.y would be [-1, 1]
+  // Cube's normalized local_pos is sphere
   local_pos = normalize(local_pos);
   const float pi = 3.1415926;
-  const float u_scale = 1 / (pi * 2);
-  const float v_scale = 0.5 / (pi / 2);
-  const vec2 scale = vec2(u_scale, v_scale);
-  vec2 uv = vec2(atan(local_pos.z, local_pos.x), asin(local_pos.y));
-  uv *= scale;
-  uv += 0.5;
-  return uv;
+  float u = atan(local_pos.z, local_pos.x);
+  if (u < 0.0) {
+    u = u + 2.0 * pi;
+  }
+  u = u / (2.0 * pi);
+  float v = asin(local_pos.y);
+  v = v / (pi / 2.0);
+  v = (v + 1.0) / 2.0;
+  return vec2(u, v);
 }
 
 // Sample nearing H direction, according to roughness and normal.

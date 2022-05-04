@@ -90,9 +90,15 @@ constexpr float kTexcoordXThreshold = 1 / 5.0 + 0.1;
 
 // [0, M_PI * 2)
 float CalcTexcoordx(const glm::vec3& position) {
-  float res = std::atan2(position.z, position.x);
-  res = res < 0 ? res + 2 * M_PI : res;
-  return res / (2 * M_PI);
+  float phi = std::atan2(position.z, position.x);
+  phi = phi < 0 ? phi + 2 * M_PI : phi;
+  return phi / (2 * M_PI);
+}
+float CalcTexcoordy(const glm::vec3& position) {
+  float theta = asin(position.y);
+  theta = theta / (M_PI / 2.0);
+  theta = (theta + 1.0) / 2.0;
+  return theta;
 }
 float CalcAverageOfTexcoords(float texcoordx0, float texcoordx1) {
   // two conditions: 
@@ -169,9 +175,7 @@ void SphereMesh::FillTexcoord(const std::vector<glm::vec3>& triangles, std::vect
     // Step 2 End
 
     for (int i = 0; i < 3; ++i) {
-      float theta = asin(triangles[triangle_index + i].y);
-      theta = theta / (M_PI / 2.0);
-      theta = (theta + 1.0) / 2.0;
+      float theta = CalcTexcoordy(triangles[triangle_index + i]);
       texcoords->at(triangle_index + i) = glm::vec2(texcoordxs[i], theta);
     }
   }

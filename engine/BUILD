@@ -68,7 +68,6 @@ cc_library(
   ],
   deps = [
     "//engine:debug",
-    "//engine:gl",
     # TODO : for compile success
     "//engine/proto:cc_config_proto",
   ],

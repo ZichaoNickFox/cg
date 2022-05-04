@@ -194,10 +194,11 @@ void SaveTexture2DImpl(const std::unordered_map<std::string, std::string>& paths
     
     int channel = -1, byte_per_channel = -1, format = -1, type = -1;
     GetInternalFormatSize(internal_format, &channel, &byte_per_channel, &format, &type);
-    GLubyte pixels[width * height * channel * byte_per_channel];
 
-    glGetTexImage_(target, level, format, type, pixels);
-    FlipVertically(pixels, width, height, channel, byte_per_channel);
+    std::vector<GLubyte> pixels(width * height * channel * byte_per_channel);
+
+    glGetTexImage_(target, level, format, type, pixels.data());
+    FlipVertically(pixels.data(), width, height, channel, byte_per_channel);
 
     CGCHECK(width > 0) << "Widget must > 0";
     CGCHECK(height > 0) << "Height must > 0";
@@ -205,7 +206,7 @@ void SaveTexture2DImpl(const std::unordered_map<std::string, std::string>& paths
     CGCHECK(VarifyChannel(path, channel)); 
 
     TryMakeDir(path);
-    SaveImage(path, width, height, channel, pixels);
+    SaveImage(path, width, height, channel, pixels.data());
   }
 }
 
@@ -269,14 +270,15 @@ int SaveCubemapImpl(const std::unordered_map<std::string, std::string>& paths, G
 
       int channel = -1, byte_per_channel = -1, format = -1, type = -1;
       GetInternalFormatSize(internal_format, &channel, &byte_per_channel, &format, &type);
-      GLubyte pixels[width * height * channel * byte_per_channel];
 
-      glGetTexImage_(texture_unit, level, format, type, pixels);
-      FlipVertically(pixels, width, height, channel, byte_per_channel);
+      std::vector<GLubyte> pixels(width * height * channel * byte_per_channel);
+
+      glGetTexImage_(texture_unit, level, format, type, pixels.data());
+      FlipVertically(pixels.data(), width, height, channel, byte_per_channel);
 
       std::string file_path = GetCubemapPath(paths, level, texture_unit_offset);
       TryMakeDir(file_path);
-      SaveImage(file_path, width, height, channel, pixels);
+      SaveImage(file_path, width, height, channel, pixels.data());
     }
   }
   glBindTexture_(GL_TEXTURE_CUBE_MAP, 0);

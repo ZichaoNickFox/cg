@@ -79,7 +79,7 @@ void PbrScene::OnRender(Context *context)
   sphere_.OnRender(context);
 
   coord_.OnRender(context);
-  SkyboxShader({context->GetTexture("pbr_environment_cubemap")}, context, &skybox_);
+  CubemapShader({context->GetTexture("pbr_environment_cubemap")}, context, &skybox_);
   skybox_.OnRender(context);
 
   PbrShader(pbr, context, &plane_);

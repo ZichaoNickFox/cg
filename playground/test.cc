@@ -1,5 +1,7 @@
 #include "gtest/gtest.h"
 
+#include <math.h>
+
 #include "engine/util.h"
 
 TEST(engine_test, util)

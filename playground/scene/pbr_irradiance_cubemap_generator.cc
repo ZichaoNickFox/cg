@@ -12,6 +12,8 @@
 #include "playground/scene/common.h"
 
 constexpr int kLevel0Size = 512;
+constexpr char input[] = "pbr_environment_cubemap";
+constexpr char output[] = "pbr_irradiance_cubemap";
 
 void PbrIrradianceCubemapGenerator::OnEnter(Context *context) {
   camera_->mutable_transform()->SetTranslation(glm::vec3(2.97, 3.95, 6.76));
@@ -43,7 +45,7 @@ void PbrIrradianceCubemapGenerator::OnRender(Context *context) {
   engine::CubemapData data(3, kLevel0Size * kLevel0Size * 4 * 4);
   for (int face = 0; face < 6; ++face) {
     color_framebuffer_.Bind();
-    PbrIrradianceCubemapGeneratorShader({context->GetTexture("pbr_environment_cubemap"),
+    PbrIrradianceCubemapGeneratorShader({context->GetTexture(input),
                                         &cubemap_cameras_[face]}, context, &cube_);
     cube_.OnRender(context);
     color_framebuffer_.Unbind();
@@ -51,8 +53,8 @@ void PbrIrradianceCubemapGenerator::OnRender(Context *context) {
     *data.mutable_vector(face, 0) = color_framebuffer_.GetColorTextureData(0);
   }
   engine::CreateCubemapParam param{1, kLevel0Size, kLevel0Size, &data};
-  context->ResetCubemap("pbr_irradiance_cubemap", param);
-  context->SaveCubemap("pbr_irradiance_cubemap");
+  context->ResetCubemap(output, param);
+  context->SaveCubemap(output);
   exit(0);
 }
 

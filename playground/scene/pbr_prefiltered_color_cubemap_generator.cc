@@ -12,6 +12,9 @@
 #include "playground/object/sphere.h"
 #include "playground/scene/common.h"
 
+constexpr char input[] = "pbr_environment_cubemap";
+constexpr char output[] = "pbr_prefiltered_color_cubemap";
+
 void PbrPrefilteredColorCubemapGenerator::OnEnter(Context *context)
 {
   camera_->mutable_transform()->SetTranslation(glm::vec3(2.97, 3.95, 6.76));
@@ -38,7 +41,7 @@ void PbrPrefilteredColorCubemapGenerator::OnEnter(Context *context)
 
 void PbrPrefilteredColorCubemapGenerator::OnUpdate(Context *context)
 {
-  OnUpdateCommon _(context, "PbrIrradianceCubemapGenerator");
+  OnUpdateCommon _(context, "PbrPrefilteredColorCubemapGenerator");
 
   cube_.OnUpdate(context);
 }
@@ -52,7 +55,7 @@ void PbrPrefilteredColorCubemapGenerator::OnRender(Context *context)
     for (int face = 0; face < 6; ++face) {
       float roughness = std::pow(0.5, kMipmapMaxLevel - level - 1);
       color_framebuffers_[level].Bind();
-      PbrPrefilteredColorCubemapGeneratorShader({context->GetTexture("pbr_environment_cubemap"),
+      PbrPrefilteredColorCubemapGeneratorShader({context->GetTexture(input),
                                                 &cubemap_cameras_[face], roughness}, context, &cube_);
       cube_.OnRender(context);
       color_framebuffers_[level].Unbind();
@@ -61,8 +64,8 @@ void PbrPrefilteredColorCubemapGenerator::OnRender(Context *context)
     }
   }
   engine::CreateCubemapParam param{kMipmapMaxLevel, kLevel0Size, kLevel0Size, &data};
-  context->ResetCubemap("pbr_prefiltered_color_cubemap", param);
-  context->SaveCubemap("pbr_prefiltered_color_cubemap");
+  context->ResetCubemap(output, param);
+  context->SaveCubemap(output);
   exit(0);
 }
 

@@ -92,7 +92,7 @@ cc_test (
       "test.cc",
   ],
   deps = [
-    "//playground:util",
+    "//engine:util",
     "@gtest//:gtest",
     "@gtest//:gtest_main"
   ],

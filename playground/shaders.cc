@@ -274,7 +274,7 @@ DepthBufferShader::DepthBufferShader(const engine::Shader& depth_buffer_shader,
   material->SetMat4("model", model);
 }
 
-SkyboxShader::SkyboxShader(const Param& param, Context* context, Object* object) {
+CubemapShader::CubemapShader(const Param& param, Context* context, Object* object) {
   engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
   material->SetShader(context->GetShader("skybox"));
 
