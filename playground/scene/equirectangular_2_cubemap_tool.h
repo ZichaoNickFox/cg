@@ -13,7 +13,7 @@
 #include "playground/scene.h"
 #include "playground/shaders.h"
 
-class PbrEnvironmentCubemapGenerator : public Scene {
+class Equirectangular2CubemapTool : public Scene {
  public:
   void OnEnter(Context* context);
   void OnUpdate(Context* context);

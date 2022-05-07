@@ -296,7 +296,7 @@ FullscreenQuadShader::FullscreenQuadShader(const Param& param, Context* context,
 PbrEnvironmentCubemapGerneratorShader::PbrEnvironmentCubemapGerneratorShader(const Param& param, Context* context,
                                                                              Object* object) {
   engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
-  material->SetShader(context->GetShader("pbr_environment_cubemap_generator"));
+  material->SetShader(context->GetShader("equirectangular_2_cubemap_tool"));
 
   glm::mat4 model = object->GetModelMatrix();
   glm::mat4 view = param.camera->GetViewMatrix();

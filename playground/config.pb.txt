@@ -234,14 +234,14 @@ shader_config {
 }
 
 shader_config {
-  name : "pbr_environment_cubemap_generator";
+  name : "equirectangular_2_cubemap_tool";
   vs_path : [
-    "engine/shader/pbr_environment_cubemap_generator.vs.glsl"
+    "engine/shader/equirectangular_2_cubemap_tool.vs.glsl"
   ];
   fs_path : [
     "engine/shader/version.glsl",
     "engine/shader/sample.glsl",
-    "engine/shader/pbr_environment_cubemap_generator.fs.glsl"
+    "engine/shader/equirectangular_2_cubemap_tool.fs.glsl"
   ];
 }
 

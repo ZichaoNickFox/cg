@@ -1,4 +1,4 @@
-#include "playground/scene/pbr_environment_cubemap_generator.h"
+#include "playground/scene/equirectangular_2_cubemap_tool.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -15,7 +15,7 @@ constexpr int kEnvironmentCubemapSize = 2048;
 constexpr char input[] = "tropical_equirectangular";
 constexpr char output[] = "pbr_environment_cubemap";
 
-void PbrEnvironmentCubemapGenerator::OnEnter(Context *context)
+void Equirectangular2CubemapTool::OnEnter(Context *context)
 {
   context->SetCamera(camera_.get());
 
@@ -34,14 +34,14 @@ void PbrEnvironmentCubemapGenerator::OnEnter(Context *context)
   color_framebuffer_.Init(option);
 }
 
-void PbrEnvironmentCubemapGenerator::OnUpdate(Context *context)
+void Equirectangular2CubemapTool::OnUpdate(Context *context)
 {
   OnUpdateCommon _(context, "PbrEnvironmentCubemapGenerator");
 
   cube_.OnUpdate(context);
 }
 
-void PbrEnvironmentCubemapGenerator::OnRender(Context *context) {
+void Equirectangular2CubemapTool::OnRender(Context *context) {
   // TODO : why * 4 * 4 not * 4
   engine::CubemapData data(1, kEnvironmentCubemapSize * kEnvironmentCubemapSize * 4 * 4);
   for (int face = 0; face < 6; ++face) {
@@ -59,7 +59,7 @@ void PbrEnvironmentCubemapGenerator::OnRender(Context *context) {
   exit(0);
 }
 
-void PbrEnvironmentCubemapGenerator::OnExit(Context *context)
+void Equirectangular2CubemapTool::OnExit(Context *context)
 {
   cube_.OnDestory(context);
 }

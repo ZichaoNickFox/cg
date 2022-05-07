@@ -68,20 +68,26 @@ void PbrScene::OnRender(Context *context)
     point_lights_[i].OnRender(context);
   }
 
-  PbrShader::Param pbr;
-  pbr.albedo = albedo_;
-  pbr.metallic = metallic;
-  pbr.roughness = roughness;
-  pbr.light_info = ShaderLightInfo(point_lights_);
-  pbr.texture_irradiance_cubemap = context->GetTexture("pbr_irradiance_cubemap");
-  pbr.texture_prefiltered_color_cubemap = context->GetTexture("pbr_prefiltered_color_cubemap");
-  pbr.texture_BRDF_integration_map = context->GetTexture("pbr_BRDF_integration_map");
+  PbrShader::Param pbr_primitive;
+  pbr_primitive.albedo = albedo_;
+  pbr_primitive.metallic = metallic;
+  pbr_primitive.roughness = roughness;
+  pbr_primitive.light_info = ShaderLightInfo(point_lights_);
+  pbr_primitive.texture_irradiance_cubemap = context->GetTexture("pbr_irradiance_cubemap");
+  pbr_primitive.texture_prefiltered_color_cubemap = context->GetTexture("pbr_prefiltered_color_cubemap");
+  pbr_primitive.texture_BRDF_integration_map = context->GetTexture("pbr_BRDF_integration_map");
 
-  PbrShader(pbr, context, &sphere_);
+  PbrShader(pbr_primitive, context, &sphere_);
   sphere_.OnRender(context);
 
-  PbrShader(pbr, context, &cube_);
+  PbrShader(pbr_primitive, context, &cube_);
   cube_.OnRender(context);
+
+  PbrShader(pbr_primitive, context, &plane_);
+  plane_.OnRender(context);
+
+  PbrShader::Param pbr_cerberus;
+
 
   LinesShader({1.0}, context, &coord_);
   coord_.OnRender(context);
@@ -89,8 +95,6 @@ void PbrScene::OnRender(Context *context)
   CubemapShader({context->GetTexture("pbr_environment_cubemap")}, context, &skybox_);
   skybox_.OnRender(context);
 
-  PbrShader(pbr, context, &plane_);
-  plane_.OnRender(context);
 }
 
 void PbrScene::OnExit(Context *context)

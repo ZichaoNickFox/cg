@@ -9,7 +9,7 @@
 #include "playground/scene/model_scene.h"
 #include "playground/scene/mrt_scene.h"
 #include "playground/scene/normal_scene.h"
-#include "playground/scene/pbr_environment_cubemap_generator.h"
+#include "playground/scene/equirectangular_2_cubemap_tool.h"
 #include "playground/scene/pbr_BRDF_integration_map_generator.h"
 #include "playground/scene/pbr_irradiance_cubemap_generator.h"
 #include "playground/scene/pbr_prefiltered_color_cubemap_generator.h"
@@ -21,7 +21,7 @@
 #include "playground/scene/texture_lod_scene.h"
 
 namespace {
-const std::string kDefaultScene = "PbrScene";
+const std::string kDefaultScene = "Equirectangular2CubemapTool";
 }
 
 void Playground::Init(const Context::Option& option) {
@@ -41,7 +41,7 @@ void Playground::InitScene() {
   scene_map_.insert(std::make_pair("PbrScene", std::make_unique<PbrScene>()));
   scene_map_.insert(std::make_pair("NormalScene", std::make_unique<NormalScene>()));
   scene_map_.insert(std::make_pair("ShareScene", std::make_unique<ShareScene>()));
-  scene_map_.insert(std::make_pair("PbrEnvironmentCubemapGenerator", std::make_unique<PbrEnvironmentCubemapGenerator>()));
+  scene_map_.insert(std::make_pair("Equirectangular2CubemapTool", std::make_unique<Equirectangular2CubemapTool>()));
   scene_map_.insert(std::make_pair("PbrIrradianceCubemapGenerator", std::make_unique<PbrIrradianceCubemapGenerator>()));
   scene_map_.insert(std::make_pair("SampleScene", std::make_unique<SampleScene>()));
   scene_map_.insert(std::make_pair("PbrPrefilteredColorCubemapGenerator", std::make_unique<PbrPrefilteredColorCubemapGenerator>()));
