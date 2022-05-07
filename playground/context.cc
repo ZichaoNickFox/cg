@@ -20,14 +20,8 @@ void Context::Init(const Option& option) {
   framebuffer_size_ = option.framebuffer_size;
 }
 
-const engine::Camera& Context::camera() {
-  CGCHECK(!camera_.expired());
-  return *camera_.lock().get();
-}
-
 engine::Camera* Context::mutable_camera() {
-  CGCHECK(!camera_.expired());
-  return camera_.lock().get();
+  return camera_;
 }
 
 void Context::SetFrameInternal(int frame_interval) {
@@ -61,6 +55,10 @@ void Context::ResetCubemap(const std::string& name, const engine::CreateCubemapP
 
 engine::Texture Context::CreateTempTexture2D(const engine::CreateTexture2DParam& param) {
   return texture_repo_.CreateTempTexture2D(param);
+}
+
+engine::Texture Context::CreateCubemapPreviewTexture2D(const engine::CreateCubemapParam& param) {
+  return texture_repo_.CreateCubemapPreviewTexture2D(param);
 }
 
 std::shared_ptr<const engine::Mesh> Context::GetMesh(const std::string& name) {

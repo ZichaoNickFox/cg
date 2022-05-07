@@ -18,13 +18,12 @@ constexpr char output[] = "pbr_prefiltered_color_cubemap";
 void PbrPrefilteredColorCubemapGenerator::OnEnter(Context *context)
 {
   camera_->mutable_transform()->SetTranslation(glm::vec3(2.97, 3.95, 6.76));
-  camera_->mutable_transform()->SetRotation(glm::quat(0.89, -0.21, 0.38, 0.09));
-  context->SetCamera(camera_);
+  context->SetCamera(camera_.get());
 
   glEnable(GL_DEPTH_TEST);
 
   for (int face = 0; face < 6; ++face) {
-    cubemap_cameras_[face].mutable_transform()->SetRotation(rotations_[face]);
+    cubemap_cameras_[face].SetTransform(transforms_[face]);
     cubemap_cameras_[face].SetPerspectiveFov(90.0);
     cubemap_cameras_[face].SetAspect(1);
   }

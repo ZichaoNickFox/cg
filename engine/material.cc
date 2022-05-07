@@ -51,7 +51,7 @@ int Material::SetTexture(const std::string& location, Texture value) {
       if (found_valid_cubemap_unit)
         break;
     }
-    CGCHECK(valid_cubemap_unit > valid_texture2d_unit) << "A shader must have LE than 32 textures";
+    CGCHECK(valid_cubemap_unit > valid_texture2d_unit) << "A shader must have LE than 31 textures";
     texture_unit = (value.type() == engine::Texture::Texture2D ? valid_texture2d_unit : valid_cubemap_unit);
     location_texture_[location] = TextureData{texture_unit, value};
   } else {

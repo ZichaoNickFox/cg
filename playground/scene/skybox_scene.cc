@@ -15,7 +15,7 @@ void SkyboxScene::OnEnter(Context *context)
   camera_->mutable_transform()->SetTranslation(glm::vec3(-1.0, 1.5, 1.1));
   camera_->mutable_transform()->SetRotation(glm::angleAxis(float(M_PI) / 2, glm::vec3(0, 1, 0)));
   camera_->SetFarClip(200);
-  context->SetCamera(camera_);
+  context->SetCamera(camera_.get());
 
   skybox_.mutable_material()->SetShader(context->GetShader("skybox"));
   skybox_.mutable_material()->SetTexture("texture0", context->GetTexture("skybox"));
@@ -27,9 +27,6 @@ void SkyboxScene::OnEnter(Context *context)
 void SkyboxScene::OnUpdate(Context *context)
 {
   OnUpdateCommon _(context, "SkyboxScene");
-  ImGui::Separator();
-  ImGui::Text("camera_location %s", glm::to_string(context->camera().transform().translation()).c_str());
-  ImGui::Text("camera_front %s", glm::to_string(context->camera().front()).c_str());
   coord_.OnUpdate(context);
   skybox_.OnUpdate(context);
 }

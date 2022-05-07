@@ -43,7 +43,7 @@ void AAScene::OnEnter(Context *context)
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(5.3, 4.3, -3.5));
   camera_->mutable_transform()->SetRotation(glm::quat(glm::vec3(2.7, 0.75, -3.1)));
-  context->SetCamera(camera_);
+  context->SetCamera(camera_.get());
 
   plane_.mutable_material()->SetShader(context->mutable_shader_repo()->GetOrLoadShader("forward_shading"));
   plane_.mutable_material()->SetVec3("material.ambient", material_property_.ambient);

@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 
+#include <map>
 #include <math.h>
 
 #include "engine/util.h"

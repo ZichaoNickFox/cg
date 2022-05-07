@@ -23,7 +23,7 @@ void PhongScene::OnEnter(Context *context)
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(-4.8, 6.1, 5.8));
   camera_->mutable_transform()->SetRotation(glm::quat(0.88, -0.30, -0.32, -0.11));
-  context->SetCamera(camera_);
+  context->SetCamera(camera_.get());
 
   glEnable(GL_DEPTH_TEST);
 }

@@ -40,7 +40,7 @@ void SaveImage(const std::string& filename, int width, int height, int channels,
 
 std::string GetCubemapPath(const std::unordered_map<std::string, std::string>& paths,
                            int level, int texture_unit_offset) {
-  std::vector<std::string> faces = {"left", "right", "top", "bottom", "front", "back"};
+  std::vector<std::string> faces = {"px", "nx", "py", "ny", "pz", "nz"};
   std::string key = util::Format("level{}_{}", level, faces[texture_unit_offset]);
   CGCHECK(!paths.empty());
   CGCHECK(paths.count(key) > 0) << " Cannot find path " << key;
@@ -153,6 +153,33 @@ Texture ResetCubemapImpl(const CreateCubemapParam& param) {
   return Texture(ret, Texture::Cubemap);
 }
 
+// Outsize cubemap :
+//    py
+// nx pz px nz
+//    ny
+engine::Texture CreateCubemapPreviewTexture2DImpl(const CreateCubemapParam& param) {
+  GLuint ret;
+  glGenTextures_(1, &ret);
+  glBindTexture_(GL_TEXTURE_2D, ret);
+  glTexStorage2D_(GL_TEXTURE_2D, 1, param.internal_format, 800, 600);
+  // px, nx, py, ny, pz, nz
+  std::vector<glm::vec2> offset{{400, 200}, {0, 200}, {200, 400}, {200, 0}, {200, 200}, {600, 200}};
+  for (GLuint texture_unit_offset = 0; texture_unit_offset < 6; ++texture_unit_offset) {
+    glTexSubImage2D_(GL_TEXTURE_2D, 0, offset[texture_unit_offset].x, offset[texture_unit_offset].y,
+                     200, 200, param.format, param.type, param.data->mutable_data(texture_unit_offset, 0));
+  }
+  glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  if (param.level_num > 1) {
+    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  } else {
+    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  }
+  glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glBindTexture_(GL_TEXTURE_2D, 0);
+  return Texture(ret, Texture::Texture2D);
+}
+
 bool VarifyChannel(const std::string& path, int channel) {
   std::string file_ext = util::FileExt(path);
   if (file_ext == "png") {
@@ -217,7 +244,7 @@ Texture LoadCubeMap(const std::unordered_map<std::string, std::string>& paths, i
   Texture ret(textureId, Texture::Cubemap);
   glBindTexture_(GL_TEXTURE_CUBE_MAP, textureId);
 
-  std::string key = "level0_left";
+  std::string key = "level0_pz";
   CGCHECK(paths.count(key) > 0) << " Cannot find key " << key;
   std::string path = paths.at(key);
   // TODO : To be variables
@@ -345,6 +372,11 @@ void TextureRepo::ResetTexture2D(const std::string& name, const CreateTexture2DP
 Texture TextureRepo::CreateTempTexture2D(const CreateTexture2DParam& param) {
   LOG(ERROR) << "TextureRepo::CreateTempTexture2D ";
   return CreateTexture2DImpl(param);
+}
+
+Texture TextureRepo::CreateCubemapPreviewTexture2D(const CreateCubemapParam& param) {
+  LOG(ERROR) << "TextureRepo::CreateCubemapPreviewTexture2D";
+  return CreateCubemapPreviewTexture2DImpl(param);
 }
 
 void TextureRepo::ResetCubemap(const std::string& name, const CreateCubemapParam& param) {

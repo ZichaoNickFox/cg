@@ -20,7 +20,7 @@ void PbrBRDFIntegrationMapGenerator::OnEnter(Context *context) {
   option.size = glm::ivec2{kLevel0Size, kLevel0Size};
   color_framebuffer_.Init(option);
 
-  context->SetCamera(camera_);
+  context->SetCamera(camera_.get());
 }
 
 void PbrBRDFIntegrationMapGenerator::OnUpdate(Context *context) {

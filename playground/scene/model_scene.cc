@@ -20,7 +20,7 @@ void ModelScene::OnEnter(Context *context)
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(0.87, 4.87, 3.87));
   camera_->mutable_transform()->SetRotation(glm::quat(0.94, -0.14, 0.13, 0.014));
-  context->SetCamera(camera_);
+  context->SetCamera(camera_.get());
 
   nanosuit_.Init(context, "nanosuit1", "nanosuit");
   point_lights_.push_back(PointLight());

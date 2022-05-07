@@ -17,36 +17,37 @@ void Lines::OnInit(const Mesh& data) {
 
   CGCHECK(data.points.size() == data.colors.size());
   std::vector<glm::vec3> buffer(data.points.size() + data.colors.size(), glm::vec3());
-  glGenBuffers(1, &vbo_);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-  glBufferData(GL_ARRAY_BUFFER, util::VectorByteSize(buffer), buffer.data(), GL_STATIC_DRAW);
-  glBufferSubData(GL_ARRAY_BUFFER, 0, util::VectorByteSize(data.points), data.points.data());
-  glBufferSubData(GL_ARRAY_BUFFER, util::VectorByteSize(data.points), util::VectorByteSize(data.colors), data.colors.data());
+  glGenBuffers_(1, &vbo_);
+  glBindBuffer_(GL_ARRAY_BUFFER, vbo_);
+  glBufferData_(GL_ARRAY_BUFFER, util::VectorByteSize(buffer), buffer.data(), GL_STATIC_DRAW);
+  glBufferSubData_(GL_ARRAY_BUFFER, 0, util::VectorByteSize(data.points), data.points.data());
+  glBufferSubData_(GL_ARRAY_BUFFER, util::VectorByteSize(data.points), util::VectorByteSize(data.colors), data.colors.data());
 
   const int kPosLayout = 0;
   const int kColorLayout = 1;
-  glGenVertexArrays(1, &vao_);
-  glBindVertexArray(vao_);
-  glEnableVertexAttribArray(kPosLayout);
-  glEnableVertexAttribArray(kColorLayout);
+  glGenVertexArrays_(1, &vao_);
+  glBindVertexArray_(vao_);
+  glEnableVertexAttribArray_(kPosLayout);
+  glEnableVertexAttribArray_(kColorLayout);
 
   // Stride param must assign to vertex size 8 * sizeof(float)
   // Offset param means offset in a vertex
-  glVertexAttribPointer(kPosLayout, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-  glVertexAttribPointer(kColorLayout, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), reinterpret_cast<void *>(util::VectorByteSize(data.points)));
+  glVertexAttribPointer_(kPosLayout, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+  glVertexAttribPointer_(kColorLayout, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+                         reinterpret_cast<void *>(util::VectorByteSize(data.points)));
 
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindVertexArray(0);
+  glBindBuffer_(GL_ARRAY_BUFFER, 0);
+  glBindVertexArray_(0);
 }
 
 void Lines::OnUpdate(Context *context) {
 
 }
 
-void Lines::OnRender(Context *context)
-{ 
-  glBindVertexArray(vao_);
-  glDrawArrays(primitive_mode_, 0, vertex_size_);
+void Lines::OnRender(Context *context) {
+  material_.PrepareShader();
+  glBindVertexArray_(vao_);
+  glDrawArrays_(primitive_mode_, 0, vertex_size_);
 }
 
 void Lines::OnDestory(Context *context) {
@@ -54,8 +55,8 @@ void Lines::OnDestory(Context *context) {
 }
 
 void Lines::Clear() {
-  glDeleteVertexArrays(1, &vao_);
-  glDeleteBuffers(1, &vbo_);
+  glDeleteVertexArrays_(1, &vao_);
+  glDeleteBuffers_(1, &vbo_);
 }
 
 Coord::Coord() {

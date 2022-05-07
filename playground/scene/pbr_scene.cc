@@ -26,11 +26,13 @@ void PbrScene::OnEnter(Context *context)
   camera_->mutable_transform()->SetTranslation(glm::vec3(2.97, 3.95, 6.76));
   camera_->mutable_transform()->SetRotation(glm::quat(0.95, -0.21, 0.18, 0.04));
   camera_->SetFarClip(200);
-  context->SetCamera(camera_);
+  context->SetCamera(camera_.get());
 
   skybox_.mutable_transform()->SetScale(glm::vec3(100, 100, 100));
 
   plane_.mutable_transform()->SetScale(glm::vec3(5.0, 5.0, 5.0));
+
+  cube_.mutable_transform()->SetTranslation(glm::vec3(2, 2, 2));
 
   glEnable(GL_DEPTH_TEST);
 }
@@ -78,7 +80,12 @@ void PbrScene::OnRender(Context *context)
   PbrShader(pbr, context, &sphere_);
   sphere_.OnRender(context);
 
+  PbrShader(pbr, context, &cube_);
+  cube_.OnRender(context);
+
+  LinesShader({1.0}, context, &coord_);
   coord_.OnRender(context);
+
   CubemapShader({context->GetTexture("pbr_environment_cubemap")}, context, &skybox_);
   skybox_.OnRender(context);
 

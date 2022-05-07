@@ -36,7 +36,7 @@ void DeferredShadingScene::OnEnter(Context *context)
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(5.3, 4.3, -3.5));
   camera_->mutable_transform()->SetRotation(glm::quat(glm::vec3(2.7, 0.75, -3.1)));
-  context->SetCamera(camera_);
+  context->SetCamera(camera_.get());
 
   plane_.mutable_material()->SetShader(context->GetShader("phong_shadow"));
   plane_.mutable_material()->SetVec3("material.ambient", context->material_property_ambient(material_name_));
@@ -86,10 +86,6 @@ void DeferredShadingScene::OnEnter(Context *context)
 void DeferredShadingScene::OnUpdate(Context *context)
 {
   OnUpdateCommon _(context, "DeferredShadingScene");
-
-  ImGui::Text("camera_location %s", glm::to_string(context->camera().transform().translation()).c_str());
-  ImGui::Text("camera_front %s", glm::to_string(context->camera().front()).c_str());
-  ImGui::Text("camera_euler %s", glm::to_string(glm::eulerAngles(context->camera().transform().rotation())).c_str());
 
   ImGui::SliderFloat3("cube0_location", (float*)cubes_[0].mutable_transform()->mutable_translation(), -20, 0);
 

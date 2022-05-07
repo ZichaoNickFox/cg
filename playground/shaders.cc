@@ -293,7 +293,8 @@ FullscreenQuadShader::FullscreenQuadShader(const Param& param, Context* context,
   material->SetTexture("texture0", param.texture0); 
 }
 
-PbrEnvironmentCubemapGerneratorShader::PbrEnvironmentCubemapGerneratorShader(const Param& param, Context* context, Object* object) {
+PbrEnvironmentCubemapGerneratorShader::PbrEnvironmentCubemapGerneratorShader(const Param& param, Context* context,
+                                                                             Object* object) {
   engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
   material->SetShader(context->GetShader("pbr_environment_cubemap_generator"));
 

@@ -10,6 +10,19 @@
 void glEnable_(GLenum cap);
 void glDisable_(GLenum cap);
 
+// Mesh
+void glGenBuffers_(GLsizei n, GLuint* buffers);
+void glBindBuffer_(GLenum target, GLuint buffer);
+void glBufferData_(GLenum target, GLsizeiptr size, const void * data, GLenum usage);
+void glBufferSubData_(GLenum target, GLintptr offset, GLsizeiptr size, const void * data);
+void glGenVertexArrays_(GLsizei n, GLuint *arrays);
+void glBindVertexArray_(GLuint array);
+void glEnableVertexAttribArray_(GLuint index);
+void glVertexAttribPointer_(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void * pointer);
+void glDrawArrays_(GLenum mode, GLint first, GLsizei count);
+void glDeleteVertexArrays_(GLsizei n, const GLuint *arrays);
+void glDeleteBuffers_(GLsizei n, const GLuint * buffers);
+
 // Texture
 void glGenTextures_(GLsizei n, GLuint *textures);
 void glGetTexImage_(GLenum target, GLint level, GLenum format, GLenum type, void * pixels);

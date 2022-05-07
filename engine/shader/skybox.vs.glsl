@@ -12,14 +12,6 @@ out vec3 texcoord_;
 
 void main()
 {
-  if (normal.x != 0) {
-    texcoord_ = vec3(normal.x, (texcoord - 0.5) * 2);
-  } else if (normal.y != 0) {
-    texcoord_ = vec3((texcoord.x - 0.5) * 2, normal.y, (texcoord.y - 0.5) * 2);
-  } else if (normal.z != 0) {
-    texcoord_ = vec3((texcoord - 0.5) * 2, normal.z);
-  } else {
-    1 / 0;
-  }
+  texcoord_ = pos;
   gl_Position = project * view * model * vec4(pos, 1.0);
 }

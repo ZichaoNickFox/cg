@@ -27,7 +27,7 @@ void NormalScene::OnEnter(Context *context)
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(5.83, 4.11, 0.10));
   camera_->mutable_transform()->SetRotation(glm::quat(-0.64, 0.28, -0.65, -0.28));
-  context->SetCamera(camera_);
+  context->SetCamera(camera_.get());
 
   struct Data {
     std::vector<glm::vec3> points;

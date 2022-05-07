@@ -37,6 +37,7 @@ class TextureRepo {
   void ResetTexture2D(const std::string& name, const CreateTexture2DParam& param);
   void ResetCubemap(const std::string& name, const CreateCubemapParam& param);
   Texture CreateTempTexture2D(const CreateTexture2DParam& param);
+  Texture CreateCubemapPreviewTexture2D(const CreateCubemapParam& param);
 
  private:
   struct State {

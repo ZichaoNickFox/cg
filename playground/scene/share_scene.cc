@@ -27,7 +27,7 @@ void ShareScene::OnEnter(Context *context)
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(5.95, 5.34, 2.24));
   camera_->mutable_transform()->SetRotation(glm::quat(-0.81, 0.36, -0.40, -0.17));
-  context->SetCamera(camera_);
+  context->SetCamera(camera_.get());
 
   directional_light_.mutable_transform()->SetTranslation(kLightPos);
   directional_light_.mutable_transform()->SetRotation(glm::quat(-0.67, 0.16, -0.70, -0.15));

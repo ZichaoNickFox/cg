@@ -10,6 +10,61 @@ void glDisable_(GLenum cap) {
   CGCHECKGL();
 }
 
+void glGenBuffers_(GLsizei n, GLuint* buffers) {
+  glGenBuffers(n, buffers);
+  CGCHECKGL();
+}
+
+void glBindBuffer_(GLenum target, GLuint buffer) {
+  glBindBuffer(target, buffer);
+  CGCHECKGL();
+}
+
+void glBufferData_(GLenum target, GLsizeiptr size, const void * data, GLenum usage) {
+  glBufferData(target, size, data, usage);
+  CGCHECKGL();
+}
+
+void glBufferSubData_(GLenum target, GLintptr offset, GLsizeiptr size, const void * data) {
+  glBufferSubData(target, offset, size, data);
+  CGCHECKGL();
+}
+
+void glGenVertexArrays_(GLsizei n, GLuint *arrays) {
+  glGenVertexArrays(n, arrays);
+  CGCHECKGL();
+}
+
+void glBindVertexArray_(GLuint array) {
+  glBindVertexArray(array);
+  CGCHECKGL();
+}
+
+void glEnableVertexAttribArray_(GLuint index) {
+  glEnableVertexAttribArray(index);
+  CGCHECKGL();
+}
+
+void glVertexAttribPointer_(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void * pointer) {
+  glVertexAttribPointer(index, size, type, normalized, stride, pointer);
+  CGCHECKGL();
+}
+
+void glDrawArrays_(GLenum mode, GLint first, GLsizei count) {
+  glDrawArrays(mode, first, count);
+  CGCHECKGL();
+}
+
+void glDeleteVertexArrays_(GLsizei n, const GLuint *arrays) {
+  glDeleteVertexArrays(n, arrays);
+  CGCHECKGL();
+}
+
+void glDeleteBuffers_(GLsizei n, const GLuint * buffers) {
+  glDeleteBuffers(n, buffers);
+  CGCHECKGL();
+}
+
 void glGenTextures_(GLsizei n, GLuint *textures) {
   glGenTextures(n, textures);
   CGCHECKGL();

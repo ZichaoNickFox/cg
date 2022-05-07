@@ -17,13 +17,12 @@ constexpr char output[] = "pbr_environment_cubemap";
 
 void PbrEnvironmentCubemapGenerator::OnEnter(Context *context)
 {
-  camera_->mutable_transform()->SetTranslation(glm::vec3(2.97, 3.95, 6.76));
-  context->SetCamera(camera_);
+  context->SetCamera(camera_.get());
 
   glEnable(GL_DEPTH_TEST);
 
   for (int i = 0; i < 6; ++i) {
-    cubemap_cameras_[i].mutable_transform()->SetRotation(rotations_[i]);
+    cubemap_cameras_[i].SetTransform(transforms_[i]);
     cubemap_cameras_[i].SetPerspectiveFov(90.0);
     cubemap_cameras_[i].SetAspect(1);
   }

@@ -33,9 +33,9 @@ class Context {
   const Io& io() { return io_; }
   Io* mutable_io() { return &io_; }
 
-  void SetCamera(std::shared_ptr<engine::Camera> camera) { camera_ = camera; }
+  void SetCamera(engine::Camera* camera) { camera_ = camera; }
   
-  const engine::Camera& camera();
+  const engine::Camera& camera() { return *camera_; }
   engine::Camera* mutable_camera();
 
   void SetFrameInternal(int frame_interval);
@@ -49,6 +49,7 @@ class Context {
   engine::Texture GetTexture(const std::string& name, bool flip_vertically = false, bool equirectangular = false);
   void ResetTexture2D(const std::string& name, const engine::CreateTexture2DParam& param);
   void ResetCubemap(const std::string& name, const engine::CreateCubemapParam& param);
+  engine::Texture CreateCubemapPreviewTexture2D(const engine::CreateCubemapParam& param);
   void SaveTexture2D(const std::string& name);
   void SaveCubemap(const std::string& name);
   engine::Texture CreateTempTexture2D(const engine::CreateTexture2DParam& param);
@@ -83,7 +84,7 @@ class Context {
   Io io_;
 
   // Move camera outside context
-  std::weak_ptr<engine::Camera> camera_;
+  engine::Camera* camera_ = nullptr;
 
   int frame_interval_;
   int fps_;

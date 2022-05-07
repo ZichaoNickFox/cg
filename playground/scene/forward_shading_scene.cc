@@ -36,7 +36,7 @@ void ForwardShadingScene::OnEnter(Context *context)
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(5.3, 4.3, -3.5));
   camera_->mutable_transform()->SetRotation(glm::quat(glm::vec3(2.7, 0.75, -3.1)));
-  context->SetCamera(camera_);
+  context->SetCamera(camera_.get());
 
   plane_.mutable_transform()->SetTranslation(glm::vec3(0, -1, 0));
   plane_.mutable_transform()->SetScale(glm::vec3(10, 0, 10));
@@ -54,10 +54,6 @@ void ForwardShadingScene::OnEnter(Context *context)
 void ForwardShadingScene::OnUpdate(Context *context)
 {
   OnUpdateCommon _(context, "ForwardShadingScene");
-
-  ImGui::Text("camera_location %s", glm::to_string(context->camera().transform().translation()).c_str());
-  ImGui::Text("camera_front %s", glm::to_string(context->camera().front()).c_str());
-  ImGui::Text("camera_euler %s", glm::to_string(glm::eulerAngles(context->camera().transform().rotation())).c_str());
 
   ImGui::SliderFloat3("cube0_location", (float*)cubes_[0].mutable_transform()->mutable_translation(), -20, 0);
 
@@ -77,17 +73,17 @@ void ForwardShadingScene::OnUpdate(Context *context)
   ImGui::Text("Camera Type");
   ImGui::SameLine();
   if (ImGui::Button("Perceptive Camera")) {
-    context->SetCamera(camera_);
+    context->SetCamera(camera_.get());
     camera_->SetType(engine::Camera::Perspective);
   }
   ImGui::SameLine();
   if (ImGui::Button("Orthographic Camera")) {
-    context->SetCamera(camera_);
+    context->SetCamera(camera_.get());
     camera_->SetType(engine::Camera::Orthographic);
   }
   ImGui::SameLine();
   if (ImGui::Button("Orthographic Direction Light")) {
-    context->SetCamera(depth_buffer_pass_.mutable_camera());
+    context->SetCamera(depth_buffer_pass_.mutable_camera().get());
   }
 
   for (int i = 0; i < point_lights_num_; ++i) {

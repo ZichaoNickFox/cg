@@ -14,7 +14,7 @@
 constexpr int kLevel0Size = 512;
 
 void TextureLodScene::OnEnter(Context *context) {
-  context->SetCamera(camera_);
+  context->SetCamera(camera_.get());
   camera_->mutable_transform()->SetTranslation(glm::vec3(0, 0, 5));
 
   glEnable(GL_DEPTH_TEST);

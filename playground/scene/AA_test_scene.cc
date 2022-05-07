@@ -29,7 +29,7 @@ void AATestScene::OnEnter(Context *context)
   glEnable(GL_DEPTH_TEST);
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(0, 0, 10));
-  context->SetCamera(camera_);
+  context->SetCamera(camera_.get());
 }
 
 void AATestScene::OnUpdate(Context *context)

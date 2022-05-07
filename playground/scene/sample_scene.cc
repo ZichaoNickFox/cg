@@ -14,7 +14,7 @@ void SampleScene::OnEnter(Context *context)
   camera_->mutable_transform()->SetTranslation(glm::vec3(2.97, 3.95, 6.76));
   camera_->mutable_transform()->SetRotation(glm::quat(0.95, -0.21, 0.18, 0.04));
   camera_->SetFarClip(200);
-  context->SetCamera(camera_);
+  context->SetCamera(camera_.get());
 
   glEnable(GL_DEPTH_TEST);
 }

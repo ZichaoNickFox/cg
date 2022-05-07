@@ -41,7 +41,7 @@ void MrtScene::OnEnter(Context *context)
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(5.3, 4.3, -3.5));
   camera_->mutable_transform()->SetRotation(glm::quat(glm::vec3(2.7, 0.75, -3.1)));
-  context->SetCamera(camera_);
+  context->SetCamera(camera_.get());
 
   plane_.mutable_material()->SetShader(context->GetShader("forward_shading"));
   plane_.mutable_material()->SetVec3("material.ambient", material_property_.ambient);
@@ -62,10 +62,6 @@ void MrtScene::OnEnter(Context *context)
 void MrtScene::OnUpdate(Context *context)
 {
   OnUpdateCommon _(context, "MrtScene");
-
-  ImGui::Text("camera_location %s", glm::to_string(context->camera().transform().translation()).c_str());
-  ImGui::Text("camera_front %s", glm::to_string(context->camera().front()).c_str());
-  ImGui::Text("camera_euler %s", glm::to_string(glm::eulerAngles(context->camera().transform().rotation())).c_str());
 
   for (int i = 0; i < point_lights_num_; ++i) {
     point_lights_[i].OnUpdate(context);
