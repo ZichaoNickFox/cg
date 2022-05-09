@@ -30,8 +30,6 @@ cc_library(
     "normal_scene.cc",
     "pbr_scene.h",
     "pbr_scene.cc",
-    "phong_scene.h",
-    "phong_scene.cc",
     "sample_scene.h",
     "sample_scene.cc",
     "share_scene.h",

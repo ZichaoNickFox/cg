@@ -94,7 +94,7 @@ void glTexParameteri_(GLenum target, GLenum pname, GLint param) {
 
 void glBindTexture_(GLenum target, GLuint texture) {
   glBindTexture(target, texture);
-  CGCHECKGL();
+  CGCHECKGL() << target << " " << texture;
 }
 
 void glGetTexLevelParameteriv_(GLenum target, GLint level, GLenum pname, GLint *params) {

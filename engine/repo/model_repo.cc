@@ -13,7 +13,7 @@ void ModelRepo::Init(const Config& config) {
   for (const ModelConfig& config : config.model_config()) {
     State state;
     state.name = config.name();
-    state.obj_path = config.obj_path();
+    state.mesh_path = config.mesh_path();
     state.texture_dir = config.texture_dir();
     models_[config.name()] = state;
     CGLOG(ERROR) << "Init model : " << config.name();
@@ -25,7 +25,7 @@ std::vector<ModelRepo::ModelPartData> ModelRepo::GetOrLoadModel(const std::strin
   State* state = &models_[name];
   if (!state->loaded) {
     Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFile(state->obj_path, aiProcess_Triangulate | aiProcess_GenSmoothNormals
+    const aiScene* scene = importer.ReadFile(state->mesh_path, aiProcess_Triangulate | aiProcess_GenSmoothNormals
                                              | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
     if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
       CGCHECK(false) << "AssImp Error : " << importer.GetErrorString();
@@ -68,7 +68,7 @@ void ModelRepo::ProcessMesh(const aiMesh& ai_mesh, State* state) {
   for(uint32_t i = 0; i < ai_mesh.mNumVertices; i++) {
     positions.push_back(glm::vec3(ai_mesh.mVertices[i].x, ai_mesh.mVertices[i].y, ai_mesh.mVertices[i].z));
     if (ai_mesh.HasNormals()) {
-      normals.push_back(glm::vec3(ai_mesh.mNormals[i].x, ai_mesh.mNormals[i].y, ai_mesh.mNormals[i].y));
+      normals.push_back(glm::vec3(ai_mesh.mNormals[i].x, ai_mesh.mNormals[i].y, ai_mesh.mNormals[i].z));
     }
     if(ai_mesh.mTextureCoords[0]) {
       texcoords.push_back(glm::vec2(ai_mesh.mTextureCoords[0][i].x, ai_mesh.mTextureCoords[0][i].y));
@@ -125,6 +125,18 @@ void ModelRepo::ProcessTexture(const aiScene& ai_scene, const aiMesh& ai_mesh, S
   std::vector<engine::Texture> ambients = LoadTextures(ai_material, aiTextureType_AMBIENT, state);
   handling_model_part->ambient_textures.insert(
       handling_model_part->ambient_textures.end(), ambients.begin(), ambients.end());
+
+  std::vector<engine::Texture> albedos = LoadTextures(ai_material, aiTextureType_BASE_COLOR, state);
+  handling_model_part->albedo_textures.insert(
+      handling_model_part->albedo_textures.end(), albedos.begin(), albedos.end());
+
+  std::vector<engine::Texture> roughnesses = LoadTextures(ai_material, aiTextureType_DIFFUSE_ROUGHNESS, state);
+  handling_model_part->roughness_textures.insert(
+      handling_model_part->roughness_textures.end(), roughnesses.begin(), roughnesses.end());
+
+  std::vector<engine::Texture> metallics = LoadTextures(ai_material, aiTextureType_METALNESS, state);
+  handling_model_part->metallic_textures.insert(
+      handling_model_part->metallic_textures.end(), metallics.begin(), metallics.end());
 
   CGLOG(ERROR) << "Process Texture : model=" << state->name;
   CGLOG(ERROR) << "Texture Begin";

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -38,14 +39,14 @@ class Texture {
   Texture(GLuint inid, Type in) : id_(inid), textureType_(in){}
   Texture(GLuint inid, Type in, const std::string& info) : id_(inid), textureType_(in), info_(info) {}
 
-  GLuint id() const { return id_; }
+  GLuint id() const;
   GLuint* mutable_id() { return &id_; }
   Type type() const  {return textureType_;}
   void SetInfo(const std::string& info) { info_ = info; }
   std::string info() const { return info_; }
 
  private:
-  GLuint id_;
+  GLuint id_ = std::numeric_limits<GLuint>::max();
   Type textureType_ = Texture2D;
   std::string info_;
 };

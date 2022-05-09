@@ -4,7 +4,7 @@
 
 #include "engine/debug.h"
 
-#define CGCHECKGL() int error = glGetError(); CGCHECK(error == 0) << error;
+#define CGCHECKGL() int error = glGetError(); CGCHECK(error == 0) << error << " "
 
 // Common
 void glEnable_(GLenum cap);

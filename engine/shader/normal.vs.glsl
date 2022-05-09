@@ -22,9 +22,9 @@ void main()
   texcoord_ = texcoord;
   normal_ = normal;
   world_pos_ = (model * vec4(pos, 1.0)).xyz;
-  world_normal_ = (model * vec4(normal, 0.0)).xyz;
+  world_normal_ = (model * vec4(normal, 1.0)).xyz;
 
-  vec3 world_tangent = mat3(model) * tangent;
-  vec3 world_bitangent = mat3(model) * bitangent;
-  world_TBN_ = mat3(world_tangent, world_bitangent, world_normal_);
+  world_TBN_[0] = normalize(vec3(model * vec4(tangent, 0.0)));
+  world_TBN_[1] = normalize(vec3(model * vec4(bitangent, 0.0)));
+  world_TBN_[2] = world_normal_;
 }

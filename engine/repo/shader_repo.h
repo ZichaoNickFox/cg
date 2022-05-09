@@ -10,6 +10,7 @@ class ShaderRepo {
  public:
   void Init(const Config& config);
   engine::Shader GetOrLoadShader(const std::string& name);
+  void ReloadShaders();
 
  private:
   struct ShaderData {

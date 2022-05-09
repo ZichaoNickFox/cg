@@ -22,7 +22,7 @@ message TextureConfig {
 
 message ModelConfig {
   string name = 1;
-  string obj_path = 2;
+  string mesh_path = 2;
   string texture_dir = 3;
 }
 

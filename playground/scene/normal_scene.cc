@@ -48,7 +48,6 @@ void NormalScene::OnUpdate(Context *context)
   OnUpdateCommon _(context, "NormalScene");
 
   ImGui::ColorEdit3("light_color", (float*)&light_color_);
-  ImGui::Checkbox("texture normal", &use_texture_normal_);
   ImGui::Checkbox("blinn_phong", &use_blinn_phong_);
 
   ImGui::Checkbox("show_vertex_normal", &show_vertex_normal_);
@@ -81,26 +80,21 @@ void NormalScene::OnUpdate(Context *context)
 
 void NormalScene::OnRender(Context *context)
 {
-  PhongShader::Param phong_param;
+  static PhongShader::Param phong_param;
   phong_param.light_info = ShaderLightInfo(point_light_);
-  phong_param.use_blinn_phong = use_blinn_phong_;
-  if (use_texture_normal_) {
-    phong_param.texture_normal = context->GetTexture("brickwall_normal");
-  }
+  phong_param.texture_normal = context->GetTexture("brickwall_normal");
   phong_param.texture_diffuse = context->GetTexture("brickwall");
-  phong_param.shininess = shininess_;
 
-  PhongShader(phong_param, context, &plane_);
+  PhongShader(&phong_param, context, &plane_);
   plane_.OnRender(context);
 
-  NormalShader::Param normal_param{show_vertex_normal_, show_TBN_, show_triangle_,
-                             show_texture_normal_, context->GetTexture("brickwall_normal"), 0.1};
-  NormalShader(normal_param, context, &plane_);
+  static NormalShader::Param normal_param{false, false, false, false, 0.1, 1.0, context->GetTexture("brickwall_normal")};
+  NormalShader(&normal_param, context, &plane_);
   plane_.OnRender(context);
 
-  PhongShader(phong_param, context, &sphere_);
+  PhongShader(&phong_param, context, &sphere_);
   sphere_.OnRender(context);
-  NormalShader(normal_param, context, &sphere_);
+  NormalShader(&normal_param, context, &sphere_);
   sphere_.OnRender(context);
 
   if (intersect_line_) {
@@ -111,6 +105,7 @@ void NormalScene::OnRender(Context *context)
   LinesShader lines({1.0}, context, &coord_); 
   coord_.OnRender(context);
 
+  ColorShader({}, context, &point_light_);
   point_light_.OnRender(context);
 }
 

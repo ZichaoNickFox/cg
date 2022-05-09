@@ -130,23 +130,19 @@ void ShareScene::OnRender(Context *context)
     } else if (step_ > 1012) {
       PhongShader::Param phong_param;
       phong_param.light_info = ShaderLightInfo(point_light_);
-      phong_param.use_blinn_phong = use_blinn_phong_;
       if (use_texture_normal_) {
         phong_param.texture_normal = context->GetTexture("brickwall_normal");
       }
       phong_param.texture_diffuse = context->GetTexture("brickwall");
-      phong_param.shininess = 10;
-      phong_param.specular = glm::vec3(0.5,0.5,0.5);
-      PhongShader(phong_param, context, &sphere_);
-      PhongShader(phong_param, context, &plane_);
+      PhongShader(&phong_param, context, &sphere_);
+      PhongShader(&phong_param, context, &plane_);
 
       sphere_.OnRender(context);
       plane_.OnRender(context);
 
-      NormalShader::Param normal_param{show_vertex_normal_, show_TBN_, show_triangle_,
-                                      show_texture_normal_, context->GetTexture("brickwall_normal"), 0.1};
-      NormalShader(normal_param, context, &sphere_);
-      NormalShader(normal_param, context, &plane_);
+      NormalShader::Param normal_param{false, false, false, false, 0.1, 1.0, context->GetTexture("brickwall_normal")};
+      NormalShader(&normal_param, context, &sphere_);
+      NormalShader(&normal_param, context, &plane_);
 
       sphere_.OnRender(context);
       plane_.OnRender(context);
@@ -197,11 +193,9 @@ void ShareScene::RunForwardPass(Context* context, ForwardPass* forward_pass) {
   phong.light_info = {point_light_};
   phong.texture_normal = context->GetTexture("brickwall_normal");
   phong.texture_diffuse = context->GetTexture("brickwall");
-  phong.shininess = 10;
-  phong.specular = glm::vec3(0.5,0.5,0.5);
-  PhongShader(phong, context, &sphere_);
+  PhongShader(&phong, context, &sphere_);
   sphere_.OnRender(context);
-  PhongShader(phong, context, &plane_);
+  PhongShader(&phong, context, &plane_);
   plane_.OnRender(context);
 
   LinesShader({}, context, directional_light_.mutable_lines());
@@ -228,12 +222,9 @@ void ShareScene::RunDepthBufferPass2(Context* context, DepthBufferPass* depth_bu
 void ShareScene::RunForwardPass2(Context* context, ForwardPass* forward_pass) {
   forward_pass->Begin();
 
-  PbrShader::Param pbr;
+  PbrShader::Param pbr{albedo_, metallic_, roughness_};
   pbr.texture_albedo = context->GetTexture("brickwall");
   pbr.texture_normal = context->GetTexture("brickwall_normal");
-  pbr.metallic = metallic_;
-  pbr.roughness = roughness_;
-  pbr.albedo = albedo_;
   pbr.light_info = ShaderLightInfo({point_light_});
   pbr.shadow_info = forward_pass->prepass_shadow_info();
   PbrShader(pbr, context, &sphere_);

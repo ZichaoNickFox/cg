@@ -13,8 +13,8 @@ using engine::Texture;
 
 namespace engine {
 GLubyte* ReadImage(const std::string& filename, int* width, int* height, int* channels, int force_channels = 4) {
-	GLubyte* res = stbi_load(filename.c_str(), width, height, channels, force_channels);
-  CGCHECK(res) << stbi_failure_reason();
+	GLubyte* res = stbi_load(util::ReplaceBackslash(filename).c_str(), width, height, channels, force_channels);
+  CGCHECK(res) << stbi_failure_reason() << " " << util::ReplaceBackslash(filename);
 	return res;
 }
 
@@ -237,7 +237,13 @@ void SaveTexture2DImpl(const std::unordered_map<std::string, std::string>& paths
   }
 }
 
-Texture LoadCubeMap(const std::unordered_map<std::string, std::string>& paths, int level_num) {
+Texture LoadCubeMap(const std::unordered_map<std::string, std::string>& paths, int level_num,
+                    bool flip_vertically = false) {
+  // OpenGL uv (0,0) is at left bottom
+  // Texture uv (0,0) is at left top
+  // So flip vertical uv
+  stbi_set_flip_vertically_on_load(flip_vertically);
+
   GLuint textureId;
   glGenTextures_(1, &textureId);
   
@@ -333,7 +339,7 @@ Texture TextureRepo::GetOrLoadTexture(const std::string& name, bool flip_vertica
       state->texture = LoadTexture2D(state->paths, flip_vertically, state->level_num, false);
     } else if (state->texture_type == Texture::Cubemap) {
       LOG(ERROR) << "Loading Cubemap " << name;
-      state->texture = LoadCubeMap(state->paths, state->level_num);
+      state->texture = LoadCubeMap(state->paths, state->level_num, flip_vertically);
     } else {
       CGCHECK(false) << "Unsupported Texture Type";
     }

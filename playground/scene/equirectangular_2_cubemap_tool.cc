@@ -13,7 +13,7 @@
 
 constexpr int kEnvironmentCubemapSize = 2048;
 constexpr char input[] = "tropical_equirectangular";
-constexpr char output[] = "pbr_environment_cubemap";
+constexpr char output[] = "pbr_environment_tropical";
 
 void Equirectangular2CubemapTool::OnEnter(Context *context)
 {

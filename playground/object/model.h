@@ -24,6 +24,9 @@ class ModelPart : public Object {
   std::optional<engine::Texture> texture_normal(int i = 0) const;
   std::optional<engine::Texture> texture_ambient(int i = 0) const;
   std::optional<engine::Texture> texture_height(int i = 0) const;
+  std::optional<engine::Texture> texture_albedo(int i = 0) const;
+  std::optional<engine::Texture> texture_metallic(int i = 0) const;
+  std::optional<engine::Texture> texture_roughness(int i = 0) const;
 
   const engine::ModelRepo::ModelPartData& model_part_data() const { return model_part_data_; }
 

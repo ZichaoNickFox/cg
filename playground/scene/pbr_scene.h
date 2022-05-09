@@ -33,9 +33,12 @@ class PbrScene : public Scene {
   Plane plane_;
   Cube cube_;
 
+  Model cerberus_;
+  Model teapot_;
+
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
 
-  float metallic = 0.5;
-  float roughness = 0.5;
-  float ao = 1.0;
+  float metallic_ = 0.5;
+  float roughness_ = 0.5;
+  float ao_ = 1.0;
 };

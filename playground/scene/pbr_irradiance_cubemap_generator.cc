@@ -12,8 +12,8 @@
 #include "playground/scene/common.h"
 
 constexpr int kLevel0Size = 512;
-constexpr char input[] = "pbr_environment_cubemap";
-constexpr char output[] = "pbr_irradiance_cubemap";
+constexpr char input[] = "pbr_environment_tropical";
+constexpr char output[] = "pbr_irradiance_tropical";
 
 void PbrIrradianceCubemapGenerator::OnEnter(Context *context) {
   camera_->mutable_transform()->SetTranslation(glm::vec3(2.97, 3.95, 6.76));

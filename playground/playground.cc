@@ -14,14 +14,13 @@
 #include "playground/scene/pbr_irradiance_cubemap_generator.h"
 #include "playground/scene/pbr_prefiltered_color_cubemap_generator.h"
 #include "playground/scene/pbr_scene.h"
-#include "playground/scene/phong_scene.h"
 #include "playground/scene/sample_scene.h"
 #include "playground/scene/share_scene.h"
 #include "playground/scene/skybox_scene.h"
 #include "playground/scene/texture_lod_scene.h"
 
 namespace {
-const std::string kDefaultScene = "Equirectangular2CubemapTool";
+const std::string kDefaultScene = "ModelScene";
 }
 
 void Playground::Init(const Context::Option& option) {
@@ -30,7 +29,6 @@ void Playground::Init(const Context::Option& option) {
 }
 
 void Playground::InitScene() {
-  scene_map_.insert(std::make_pair("PhongScene", std::make_unique<PhongScene>()));
   scene_map_.insert(std::make_pair("ForwardShadingScene", std::make_unique<ForwardShadingScene>()));
   scene_map_.insert(std::make_pair("DeferredShadingScene", std::make_unique<DeferredShadingScene>()));
   scene_map_.insert(std::make_pair("SkyboxScene", std::make_unique<SkyboxScene>()));

@@ -11,10 +11,15 @@ OnUpdateCommon::OnUpdateCommon(Context* context, const std::string& title) {
   ImGui::Separator();
 
   MoveCamera(context);
+
   InspectCamera(context);
   ImGui::Separator();
 
   InSpectCursor(context);
+  ImGui::Separator();
+
+  ReloadShaders(context);
+
   ImGui::Separator();
 }
 
@@ -33,6 +38,12 @@ void OnUpdateCommon::InSpectCursor(Context* context) {
   ImGui::Text("cursor pos y %lf", context->io().cursor_screen_pos_y());
   ImGui::Text("cursor screen space x %lf", context->io().cursor_screen_pos_x() / context->io().screen_size().x);
   ImGui::Text("cursor screen space y %lf", context->io().cursor_screen_pos_y() / context->io().screen_size().y);
+}
+
+void OnUpdateCommon::ReloadShaders(Context* context) {
+  if (ImGui::Button("Reload Shaders")) {
+    context->mutable_shader_repo()->ReloadShaders();
+  }
 }
 
 void OnUpdateCommon::GuiFps(Context* context) {

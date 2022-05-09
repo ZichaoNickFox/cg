@@ -21,6 +21,10 @@ class ModelRepo {
     std::vector<engine::Texture> specular_textures;
     std::vector<engine::Texture> normal_textures;
     std::vector<engine::Texture> height_textures;
+
+    std::vector<engine::Texture> albedo_textures;
+    std::vector<engine::Texture> metallic_textures;
+    std::vector<engine::Texture> roughness_textures;
     std::shared_ptr<engine::Mesh> mesh = std::make_shared<engine::Mesh>();
   };
   std::vector<ModelPartData> GetOrLoadModel(const std::string& name);
@@ -29,7 +33,7 @@ class ModelRepo {
   struct State {
     bool loaded = false;
     std::string name;
-    std::string obj_path;
+    std::string mesh_path;
     std::string texture_dir;
     std::vector<ModelPartData> model_parts;
 

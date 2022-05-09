@@ -55,6 +55,27 @@ std::optional<engine::Texture> ModelPart::texture_height(int i) const {
   return {};
 }
 
+std::optional<engine::Texture> ModelPart::texture_albedo(int i) const {
+  if (model_part_data_.albedo_textures.size() >= i + 1) {
+    return model_part_data_.albedo_textures[i];
+  }
+  return {};
+}
+
+std::optional<engine::Texture> ModelPart::texture_metallic(int i) const {
+  if (model_part_data_.metallic_textures.size() >= i + 1) {
+    return model_part_data_.metallic_textures[i];
+  }
+  return {};
+}
+
+std::optional<engine::Texture> ModelPart::texture_roughness(int i) const {
+  if (model_part_data_.roughness_textures.size() >= i + 1) {
+    return model_part_data_.roughness_textures[i];
+  }
+  return {};
+}
+
 void Model::Init(Context* context, const std::string& object_name, const std::string& model_name) {
   std::vector<engine::ModelRepo::ModelPartData> model_parts_data = context->GetModel(model_name);
   for (const engine::ModelRepo::ModelPartData& model_part_data : model_parts_data) {
@@ -108,6 +129,27 @@ void Model::ModelInspector() {
                                          model_part_data.height_textures.size()).c_str())) {
           for (int i = 0; i < model_part_data.height_textures.size(); ++i) {
             ImGui::Text("%s", model_part_data.height_textures[i].info().c_str());
+          }
+          ImGui::TreePop();
+        }
+        if (ImGui::TreeNode(util::Format("Albedo Textures Num : {}",
+                                         model_part_data.albedo_textures.size()).c_str())) {
+          for (int i = 0; i < model_part_data.albedo_textures.size(); ++i) {
+            ImGui::Text("%s", model_part_data.albedo_textures[i].info().c_str());
+          }
+          ImGui::TreePop();
+        }
+        if (ImGui::TreeNode(util::Format("Roughness Textures Num : {}",
+                                         model_part_data.roughness_textures.size()).c_str())) {
+          for (int i = 0; i < model_part_data.roughness_textures.size(); ++i) {
+            ImGui::Text("%s", model_part_data.roughness_textures[i].info().c_str());
+          }
+          ImGui::TreePop();
+        }
+        if (ImGui::TreeNode(util::Format("Metallic Textures Num : {}",
+                                         model_part_data.metallic_textures.size()).c_str())) {
+          for (int i = 0; i < model_part_data.metallic_textures.size(); ++i) {
+            ImGui::Text("%s", model_part_data.metallic_textures[i].info().c_str());
           }
           ImGui::TreePop();
         }

@@ -124,16 +124,13 @@ void ForwardShadingScene::RunDepthBufferPass(Context* context, DepthBufferPass* 
 void ForwardShadingScene::RunForwardPass(Context* context, ForwardPass* forward_pass) {
   forward_pass->Begin();
 
-  PhongShader::Param phong;
+  PhongShader::Param phong{context->material_property_ambient("gold"), context->material_property_diffuse("gold"),
+                           context->material_property_specular("gold"), context->material_property_shininess("gold")};
   phong.shadow_info = forward_pass->prepass_shadow_info();
   phong.light_info = point_lights_;
-  phong.ambient = context->material_property_ambient("gold");
-  phong.diffuse = context->material_property_diffuse("gold");
-  phong.specular = context->material_property_specular("gold");
-  phong.shininess = context->material_property_shininess("gold");
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
-    PhongShader(phong, context, cube);
+    PhongShader(&phong, context, cube);
     cube->OnRender(context);
   }
   for (int i = 0; i < point_lights_num_; ++i) {
@@ -144,7 +141,7 @@ void ForwardShadingScene::RunForwardPass(Context* context, ForwardPass* forward_
   LinesShader({}, context, &coord_);
   coord_.OnRender(context);
 
-  PhongShader(phong, context, &plane_);
+  PhongShader(&phong, context, &plane_);
   plane_.OnRender(context);
 
   LinesShader({}, context, directional_light_.mutable_lines());

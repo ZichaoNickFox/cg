@@ -12,4 +12,5 @@ class OnUpdateCommon {
   void InspectCamera(Context* context);
   void MoveCamera(Context* context);
   void InSpectCursor(Context* context);
+  void ReloadShaders(Context* context);
 };

@@ -33,7 +33,7 @@ void SkyboxScene::OnUpdate(Context *context)
 
 void SkyboxScene::OnRender(Context *context)
 {
-  CubemapShader({context->GetTexture("pbr_environment_cubemap")}, context, &skybox_);
+  CubemapShader({context->GetTexture("pbr_environment_tropical")}, context, &skybox_);
   skybox_.OnRender(context);
 
   LinesShader({}, context, &coord_);

@@ -17,14 +17,17 @@ struct PbrModelInput {
   vec3 normal;
 };
 
+// https://reference.wolfram.com/language/tutorial/PhysicallyBasedRendering.html
+// https://hal.inria.fr/hal-00942452v2/document
 vec3 PbrModel(PbrModelInput param) {
-  vec3 N = normalize(param.normal);
+  vec3 N = param.normal;
   vec3 V = normalize(param.view_pos - param.frag_world_pos);
 
   vec3 F0 = vec3(0.04);
   F0 = mix(F0, param.albedo, param.metallic);
 
   vec3 Lo = vec3(0.0);
+  // Lights Lo
   for (int i = 0; i < light_count; ++i) {
     Light light = lights[i];
 
@@ -45,13 +48,14 @@ vec3 PbrModel(PbrModelInput param) {
     vec3 specular = nominator / denominator;
 
     vec3 kS = F;
-    vec3 kD = vec3(1.0) - kS;
-    kD *= 1.0 - param.metallic;
+    vec3 kD = (vec3(1.0) - kS) * (1.0 - param.metallic);
 
     float NdotL = max(dot(N, L), 0.0);
     Lo += (kD * param.albedo / PI + specular) * radiance * NdotL;
   }
-  vec3 R = normalize(reflect(-V, N));
+  Lo = vec3(0, 0, 0);
+  // Environmental Lo
+  vec3 R = normalize(reflect(-V, normalize(N)));
   const float MAX_REFLECTED_LOD = 4.0;
   vec3 prefiltered_color = textureLod(texture_prefiltered_color_cubemap, R, param.roughness * MAX_REFLECTED_LOD).rgb;
   vec3 ambient_F = FresnelSchlinkRoughness(max(dot(N, V), 0.0), F0, param.roughness);
@@ -64,5 +68,5 @@ vec3 PbrModel(PbrModelInput param) {
   vec3 irradiance = texture(texture_irradiance_cubemap, N).rgb;
   vec3 ambient = (ambient_KD * irradiance * param.albedo + ambient_specular) * param.ao;
   vec3 color = ambient + Lo;
-  return prefiltered_color;
+  return N;
 }

@@ -33,4 +33,8 @@ TEST(engine_test, util)
   EXPECT_EQ(util::FileDir("abc.png"), "");
   EXPECT_EQ(util::FileDir("/abc.png"), "");
   EXPECT_EQ(util::FileDir("a/abc.png"), "a");
+
+  EXPECT_EQ(util::ReplaceBackslash("a\\abc.png"), "a/abc.png");
+  EXPECT_EQ(util::ReplaceBackslash("\\"), "/");
+  EXPECT_EQ(util::ReplaceBackslash("a/abc.png"), "a/abc.png");
 }

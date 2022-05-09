@@ -1,5 +1,8 @@
 #include "playground/shaders.h"
 
+#include "glm/gtc/type_ptr.hpp"
+#include "imgui.h"
+
 #include "engine/debug.h"
 #include "playground/object/point_light.h"
 #include "engine/util.h"
@@ -51,7 +54,19 @@ void ShaderLightInfo::UpdateMaterial(Context* context, engine::Material* materia
   material->SetInt("light_count", light_poses.size());
 }
 
-PhongShader::PhongShader(const Param& phong, Context* context, Object* object) {
+void PhongShader::Param::Gui() {
+  ImGui::Separator();
+  ImGui::Text("Phong Shader");
+  ImGui::SliderFloat3(util::Format("{}##{}", "ambient", (const char*)this).c_str(), glm::value_ptr(ambient_), 0, 1);
+  ImGui::SliderFloat3(util::Format("{}##{}", "diffuse", (const char*)this).c_str(), glm::value_ptr(diffuse_), 0, 1);
+  ImGui::SliderFloat3(util::Format("{}##{}", "specular", (const char*)this).c_str(), glm::value_ptr(specular_), 0, 1);
+  ImGui::SliderFloat(util::Format("{}##{}", "roughness", (const char*)this).c_str(), &shininess_, 0, 100);
+  ImGui::Checkbox(util::Format("{}##{}", "use_blinn_phong", (const char*)this).c_str(), &use_blinn_phong_);
+  ImGui::Separator();
+}
+
+PhongShader::PhongShader(Param* phong, Context* context, Object* object) {
+  phong->Gui();
   engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
   material->SetShader(context->GetShader("phong"));
 
@@ -63,44 +78,54 @@ PhongShader::PhongShader(const Param& phong, Context* context, Object* object) {
   material->SetMat4("model", object->GetModelMatrix());
   material->SetVec3("view_pos", context->camera().transform().translation());
 
-  material->SetVec3("phong_material.ambient", phong.ambient);
-  material->SetVec3("phong_material.diffuse", phong.diffuse);
-  material->SetVec3("phong_material.specular", phong.specular);
-  material->SetFloat("phong_material.shininess", phong.shininess);
-  if (phong.texture_normal) {
+  material->SetVec3("phong_material.ambient", phong->ambient_);
+  material->SetVec3("phong_material.diffuse", phong->diffuse_);
+  material->SetVec3("phong_material.specular", phong->specular_);
+  material->SetFloat("phong_material.shininess", phong->shininess_);
+  if (phong->texture_normal) {
     material->SetBool("phong_material.use_texture_normal", true);
-    material->SetTexture("phong_material.texture_normal0", phong.texture_normal.value());
+    material->SetTexture("phong_material.texture_normal0", phong->texture_normal.value());
   } else {
     material->SetBool("phong_material.use_texture_normal", false);
   }
 
-  if (phong.texture_specular) {
+  if (phong->texture_specular) {
     material->SetBool("phong_material.use_texture_specular", true);
-    material->SetTexture("phong_material.texture_specular0", phong.texture_specular.value());
+    material->SetTexture("phong_material.texture_specular0", phong->texture_specular.value());
   } else {
     material->SetBool("phong_material.use_texture_specular", false);
   }
 
-  if (phong.texture_ambient) {
+  if (phong->texture_ambient) {
     material->SetBool("phong_material.use_texture_ambient", true);
-    material->SetTexture("phong_material.texture_ambient0", phong.texture_ambient.value());
+    material->SetTexture("phong_material.texture_ambient0", phong->texture_ambient.value());
   } else {
     material->SetBool("phong_material.use_texture_ambient", false);
   }
   
-  if (phong.texture_diffuse) {
+  if (phong->texture_diffuse) {
     material->SetBool("phong_material.use_texture_diffuse", true);
-    material->SetTexture("phong_material.texture_diffuse0", phong.texture_diffuse.value());
+    material->SetTexture("phong_material.texture_diffuse0", phong->texture_diffuse.value());
   } else {
     material->SetBool("phong_material.use_texture_diffuse", false);
   }
 
-  phong.light_info.UpdateMaterial(context, material);
-  if (phong.shadow_info) {
-    phong.shadow_info->UpdateMaterial(context, material);
+  phong->light_info.UpdateMaterial(context, material);
+  if (phong->shadow_info) {
+    phong->shadow_info->UpdateMaterial(context, material);
   }
 
-  material->SetInt("blinn_phong", phong.use_blinn_phong);
+  material->SetInt("blinn_phong", phong->use_blinn_phong_);
+}
+
+void PbrShader::Param::Gui() {
+  ImGui::Separator();
+  ImGui::Text("Pbr Shader");
+  ImGui::SliderFloat3(util::Format("{}##{}", "albedo", (const char*)this).c_str(), glm::value_ptr(albedo_), 0, 1);
+  ImGui::SliderFloat(util::Format("{}##{}", "metallic", (const char*)this).c_str(), &metallic_, 0, 1);
+  ImGui::SliderFloat(util::Format("{}##{}", "roughness", (const char*)this).c_str(), &roughness_, 0, 1);
+  ImGui::SliderFloat3(util::Format("{}##{}", "ao", (const char*)this).c_str(), glm::value_ptr(ao_), 0, 1);
+  ImGui::Separator();
 }
 
 PbrShader::PbrShader(const Param& pbr, Context* context, Object* object) {
@@ -115,10 +140,10 @@ PbrShader::PbrShader(const Param& pbr, Context* context, Object* object) {
   material->SetMat4("model", object->GetModelMatrix());
   material->SetVec3("view_pos", context->camera().transform().translation());
 
-  material->SetVec3("pbr_material.albedo", pbr.albedo);
-  material->SetFloat("pbr_material.roughness", pbr.roughness);
-  material->SetFloat("pbr_material.metallic", pbr.metallic);
-  material->SetVec3("pbr_material.ao", pbr.ao);
+  material->SetVec3("pbr_material.albedo", pbr.albedo_);
+  material->SetFloat("pbr_material.roughness", pbr.roughness_);
+  material->SetFloat("pbr_material.metallic", pbr.metallic_);
+  material->SetVec3("pbr_material.ao", pbr.ao_);
 
   if (pbr.texture_normal.has_value()) {
     material->SetBool("pbr_material.use_texture_normal", true);
@@ -165,7 +190,8 @@ PbrShader::PbrShader(const Param& pbr, Context* context, Object* object) {
   }
 }
 
-NormalShader::NormalShader(const Param& normal, Context* context, Object* object) {
+NormalShader::NormalShader(Param* normal, Context* context, Object* object) {
+  normal->Gui();
   engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
   material->SetShader(context->GetShader("normal"));
   const engine::Camera& camera = context->camera();
@@ -174,16 +200,28 @@ NormalShader::NormalShader(const Param& normal, Context* context, Object* object
   material->SetMat4("project", project);
   material->SetMat4("view", view);
   material->SetMat4("model", object->GetModelMatrix());
-  material->SetFloat("line_length", normal.length);
-  material->SetFloat("line_width", normal.width);
+  material->SetFloat("line_length", normal->length_);
+  material->SetFloat("line_width", normal->width_);
   material->SetVec3("view_pos", camera.transform().translation());
-  material->SetBool("show_vertex_normal", normal.show_vertex_normal);
-  material->SetBool("show_TBN", normal.show_TBN);
-  material->SetBool("show_triangle", normal.show_triangle);
-  material->SetBool("show_texture_normal", normal.show_texture_normal && normal.texture_normal);
-  if (normal.texture_normal) {
-    material->SetTexture("texture_normal", normal.texture_normal.value());
+  material->SetBool("show_vertex_normal", normal->show_vertex_normal_);
+  material->SetBool("show_TBN", normal->show_TBN_);
+  material->SetBool("show_triangle", normal->show_triangle_);
+  material->SetBool("show_texture_normal", normal->show_texture_normal_ && normal->texture_normal);
+  if (normal->texture_normal) {
+    material->SetTexture("texture_normal", normal->texture_normal.value());
   }
+}
+
+void NormalShader::Param::Gui() {
+  ImGui::Separator();
+  ImGui::Text("Normal Shader");
+  ImGui::Checkbox(util::Format("{}##{}", "vertex_normal", (const char*)this).c_str(), &show_vertex_normal_);
+  ImGui::Checkbox(util::Format("{}##{}", "TBN", (const char*)this).c_str(), &show_TBN_);
+  ImGui::Checkbox(util::Format("{}##{}", "triangle", (const char*)this).c_str(), &show_triangle_);
+  ImGui::Checkbox(util::Format("{}##{}", "texture_normal", (const char*)this).c_str(), &show_texture_normal_);
+  ImGui::SliderFloat(util::Format("{}##{}", "length", (const char*)this).c_str(), &length_, 0, 1);
+  ImGui::SliderFloat(util::Format("{}##{}", "width", (const char*)this).c_str(), &width_, 0, 1);
+  ImGui::Separator();
 }
 
 LinesShader::LinesShader(const Param& param, Context* context, Object* object) {

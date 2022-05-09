@@ -85,7 +85,7 @@ void ModelScene::OnRender(Context *context) {
   glCullFace_(call_face_);
   glFrontFace_(cw_);
 
-  PhongShader::Param phong;
+  static PhongShader::Param phong;
   phong.light_info = ShaderLightInfo(point_lights_);
   for (int i = 0; i < nanosuit_.model_part_num(); ++i) {
     ModelPart* model_part = nanosuit_.mutable_model_part(i);
@@ -107,14 +107,11 @@ void ModelScene::OnRender(Context *context) {
     if (use_texture_diffuse_) {
       phong.texture_diffuse = model_part->texture_diffuse(0);
     }
-    phong.shininess = shininess_;
-    PhongShader(phong, context, model_part);
+    PhongShader(&phong, context, model_part);
     model_part->OnRender(context);
-    phong.use_blinn_phong = use_blinn_phong_;
     
-    NormalShader::Param normal_param{show_vertex_normal_, show_TBN_, show_triangle_,
-                                     show_texture_normal_, phong.texture_normal, 0.1, 1};
-    NormalShader(normal_param, context, model_part);
+    static NormalShader::Param normal_param{false, false, false, false, 0.1, 1, phong.texture_normal};
+    NormalShader(&normal_param, context, model_part);
     model_part->OnRender(context);
   }
 

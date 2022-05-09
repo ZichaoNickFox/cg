@@ -371,51 +371,51 @@ texture_config {
 }
 
 texture_config {
-  name : "pbr_environment_cubemap";
+  name : "pbr_environment_tropical";
   level_num : 1;
   texture_type : Cubemap;
-  path { key : "level0_px"; value : "playground/resource/texture/pbr_enviroment_cubemap/px.png"; }
-  path { key : "level0_nx"; value : "playground/resource/texture/pbr_enviroment_cubemap/nx.png"; }
-  path { key : "level0_py"; value : "playground/resource/texture/pbr_enviroment_cubemap/py.png"; }
-  path { key : "level0_ny"; value : "playground/resource/texture/pbr_enviroment_cubemap/ny.png"; }
-  path { key : "level0_pz"; value : "playground/resource/texture/pbr_enviroment_cubemap/pz.png"; }
-  path { key : "level0_nz"; value : "playground/resource/texture/pbr_enviroment_cubemap/nz.png"; }
+  path { key : "level0_px"; value : "playground/resource/texture/pbr_environment_tropical/px.png"; }
+  path { key : "level0_nx"; value : "playground/resource/texture/pbr_environment_tropical/nx.png"; }
+  path { key : "level0_py"; value : "playground/resource/texture/pbr_environment_tropical/py.png"; }
+  path { key : "level0_ny"; value : "playground/resource/texture/pbr_environment_tropical/ny.png"; }
+  path { key : "level0_pz"; value : "playground/resource/texture/pbr_environment_tropical/pz.png"; }
+  path { key : "level0_nz"; value : "playground/resource/texture/pbr_environment_tropical/nz.png"; }
 }
 
 texture_config {
-  name : "pbr_prefiltered_color_cubemap";
+  name : "pbr_prefiltered_color_tropical";
   level_num : 5;
   texture_type : Cubemap;
-  path { key : "level0_px"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level0_px.png"; }
-  path { key : "level0_nx"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level0_nx.png"; }
-  path { key : "level0_py"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level0_py.png"; }
-  path { key : "level0_ny"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level0_ny.png"; }
-  path { key : "level0_pz"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level0_pz.png"; }
-  path { key : "level0_nz"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level0_nz.png"; }
-  path { key : "level1_px"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level1_px.png"; }
-  path { key : "level1_nx"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level1_nx.png"; }
-  path { key : "level1_py"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level1_py.png"; }
-  path { key : "level1_ny"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level1_ny.png"; }
-  path { key : "level1_pz"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level1_pz.png"; }
-  path { key : "level1_nz"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level1_nz.png"; }
-  path { key : "level2_px"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level2_px.png"; }
-  path { key : "level2_nx"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level2_nx.png"; }
-  path { key : "level2_py"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level2_py.png"; }
-  path { key : "level2_ny"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level2_ny.png"; }
-  path { key : "level2_pz"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level2_pz.png"; }
-  path { key : "level2_nz"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level2_nz.png"; }
-  path { key : "level3_px"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level3_px.png"; }
-  path { key : "level3_nx"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level3_nx.png"; }
-  path { key : "level3_py"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level3_py.png"; }
-  path { key : "level3_ny"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level3_ny.png"; }
-  path { key : "level3_pz"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level3_pz.png"; }
-  path { key : "level3_nz"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level3_nz.png"; }
-  path { key : "level4_px"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level4_px.png"; }
-  path { key : "level4_nx"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level4_nx.png"; }
-  path { key : "level4_py"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level4_py.png"; }
-  path { key : "level4_ny"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level4_ny.png"; }
-  path { key : "level4_pz"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level4_pz.png"; }
-  path { key : "level4_nz"; value : "playground/resource/texture/pbr_prefiltered_color_cubemap/level4_nz.png"; }
+  path { key : "level0_px"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level0_px.png"; }
+  path { key : "level0_nx"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level0_nx.png"; }
+  path { key : "level0_py"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level0_py.png"; }
+  path { key : "level0_ny"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level0_ny.png"; }
+  path { key : "level0_pz"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level0_pz.png"; }
+  path { key : "level0_nz"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level0_nz.png"; }
+  path { key : "level1_px"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level1_px.png"; }
+  path { key : "level1_nx"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level1_nx.png"; }
+  path { key : "level1_py"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level1_py.png"; }
+  path { key : "level1_ny"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level1_ny.png"; }
+  path { key : "level1_pz"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level1_pz.png"; }
+  path { key : "level1_nz"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level1_nz.png"; }
+  path { key : "level2_px"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level2_px.png"; }
+  path { key : "level2_nx"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level2_nx.png"; }
+  path { key : "level2_py"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level2_py.png"; }
+  path { key : "level2_ny"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level2_ny.png"; }
+  path { key : "level2_pz"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level2_pz.png"; }
+  path { key : "level2_nz"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level2_nz.png"; }
+  path { key : "level3_px"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level3_px.png"; }
+  path { key : "level3_nx"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level3_nx.png"; }
+  path { key : "level3_py"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level3_py.png"; }
+  path { key : "level3_ny"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level3_ny.png"; }
+  path { key : "level3_pz"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level3_pz.png"; }
+  path { key : "level3_nz"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level3_nz.png"; }
+  path { key : "level4_px"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level4_px.png"; }
+  path { key : "level4_nx"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level4_nx.png"; }
+  path { key : "level4_py"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level4_py.png"; }
+  path { key : "level4_ny"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level4_ny.png"; }
+  path { key : "level4_pz"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level4_pz.png"; }
+  path { key : "level4_nz"; value : "playground/resource/texture/pbr_prefiltered_color_tropical/level4_nz.png"; }
 }
 
 texture_config {
@@ -460,15 +460,15 @@ texture_config {
 }
 
 texture_config {
-  name : "pbr_irradiance_cubemap";
+  name : "pbr_irradiance_tropical";
   level_num : 1;
   texture_type : Cubemap;
-  path { key : "level0_px"; value : "playground/resource/texture/pbr_irradiance_cubemap/px.png"; }
-  path { key : "level0_nx"; value : "playground/resource/texture/pbr_irradiance_cubemap/nx.png"; }
-  path { key : "level0_ny"; value : "playground/resource/texture/pbr_irradiance_cubemap/ny.png"; }
-  path { key : "level0_py"; value : "playground/resource/texture/pbr_irradiance_cubemap/py.png"; }
-  path { key : "level0_pz"; value : "playground/resource/texture/pbr_irradiance_cubemap/pz.png"; }
-  path { key : "level0_nz"; value : "playground/resource/texture/pbr_irradiance_cubemap/nz.png"; }
+  path { key : "level0_px"; value : "playground/resource/texture/pbr_irradiance_tropical/px.png"; }
+  path { key : "level0_nx"; value : "playground/resource/texture/pbr_irradiance_tropical/nx.png"; }
+  path { key : "level0_py"; value : "playground/resource/texture/pbr_irradiance_tropical/py.png"; }
+  path { key : "level0_ny"; value : "playground/resource/texture/pbr_irradiance_tropical/ny.png"; }
+  path { key : "level0_pz"; value : "playground/resource/texture/pbr_irradiance_tropical/pz.png"; }
+  path { key : "level0_nz"; value : "playground/resource/texture/pbr_irradiance_tropical/nz.png"; }
 }
 
 texture_config {
@@ -478,10 +478,49 @@ texture_config {
   path { key : "level0"; value : "playground/resource/texture/pbr_BRDF_integration_map.png"; }
 }
 
+texture_config {
+  name : "cerberus_albedo";
+  level_num : 1;
+  texture_type : Texture2D;
+  path { key : "level0"; value : "playground/resource/model/cerberus/Textures/Cerberus_A.tga"; }
+}
+
+texture_config {
+  name : "cerberus_roughness";
+  level_num : 1;
+  texture_type : Texture2D;
+  path { key : "level0"; value : "playground/resource/model/cerberus/Textures/Cerberus_R.tga"; }
+}
+
+texture_config {
+  name : "cerberus_normal";
+  level_num : 1;
+  texture_type : Texture2D;
+  path { key : "level0"; value : "playground/resource/model/cerberus/Textures/Cerberus_N.tga"; }
+}
+
+texture_config {
+  name : "cerberus_metallic";
+  level_num : 1;
+  texture_type : Texture2D;
+  path { key : "level0"; value : "playground/resource/model/cerberus/Textures/Cerberus_M.tga"; }
+}
+
 model_config {
   name : "nanosuit";
-  obj_path : "playground/resource/model/nanosuit/nanosuit.obj";
+  mesh_path : "playground/resource/model/nanosuit/nanosuit.obj";
   texture_dir : "playground/resource/model/nanosuit";
+}
+
+model_config {
+  name : "cerberus";
+  mesh_path : "playground/resource/model/cerberus/Cerberus_LP.FBX";
+  texture_dir : "playground/resource/model/cerberus";
+}
+
+model_config {
+  name : "teapot";
+  mesh_path : "playground/resource/model/teapot.obj";
 }
 
 light_attenuation_config {

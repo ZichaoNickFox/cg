@@ -46,6 +46,12 @@ std::string FileDir(const std::string& path) {
   }
 }
 
+std::string ReplaceBackslash(const std::string& path) {
+  std::string res = path;
+  std::replace(res.begin(), res.end(), '\\', '/');
+  return res;
+}
+
 // S_IRWXU	00700权限，代表该文件所有者拥有读，写和执行操作的权限
 // S_IRUSR(S_IREAD)	00400权限，代表该文件所有者拥有可读的权限
 // S_IWUSR(S_IWRITE)	00200权限，代表该文件所有者拥有可写的权限

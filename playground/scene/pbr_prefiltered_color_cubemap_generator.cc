@@ -12,8 +12,8 @@
 #include "playground/object/sphere.h"
 #include "playground/scene/common.h"
 
-constexpr char input[] = "pbr_environment_cubemap";
-constexpr char output[] = "pbr_prefiltered_color_cubemap";
+std::string input = "pbr_environment_tropical";
+std::string output = "pbr_prefiltered_color_tropical";
 
 void PbrPrefilteredColorCubemapGenerator::OnEnter(Context *context)
 {

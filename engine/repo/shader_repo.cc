@@ -52,4 +52,10 @@ Shader ShaderRepo::GetOrLoadShader(const std::string& name) {
   }
   return shader_data->shader;
 }
+
+void ShaderRepo::ReloadShaders() {
+  for (auto& p : shaders_) {
+    p.second.loaded = false;
+  }
+}
 } // namespace engine

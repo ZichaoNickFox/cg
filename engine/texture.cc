@@ -8,6 +8,11 @@
 
 namespace engine {
 
+GLuint Texture::id() const {
+  CGCHECK(id_ != std::numeric_limits<GLuint>::max()) << "Texture used before assign id";
+  return id_;
+}
+
 Texture2DData::Texture2DData(int level_num, int level0_buffer_size) {
   resize(level_num, level0_buffer_size);
 }
