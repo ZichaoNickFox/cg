@@ -82,7 +82,7 @@ void PbrScene::OnRender(Context *context)
     PbrShader(&pbr_cerberus, context, teapot_.mutable_model_part(part_index));
     teapot_.mutable_model_part(part_index)->OnRender(context);
 
-    static NormalShader::Param normal_shadow_teapot{true, true, true, true, 0.4, 0.1, context->GetTexture("cerberus_normal")};
+    static NormalShader::Param normal_shadow_teapot;
     NormalShader(&normal_shadow_teapot, context, teapot_.mutable_model_part(part_index));
     teapot_.mutable_model_part(part_index)->OnRender(context);
   }

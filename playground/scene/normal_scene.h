@@ -25,7 +25,6 @@ class NormalScene : public Scene {
   glm::vec4 light_color_ = glm::vec4(1, 1, 1, 1);
 
   bool use_blinn_phong_ = false;
-  bool use_texture_normal_ = false;
   bool show_vertex_normal_ = false;
   bool show_texture_normal_ = false;
   bool show_TBN_ = false;

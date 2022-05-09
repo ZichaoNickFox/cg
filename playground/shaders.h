@@ -104,21 +104,21 @@ class PbrShader {
 class NormalShader {
  public:
   struct Param {
-    Param(bool show_vertex_normal = true, bool show_TBN = true, bool show_triangle = true,
-          float show_texture_normal = true, float length = 0.4, float width = 1.0,
+    Param(bool show_vertex_normal = false, bool show_TBN = false, bool show_triangle = false,
+          float show_texture_normal = false, float length = 0.4, float width = 1.0,
           std::optional<engine::Texture> in_texture_normal = std::optional<engine::Texture>())
         : show_vertex_normal_(show_vertex_normal), show_TBN_(show_TBN), show_triangle_(show_triangle),
           show_texture_normal_(show_texture_normal), length_(length), width_(width),
           texture_normal(in_texture_normal) {}
    private:
-      void Gui();
+    void Gui();
 
-      bool show_vertex_normal_ = true;
-      bool show_TBN_ = true;
-      bool show_triangle_ = true;
-      bool show_texture_normal_ = true;
-      float length_ = 0.4;
-      float width_ = 1.0;
+    bool show_vertex_normal_;
+    bool show_TBN_;
+    bool show_triangle_;
+    bool show_texture_normal_;
+    float length_;
+    float width_;
    public:
     std::optional<engine::Texture> texture_normal;
 
