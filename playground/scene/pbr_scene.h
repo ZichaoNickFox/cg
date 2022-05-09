@@ -33,7 +33,6 @@ class PbrScene : public Scene {
   Plane plane_;
   Cube cube_;
 
-  Model cerberus_;
   Model teapot_;
 
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();

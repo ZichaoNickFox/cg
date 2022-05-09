@@ -13,21 +13,16 @@ out vec3 normal_ws_;
 out vec2 texcoord_;
 out mat3 world_TBN_;
 
-out vec3 normal_ls_;
 out mat4 model_;
 
 void main()
 {
   frag_world_pos_ = (model * vec4(pos, 1.0)).xyz;
-  normal_ls_ = normal;
   normal_ws_ = (model * vec4(normal, 1.0)).xyz;
 
   world_TBN_[0] = normalize(vec3(model * vec4(tangent, 0.0)));
   world_TBN_[1] = normalize(vec3(model * vec4(bitangent, 0.0)));
   world_TBN_[2] = normalize(normal_ws_);
-  // world_TBN_[0] = tangent;
-  // world_TBN_[1] = bitangent;
-  // world_TBN_[2] = normal_ws_;
 
   texcoord_ = texcoord;
 

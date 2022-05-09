@@ -20,7 +20,7 @@
 #include "playground/scene/texture_lod_scene.h"
 
 namespace {
-const std::string kDefaultScene = "ModelScene";
+const std::string kDefaultScene = "PbrScene";
 }
 
 void Playground::Init(const Context::Option& option) {

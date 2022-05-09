@@ -10,7 +10,6 @@ in mat3 world_TBN_;
 
 in vec2 texcoord_;
 
-in vec3 normal_ls_;
 in mat4 model_;
 
 void main()
@@ -58,5 +57,5 @@ void main()
   // color = color / (color + vec3(1.0));
   // color = pow(color, vec3(1.0 / 2.2));
 
-  FragColor = vec4(normal_ls_, 1.0);
+  FragColor = vec4(color, 1.0);
 }

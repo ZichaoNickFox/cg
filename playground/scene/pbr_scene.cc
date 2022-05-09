@@ -34,17 +34,9 @@ void PbrScene::OnEnter(Context *context)
 
   cube_.mutable_transform()->SetTranslation(glm::vec3(2, 2, 2));
 
-  cerberus_.Init(context, "cerberus", "cerberus");
-  for (int i = 0; i < cerberus_.model_part_num(); ++i) {
-    cerberus_.mutable_model_part(i)->mutable_transform()->SetScale(glm::vec3(0.02, 0.02, 0.02));
-    glm::quat rotation = glm::angleAxis(float(M_PI /2), glm::vec3(-1.0, 0.0, 0.0));
-    cerberus_.mutable_model_part(i)->mutable_transform()->SetRotation(rotation);
-  }
-
   teapot_.Init(context, "teapot", "teapot");
   for (int i = 0; i < teapot_.model_part_num(); ++i) {
-    teapot_.mutable_model_part(i)->mutable_transform()->SetScale(glm::vec3(0.1, 0.1, 0.1));
-    glm::quat rotation = glm::angleAxis(float(M_PI /2), glm::vec3(-1.0, 0.0, 0.0));
+    teapot_.mutable_model_part(i)->mutable_transform()->SetScale(glm::vec3(0.2, 0.2, 0.2));
   }
 
   glEnable(GL_DEPTH_TEST);
@@ -81,44 +73,18 @@ void PbrScene::OnRender(Context *context)
     point_lights_[i].OnRender(context);
   }
 
-  static PbrShader::Param pbr_primitive{glm::vec3(1, 0, 0), 0.5, 0.5};
-  pbr_primitive.Gui();
-  pbr_primitive.light_info = ShaderLightInfo(point_lights_);
-  pbr_primitive.texture_irradiance_cubemap = context->GetTexture("pbr_irradiance_tropical");
-  pbr_primitive.texture_prefiltered_color_cubemap = context->GetTexture("pbr_prefiltered_color_tropical");
-  pbr_primitive.texture_BRDF_integration_map = context->GetTexture("pbr_BRDF_integration_map");
-
-  PbrShader(pbr_primitive, context, &sphere_);
-  sphere_.OnRender(context);
-
-  static NormalShader::Param normal_shader_sphere;
-  NormalShader(&normal_shader_sphere, context, &sphere_);
-  sphere_.OnRender(context);
-
-  PbrShader(pbr_primitive, context, &cube_);
-  cube_.OnRender(context);
-
-  // PbrShader(pbr_primitive, context, &plane_);
-  // plane_.OnRender(context);
-
   static PbrShader::Param pbr_cerberus;
   pbr_cerberus.light_info = ShaderLightInfo(point_lights_);
   pbr_cerberus.texture_irradiance_cubemap = context->GetTexture("pbr_irradiance_tropical");
   pbr_cerberus.texture_prefiltered_color_cubemap = context->GetTexture("pbr_prefiltered_color_tropical");
   pbr_cerberus.texture_BRDF_integration_map = context->GetTexture("pbr_BRDF_integration_map");
-  for (int part_index = 0; part_index < cerberus_.model_part_num(); ++part_index) {
-    pbr_cerberus.texture_albedo = context->GetTexture("cerberus_albedo");
-    pbr_cerberus.texture_metallic = context->GetTexture("cerberus_metallic");
-    pbr_cerberus.texture_roughness = context->GetTexture("cerberus_roughness");
-    pbr_cerberus.texture_normal = context->GetTexture("cerberus_normal");
-    PbrShader({pbr_cerberus}, context, teapot_.mutable_model_part(part_index));
-    // cerberus_.mutable_model_part(part_index)->OnRender(context); 
+  for (int part_index = 0; part_index < teapot_.model_part_num(); ++part_index) {
+    PbrShader(&pbr_cerberus, context, teapot_.mutable_model_part(part_index));
     teapot_.mutable_model_part(part_index)->OnRender(context);
 
     static NormalShader::Param normal_shadow_teapot{true, true, true, true, 0.4, 0.1, context->GetTexture("cerberus_normal")};
     NormalShader(&normal_shadow_teapot, context, teapot_.mutable_model_part(part_index));
     teapot_.mutable_model_part(part_index)->OnRender(context);
-    // cerberus_.mutable_model_part(part_index)->OnRender(context); 
   }
 
   LinesShader({1.0}, context, &coord_);

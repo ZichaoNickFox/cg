@@ -227,9 +227,9 @@ void ShareScene::RunForwardPass2(Context* context, ForwardPass* forward_pass) {
   pbr.texture_normal = context->GetTexture("brickwall_normal");
   pbr.light_info = ShaderLightInfo({point_light_});
   pbr.shadow_info = forward_pass->prepass_shadow_info();
-  PbrShader(pbr, context, &sphere_);
+  PbrShader(&pbr, context, &sphere_);
   sphere_.OnRender(context);
-  PbrShader(pbr, context, &plane_);
+  PbrShader(&pbr, context, &plane_);
   plane_.OnRender(context);
 
   LinesShader({}, context, directional_light_.mutable_lines());

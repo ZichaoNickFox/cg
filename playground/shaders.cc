@@ -121,14 +121,15 @@ PhongShader::PhongShader(Param* phong, Context* context, Object* object) {
 void PbrShader::Param::Gui() {
   ImGui::Separator();
   ImGui::Text("Pbr Shader");
-  ImGui::SliderFloat3(util::Format("{}##{}", "albedo", (const char*)this).c_str(), glm::value_ptr(albedo_), 0, 1);
+  ImGui::ColorEdit3(util::Format("{}##{}", "albedo", (const char*)this).c_str(), glm::value_ptr(albedo_));
   ImGui::SliderFloat(util::Format("{}##{}", "metallic", (const char*)this).c_str(), &metallic_, 0, 1);
   ImGui::SliderFloat(util::Format("{}##{}", "roughness", (const char*)this).c_str(), &roughness_, 0, 1);
   ImGui::SliderFloat3(util::Format("{}##{}", "ao", (const char*)this).c_str(), glm::value_ptr(ao_), 0, 1);
   ImGui::Separator();
 }
 
-PbrShader::PbrShader(const Param& pbr, Context* context, Object* object) {
+PbrShader::PbrShader(Param* pbr, Context* context, Object* object) {
+  pbr->Gui();
   engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
   material->SetShader(context->GetShader("pbr"));
 
@@ -140,53 +141,53 @@ PbrShader::PbrShader(const Param& pbr, Context* context, Object* object) {
   material->SetMat4("model", object->GetModelMatrix());
   material->SetVec3("view_pos", context->camera().transform().translation());
 
-  material->SetVec3("pbr_material.albedo", pbr.albedo_);
-  material->SetFloat("pbr_material.roughness", pbr.roughness_);
-  material->SetFloat("pbr_material.metallic", pbr.metallic_);
-  material->SetVec3("pbr_material.ao", pbr.ao_);
+  material->SetVec3("pbr_material.albedo", pbr->albedo_);
+  material->SetFloat("pbr_material.roughness", pbr->roughness_);
+  material->SetFloat("pbr_material.metallic", pbr->metallic_);
+  material->SetVec3("pbr_material.ao", pbr->ao_);
 
-  if (pbr.texture_normal.has_value()) {
+  if (pbr->texture_normal.has_value()) {
     material->SetBool("pbr_material.use_texture_normal", true);
-    material->SetTexture("pbr_material.texture_normal0", pbr.texture_normal.value());
+    material->SetTexture("pbr_material.texture_normal0", pbr->texture_normal.value());
   } else {
     material->SetBool("pbr_material.use_texture_normal", false);
   }
 
-  if (pbr.texture_albedo.has_value()) {
+  if (pbr->texture_albedo.has_value()) {
     material->SetBool("pbr_material.use_texture_albedo", true);
-    material->SetTexture("pbr_material.texture_albedo0", pbr.texture_albedo.value());
+    material->SetTexture("pbr_material.texture_albedo0", pbr->texture_albedo.value());
   } else {
     material->SetBool("pbr_material.use_texture_albedo", false);
   }
 
-  if (pbr.texture_metallic.has_value()) {
+  if (pbr->texture_metallic.has_value()) {
     material->SetBool("pbr_material.use_texture_metallic", true);
-    material->SetTexture("pbr_material.texture_metallic0", pbr.texture_metallic.value());
+    material->SetTexture("pbr_material.texture_metallic0", pbr->texture_metallic.value());
   } else {
     material->SetBool("pbr_material.use_texture_metallic", false);
   }
 
-  if (pbr.texture_roughness.has_value()) {
+  if (pbr->texture_roughness.has_value()) {
     material->SetBool("pbr_material.use_texture_roughness", true);
-    material->SetTexture("pbr_material.texture_roughness0", pbr.texture_roughness.value());
+    material->SetTexture("pbr_material.texture_roughness0", pbr->texture_roughness.value());
   } else {
     material->SetBool("pbr_material.use_texture_roughness", false);
   }
 
-  if (pbr.texture_ao.has_value()) {
+  if (pbr->texture_ao.has_value()) {
     material->SetBool("pbr_material.use_texture_ao", true);
-    material->SetTexture("pbr_material.texture_ao0", pbr.texture_ao.value());
+    material->SetTexture("pbr_material.texture_ao0", pbr->texture_ao.value());
   } else {
     material->SetBool("pbr_material.use_texture_ao", false);
   }
 
-  material->SetTexture("texture_irradiance_cubemap", pbr.texture_irradiance_cubemap);
-  material->SetTexture("texture_prefiltered_color_cubemap", pbr.texture_prefiltered_color_cubemap);
-  material->SetTexture("texture_BRDF_integration_map", pbr.texture_BRDF_integration_map);
+  material->SetTexture("texture_irradiance_cubemap", pbr->texture_irradiance_cubemap);
+  material->SetTexture("texture_prefiltered_color_cubemap", pbr->texture_prefiltered_color_cubemap);
+  material->SetTexture("texture_BRDF_integration_map", pbr->texture_BRDF_integration_map);
 
-  pbr.light_info.UpdateMaterial(context, material);
-  if (pbr.shadow_info) {
-    pbr.shadow_info->UpdateMaterial(context, material);
+  pbr->light_info.UpdateMaterial(context, material);
+  if (pbr->shadow_info) {
+    pbr->shadow_info->UpdateMaterial(context, material);
   }
 }
 

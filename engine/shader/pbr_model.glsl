@@ -68,5 +68,5 @@ vec3 PbrModel(PbrModelInput param) {
   vec3 irradiance = texture(texture_irradiance_cubemap, N).rgb;
   vec3 ambient = (ambient_KD * irradiance * param.albedo + ambient_specular) * param.ao;
   vec3 color = ambient + Lo;
-  return N;
+  return color;
 }

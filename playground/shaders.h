@@ -98,7 +98,7 @@ class PbrShader {
 
     friend class PbrShader;
   };
-  PbrShader(const Param& param, Context* context, Object* object);
+  PbrShader(Param* param, Context* context, Object* object);
 };
 
 class NormalShader {
