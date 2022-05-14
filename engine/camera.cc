@@ -19,9 +19,29 @@ glm::mat4 Camera::GetProjectMatrix() const {
   }
 }
 
+// https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/gluLookAt.xml
+glm::mat4 LookAt(const glm::vec3& transform, const glm::vec3& center, const glm::vec3& world_up) {
+  glm::vec3 front = normalize(center - transform);
+  glm::vec3 right = normalize(glm::cross(front, world_up));
+  glm::vec3 up = normalize(glm::cross(right, front));
+  glm::mat4 translation_v2w = glm::mat4(1, 0, 0, -transform.x,
+                                        0, 1, 0, -transform.y,
+                                        0, 0, 1, -transform.z,
+                                        0, 0, 0, 1);
+  // TODO why cannot use inverse?
+  glm::mat4 translation_w2v = glm::transpose(translation_v2w);
+  glm::mat4 rotation_v2w = glm::mat4(right.x, right.y, right.z, 0,
+                                     up.x, up.y, up.z, 0,
+                                     -front.x, -front.y, -front.z, 0,
+                                     0, 0, 0, 1);
+  glm::mat4 rotation_w2v = glm::transpose(rotation_v2w);
+  return rotation_w2v * translation_w2v;
+}
+
 glm::mat4 Camera::GetViewMatrix() const {
   glm::vec3 center = transform_.translation() + transform_.rotation() * glm::vec3(0, 0, -1);
-  return glm::lookAt(transform_.translation(), center, world_up_);
+  // return glm::lookAt(transform_.translation(), center, world_up_);
+  return LookAt(transform_.translation(), center, world_up_);
 }
 
 void Camera::MoveForward(float delta) {

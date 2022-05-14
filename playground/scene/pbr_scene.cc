@@ -23,8 +23,8 @@ void PbrScene::OnEnter(Context *context)
     point_lights_[i].SetColor(kLightColor);
   }
 
-  camera_->mutable_transform()->SetTranslation(glm::vec3(-1.50, 0.51, 2.71));
-  camera_->mutable_transform()->SetRotation(glm::quat(0.89, -0.13, -0.41, -0.06));
+  // camera_->mutable_transform()->SetTranslation(glm::vec3(1.18, -1.38, 2.66));
+  // camera_->mutable_transform()->SetRotation(glm::quat(0.96, 0.17, 0.17, -0.03));
   camera_->SetFarClip(200);
   context->SetCamera(camera_.get());
 
@@ -58,6 +58,7 @@ void PbrScene::OnUpdate(Context *context)
   coord_.OnUpdate(context);
   skybox_.OnUpdate(context);
   plane_.OnUpdate(context);
+  cube_.OnUpdate(context);
 
   ImGui::SliderFloat("metallic", &metallic_, 0.0, 1.0);
   ImGui::SliderFloat("roughness", &roughness_, 0.0, 1.0);
@@ -87,10 +88,13 @@ void PbrScene::OnRender(Context *context)
     teapot_.mutable_model_part(part_index)->OnRender(context);
   }
 
+  PbrShader(&pbr_cerberus, context, &cube_);
+  cube_.OnRender(context);
+
   LinesShader({1.0}, context, &coord_);
   coord_.OnRender(context);
 
-  CubemapShader({context->GetTexture("pbr_environment_tropical")}, context, &skybox_);
+  CubemapShader({context->GetTexture("pbr_prefiltered_color_tropical")}, context, &skybox_);
   skybox_.OnRender(context);
 }
 
