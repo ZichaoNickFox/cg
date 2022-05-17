@@ -18,10 +18,10 @@ cc_library(
     "//engine:engine",
     "//engine/primitive:primitive",
     "//engine:util",
+    "@fmt//:fmt",
     "@stb//:stb",
   ],
   linkopts = [
-    "-lfmt",
     "-lGLEW",
   ],
 )

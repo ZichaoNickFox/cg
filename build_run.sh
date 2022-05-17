@@ -1,6 +1,6 @@
 
 # build
-bazel build \
+bazel --output_user_root="./.cache" build \
   --cxxopt="--std=c++17" \
   --cxxopt="-Wreturn-type" \
   --cxxopt="-Wnonportable-include-path" \

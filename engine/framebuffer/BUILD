@@ -20,9 +20,9 @@ cc_library(
     "//engine:debug",
     "//engine:engine",
     "//engine:util",
+    "@fmt//:fmt",
   ],
   linkopts = [
-    "-lfmt",
     "-lGLEW",
   ],
 )

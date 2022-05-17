@@ -47,10 +47,7 @@ cc_library(
     "//playground:pass",
     "//playground:scene",
     "//playground/object:object",
+    "@fmt//:fmt",
     "@imgui//:imgui",
-  ],
-  linkopts = [
-    "-lfmt",
-    "-lglog"
   ],
 )

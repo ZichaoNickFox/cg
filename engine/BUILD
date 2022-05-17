@@ -9,6 +9,7 @@ cc_library (
   ],
   deps = [
     "//engine:debug",
+    "@com_github_google_glog//:glog",
   ],
 )
 
@@ -53,9 +54,9 @@ cc_library(
     "//engine/primitive:primitive",
     "//engine:util",
     "@imgui//:imgui",
+    "@fmt//:fmt",
   ],
   linkopts = [
-    "-lfmt",
     "-lGLEW",
   ],
 )
@@ -70,8 +71,7 @@ cc_library(
     "//engine:debug",
     # TODO : for compile success
     "//engine/proto:cc_config_proto",
-  ],
-  linkopts = [
-    "-lglog"
+    "@fmt",
+    "@com_github_google_glog//:glog"
   ],
 )

@@ -32,9 +32,6 @@ cc_library(
     "//engine/framebuffer:framebuffer",
     "//engine/repo:repo",
     "//playground:context",
-  ],
-  linkopts = [
-    "-lfmt",
-    "-lglog"
+    "@fmt//:fmt",
   ],
 )

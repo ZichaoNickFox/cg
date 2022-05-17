@@ -9,3 +9,5 @@ thirdparty
 settings.json
 imgui.ini
 /imgui.ini
+bazel.exe
+.cache

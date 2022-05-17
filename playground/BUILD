@@ -10,11 +10,11 @@ cc_binary(
   deps = [
     "//engine:debug",
     "//playground:playground",
+    "@fmt//:fmt",
+    # "@glfw//:glfw",
     "@imgui//:imgui",
-    "@imgui//backends:backends",
   ],
   linkopts = [
-    "-lfmt",
     "-lGLEW",
     "-lglfw3",
     "-framework OpenGL",
@@ -35,9 +35,9 @@ cc_library(
     "//engine/proto:cc_config_proto",
     "//playground:scene",
     "//playground/scene:scenes",
+    "@fmt",
   ],
   linkopts = [
-    "-lfmt",
     "-lassimp",
   ],
 )
@@ -63,9 +63,7 @@ cc_library(
     "//engine/proto:cc_config_proto",
     "//engine/repo:repo",
     "//engine:util",
-  ],
-  linkopts = [
-    "-lfmt",
+    "@fmt//:fmt",
   ],
 )
 
