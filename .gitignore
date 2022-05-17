@@ -3,8 +3,7 @@ examples
 bazel-*
 docs
 ~imgui/BUILD
-thirdparty
-!thirdparty/imgui/BUILD
+!thirdparty/glfw
 .DS_Store
 settings.json
 imgui.ini
