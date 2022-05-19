@@ -2,7 +2,6 @@
 
 #include <assimp/material.h>
 #include <assimp/postprocess.h>
-#include <glog/logging.h>
 #include <set>
 
 #include "engine/debug.h"

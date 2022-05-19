@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <assimp/postprocess.h>
 #include <glm/glm.hpp>
-#include <glog/logging.h>
 #include <math.h>
 #include <set>
 

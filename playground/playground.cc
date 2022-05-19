@@ -20,7 +20,7 @@
 #include "playground/scene/texture_lod_scene.h"
 
 namespace {
-const std::string kDefaultScene = "PbrScene";
+const std::string kDefaultScene = "ForwardShadingScene";
 }
 
 void Playground::Init(const Context::Option& option) {
@@ -48,7 +48,6 @@ void Playground::InitScene() {
 }
 
 void Playground::BeginFrame() {
-  CGLOG(ERROR, false) << "begin--------begin---------begin";
   frame_start_time_ = std::chrono::high_resolution_clock::now();
 }
 
@@ -69,7 +68,6 @@ void Playground::EndFrame() {
   util::Time frame_end_time = std::chrono::high_resolution_clock::now();
   int64_t frame_interval_millisecond = util::DurationMillisecond(frame_start_time_, frame_end_time);
   context_.SetFrameInternal(frame_interval_millisecond);
-  CGLOG(ERROR, false) << "end--------end---------end";
 }
 
 void Playground::SwitchScene(const std::string& next_scene) {

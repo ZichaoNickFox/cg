@@ -4,7 +4,6 @@
 
 #include "fmt/format.h"
 #include <glm/glm.hpp>
-#include <glog/logging.h>
 #include <google/protobuf/text_format.h>
 
 #include "engine/debug.h"

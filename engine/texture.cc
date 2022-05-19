@@ -1,6 +1,5 @@
 #include "engine/texture.h"
 
-#include <glog/logging.h>
 #include <math.h>
 #include <unordered_map>
 

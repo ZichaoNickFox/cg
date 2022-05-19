@@ -3,7 +3,8 @@
 #include <glm/glm.hpp>
 #include <glm/ext/quaternion_trigonometric.hpp>
 #include <glm/gtx/string_cast.hpp>
-#include <glog/logging.h>
+
+#include "engine/debug.h"
 
 namespace engine {
 

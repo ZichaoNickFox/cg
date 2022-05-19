@@ -1,9 +1,10 @@
 #include "engine/transform.h"
 
-#include <glog/logging.h>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/transform.hpp>
+
+#include "engine/debug.h" 
 
 namespace engine {
 

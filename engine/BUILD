@@ -9,7 +9,6 @@ cc_library (
   ],
   deps = [
     "//engine:debug",
-    "@com_github_google_glog//:glog",
     "@glew",
   ],
 )
@@ -19,6 +18,20 @@ cc_library (
   srcs = [
     "debug.h"
   ],
+  deps = [
+    "@boost//:stacktrace",
+    "@com_github_google_glog//:glog"
+  ],
+  defines = select({
+    "@platforms//os:windows": [
+      "CG_PLATFORM_WINDOWS",
+    ],
+    "@platforms//os:macos": [
+      "CG_PLATFORM_MACOS"
+    ],
+    "//conditions:default": [
+    ],
+  }),
 )
 
 cc_library(
@@ -73,6 +86,5 @@ cc_library(
     "//engine/proto:cc_config_proto",
     "@fmt",
     "@glm",
-    "@com_github_google_glog//:glog"
   ],
 )

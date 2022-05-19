@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#if defined _GLFW_COCOA
+#if defined CG_PLATFORM_MACOS
 #include <execinfo.h>
 #include <unistd.h>
 #endif
@@ -11,7 +11,6 @@
 #include "imgui.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
-#include <glog/logging.h>
 
 #include "engine/debug.h"
 #include "playground/playground.h"

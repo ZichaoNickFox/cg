@@ -6,8 +6,8 @@
 #include <vector>
 
 #include <glm/glm.hpp>
-#include <glog/logging.h>
 
+#include "engine/debug.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
 

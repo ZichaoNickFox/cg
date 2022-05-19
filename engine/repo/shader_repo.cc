@@ -1,7 +1,6 @@
 #include "engine/repo/shader_repo.h"
 
-#include <glog/logging.h>
-
+#include "engine/debug.h"
 #include "engine/util.h"
 
 namespace engine {

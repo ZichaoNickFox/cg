@@ -1,11 +1,14 @@
 #pragma once
 
-#if defined _GLFW_COCOA
+#if defined CG_PLATFORM_MACOS
 #include <execinfo.h>
 #include <unistd.h>
-#endif
-
 #include <glog/logging.h>
+#elif defined CG_PLATFORM_WINDOWS
+#include <boost/stacktrace.hpp>
+#define GLOG_NO_ABBREVIATED_SEVERITIES
+#include <glog/logging.h>
+#endif
 
 // Variable Argument Macro (VA_MACRO) upto 6 arguments
 #define NUM_ARGS_(_1, _2, _3, _4, _5, _6, TOTAL, ...) TOTAL
@@ -16,14 +19,17 @@
 #define VA_MACRO(MACRO, ...) CONCATE(MACRO, NUM_ARGS(__VA_ARGS__))(__VA_ARGS__)
 
 // functions
-#if defined _GLFW_COCOA
+#if defined CG_PLATFORM_MACOS
 #define BT() \
   void *bt_array[10]; \
   size_t bt_size; \
   bt_size = backtrace(bt_array, 10); \
   backtrace_symbols_fd(bt_array, bt_size, STDERR_FILENO);
+#elif defined CG_PLATFORM_WINDOWS
+#define BT() \
+  LOG(ERROR) << boost::stacktrace::stacktrace();
 #else
-#define BT()
+#error Implement BT
 #endif
 
 #define CGCHECK(condition)  \
@@ -33,9 +39,7 @@
   LOG_IF(FATAL, GOOGLE_PREDICT_BRANCH_NOT_TAKEN(!(condition))) \
     << "Check failed: " #condition " "
 
-#define CGLOG(...) VA_MACRO(CGLOG, __VA_ARGS__)
-#define CGLOG1(verbose) LOG(ERROR)
-#define CGLOG2(verbose, false) LOG_IF(verbose, false)
+#define CGLOG(...) LOG(ERROR)
 
 #define CGLOG_IF(verbose, condition) LOG_IF(verbose, condition)
 

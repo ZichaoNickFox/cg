@@ -2,8 +2,7 @@
 
 #include <stack>
 
-#include <glog/logging.h>
-
+#include "engine/debug.h"
 #include "engine/camera.h"
 #include "engine/io.h"
 #include "engine/proto/config.pb.h"

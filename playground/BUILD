@@ -17,6 +17,16 @@ cc_binary(
     "@glm",
     "@imgui",
   ],
+  defines = select({
+    "@platforms//os:windows": [
+      "CG_PLATFORM_WINDOWS",
+    ],
+    "@platforms//os:macos": [
+      "CG_PLATFORM_MACOS"
+    ],
+    "//conditions:default": [
+    ],
+  }),
 )
 
 cc_library(

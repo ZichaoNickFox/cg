@@ -1,10 +1,11 @@
 #include "engine/util.h"
 
 #include <fstream>
-#include <glog/logging.h>
 #include <limits>
 #include <string>
 #include <sys/stat.h>
+
+#include "engine/debug.h"
 
 namespace util {
 
@@ -65,7 +66,7 @@ std::string ReplaceBackslash(const std::string& path) {
 // S_IWOTH	00002权限，代表其他用户拥有可写的权限
 // S_IXOTH	00001权限，代表其他用户拥有执行的权限
 void MakeDir(const std::string& dir) {
-#if defined _GLFW_COCOA
+#if defined GL_PLATFORM_MACOS
   struct stat info;
   if (stat(dir.c_str(), &info) != 0) {
     mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;

@@ -2,7 +2,8 @@
 
 #include "imgui.h"
 #include <glm/gtx/string_cast.hpp>
-#include <glog/logging.h>
+
+#include "engine/debug.h"
 
 OnUpdateCommon::OnUpdateCommon(Context* context, const std::string& title) {
   bool open = true;
