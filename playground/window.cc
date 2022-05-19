@@ -17,13 +17,11 @@
 
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
 
-static void glfw_error_callback(int error, const char *description)
-{
+static void glfw_error_callback(int error, const char *description) {
   fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
-void handler(int sig)
-{
+void handler(int sig) {
   fprintf(stderr, "Error: signal %d:\n", sig);
   BT();
   exit(1);
@@ -52,19 +50,6 @@ void FillIoInput(GLFWwindow* window, ImGuiIO* imgui_io, Io* io) {
   io->SetGuiCapturedMouse(imgui_io->WantCaptureMouse);
 }
 
-
-void GLAPIENTRY GLDebugMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
-                                  const GLchar* message, const void* user_param) {
-  return;
-  LOG(ERROR) << "GLDebugMessageCallback";
-  LOG(ERROR) << "-------------------------";
-  LOG(ERROR) << "type : " << type;
-  LOG(ERROR) << "id : " << id;
-  LOG(ERROR) << "severity : " << severity;
-  LOG(ERROR) << "length : " << length;
-  LOG(ERROR) << "message : " << message;
-  LOG(ERROR) << "-------------------------";
-}
 int main(int argc, char **argv)
 {
   signal(SIGSEGV, handler); // install our handler
@@ -78,8 +63,8 @@ int main(int argc, char **argv)
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // 3.2+ only
 
   // Create window with graphics context
-  constexpr int kScreenWidth = 2560;
-  constexpr int kScreenHeight = 1440;
+  constexpr int kScreenWidth = 3240;
+  constexpr int kScreenHeight = 2160;
   GLFWwindow* window = glfwCreateWindow(kScreenWidth, kScreenHeight, "CG",
                                         NULL, NULL);
   CGCHECK(window) << "GLFW create window failed";
@@ -120,6 +105,7 @@ int main(int argc, char **argv)
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
+    imgui_io.FontGlobalScale = 2.0;
     ImGui::NewFrame();
 
     FillIoInput(window, &imgui_io, playground.mutable_io());

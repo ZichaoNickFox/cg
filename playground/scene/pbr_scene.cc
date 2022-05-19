@@ -23,8 +23,6 @@ void PbrScene::OnEnter(Context *context)
     point_lights_[i].SetColor(kLightColor);
   }
 
-  // camera_->mutable_transform()->SetTranslation(glm::vec3(1.18, -1.38, 2.66));
-  // camera_->mutable_transform()->SetRotation(glm::quat(0.96, 0.17, 0.17, -0.03));
   camera_->SetFarClip(200);
   context->SetCamera(camera_.get());
 
@@ -94,7 +92,7 @@ void PbrScene::OnRender(Context *context)
   LinesShader({1.0}, context, &coord_);
   coord_.OnRender(context);
 
-  CubemapShader({context->GetTexture("pbr_prefiltered_color_tropical")}, context, &skybox_);
+  CubemapShader({context->GetTexture("pbr_environment_tropical")}, context, &skybox_);
   skybox_.OnRender(context);
 }
 

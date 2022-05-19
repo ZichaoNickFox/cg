@@ -26,8 +26,7 @@
   bt_size = backtrace(bt_array, 10); \
   backtrace_symbols_fd(bt_array, bt_size, STDERR_FILENO);
 #elif defined CG_PLATFORM_WINDOWS
-#define BT() \
-  LOG(ERROR) << boost::stacktrace::stacktrace();
+#define BT()
 #else
 #error Implement BT
 #endif

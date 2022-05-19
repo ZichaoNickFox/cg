@@ -88,7 +88,7 @@ GLuint Shader::CompileShader(const std::vector<CodePart>& code_parts, GLuint sha
     glGetShaderInfoLog_(object, 1024, NULL, info_log);
     std::string correct_compile_message(info_log);
     CorrectCompileMessage(code_parts, &correct_compile_message);
-    CGCHECK(false) << " compile error : " << correct_compile_message;
+    CGCHECK(false) << name_ << " compile error : " << correct_compile_message;
   }
   
   return object;
@@ -115,7 +115,6 @@ void Shader::LinkShader(GLuint program, const std::vector<GLuint>& objects) {
 }
 
 void Shader::Use() const {
-  CGLOG(ERROR, false) << "Use shader : " << name_ << " " << id_;
   glUseProgram_(id_);
 }
 

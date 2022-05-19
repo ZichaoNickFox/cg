@@ -44,13 +44,20 @@ void main()
     metallic = pbr_material.metallic;
   }
 
+  vec3 ao = vec3(0.0, 0.0, 0.0);
+  if (pbr_material.use_texture_ao) {
+    ao = texture(pbr_material.texture_ao0, texcoord_).xyz;
+  } else {
+    ao = pbr_material.ao;
+  }
+
   PbrModelInput pbr_model_input;
   pbr_model_input.view_pos = view_pos;
   pbr_model_input.frag_world_pos = frag_world_pos_;
   pbr_model_input.albedo = albedo;
   pbr_model_input.roughness = roughness;
   pbr_model_input.metallic = metallic;
-  pbr_model_input.ao = pbr_material.ao;
+  pbr_model_input.ao = ao;
   pbr_model_input.normal = N;
 
   vec3 color = PbrModel(pbr_model_input);

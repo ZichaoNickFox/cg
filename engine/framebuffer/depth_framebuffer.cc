@@ -11,7 +11,9 @@ void DepthFramebuffer::Init(const Option& option) {
 
   glBindFramebuffer_(GL_FRAMEBUFFER, fbo_);
 
-  textures_.push_back(Texture());
+  GLuint depth_texture;
+  glGenTextures_(1, &depth_texture);
+  textures_.push_back(Texture(depth_texture, engine::Texture::Texture2D));
   CHECK(textures_.size() == 1) << "Depth should only have 1 texture";
   glBindTexture_(GL_TEXTURE_2D, textures_[0].id());
   glTexImage2D_(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, option.size.x, option.size.y, 0, GL_DEPTH_COMPONENT,
