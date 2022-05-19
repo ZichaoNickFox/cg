@@ -16,7 +16,7 @@
 
 void ModelScene::OnEnter(Context *context)
 {
-  glEnable(GL_DEPTH_TEST);
+  glEnable_(GL_DEPTH_TEST);
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(0.87, 4.87, 3.87));
   camera_->mutable_transform()->SetRotation(glm::quat(0.94, -0.14, 0.13, 0.014));

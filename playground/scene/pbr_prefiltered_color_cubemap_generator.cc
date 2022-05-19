@@ -20,7 +20,7 @@ void PbrPrefilteredColorCubemapGenerator::OnEnter(Context *context)
   camera_->mutable_transform()->SetTranslation(glm::vec3(2.97, 3.95, 6.76));
   context->SetCamera(camera_.get());
 
-  glEnable(GL_DEPTH_TEST);
+  glEnable_(GL_DEPTH_TEST);
 
   for (int face = 0; face < 6; ++face) {
     cubemap_cameras_[face].SetTransform(transforms_[face]);

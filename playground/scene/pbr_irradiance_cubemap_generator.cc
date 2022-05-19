@@ -20,7 +20,7 @@ void PbrIrradianceCubemapGenerator::OnEnter(Context *context) {
   camera_->mutable_transform()->SetRotation(glm::quat(0.89, -0.21, 0.38, 0.09));
   context->SetCamera(camera_.get());
 
-  glEnable(GL_DEPTH_TEST);
+  glEnable_(GL_DEPTH_TEST);
 
   for (int i = 0; i < 6; ++i) {
     cubemap_cameras_[i].SetTransform(transforms_[i]);

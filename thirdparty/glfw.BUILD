@@ -54,7 +54,6 @@ cc_library(
         "src/monitor.c",
         "src/vulkan.c",
         "src/window.c",
-        "src/xkb_unicode.c",
     ] + select({
         "@platforms//os:windows": [
             "src/win32_init.c",
@@ -86,7 +85,6 @@ cc_library(
         "src/internal.h",
         "src/osmesa_context.h",
         "src/mappings.h",
-        "src/xkb_unicode.h"
     ] + select({
         "@platforms//os:windows": [
             "src/win32_joystick.h",

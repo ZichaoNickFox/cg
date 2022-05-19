@@ -42,7 +42,7 @@ void Mesh::SetupVBO(int buffer_size_in_float) {
   glGenBuffers_(1, &vbo_);
   glBindBuffer_(GL_ARRAY_BUFFER, vbo_);
   glBufferData_(GL_ARRAY_BUFFER, VectorSizeInByte(buffer), buffer.data(), GL_STATIC_DRAW);
-  int offset_in_vbo = 0; 
+  uint64_t offset_in_vbo = 0; 
 
 #define ADD_SUB_DATA(component) \
   if (component.size() == 0) { \
@@ -71,7 +71,7 @@ void Mesh::SetupVAO(int enabled_component_num) {
   for (int i = 0; i < enabled_component_num; ++i) {
     glEnableVertexAttribArray_(i);
   }
-  int offset_in_vbo = 0;
+  uint64_t offset_in_vbo = 0;
   int vertex_component_index = 0;
 #define ENABLE_VERTEX_COMPONENT(component, component_index, size_in_float) \
   glVertexAttribPointer_(component_index, size_in_float, GL_FLOAT, GL_FALSE, size_in_float * sizeof(float), \
@@ -104,7 +104,7 @@ void Mesh::Submit() const {
   glBindVertexArray_(vao_);
   if (use_ebo) {
     glBindBuffer_(GL_ELEMENT_ARRAY_BUFFER, ebo_);
-    glDrawElements(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements_(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, 0);
     glBindBuffer_(GL_ELEMENT_ARRAY_BUFFER, 0);
   } else {
     glDrawArrays_(GL_TRIANGLES, 0, positions_.size());

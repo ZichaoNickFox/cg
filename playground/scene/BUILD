@@ -48,6 +48,7 @@ cc_library(
     "//playground:scene",
     "//playground/object:object",
     "@fmt//:fmt",
+    "@glm//:glm",
     "@imgui//:imgui",
   ],
 )

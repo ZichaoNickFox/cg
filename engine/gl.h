@@ -1,14 +1,29 @@
 #pragma once
 
-#include <GL/glew.h>
+#include "GL/glew.h"
 
 #include "engine/debug.h"
 
 #define CGCHECKGL() int error = glGetError(); CGCHECK(error == 0) << error << " "
 
+// glew
+GLenum glewInit_();
+
 // Common
 void glEnable_(GLenum cap);
 void glDisable_(GLenum cap);
+void glViewport_(GLint x, GLint y, GLsizei width, GLsizei height);
+void glGetBooleanv_(GLenum pname, GLboolean* data);
+void glGetDoublev_(GLenum pname, GLdouble* data);
+void glGetFloatv_(GLenum pname, GLfloat* data);
+void glGetIntegerv_(GLenum pname, GLint* data);
+void glGetInteger64v_(GLenum pname, GLint64* data);
+void glGetBooleani_v_(GLenum target, GLuint index, GLboolean* data);
+void glGetIntegeri_v_(GLenum target, GLuint index, GLint* data);
+void glGetFloati_v_(GLenum target, GLuint index, GLfloat* data);
+void glGetDoublei_v_(GLenum target, GLuint index, GLdouble* data);
+void glGetInteger64i_v_(GLenum target, GLuint index, GLint64* data);
+void glGetInternalformativ_(GLenum target, GLenum internalformat, GLenum pname, GLsizei bufSize, GLint* params);
 
 // Mesh
 void glGenBuffers_(GLsizei n, GLuint* buffers);
@@ -20,6 +35,7 @@ void glBindVertexArray_(GLuint array);
 void glEnableVertexAttribArray_(GLuint index);
 void glVertexAttribPointer_(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void * pointer);
 void glDrawArrays_(GLenum mode, GLint first, GLsizei count);
+void glDrawElements_(GLenum mode, GLsizei count, GLenum type, const void* indices);
 void glDeleteVertexArrays_(GLsizei n, const GLuint *arrays);
 void glDeleteBuffers_(GLsizei n, const GLuint * buffers);
 
@@ -27,10 +43,13 @@ void glDeleteBuffers_(GLsizei n, const GLuint * buffers);
 void glGenTextures_(GLsizei n, GLuint *textures);
 void glGetTexImage_(GLenum target, GLint level, GLenum format, GLenum type, void * pixels);
 void glBindTexture_(GLenum target, GLuint texture);
+void glActiveTexture_(GLenum texture);
 void glTexImage2D_(GLenum target, GLint level, GLint internalformat, GLsizei width,
                    GLsizei height, GLint border, GLenum format, GLenum type, const void * data);
 void glTexSubImage2D_(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width,
                      GLsizei height, GLenum format, GLenum type, const void *pixels);
+void glTexImage2DMultisample_(GLenum target, GLsizei samples, GLenum internalformat,
+                              GLsizei width, GLsizei height, GLboolean fixedsamplelocations);
 void glGetTexLevelParameteriv_(GLenum target, GLint level, GLenum pname, GLint *params);
 void glTexParameteri_(GLenum target, GLenum pname, GLint param);
 void glTexStorage2D_(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
@@ -49,6 +68,10 @@ void glClearBufferuiv_(GLenum buffer, GLint drawbuffer, const GLuint * value);
 void glClearBufferfv_(GLenum buffer, GLint drawbuffer, const GLfloat * value);
 void glClearBufferfi_(GLenum buffer, GLint drawbuffer, GLfloat depth, GLint stencil);
 void glDeleteFramebuffers_(GLsizei n, const GLuint * framebuffers);
+void glBlitFramebuffer_(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1,
+                        GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
+void glDrawBuffer_(GLenum buf);
+void glReadBuffer_(GLenum buf);
 
 // Shader
 GLuint glCreateShader_(GLenum shaderType);
@@ -57,6 +80,7 @@ void glCompileShader_(GLuint shader);
 void glGetShaderiv_(GLuint shader, GLenum pname, GLint *params);
 void glGetShaderInfoLog_(GLuint shader, GLsizei maxLength, GLsizei *length, GLchar *infoLog);
 void glAttachShader_(GLuint program, GLuint shader);
+GLuint glCreateProgram_();
 void glLinkProgram_(GLuint program);
 void glGetProgramiv_(GLuint program, GLenum pname, GLint *params);
 void glGetProgramInfoLog_(GLuint program, GLsizei maxLength, GLsizei *length, GLchar *infoLog);

@@ -26,7 +26,7 @@ void AATestScene::OnEnter(Context *context)
     cubes_.push_back(std::move(cube));
   }
 
-  glEnable(GL_DEPTH_TEST);
+  glEnable_(GL_DEPTH_TEST);
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(0, 0, 10));
   context->SetCamera(camera_.get());

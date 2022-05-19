@@ -19,7 +19,7 @@ void Equirectangular2CubemapTool::OnEnter(Context *context)
 {
   context->SetCamera(camera_.get());
 
-  glEnable(GL_DEPTH_TEST);
+  glEnable_(GL_DEPTH_TEST);
 
   for (int i = 0; i < 6; ++i) {
     cubemap_cameras_[i].SetTransform(transforms_[i]);

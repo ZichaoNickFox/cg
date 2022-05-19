@@ -46,7 +46,7 @@ std::unordered_map<KeyType, ValueType> ProtoMap2UnorderedMap(const google::proto
 
 // stl
 template<typename ElemType>
-int VectorByteSize(const std::vector<ElemType>& v) {
+uint64_t VectorByteSize(const std::vector<ElemType>& v) {
   return sizeof(ElemType) * v.size();
 }
 

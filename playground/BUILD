@@ -9,18 +9,13 @@ cc_binary(
   ],
   deps = [
     "//engine:debug",
+    "//engine:gl",
     "//playground:playground",
-    "@fmt//:fmt",
-    # "@glfw//:glfw",
-    "@imgui//:imgui",
-  ],
-  linkopts = [
-    "-lGLEW",
-    "-lglfw3",
-    "-framework OpenGL",
-    "-framework Cocoa",
-    "-framework IOKit",
-    "-framework CoreFoundation",
+    "@fmt",
+    "@glew",
+    "@glfw",
+    "@glm",
+    "@imgui",
   ],
 )
 
@@ -37,9 +32,6 @@ cc_library(
     "//playground/scene:scenes",
     "@fmt",
   ],
-  linkopts = [
-    "-lassimp",
-  ],
 )
 
 cc_library(
@@ -49,8 +41,9 @@ cc_library(
   ],
   deps = [
     "//playground:context",
-  ]
+  ],
 )
+
 cc_library(
   name = "context",
   srcs = [
@@ -81,6 +74,7 @@ cc_library(
     "//engine/framebuffer:framebuffer",
     "//playground:context",
     "//playground/object:object",
+    "@glm//:glm",
   ]
 )
 

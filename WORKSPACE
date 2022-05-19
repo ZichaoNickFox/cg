@@ -5,11 +5,6 @@
 #   path = "thirdparty/imgui"
 # )
 
-local_repository(
-  name = "glfw",
-  path = "thirdparty/glfw"
-)
-
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 http_archive(
   name = "rules_proto",
@@ -69,10 +64,34 @@ http_archive(
   urls = ["https://github.com/fmtlib/fmt/releases/download/8.1.1/fmt-8.1.1.zip"],
 )
 
-# http_archive(
-#   name = "glfw",
-#   build_file = "@//:thirdparty/glfw.BUILD",
-#   sha256 = "4ef0c544a8ace9a6cd0e0aef8250090f89fea1bf96e9fc1d9d6f76386c290c9c",
-#   strip_prefix = "glfw-3.3.7",
-#   urls = ["https://github.com/glfw/glfw/releases/download/3.3.7/glfw-3.3.7.zip"],
-# )
+http_archive(
+  name = "glm",
+  build_file = "@//:thirdparty/glm.BUILD",
+  sha256 = "37e2a3d62ea3322e43593c34bae29f57e3e251ea89f4067506c94043769ade4c",
+  strip_prefix = "glm",
+  urls = ["https://github.com/g-truc/glm/releases/download/0.9.9.8/glm-0.9.9.8.zip"],
+)
+
+# TODO here is window platform
+http_archive(
+  name = "glew",
+  build_file = "@//:thirdparty/glew.BUILD",
+  sha256 = "a9046a913774395a095edcc0b0ac2d81c3aacca61787b39839b941e9be14e0d4",
+  strip_prefix = "glew-2.2.0",
+  urls = ["https://github.com/nigels-com/glew/releases/download/glew-2.2.0/glew-2.2.0.zip"],
+)
+
+http_archive(
+  name = "glfw",
+  build_file = "@//:thirdparty/glfw.BUILD",
+  sha256 = "4ef0c544a8ace9a6cd0e0aef8250090f89fea1bf96e9fc1d9d6f76386c290c9c",
+  strip_prefix = "glfw-3.3.7",
+  urls = ["https://github.com/glfw/glfw/releases/download/3.3.7/glfw-3.3.7.zip"],
+)
+
+http_archive(
+  name = "assimp",
+  build_file = "@//:thirdparty/assimp.BUILD",
+  strip_prefix = "cg_assimp-cg_assimp",
+  urls = ["https://github.com/ZichaoNickFox/cg_assimp/archive/refs/tags/cg_assimp.zip"],
+)

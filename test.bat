@@ -1,0 +1,1 @@
+bazel --test_output=all test //playground:test

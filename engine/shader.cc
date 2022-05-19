@@ -30,7 +30,7 @@ Shader::Shader(const std::string& name, const std::vector<CodePart>& vs, const s
     tessellation_shader_object = CompileShader(ts, GL_TESS_CONTROL_SHADER);
   }
 
-  id_ = glCreateProgram();
+  id_ = glCreateProgram_();
   std::vector<GLuint> objects{vertex_shader_object, fragment_shader_object};
   if (has_gs) objects.push_back(geometry_shader_object);
   if (has_ts) objects.push_back(tessellation_shader_object);
@@ -71,13 +71,14 @@ void CorrectCompileMessage(const std::vector<Shader::CodePart>& code_parts, std:
 }
 GLuint Shader::CompileShader(const std::vector<CodePart>& code_parts, GLuint shader_type) {
   GLuint object = glCreateShader_(shader_type);
-  const char* code_data[code_parts.size()];
+   
+  std::vector<const char*> code_data(code_parts.size());
   for (int i = 0; i < code_parts.size(); ++i) {
     const CodePart& code_part = code_parts[i];
     code_data[i] = code_part.code.data();
   }
 
-  glShaderSource_(object, code_parts.size(), code_data, NULL);
+  glShaderSource_(object, code_parts.size(), code_data.data(), NULL);
   glCompileShader_(object);
 
   int success;

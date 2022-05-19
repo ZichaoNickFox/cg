@@ -5,11 +5,12 @@ cc_library (
   name = "gl",
   srcs = [
     "gl.h",
-    "gl.cc"
+    "gl.cc",
   ],
   deps = [
     "//engine:debug",
     "@com_github_google_glog//:glog",
+    "@glew",
   ],
 )
 
@@ -29,6 +30,7 @@ cc_library(
   deps = [
     "//engine:debug",
     "//engine:gl",
+    "@glm",
   ],
 )
 
@@ -41,6 +43,7 @@ cc_library(
     "io.cc",
     "material.h",
     "material.cc",
+    "math.h",
     "shader.h",
     "shader.cc",
     "texture.h",
@@ -56,9 +59,6 @@ cc_library(
     "@imgui//:imgui",
     "@fmt//:fmt",
   ],
-  linkopts = [
-    "-lGLEW",
-  ],
 )
 
 cc_library(
@@ -72,6 +72,7 @@ cc_library(
     # TODO : for compile success
     "//engine/proto:cc_config_proto",
     "@fmt",
+    "@glm",
     "@com_github_google_glog//:glog"
   ],
 )

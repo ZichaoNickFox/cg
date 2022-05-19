@@ -5,6 +5,7 @@
 
 #include "engine/camera.h"
 #include "engine/framebuffer/color_framebuffer.h"
+#include "engine/math.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"

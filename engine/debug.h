@@ -1,7 +1,9 @@
 #pragma once
 
+#if defined _GLFW_COCOA
 #include <execinfo.h>
 #include <unistd.h>
+#endif
 
 #include <glog/logging.h>
 
@@ -14,11 +16,15 @@
 #define VA_MACRO(MACRO, ...) CONCATE(MACRO, NUM_ARGS(__VA_ARGS__))(__VA_ARGS__)
 
 // functions
+#if defined _GLFW_COCOA
 #define BT() \
   void *bt_array[10]; \
   size_t bt_size; \
   bt_size = backtrace(bt_array, 10); \
   backtrace_symbols_fd(bt_array, bt_size, STDERR_FILENO);
+#else
+#define BT()
+#endif
 
 #define CGCHECK(condition)  \
   if (!(condition)) { \

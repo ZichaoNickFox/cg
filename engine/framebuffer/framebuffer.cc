@@ -16,17 +16,17 @@ Framebuffer::~Framebuffer() {
 }
 
 void Framebuffer::Bind() {
-  glGetIntegerv(GL_VIEWPORT, resumption_viewport_);
-  glGetIntegerv(GL_FRAMEBUFFER_BINDING, &resumption_fbo_);
-  glViewport(0, 0, size_.x, size_.y);
-  glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
+  glGetIntegerv_(GL_VIEWPORT, resumption_viewport_);
+  glGetIntegerv_(GL_FRAMEBUFFER_BINDING, &resumption_fbo_);
+  glViewport_(0, 0, size_.x, size_.y);
+  glBindFramebuffer_(GL_FRAMEBUFFER, fbo_);
   OnBind();
   Clear();
 }
 
 void Framebuffer::Unbind() {
-  glBindFramebuffer(GL_FRAMEBUFFER, resumption_fbo_);
-  glViewport(resumption_viewport_[0], resumption_viewport_[1], resumption_viewport_[2], resumption_viewport_[3]);
+  glBindFramebuffer_(GL_FRAMEBUFFER, resumption_fbo_);
+  glViewport_(resumption_viewport_[0], resumption_viewport_[1], resumption_viewport_[2], resumption_viewport_[3]);
   OnUnbind();
 }
 }

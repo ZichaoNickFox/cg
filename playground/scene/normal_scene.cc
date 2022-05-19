@@ -4,9 +4,9 @@
 #include <glm/gtx/string_cast.hpp>
 #include "glog/logging.h"
 #include "imgui.h"
-#include <math.h>
 #include <memory>
 
+#include "engine/math.h"
 #include "engine/transform.h"
 #include "playground/scene/common.h"
 
@@ -40,7 +40,7 @@ void NormalScene::OnEnter(Context *context)
                         {glm::vec3(1, 0, 0), glm::vec3(1, 0, 0)}, GL_LINES};
   line_.SetMesh(line_data);
 
-  glEnable(GL_DEPTH_TEST);
+  glEnable_(GL_DEPTH_TEST);
 }
 
 void NormalScene::OnUpdate(Context *context)

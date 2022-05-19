@@ -1,5 +1,11 @@
 #include "engine/gl.h"
 
+GLenum glewInit_() {
+  GLenum res = glewInit();
+  CGCHECKGL();
+  return res;
+}
+
 void glEnable_(GLenum cap) {
   glEnable(cap);
   CGCHECKGL();
@@ -7,6 +13,66 @@ void glEnable_(GLenum cap) {
 
 void glDisable_(GLenum cap) {
   glDisable(cap);
+  CGCHECKGL();
+}
+
+void glViewport_(GLint x, GLint y, GLsizei width, GLsizei height) {
+  glViewport(x, y, width, height);
+  CGCHECKGL();
+}
+
+void glGetBooleanv_(GLenum pname, GLboolean* data) {
+  glGetBooleanv(pname, data);
+  CGCHECKGL();
+}
+
+void glGetDoublev_(GLenum pname, GLdouble* data) {
+  glGetDoublev(pname, data);
+  CGCHECKGL();
+}
+
+void glGetFloatv_(GLenum pname, GLfloat* data) {
+  glGetFloatv(pname, data);
+  CGCHECKGL();
+}
+
+void glGetIntegerv_(GLenum pname, GLint* data) {
+  glGetIntegerv(pname, data);
+  CGCHECKGL();
+}
+
+void glGetInteger64v_(GLenum pname, GLint64* data) {
+  glGetInteger64v(pname, data);
+  CGCHECKGL();
+}
+
+void glGetBooleani_v_(GLenum target, GLuint index, GLboolean* data) {
+  glGetBooleani_v(target, index, data);
+  CGCHECKGL();
+}
+
+void glGetIntegeri_v_(GLenum target, GLuint index, GLint* data) {
+  glGetIntegeri_v(target, index, data);
+  CGCHECKGL();
+}
+
+void glGetFloati_v_(GLenum target, GLuint index, GLfloat* data) {
+  glGetFloati_v(target, index, data);
+  CGCHECKGL();
+}
+
+void glGetDoublei_v_(GLenum target, GLuint index, GLdouble* data) {
+  glGetDoublei_v(target, index, data);
+  CGCHECKGL();
+}
+
+void glGetInteger64i_v_(GLenum target, GLuint index, GLint64* data) {
+  glGetInteger64i_v(target, index, data);
+  CGCHECKGL();
+}
+
+void glGetInternalformativ_(GLenum target, GLenum internalformat, GLenum pname, GLsizei bufSize, GLint* params) {
+  glGetInternalformativ(target, internalformat, pname, bufSize, params);
   CGCHECKGL();
 }
 
@@ -55,6 +121,11 @@ void glDrawArrays_(GLenum mode, GLint first, GLsizei count) {
   CGCHECKGL();
 }
 
+void glDrawElements_(GLenum mode, GLsizei count, GLenum type, const void* indices) {
+  glDrawElements(mode, count, type, indices);
+  CGCHECKGL();
+}
+
 void glDeleteVertexArrays_(GLsizei n, const GLuint *arrays) {
   glDeleteVertexArrays(n, arrays);
   CGCHECKGL();
@@ -87,6 +158,12 @@ void glTexSubImage2D_(GLenum target, GLint level, GLint xoffset, GLint yoffset, 
   CGCHECKGL();
 }
 
+void glTexImage2DMultisample_(GLenum target, GLsizei samples, GLenum internalformat,
+                              GLsizei width, GLsizei height, GLboolean fixedsamplelocations) {
+  glTexImage2DMultisample(target, samples, internalformat, width, height, fixedsamplelocations);
+  CGCHECKGL();
+}
+
 void glTexParameteri_(GLenum target, GLenum pname, GLint param) {
   glTexParameteri(target, pname, param);
   CGCHECKGL();
@@ -95,6 +172,11 @@ void glTexParameteri_(GLenum target, GLenum pname, GLint param) {
 void glBindTexture_(GLenum target, GLuint texture) {
   glBindTexture(target, texture);
   CGCHECKGL() << target << " " << texture;
+}
+
+void glActiveTexture_(GLenum texture) {
+  glActiveTexture(texture);
+  CGCHECKGL();
 }
 
 void glGetTexLevelParameteriv_(GLenum target, GLint level, GLenum pname, GLint *params) {
@@ -173,6 +255,22 @@ void glDeleteFramebuffers_(GLsizei n, const GLuint * framebuffers) {
   CGCHECKGL();
 }
 
+void glBlitFramebuffer_(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1,
+                        GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter) {
+  glBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
+  CGCHECKGL();
+}
+
+void glDrawBuffer_(GLenum buf) {
+  glDrawBuffer(buf);
+  CGCHECKGL();
+}
+
+void glReadBuffer_(GLenum buf) {
+  glReadBuffer(buf);
+  CGCHECKGL();
+}
+
 GLuint glCreateShader_(GLenum shaderType) {
   GLuint res = glCreateShader(shaderType);
   CGCHECKGL();
@@ -202,6 +300,12 @@ void glGetShaderInfoLog_(GLuint shader, GLsizei maxLength, GLsizei *length, GLch
 void glAttachShader_(GLuint program, GLuint shader) {
   glAttachShader(program, shader);
   CGCHECKGL();
+}
+
+GLuint glCreateProgram_() {
+  GLuint res = glCreateProgram();
+  CGCHECKGL();
+  return res;
 }
 
 void glLinkProgram_(	GLuint program) {

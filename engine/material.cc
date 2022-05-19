@@ -74,7 +74,7 @@ void Material::PrepareShader() {
     const std::string& location = pair.first;
     const TextureData& texture_data = pair.second;
     shader_->SetInt(location, texture_data.texture_unit);
-    glActiveTexture(GL_TEXTURE0 + texture_data.texture_unit);
+    glActiveTexture_(GL_TEXTURE0 + texture_data.texture_unit);
     if (texture_data.texture.type() == Texture::Texture2D) {
       glBindTexture_(GL_TEXTURE_2D, texture_data.texture.id());
     } else if (texture_data.texture.type() == Texture::Cubemap) {

@@ -16,7 +16,7 @@ void SampleScene::OnEnter(Context *context)
   camera_->SetFarClip(200);
   context->SetCamera(camera_.get());
 
-  glEnable(GL_DEPTH_TEST);
+  glEnable_(GL_DEPTH_TEST);
 }
 
 void SampleScene::OnUpdate(Context *context) {

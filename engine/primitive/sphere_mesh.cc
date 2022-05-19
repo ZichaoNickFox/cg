@@ -2,6 +2,7 @@
 
 #include "glm/gtx/string_cast.hpp"
 #include <map>
+#include <math.h>
 
 #include "engine/debug.h"
 #include "engine/primitive/primitive_util.h"
@@ -86,17 +87,18 @@ namespace {
 //! kTexcoordXThreshold is the factor judging two tecoords cross 01 gap.
 // Sphere comes from icosahedron. The pole circle has 5 triangles, max texcoord is 1 / 5 = 0.2
 // So When distance of two texcoords > 0.2, Says two texcoords cross 0/1 gap
-constexpr float kTexcoordXThreshold = 1 / 5.0 + 0.1;
+static constexpr float kTexcoordXThreshold = 1 / 5.0 + 0.1;
+static constexpr float pi = 3.1415926f;
 
-// [0, M_PI * 2)
+// [0, pi * 2)
 float CalcTexcoordx(const glm::vec3& position) {
   float phi = std::atan2(position.z, position.x);
-  phi = phi < 0 ? phi + 2 * M_PI : phi;
-  return phi / (2 * M_PI);
+  phi = phi < 0 ? phi + 2 * pi : phi;
+  return phi / (2 * pi);
 }
 float CalcTexcoordy(const glm::vec3& position) {
   float theta = asin(position.y);
-  theta = theta / (M_PI / 2.0);
+  theta = theta / (pi / 2.0);
   theta = (theta + 1.0) / 2.0;
   return theta;
 }

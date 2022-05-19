@@ -1,9 +1,12 @@
 #include <stdio.h>
-#include <execinfo.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#if defined _GLFW_COCOA
+#include <execinfo.h>
 #include <unistd.h>
+#endif
 
 #include "imgui.h"
 #include "backends/imgui_impl_glfw.h"
@@ -93,14 +96,14 @@ int main(int argc, char **argv)
   const char *glsl_version = "#version 150";
   ImGui_ImplOpenGL3_Init(glsl_version);
 
-  glewInit();
+  glewInit_();
 
   glm::vec4 clear_color = glm::vec4(0.45f, 0.55f, 0.60f, 1.00f);
   const std::string kConfigPath = "playground/config.pb.txt";
     
   glm::ivec2 framebuffer_size;
   glfwGetFramebufferSize(window, &framebuffer_size.x, &framebuffer_size.y);
-  glViewport(0, 0, framebuffer_size.x, framebuffer_size.y);
+  glViewport_(0, 0, framebuffer_size.x, framebuffer_size.y);
 
   glm::ivec2 screen_size;
   glfwGetWindowSize(window, &screen_size.x, &screen_size.y);

@@ -1,5 +1,6 @@
 #include "engine/repo/model_repo.h"
 
+#include <assimp/material.h>
 #include <assimp/postprocess.h>
 #include <glog/logging.h>
 #include <set>
@@ -163,7 +164,7 @@ std::vector<Texture> ModelRepo::LoadTextures(const aiMaterial& ai_material, aiTe
     if(!skip) {
       engine::Texture texture;
       texture = LoadModelTexture2D(full_path);
-      LOG(ERROR) << "Loading " << TextureTypeToString(type) << " texture from " << full_path;
+      LOG(ERROR) << "Loading " << aiTextureTypeToString(type) << " texture from " << full_path;
       textures.push_back(texture);
       loaded_paths[full_path] = texture;
     }

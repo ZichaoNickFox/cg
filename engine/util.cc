@@ -65,6 +65,7 @@ std::string ReplaceBackslash(const std::string& path) {
 // S_IWOTH	00002权限，代表其他用户拥有可写的权限
 // S_IXOTH	00001权限，代表其他用户拥有执行的权限
 void MakeDir(const std::string& dir) {
+#if defined _GLFW_COCOA
   struct stat info;
   if (stat(dir.c_str(), &info) != 0) {
     mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
@@ -74,6 +75,8 @@ void MakeDir(const std::string& dir) {
       CGCHECK(false) << result;
     }
   }
+#endif
+  CGCHECK(false);
 }
 
 bool StartsWith(const std::string& str, const std::string& start_with) {
@@ -101,10 +104,10 @@ namespace {
 int RandFromTo(int from, int to) {
   CHECK(to > from) << "to LE than from";
   std::srand(Now().time_since_epoch().count());
-  uint slide = std::max(0, 0 - from);
-  uint rand_from = from + slide;
-  uint rand_to = to + slide;
-  uint rand_value = rand_from + uint(std::rand()) % (rand_to - rand_from + 1);
+  uint32_t slide = std::max(0, 0 - from);
+  uint32_t rand_from = from + slide;
+  uint32_t rand_to = to + slide;
+  uint32_t rand_value = rand_from + uint32_t(std::rand()) % (rand_to - rand_from + 1);
   return rand_value - slide;
 }
 }

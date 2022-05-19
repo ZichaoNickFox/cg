@@ -66,14 +66,14 @@ Texture GBuffer::GetTexture(const std::string& layout) {
 }
 
 void GBuffer::BlitDepth(DepthFramebuffer* depth_framebuffer) {
-  glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo_);
+  glBindFramebuffer_(GL_READ_FRAMEBUFFER, fbo_);
   if (depth_framebuffer == nullptr) {
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glBindFramebuffer_(GL_DRAW_FRAMEBUFFER, 0);
   } else {
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, depth_framebuffer->fbo());
+    glBindFramebuffer_(GL_DRAW_FRAMEBUFFER, depth_framebuffer->fbo());
   }
-  glBlitFramebuffer(0, 0, option_.size.x, option_.size.y,
-                    0, 0, option_.size.x, option_.size.y,
-                    GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+  glBlitFramebuffer_(0, 0, option_.size.x, option_.size.y,
+                     0, 0, option_.size.x, option_.size.y,
+                     GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 }
 }

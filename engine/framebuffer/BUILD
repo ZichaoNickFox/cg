@@ -22,7 +22,4 @@ cc_library(
     "//engine:util",
     "@fmt//:fmt",
   ],
-  linkopts = [
-    "-lGLEW",
-  ],
 )

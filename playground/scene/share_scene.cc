@@ -43,7 +43,7 @@ void ShareScene::OnEnter(Context *context)
                         {glm::vec3(1, 0, 0), glm::vec3(1, 0, 0)}, GL_LINES};
   line_.SetMesh(line_data);
 
-  glEnable(GL_DEPTH_TEST);
+  glEnable_(GL_DEPTH_TEST);
 
   depth_buffer_pass_.Init({context->framebuffer_size()}, directional_light_.transform());
   forward_pass_.Init({context->framebuffer_size(), 1, context->clear_color()});

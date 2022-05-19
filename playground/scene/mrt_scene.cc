@@ -56,7 +56,7 @@ void MrtScene::OnEnter(Context *context)
   directional_light_.mutable_transform()->SetTranslation(glm::vec3(-5, 6.3, -4.6));
   directional_light_.mutable_transform()->SetRotation(glm::quat(glm::vec3(2.48, -0.82, -3.09)));
 
-  glEnable(GL_DEPTH_TEST);
+  glEnable_(GL_DEPTH_TEST);
 }
 
 void MrtScene::OnUpdate(Context *context)

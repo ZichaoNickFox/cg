@@ -54,7 +54,7 @@ void DeferredShadingScene::OnEnter(Context *context)
   engine::GBuffer::Option option{context->framebuffer_size()};
   gbuffer_.Init(option);
   
-  glEnable(GL_DEPTH_TEST);
+  glEnable_(GL_DEPTH_TEST);
 
 /*
   deferred_shading_quad_.mutable_material()->SetShader(context->GetShader("deferred_shading_lighting"));

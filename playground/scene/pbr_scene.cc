@@ -39,7 +39,7 @@ void PbrScene::OnEnter(Context *context)
     teapot_.mutable_model_part(i)->mutable_transform()->SetScale(glm::vec3(0.2, 0.2, 0.2));
   }
 
-  glEnable(GL_DEPTH_TEST);
+  glEnable_(GL_DEPTH_TEST);
 }
 
 void PbrScene::OnUpdate(Context *context)

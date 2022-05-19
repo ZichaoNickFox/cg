@@ -6,6 +6,7 @@
 #include "imgui.h"
 #include <memory>
 
+#include "engine/math.h"
 #include "engine/transform.h"
 #include "playground/scene/common.h"
 #include "playground/shaders.h"
@@ -21,7 +22,7 @@ void SkyboxScene::OnEnter(Context *context)
   skybox_.mutable_material()->SetTexture("texture0", context->GetTexture("skybox"));
   skybox_.mutable_transform()->SetScale(glm::vec3(100, 100, 100));
 
-  glEnable(GL_DEPTH_TEST);
+  glEnable_(GL_DEPTH_TEST);
 }
 
 void SkyboxScene::OnUpdate(Context *context)
