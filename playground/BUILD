@@ -81,7 +81,6 @@ cc_library(
   deps = [
     "//engine:engine",
     "//engine:util",
-    "//engine/framebuffer:framebuffer",
     "//playground:context",
     "//playground/object:object",
     "@glm//:glm",

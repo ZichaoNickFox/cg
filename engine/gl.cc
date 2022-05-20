@@ -201,7 +201,11 @@ void glGenFramebuffers_(GLsizei n, GLuint *ids) {
 
 void glFramebufferTexture2D_(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level) {
   glFramebufferTexture2D(target, attachment, textarget, texture, level);
-  CGCHECKGL();
+  CGCHECKGL() << std::hex
+              << "\ntarget - " << target << "\nattachment - " << attachment
+              << "\ntextarget - "<< textarget << "\ntexture - "<< texture
+              << "\nlevel - " << level
+              << std::dec;
 }
 
 void glBindFramebuffer_(GLenum target, GLuint framebuffer) {
@@ -235,14 +239,18 @@ void glClearBufferiv_(GLenum buffer, GLint drawbuffer, const GLint * value) {
   CGCHECKGL();
 }
 
-void glClearBufferuiv_(GLenum buffer, GLint drawbuffer, const GLuint * value) {
+void glClearBufferuiv_(GLenum buffer, GLint drawbuffer, const GLuint* value) {
   glClearBufferuiv(buffer, drawbuffer, value);
   CGCHECKGL();
 }
 
-void glClearBufferfv_(GLenum buffer, GLint drawbuffer, const GLfloat * value) {
+void glClearBufferfv_(GLenum buffer, GLint drawbuffer, const GLfloat* value) {
   glClearBufferfv(buffer, drawbuffer, value);
-  CGCHECKGL();
+  CGCHECKGL() << "\nglClearBufferfv" << std::hex
+              << "\nbuffer - " << buffer
+              << "\ndrawbuffer - " << drawbuffer
+              << "\nvalue - " << value[0] << " " << value[1] << " " << value[2] << " " << value[3]
+              << std::dec;
 }
 
 void glClearBufferfi_(GLenum buffer, GLint drawbuffer, GLfloat depth, GLint stencil) {
@@ -250,7 +258,7 @@ void glClearBufferfi_(GLenum buffer, GLint drawbuffer, GLfloat depth, GLint sten
   CGCHECKGL();
 }
 
-void glDeleteFramebuffers_(GLsizei n, const GLuint * framebuffers) {
+void glDeleteFramebuffers_(GLsizei n, const GLuint* framebuffers) {
   glDeleteFramebuffers(n, framebuffers);
   CGCHECKGL();
 }

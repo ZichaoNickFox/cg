@@ -2,22 +2,22 @@
 
 #include "imgui.h"
 
-#include "playground/scene/AA_scene.h"
-#include "playground/scene/AA_test_scene.h"
-#include "playground/scene/deferred_shading_scene.h"
+//#include "playground/scene/AA_scene.h"
+//#include "playground/scene/AA_test_scene.h"
+//#include "playground/scene/deferred_shading_scene.h"
 #include "playground/scene/forward_shading_scene.h"
-#include "playground/scene/model_scene.h"
-#include "playground/scene/mrt_scene.h"
-#include "playground/scene/normal_scene.h"
-#include "playground/scene/equirectangular_2_cubemap_tool.h"
-#include "playground/scene/pbr_BRDF_integration_map_generator.h"
-#include "playground/scene/pbr_irradiance_cubemap_generator.h"
-#include "playground/scene/pbr_prefiltered_color_cubemap_generator.h"
+//#include "playground/scene/model_scene.h"
+//#include "playground/scene/mrt_scene.h"
+//#include "playground/scene/normal_scene.h"
+//#include "playground/scene/equirectangular_2_cubemap_tool.h"
+//#include "playground/scene/pbr_BRDF_integration_map_generator.h"
+//#include "playground/scene/pbr_irradiance_cubemap_generator.h"
+//#include "playground/scene/pbr_prefiltered_color_cubemap_generator.h"
 #include "playground/scene/pbr_scene.h"
-#include "playground/scene/sample_scene.h"
-#include "playground/scene/share_scene.h"
-#include "playground/scene/skybox_scene.h"
-#include "playground/scene/texture_lod_scene.h"
+//#include "playground/scene/sample_scene.h"
+//#include "playground/scene/share_scene.h"
+//#include "playground/scene/skybox_scene.h"
+//#include "playground/scene/texture_lod_scene.h"
 
 namespace {
 const std::string kDefaultScene = "PbrScene";
@@ -30,21 +30,21 @@ void Playground::Init(const Context::Option& option) {
 
 void Playground::InitScene() {
   scene_map_.insert(std::make_pair("ForwardShadingScene", std::make_unique<ForwardShadingScene>()));
-  scene_map_.insert(std::make_pair("DeferredShadingScene", std::make_unique<DeferredShadingScene>()));
-  scene_map_.insert(std::make_pair("SkyboxScene", std::make_unique<SkyboxScene>()));
-  scene_map_.insert(std::make_pair("MrtScene", std::make_unique<MrtScene>()));
-  scene_map_.insert(std::make_pair("AAScene", std::make_unique<AAScene>()));
-  scene_map_.insert(std::make_pair("AATestScene", std::make_unique<AATestScene>()));
-  scene_map_.insert(std::make_pair("ModelScene", std::make_unique<ModelScene>()));
+  //scene_map_.insert(std::make_pair("DeferredShadingScene", std::make_unique<DeferredShadingScene>()));
+  //scene_map_.insert(std::make_pair("SkyboxScene", std::make_unique<SkyboxScene>()));
+  //scene_map_.insert(std::make_pair("MrtScene", std::make_unique<MrtScene>()));
+  //scene_map_.insert(std::make_pair("AAScene", std::make_unique<AAScene>()));
+  //scene_map_.insert(std::make_pair("AATestScene", std::make_unique<AATestScene>()));
+  //scene_map_.insert(std::make_pair("ModelScene", std::make_unique<ModelScene>()));
   scene_map_.insert(std::make_pair("PbrScene", std::make_unique<PbrScene>()));
-  scene_map_.insert(std::make_pair("NormalScene", std::make_unique<NormalScene>()));
-  scene_map_.insert(std::make_pair("ShareScene", std::make_unique<ShareScene>()));
-  scene_map_.insert(std::make_pair("Equirectangular2CubemapTool", std::make_unique<Equirectangular2CubemapTool>()));
-  scene_map_.insert(std::make_pair("PbrIrradianceCubemapGenerator", std::make_unique<PbrIrradianceCubemapGenerator>()));
-  scene_map_.insert(std::make_pair("SampleScene", std::make_unique<SampleScene>()));
-  scene_map_.insert(std::make_pair("PbrPrefilteredColorCubemapGenerator", std::make_unique<PbrPrefilteredColorCubemapGenerator>()));
-  scene_map_.insert(std::make_pair("PbrBRDFIntegrationMapGenerator", std::make_unique<PbrBRDFIntegrationMapGenerator>()));
-  scene_map_.insert(std::make_pair("TextureLodScene", std::make_unique<TextureLodScene>()));
+  //scene_map_.insert(std::make_pair("NormalScene", std::make_unique<NormalScene>()));
+  //scene_map_.insert(std::make_pair("ShareScene", std::make_unique<ShareScene>()));
+  //scene_map_.insert(std::make_pair("Equirectangular2CubemapTool", std::make_unique<Equirectangular2CubemapTool>()));
+  //scene_map_.insert(std::make_pair("PbrIrradianceCubemapGenerator", std::make_unique<PbrIrradianceCubemapGenerator>()));
+  //scene_map_.insert(std::make_pair("SampleScene", std::make_unique<SampleScene>()));
+  //scene_map_.insert(std::make_pair("PbrPrefilteredColorCubemapGenerator", std::make_unique<PbrPrefilteredColorCubemapGenerator>()));
+  //scene_map_.insert(std::make_pair("PbrBRDFIntegrationMapGenerator", std::make_unique<PbrBRDFIntegrationMapGenerator>()));
+  //scene_map_.insert(std::make_pair("TextureLodScene", std::make_unique<TextureLodScene>()));
 }
 
 void Playground::BeginFrame() {

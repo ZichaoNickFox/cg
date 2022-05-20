@@ -8,7 +8,8 @@
 
 namespace engine {
 void GBuffer::Init(const Option& option) {
-  size_ = option.size;
+CHECK(false);
+/*
   option_ = option;
 
   glBindFramebuffer_(GL_FRAMEBUFFER, fbo_);
@@ -26,7 +27,7 @@ void GBuffer::Init(const Option& option) {
     glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, attachment.texture_param_wrap_s);
     glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, attachment.texture_param_wrap_t);
 
-    glFramebufferTexture2D_(GL_FRAMEBUFFER, attachment.attachment_unit, GL_TEXTURE_2D, textures_[i].id(), 0);
+    glFramebufferTexture2D_(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, textures_[i].id(), 0);
   }
 
   GLenum framebuffer_status = glCheckFramebufferStatus_(GL_FRAMEBUFFER);
@@ -35,13 +36,14 @@ void GBuffer::Init(const Option& option) {
   }
 
   glBindFramebuffer_(GL_FRAMEBUFFER, 0); 
+  */
 }
 
 void GBuffer::OnBind() {
   std::vector<GLuint> draw_attachment_units;
   for (int i = 0; i < kGBufferMRTLayout.size(); ++i) {
-    if (kGBufferMRTLayout[i].is_draw_attachment_unit) {
-      draw_attachment_units.push_back(kGBufferMRTLayout[i].attachment_unit);
+    if (kGBufferMRTLayout[i].attachment_type == FramebufferAttachment::kColor) {
+      draw_attachment_units.push_back(i);
     }
   }
   glDrawBuffers_(kGBufferMRTLayout.size(), draw_attachment_units.data());

@@ -1,7 +1,8 @@
 #pragma once
 
 #include "engine/camera.h"
-#include "engine/framebuffer/depth_framebuffer.h"
+#include "engine/framebuffer.h"
+#include "engine/framebuffer_attachment.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
@@ -39,7 +40,9 @@ class ForwardShadingScene : public Scene {
 
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
 
+  engine::Framebuffer depth_framebuffer_;
+  engine::Framebuffer forward_framebuffer_;
+
   DepthBufferPass depth_buffer_pass_;
   ForwardPass forward_pass_;
-  ShadowPass shadow_pass_;
 };

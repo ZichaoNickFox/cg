@@ -1,7 +1,7 @@
 #pragma once
 
 #include "engine/debug.h"
-#include "engine/framebuffer/framebuffer.h"
+#include "engine/framebuffer.h"
 
 namespace engine{
 class DepthFramebuffer : public Framebuffer {
@@ -11,9 +11,10 @@ class DepthFramebuffer : public Framebuffer {
   };
   void Init(const Option& option);
 
-  void OnBind() override;
-  void Clear() override;
-  void OnUnbind() override;
+  void OnBind();
+  void Clear();
+  void OnUnbind();
   Texture GetDepthTexture(int i = 0);
+  glm::ivec2 size;
 };
 } // namespace engine

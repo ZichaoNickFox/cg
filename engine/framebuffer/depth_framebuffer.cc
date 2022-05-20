@@ -7,8 +7,8 @@
 
 namespace engine {
 void DepthFramebuffer::Init(const Option& option) {
-  size_ = option.size;
-
+CHECK(false);
+/*
   glBindFramebuffer_(GL_FRAMEBUFFER, fbo_);
 
   GLuint depth_texture;
@@ -32,6 +32,7 @@ void DepthFramebuffer::Init(const Option& option) {
   }
 
   glBindFramebuffer_(GL_FRAMEBUFFER, 0);
+  */
 }
 
 void DepthFramebuffer::OnBind() {

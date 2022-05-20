@@ -7,6 +7,7 @@
 #include "imgui.h"
 #include <memory>
 
+#include "engine/framebuffer_attachment.h"
 #include "engine/transform.h"
 #include "engine/util.h"
 #include "playground/object/empty_object.h"
@@ -47,8 +48,11 @@ void ForwardShadingScene::OnEnter(Context *context)
   
   glEnable_(GL_DEPTH_TEST);
 
-  depth_buffer_pass_.Init({context->framebuffer_size()}, directional_light_.transform());
-  forward_pass_.Init({context->framebuffer_size(), 1, context->clear_color()});
+  depth_framebuffer_.Init({context->framebuffer_size(), {engine::kAttachmentDepth}});
+  depth_buffer_pass_.Init(&depth_framebuffer_, directional_light_.transform());
+
+  forward_framebuffer_.Init({context->framebuffer_size(), {engine::kAttachmentColor, engine::kAttachmentDepth}});
+  forward_pass_.Init(&forward_framebuffer_);
 }
 
 void ForwardShadingScene::OnUpdate(Context *context)
@@ -103,7 +107,7 @@ void ForwardShadingScene::OnRender(Context *context)
   RunForwardPass(context, &forward_pass_);
 
   EmptyObject quad;
-  FullscreenQuadShader({forward_pass_.GetColorTexture()}, context, &quad);
+  FullscreenQuadShader({forward_framebuffer_.GetTexture(engine::kAttachmentNameColor)}, context, &quad);
   quad.OnRender(context);
 }
 

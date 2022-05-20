@@ -1,7 +1,6 @@
 #pragma once
 
 #include "engine/camera.h"
-#include "engine/framebuffer/depth_framebuffer.h"
 #include "playground/context.h"
 #include "playground/object/billboard.h"
 #include "playground/object/lines.h"

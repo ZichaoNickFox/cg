@@ -7,6 +7,8 @@
 
 namespace engine {
 void ColorFramebuffer::Init(const Option& option) {
+CHECK(false);
+/*
   size_ = option.size;
   option_ = option;
 
@@ -46,6 +48,7 @@ void ColorFramebuffer::Init(const Option& option) {
   }
 
   glBindFramebuffer_(GL_FRAMEBUFFER, 0); 
+*/
 }
 
 void ColorFramebuffer::OnBind() {

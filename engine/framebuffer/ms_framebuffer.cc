@@ -23,7 +23,8 @@ void MSFramebuffer::CheckSupportMSNum(GLuint fbo, int num) {
 }
 
 void MSFramebuffer::Init(const Option& option) {
-  size_ = option.size;
+CHECK(false);
+/*
   option_ = option;
 
   glBindFramebuffer_(GL_FRAMEBUFFER, fbo_);
@@ -54,6 +55,7 @@ void MSFramebuffer::Init(const Option& option) {
   }
 
   glBindFramebuffer_(GL_FRAMEBUFFER,0); 
+  */
 }
 
 void MSFramebuffer::OnBind() {

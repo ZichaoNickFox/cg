@@ -29,7 +29,6 @@ cc_library(
   ],
   deps = [
     "//engine:engine",
-    "//engine/framebuffer:framebuffer",
     "//engine/repo:repo",
     "//playground:context",
     "@fmt//:fmt",

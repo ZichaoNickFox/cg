@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "engine/framebuffer/color_framebuffer.h"
-#include "engine/framebuffer/framebuffer.h"
+#include "engine/framebuffer.h"
 #include "engine/shader.h"
 
 namespace engine {
@@ -17,9 +17,9 @@ class MSFramebuffer : public Framebuffer {
   };
   void Init(const Option& option);
 
-  void OnBind() override;
-  void Clear() override;
-  void OnUnbind() override;
+  void OnBind();
+  void Clear();
+  void OnUnbind();
   Texture GetColorTexture(int i = 0);
   Texture GetDepthTexture(int i = 0);
 

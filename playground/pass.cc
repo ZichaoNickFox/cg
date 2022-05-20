@@ -1,37 +1,37 @@
 #include "playground/pass.h"
 
-void DepthBufferPass::Init(const engine::DepthFramebuffer::Option& depth_framebuffer_option,
+void DepthBufferPass::Init(engine::Framebuffer* depth_framebuffer,
                            const engine::Transform& camera_transform) {
   camera_->SetType(engine::Camera::Orthographic);
   camera_->SetTransform(camera_transform);
-  depth_framebuffer_.Init(depth_framebuffer_option);
+  depth_framebuffer_ = depth_framebuffer;
 }
 
 void DepthBufferPass::Begin() {
-  depth_framebuffer_.Bind();
+  depth_framebuffer_->Bind();
 }
 
 void DepthBufferPass::End() {
-  depth_framebuffer_.Unbind();
+  depth_framebuffer_->Unbind();
 }
 
-void ForwardPass::Init(const engine::ColorFramebuffer::Option& option) {
-  color_framebuffer_.Init(option);
+void ForwardPass::Init(engine::Framebuffer* forward_framebuffer) {
+  forward_framebuffer_ = forward_framebuffer;
 }
 
 void ForwardPass::Begin() {
-  color_framebuffer_.Bind();
+  forward_framebuffer_->Bind();
 }
 
 void ForwardPass::End() {
-  color_framebuffer_.Unbind();
+  forward_framebuffer_->Unbind();
 }
 
-void ShadowPass::Init(const glm::mat4& camera_vp, const engine::Texture& GetDepthTexture,
-                      const engine::Texture& GetColorTexture) {
+void ShadowPass::Init(const glm::mat4& camera_vp, const engine::Texture& depth_texture,
+                      const engine::Texture& color_texture) {
   camera_vp_ = camera_vp;
-  depth_texture_ = GetDepthTexture;
-  color_texture_ = GetColorTexture;
+  depth_texture_ = depth_texture;
+  color_texture_ = color_texture;
 }
 
 void ShadowPass::Begin() {

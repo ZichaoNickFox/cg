@@ -52,6 +52,10 @@ cc_library(
   srcs = [
     "camera.h",
     "camera.cc",
+    "framebuffer.h",
+    "framebuffer.cc",
+    "framebuffer_attachment.h",
+    "framebuffer_attachment.cc",
     "io.h",
     "io.cc",
     "material.h",
@@ -69,8 +73,9 @@ cc_library(
     "//engine:gl",
     "//engine/primitive:primitive",
     "//engine:util",
-    "@imgui//:imgui",
-    "@fmt//:fmt",
+    "@fmt",
+    "@glm",
+    "@imgui",
   ],
 )
 
