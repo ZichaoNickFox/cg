@@ -3,7 +3,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include <assimp/Importer.hpp>
 #include <assimp/material.h>
 #include <assimp/scene.h>
 

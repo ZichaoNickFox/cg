@@ -39,4 +39,4 @@ public:
   std::vector<GLuint> draw_buffers_;
   std::vector<glm::vec4> draw_buffers_clear_color_;
 };
-};
+} // namespace engine

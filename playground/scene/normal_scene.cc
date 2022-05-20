@@ -81,7 +81,7 @@ void NormalScene::OnUpdate(Context *context)
 void NormalScene::OnRender(Context *context)
 {
   static PhongShader::Param phong_param;
-  phong_param.light_info = ShaderLightInfo(point_light_);
+  phong_param.scene_light_info = SceneLightInfo(point_light_);
   phong_param.texture_normal = context->GetTexture("brickwall_normal");
   phong_param.texture_diffuse = context->GetTexture("brickwall");
 

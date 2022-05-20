@@ -129,7 +129,7 @@ void ShareScene::OnRender(Context *context)
       plane_.OnRender(context);
     } else if (step_ > 1012) {
       PhongShader::Param phong_param;
-      phong_param.light_info = ShaderLightInfo(point_light_);
+      phong_param.scene_light_info = SceneLightInfo(point_light_);
       if (use_texture_normal_) {
         phong_param.texture_normal = context->GetTexture("brickwall_normal");
       }
@@ -189,8 +189,8 @@ void ShareScene::RunForwardPass(Context* context, ForwardPass* forward_pass) {
   forward_pass->Begin();
 
   PhongShader::Param phong;
-  phong.shadow_info = forward_pass->prepass_shadow_info();
-  phong.light_info = {point_light_};
+  phong.infos = forward_pass->prepass_shadow_info();
+  phong.scene_light_info = {point_light_};
   phong.texture_normal = context->GetTexture("brickwall_normal");
   phong.texture_diffuse = context->GetTexture("brickwall");
   PhongShader(&phong, context, &sphere_);
@@ -225,8 +225,8 @@ void ShareScene::RunForwardPass2(Context* context, ForwardPass* forward_pass) {
   PbrShader::Param pbr{albedo_, metallic_, roughness_};
   pbr.texture_albedo = context->GetTexture("brickwall");
   pbr.texture_normal = context->GetTexture("brickwall_normal");
-  pbr.light_info = ShaderLightInfo({point_light_});
-  pbr.shadow_info = forward_pass->prepass_shadow_info();
+  pbr.scene_light_info = SceneLightInfo({point_light_});
+  pbr.infos = forward_pass->prepass_shadow_info();
   PbrShader(&pbr, context, &sphere_);
   sphere_.OnRender(context);
   PbrShader(&pbr, context, &plane_);

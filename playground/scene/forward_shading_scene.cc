@@ -7,11 +7,12 @@
 #include "imgui.h"
 #include <memory>
 
+#include "engine/constants.h"
 #include "engine/framebuffer_attachment.h"
+#include "engine/pass.h"
 #include "engine/transform.h"
 #include "engine/util.h"
 #include "playground/object/empty_object.h"
-#include "playground/pass.h"
 #include "playground/scene/common.h"
 
 void ForwardShadingScene::OnEnter(Context *context)
@@ -103,7 +104,7 @@ void ForwardShadingScene::OnRender(Context *context)
 {
   RunDepthBufferPass(context, &depth_buffer_pass_);
 
-  forward_pass_.Update(depth_buffer_pass_.shader_shadow_info());
+  forward_pass_.Update(depth_buffer_pass_.scene_shadow_info());
   RunForwardPass(context, &forward_pass_);
 
   EmptyObject quad;
@@ -111,7 +112,7 @@ void ForwardShadingScene::OnRender(Context *context)
   quad.OnRender(context);
 }
 
-void ForwardShadingScene::RunDepthBufferPass(Context* context, DepthBufferPass* depth_buffer_pass) {
+void ForwardShadingScene::RunDepthBufferPass(Context* context, engine::DepthBufferPass* depth_buffer_pass) {
   depth_buffer_pass->Begin();
 
   for (int i = 0; i < cubes_.size(); ++i) {
@@ -125,13 +126,14 @@ void ForwardShadingScene::RunDepthBufferPass(Context* context, DepthBufferPass* 
   depth_buffer_pass->End();
 }
 
-void ForwardShadingScene::RunForwardPass(Context* context, ForwardPass* forward_pass) {
+void ForwardShadingScene::RunForwardPass(Context* context, engine::ForwardPass* forward_pass) {
   forward_pass->Begin();
 
-  PhongShader::Param phong{context->material_property_ambient("gold"), context->material_property_diffuse("gold"),
-                           context->material_property_specular("gold"), context->material_property_shininess("gold")};
-  phong.shadow_info = forward_pass->prepass_shadow_info();
-  phong.light_info = point_lights_;
+  const engine::MaterialProperty& material_property = engine::kMaterialProperties.at("gold");
+  PhongShader::Param phong{material_property.ambient, material_property.diffuse,
+                           material_property.specular, material_property.shininess};
+  phong.scene_shadow_info = forward_pass->prepass_shadow_info();
+  phong.scene_light_info = AsSceneLightInfo(point_lights_);
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
     PhongShader(&phong, context, cube);

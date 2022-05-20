@@ -1,6 +1,6 @@
 #include "engine/repo/model_repo.h"
 
-#include <assimp/material.h>
+#include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <set>
 

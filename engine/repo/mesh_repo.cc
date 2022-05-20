@@ -1,7 +1,6 @@
 #include "engine/repo/mesh_repo.h"
 
 #include <algorithm>
-#include <assimp/postprocess.h>
 #include <glm/glm.hpp>
 #include <math.h>
 #include <set>

@@ -73,7 +73,7 @@ void PbrScene::OnRender(Context *context)
   }
 
   static PbrShader::Param pbr_cerberus;
-  pbr_cerberus.light_info = ShaderLightInfo(point_lights_);
+  pbr_cerberus.scene_light_info = AsSceneLightInfo(point_lights_);
   pbr_cerberus.texture_irradiance_cubemap = context->GetTexture("pbr_irradiance_tropical");
   pbr_cerberus.texture_prefiltered_color_cubemap = context->GetTexture("pbr_prefiltered_color_tropical");
   pbr_cerberus.texture_BRDF_integration_map = context->GetTexture("pbr_BRDF_integration_map");

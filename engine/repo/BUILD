@@ -18,7 +18,7 @@ cc_library(
     "//engine:engine",
     "//engine/primitive:primitive",
     "//engine:util",
-    "@assimp",
+    "@assimp//:assimp",
     "@fmt",
     "@stb",
   ],

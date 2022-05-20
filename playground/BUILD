@@ -71,10 +71,8 @@ cc_library(
 )
 
 cc_library(
-  name = "pass",
+  name = "shaders",
   srcs = [
-    "pass.h",
-    "pass.cc",
     "shaders.h",
     "shaders.cc",
   ],

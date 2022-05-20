@@ -86,7 +86,7 @@ void ModelScene::OnRender(Context *context) {
   glFrontFace_(cw_);
 
   static PhongShader::Param phong;
-  phong.light_info = ShaderLightInfo(point_lights_);
+  phong.scene_light_info = SceneLightInfo(point_lights_);
   for (int i = 0; i < nanosuit_.model_part_num(); ++i) {
     ModelPart* model_part = nanosuit_.mutable_model_part(i);
     model_part->mutable_transform()->SetScale(glm::vec3(0.3, 0.3, 0.3));

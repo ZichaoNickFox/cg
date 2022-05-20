@@ -3,55 +3,46 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "imgui.h"
 
+#include "engine/constants.h"
 #include "engine/debug.h"
 #include "playground/object/point_light.h"
 #include "engine/util.h"
 
-ShaderShadowInfo::ShaderShadowInfo(const glm::mat4& light_space_vp, engine::Texture depth_texture) {
-  light_space_vp_ = light_space_vp;
-  texture_depth_ = depth_texture;
+void UpdateMaterial(const engine::SceneLightInfo& scene_light_info, engine::Material* material) {
+  for (int i = 0; i < scene_light_info.infos.size(); ++i) {
+    const engine::SceneLightInfo::LightInfo& light_info = scene_light_info.infos[i];
+    material->SetVec3(util::Format("lights[{}].color", i).c_str(), light_info.color);
+    material->SetVec3(util::Format("lights[{}].pos", i).c_str(), light_info.pos);
+    uint32_t attenuation_metre = light_info.attenuation_metre;
+    const engine::LightAttenuation& light_attenuation = engine::kLightAttenuation.at(attenuation_metre);
+    material->SetFloat(util::Format("lights[{}].constant", i).c_str(), light_attenuation.constant);
+    material->SetFloat(util::Format("lights[{}].linear", i).c_str(), light_attenuation.linear);
+    material->SetFloat(util::Format("lights[{}].quadratic", i).c_str(), light_attenuation.quadratic);
+  }
+  material->SetInt("light_count", scene_light_info.infos.size());
 }
 
-void ShaderShadowInfo::UpdateMaterial(Context* context, engine::Material* material) const {
+void UpdateMaterial(const engine::SceneShadowInfo& scene_shadow_info, engine::Material* material) {
   material->SetBool("use_shadowing", true);
-  material->SetMat4("shadow_info.light_space_vp", light_space_vp_);
-  material->SetTexture("shadow_info.texture_depth", texture_depth_);
+  material->SetMat4("shadow_info.light_space_vp", scene_shadow_info.infos.light_space_vp);
+  material->SetTexture("shadow_info.texture_depth", scene_shadow_info.infos.texture_depth);
 }
 
-ShaderLightInfo::ShaderLightInfo(const PointLight& point_light) {
-  Insert(point_light);
+engine::SceneLightInfo::LightInfo AsLightInfo(const PointLight& point_light) {
+  engine::SceneLightInfo::LightInfo info;
+  info.type = engine::SceneLightInfo::LightInfo::kPointLight;
+  info.pos = point_light.transform().translation();
+  info.color = point_light.color();
+  info.attenuation_metre = point_light.attenuation_metre();
+  return info;
 }
 
-ShaderLightInfo::ShaderLightInfo(const std::vector<PointLight>& point_lights) {
+engine::SceneLightInfo AsSceneLightInfo(const std::vector<PointLight>& point_lights) {
+  engine::SceneLightInfo scene_light_info;
   for (const PointLight& point_light : point_lights) {
-    Insert(point_light);
+    scene_light_info.Insert(AsLightInfo(point_light));
   }
-}
-
-void ShaderLightInfo::Insert(const PointLight& point_light) {
-  light_poses.push_back(point_light.transform().translation());
-  light_colors.push_back(point_light.color());
-  light_attenuation_metres.push_back(point_light.attenuation_metre());
-}
-
-void ShaderLightInfo::UpdateMaterial(Context* context, engine::Material* material) const {
-  CGCHECK(light_poses.size() == light_colors.size())
-      << light_poses.size() << " " << light_colors.size();
-  CGCHECK(light_poses.size() == light_attenuation_metres.size())
-      << light_poses.size() << " " << light_attenuation_metres.size();
-  for (int i = 0; i < light_poses.size(); ++i) {
-    material->SetVec3(util::Format("lights[{}].color", i).c_str(), light_colors[i]);
-    material->SetVec3(util::Format("lights[{}].pos", i).c_str(), light_poses[i]);
-    int light_attenuation_metre = light_attenuation_metres[i];
-    material->SetFloat(util::Format("lights[{}].constant", i).c_str(),
-                                    context->light_attenuation_constant(light_attenuation_metre));
-    material->SetFloat(util::Format("lights[{}].linear", i).c_str(),
-                                    context->light_attenuation_linear(light_attenuation_metre));
-    material->SetFloat(util::Format("lights[{}].quadratic", i).c_str(),
-                                    context->light_attenuation_quadratic(light_attenuation_metre));
-  }
-  CHECK(light_poses.size()) << ": Need at least 1 light";
-  material->SetInt("light_count", light_poses.size());
+  return scene_light_info;
 }
 
 void PhongShader::Param::Gui() {
@@ -110,9 +101,9 @@ PhongShader::PhongShader(Param* phong, Context* context, Object* object) {
     material->SetBool("phong_material.use_texture_diffuse", false);
   }
 
-  phong->light_info.UpdateMaterial(context, material);
-  if (phong->shadow_info) {
-    phong->shadow_info->UpdateMaterial(context, material);
+  UpdateMaterial(phong->scene_light_info, material);
+  if (phong->scene_shadow_info) {
+    UpdateMaterial(phong->scene_shadow_info.value(), material);
   }
 
   material->SetInt("blinn_phong", phong->use_blinn_phong_);
@@ -185,9 +176,9 @@ PbrShader::PbrShader(Param* pbr, Context* context, Object* object) {
   material->SetTexture("texture_prefiltered_color_cubemap", pbr->texture_prefiltered_color_cubemap);
   material->SetTexture("texture_BRDF_integration_map", pbr->texture_BRDF_integration_map);
 
-  pbr->light_info.UpdateMaterial(context, material);
-  if (pbr->shadow_info) {
-    pbr->shadow_info->UpdateMaterial(context, material);
+  UpdateMaterial(pbr->scene_light_info, material);
+  if (pbr->scene_shadow_info) {
+    UpdateMaterial(pbr->scene_shadow_info.value(), material);
   }
 }
 

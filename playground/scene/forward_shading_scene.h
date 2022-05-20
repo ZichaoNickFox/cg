@@ -3,6 +3,7 @@
 #include "engine/camera.h"
 #include "engine/framebuffer.h"
 #include "engine/framebuffer_attachment.h"
+#include "engine/pass.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
@@ -11,7 +12,6 @@
 #include "playground/object/lines.h"
 #include "playground/object/plane.h"
 #include "playground/object/point_light.h"
-#include "playground/pass.h"
 #include "playground/scene.h"
 #include "playground/shaders.h"
 
@@ -23,8 +23,8 @@ class ForwardShadingScene : public Scene {
   void OnExit(Context* context);
 
  private:
-  void RunDepthBufferPass(Context* context, DepthBufferPass* depth_buffer_pass);
-  void RunForwardPass(Context* context, ForwardPass* forward_pass);
+  void RunDepthBufferPass(Context* context, engine::DepthBufferPass* depth_buffer_pass);
+  void RunForwardPass(Context* context, engine::ForwardPass* forward_pass);
 
   std::string material_name_ = "gold";
 
@@ -43,6 +43,6 @@ class ForwardShadingScene : public Scene {
   engine::Framebuffer depth_framebuffer_;
   engine::Framebuffer forward_framebuffer_;
 
-  DepthBufferPass depth_buffer_pass_;
-  ForwardPass forward_pass_;
+  engine::DepthBufferPass depth_buffer_pass_;
+  engine::ForwardPass forward_pass_;
 };

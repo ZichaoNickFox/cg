@@ -5,6 +5,7 @@
 
 #include "engine/camera.h"
 #include "engine/material.h"
+#include "engine/pass.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
@@ -12,34 +13,11 @@
 #include "playground/object/object.h"
 #include "playground/object/point_light.h"
 
-class ShaderShadowInfo {
- public:
-  ShaderShadowInfo() {}
-  ShaderShadowInfo(const glm::mat4& light_space_vp, engine::Texture texture_depth);
+void UpdateMaterial(const engine::SceneLightInfo& scene_light_info, engine::Material* material);
+void UpdateMaterial(const engine::SceneShadowInfo& scene_shadow_info, engine::Material* material);
+engine::SceneLightInfo::LightInfo AsLightInfo(const PointLight& point_light);
+engine::SceneLightInfo AsSceneLightInfo(const std::vector<PointLight>& point_lights);
 
-  void UpdateMaterial(Context* context, engine::Material* material) const;
-
- private:
-  glm::mat4 light_space_vp_;
-  engine::Texture texture_depth_;
-};
-
-class ShaderLightInfo {
- public:
-  ShaderLightInfo() {}
-  ShaderLightInfo(const PointLight& point_light);
-  ShaderLightInfo(const std::vector<PointLight>& point_lights);
-
-  void UpdateMaterial(Context* context, engine::Material* material) const;
-
- private:
-  void Insert(const PointLight& point_light);
-
-  std::vector<glm::vec3> light_poses;
-  std::vector<glm::vec3> light_colors;
-  std::vector<int> light_attenuation_metres;
-};
-  
 class PhongShader {
  public:
   struct Param {
@@ -61,8 +39,8 @@ class PhongShader {
     std::optional<engine::Texture> texture_specular;
     std::optional<engine::Texture> texture_diffuse;
 
-    ShaderLightInfo light_info;
-    std::optional<ShaderShadowInfo> shadow_info;
+    engine::SceneLightInfo scene_light_info;
+    std::optional<engine::SceneShadowInfo> scene_shadow_info;
   
    friend class PhongShader;
   };
@@ -93,8 +71,8 @@ class PbrShader {
     engine::Texture texture_prefiltered_color_cubemap;
     engine::Texture texture_BRDF_integration_map;
 
-    ShaderLightInfo light_info;
-    std::optional<ShaderShadowInfo> shadow_info;
+    engine::SceneLightInfo scene_light_info;
+    std::optional<engine::SceneShadowInfo> scene_shadow_info;
 
     friend class PbrShader;
   };

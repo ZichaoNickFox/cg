@@ -56,15 +56,6 @@ class Context {
   std::shared_ptr<const engine::Mesh> GetMesh(const std::string& name);
   std::vector<engine::ModelRepo::ModelPartData> GetModel(const std::string& name);
 
-  float light_attenuation_constant(int metre);
-  float light_attenuation_linear(int metre);
-  float light_attenuation_quadratic(int metre);
-
-  glm::vec4 material_property_ambient(const std::string& name);
-  glm::vec4 material_property_diffuse(const std::string& name);
-  glm::vec4 material_property_specular(const std::string& name);
-  float material_property_shininess(const std::string& name);
-
   float* mutable_camera_move_speed() { return &camera_move_speed_; }
   float* mutable_camera_rotate_speed() { return &camera_rotate_speed_; }
   float camera_move_speed() { return camera_move_speed_; }
@@ -77,8 +68,6 @@ class Context {
   engine::TextureRepo texture_repo_;
   engine::MeshRepo mesh_repo_;
   engine::ModelRepo model_repo_;
-  std::unordered_map<int, LightAttenuationConfig> light_attenuation_config_;
-  std::unordered_map<std::string, MaterialProperty> material_property_config_;
 
   Io io_;
 

@@ -43,10 +43,4 @@ message Config {
   repeated ShaderConfig shader_config = 1;
   repeated TextureConfig texture_config = 2;
   repeated ModelConfig model_config = 3;
-  
-  // http://www.ogre3d.org/tikiwiki/tiki-index.php?page=-Point+Light+Attenuation
-  map<int32, LightAttenuationConfig> light_attenuation_config = 4;
-
-  // http://www.barradeau.com/nicoptere/dump/materials.html
-  map<string, MaterialProperty> material_property_config = 5;
 }

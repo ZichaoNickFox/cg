@@ -3,10 +3,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include <assimp/Importer.hpp>
-#include <assimp/material.h>
-#include <assimp/scene.h>
-
 #include "engine/mesh.h"
 #include "engine/proto/config.pb.h"
 #include "engine/texture.h"

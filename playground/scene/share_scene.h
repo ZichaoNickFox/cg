@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "engine/camera.h"
+#include "engine/pass.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
@@ -12,7 +13,6 @@
 #include "playground/object/plane.h"
 #include "playground/object/point_light.h"
 #include "playground/object/sphere.h"
-#include "playground/pass.h"
 #include "playground/scene.h"
 #include "playground/shaders.h"
 

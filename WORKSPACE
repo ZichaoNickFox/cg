@@ -92,6 +92,7 @@ http_archive(
 http_archive(
   name = "assimp",
   build_file = "@//:thirdparty/assimp.BUILD",
+  sha256 = "070c9a7f8303d6f3ff3f29a9e047276666a9fade0a97e1123269d22084da3b6c",
   strip_prefix = "cg_assimp-cg_assimp",
   urls = ["https://github.com/ZichaoNickFox/cg_assimp/archive/refs/tags/cg_assimp.zip"],
 )
