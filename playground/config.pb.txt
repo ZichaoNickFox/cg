@@ -56,26 +56,26 @@ shader_config {
   vs_path : [
     "engine/shader/version.glsl",
     "engine/shader/shadow_info.glsl",
-    "engine/shader/phong.vs.glsl"
+    "engine/shader/phong/phong.vs.glsl"
   ];
   fs_path : [
     "engine/shader/version.glsl",
     "engine/shader/light_info.glsl",
-    "engine/shader/phong_material.glsl",
+    "engine/shader/phong/phong_material.glsl",
     "engine/shader/shadow_info.glsl",
-    "engine/shader/phong_model.glsl",
+    "engine/shader/phong/phong_model.glsl",
     "engine/shader/shadow_model.glsl",
-    "engine/shader/phong.fs.glsl"
+    "engine/shader/phong/phong.fs.glsl"
   ]
 }
 
 shader_config {
   name : "phong_shadow";
   vs_path : [
-    "engine/shader/phong_shadow.vs.glsl"
+    "engine/shader/phong/phong_shadow.vs.glsl"
   ];
   fs_path : [
-    "engine/shader/phong_shadow.fs.glsl"
+    "engine/shader/phong/phong_shadow.fs.glsl"
   ];
 }
 
@@ -200,13 +200,13 @@ shader_config {
   ];
   fs_path : [
     "engine/shader/version.glsl",
-    "engine/shader/pbr_material.glsl",
+    "engine/shader/pbr/pbr_material.glsl",
     "engine/shader/light_info.glsl",
-    "engine/shader/pbr_NDF.glsl",
-    "engine/shader/pbr_geometry.glsl",
-    "engine/shader/pbr_fresnel.glsl",
-    "engine/shader/pbr_model.glsl",
-    "engine/shader/pbr.fs.glsl"
+    "engine/shader/pbr/pbr_NDF.glsl",
+    "engine/shader/pbr/pbr_geometry.glsl",
+    "engine/shader/pbr/pbr_fresnel.glsl",
+    "engine/shader/pbr/pbr_model.glsl",
+    "engine/shader/pbr/pbr.fs.glsl"
   ];
 }
 
@@ -258,10 +258,10 @@ shader_config {
 shader_config {
   name : "pbr_irradiance_cubemap_generator";
   vs_path : [
-    "engine/shader/pbr_irradiance_cubemap_generator.vs.glsl"
+    "engine/shader/pbr/pbr_irradiance_cubemap_generator.vs.glsl"
   ];
   fs_path : [
-    "engine/shader/pbr_irradiance_cubemap_generator.fs.glsl"
+    "engine/shader/pbr/pbr_irradiance_cubemap_generator.fs.glsl"
   ];
 }
 
@@ -281,24 +281,34 @@ shader_config {
 shader_config {
   name : "pbr_prefiltered_color_cubemap_generator";
   vs_path : [
-    "engine/shader/pbr_prefiltered_color_cubemap_generator.vs.glsl"
+    "engine/shader/pbr/pbr_prefiltered_color_cubemap_generator.vs.glsl"
   ];
   fs_path : [
     "engine/shader/version.glsl",
     "engine/shader/sample.glsl",
-    "engine/shader/pbr_prefiltered_color_cubemap_generator.fs.glsl"
+    "engine/shader/pbr/pbr_prefiltered_color_cubemap_generator.fs.glsl"
   ];
 }
 
 shader_config {
   name : "pbr_BRDF_integration_map_generator";
   vs_path : [
-    "engine/shader/pbr_BRDF_integration_map_generator.vs.glsl"
+    "engine/shader/pbr/pbr_BRDF_integration_map_generator.vs.glsl"
   ];
   fs_path : [
     "engine/shader/version.glsl",
     "engine/shader/sample.glsl",
-    "engine/shader/pbr_BRDF_integration_map_generator.fs.glsl"
+    "engine/shader/pbr/pbr_BRDF_integration_map_generator.fs.glsl"
+  ];
+}
+
+shader_config {
+  name : "SSAO_g_buffer";
+  vs_path : [
+    "engine/shader/SSAO/SSAO_g_buffer.vs.glsl"
+  ];
+  fs_path : [
+    "engine/shader/SSAO/SSAO_g_buffer.fs.glsl"
   ];
 }
 

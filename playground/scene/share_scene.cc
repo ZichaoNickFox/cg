@@ -157,7 +157,7 @@ void ShareScene::OnRender(Context *context)
     RunDepthBufferPass(context, &depth_buffer_pass_);
 
     forward_pass_.Update(depth_buffer_pass_.shader_shadow_info());
-    RunForwardPass(context, &forward_pass_);
+    RunForwardPass_Deprecated(context, &forward_pass_);
 
     EmptyObject quad;
     FullscreenQuadShader({forward_pass_.GetColorTexture()}, context, &quad);
@@ -185,7 +185,7 @@ void ShareScene::RunDepthBufferPass(Context* context, DepthBufferPass* depth_buf
   depth_buffer_pass->End();
 }
 
-void ShareScene::RunForwardPass(Context* context, ForwardPass* forward_pass) {
+void ShareScene::RunForwardPass_Deprecated(Context* context, ForwardPass* forward_pass) {
   forward_pass->Begin();
 
   PhongShader::Param phong;

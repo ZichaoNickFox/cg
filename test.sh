@@ -1,1 +1,1 @@
-bazel test --test_output=all //playground:test
+bazel test --test_output=all //playground:test //engine:any_test //engine:oneof_test

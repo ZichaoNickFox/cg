@@ -14,16 +14,19 @@ void GetInternalFormatSize(int internal_format, int* channel, int* byte_per_chan
 struct Texture2DData {
   Texture2DData() = default;
   Texture2DData(int level_num, int level0_buffer_size);
-  std::vector<GLubyte>* mutable_vector(int level);
-  GLubyte* mutable_data(int level);
+  void UpdateData(int level, const std::vector<GLubyte>& data) { data_[level] = data; }
+  GLubyte* mutable_data(int level) { return data_[level].data(); }
+  const void* data(int level) const { return data_[level].data(); }
   void resize(int level_num, int level0_buffer_size);
+  uint32_t level_num() const { return data_.size(); }
  private:
   std::vector<std::vector<GLubyte>> data_;
 };
+
 struct CubemapData {
   CubemapData(int level_num, int level0_buffer_size);
-  std::vector<GLubyte>* mutable_vector(int face, int level);
-  GLubyte* mutable_data(int face, int level);
+  void UpdateData(int face, int level, const std::vector<GLubyte>& data) { data_[face].UpdateData(level, data); }
+  GLubyte* mutable_data(int face, int level) { return data_[face].mutable_data(level); }
  private:
   std::array<Texture2DData, 6> data_;
 };

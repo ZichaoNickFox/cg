@@ -1,1 +1,3 @@
-bazel --test_output=all test //playground:test
+bazel test --test_output=all ^
+  --cxxopt="/std:c++17" ^
+  //playground:test

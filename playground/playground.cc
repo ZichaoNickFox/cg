@@ -15,12 +15,14 @@
 //#include "playground/scene/pbr_prefiltered_color_cubemap_generator.h"
 #include "playground/scene/pbr_scene.h"
 //#include "playground/scene/sample_scene.h"
+#include "playground/scene/shadow_scene.h"
 //#include "playground/scene/share_scene.h"
 //#include "playground/scene/skybox_scene.h"
+#include "playground/scene/SSAO_scene.h"
 //#include "playground/scene/texture_lod_scene.h"
 
 namespace {
-const std::string kDefaultScene = "ForwardShadingScene";
+const std::string kDefaultScene = "SSAOScene";
 }
 
 void Playground::Init(const Context::Option& option) {
@@ -45,6 +47,8 @@ void Playground::InitScene() {
   //scene_map_.insert(std::make_pair("PbrPrefilteredColorCubemapGenerator", std::make_unique<PbrPrefilteredColorCubemapGenerator>()));
   //scene_map_.insert(std::make_pair("PbrBRDFIntegrationMapGenerator", std::make_unique<PbrBRDFIntegrationMapGenerator>()));
   //scene_map_.insert(std::make_pair("TextureLodScene", std::make_unique<TextureLodScene>()));
+  scene_map_.insert(std::make_pair("SSAOScene", std::make_unique<SSAOScene>()));
+  scene_map_.insert(std::make_pair("ShadowScene", std::make_unique<ShadowScene>()));
 }
 
 void Playground::BeginFrame() {

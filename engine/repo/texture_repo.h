@@ -12,10 +12,18 @@ struct CreateTexture2DParam {
   int level_num;
   int width;
   int height;
-  Texture2DData* data;
+  union Data {
+    Data(const std::vector<void*>& in_raw_data) : raw_data(in_raw_data) {}
+    Data(const Texture2DData& in_full_data) : full_data(&in_full_data) {}
+    ~Data() {}
+    std::vector<void*> raw_data;
+    const Texture2DData* full_data;
+  } data;
   int internal_format = GL_RGBA8;
   int format = GL_RGBA;
   int type = GL_UNSIGNED_BYTE;
+
+  const void* texture_data(int level) const;
 };
 struct CreateCubemapParam {
   int level_num;

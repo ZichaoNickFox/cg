@@ -113,7 +113,7 @@ Texture CreateTexture2DImpl(const CreateTexture2DParam& param) {
   glTexStorage2D_(GL_TEXTURE_2D, param.level_num, param.internal_format, param.width, param.height);
   for (int level = 0; level < param.level_num; ++level) {
     glTexSubImage2D_(GL_TEXTURE_2D, level, 0, 0, param.width >> level, param.height >> level,
-                    param.format, param.type, param.data->mutable_data(level));
+                     param.format, param.type, param.texture_data(level));
   }
   glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -127,6 +127,19 @@ Texture CreateTexture2DImpl(const CreateTexture2DParam& param) {
   glBindTexture_(GL_TEXTURE_2D, 0);
   return Texture(ret, Texture::Texture2D);
 }
+
+const void* CreateTexture2DParam::texture_data(int level) const {
+  if (data.raw_data.size() > 0) {
+    CGCHECK(level < data.raw_data.size()) << " level must LT data.size : level -" << level
+                                          << " data.size - " << data.raw_data.size();
+    return data.raw_data[level];
+  } else {
+    CGCHECK(level < data.full_data->level_num()) << " level must LT data.size : level -" << level
+                                                 << " data.size - " << data.full_data->level_num();
+    return data.full_data->data(level);
+  }
+}
+
 
 Texture ResetCubemapImpl(const CreateCubemapParam& param) {
   GLuint ret;

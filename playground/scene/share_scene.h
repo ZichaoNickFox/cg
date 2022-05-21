@@ -24,7 +24,7 @@ class ShareScene : public Scene {
   void OnExit(Context* context);
 
   void RunDepthBufferPass(Context* context, DepthBufferPass* depth_buffer_pass);
-  void RunForwardPass(Context* context, ForwardPass* forward_pass);
+  void RunForwardPass_Deprecated(Context* context, ForwardPass* forward_pass);
   
   void RunDepthBufferPass2(Context* context, DepthBufferPass* depth_buffer_pass);
   void RunForwardPass2(Context* context, ForwardPass* forward_pass);

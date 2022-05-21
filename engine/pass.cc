@@ -52,4 +52,19 @@ void ShadowPass::Begin() {
 
 void ShadowPass::End() {
 }
+
+void SSAOPass::Init(Framebuffer* g_buffer, Framebuffer* SSAO_buffer) {
+  g_buffer_ = g_buffer;
+  SSAO_buffer_ = SSAO_buffer;
+}
+
+void BlurPass::Init(Framebuffer* in, Framebuffer* out) {
+  in_ = in;
+  out_ = out;
+}
+
+void LightingPass::Init(Framebuffer* in, Framebuffer* out) {
+  in_ = in;
+  out_ = out;
+}
 } // namespace engine

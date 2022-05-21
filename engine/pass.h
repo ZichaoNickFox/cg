@@ -90,4 +90,44 @@ class ShadowPass : public Pass {
   Texture depth_texture_;
   Texture color_texture_;
 };
+
+class GBufferPass : public Pass {
+ public:
+  void Init(Framebuffer* g_buffer) { g_buffer_ = g_buffer; }
+  void Begin() override { g_buffer_->Bind(); }
+  void End() override { g_buffer_->Unbind(); }
+  Framebuffer* g_buffer() { return g_buffer_; }
+ private:
+  Framebuffer* g_buffer_;
+};
+
+class SSAOPass : public Pass {
+ public:
+  void Init(Framebuffer* g_buffer, Framebuffer* SSAO_buffer);
+  void Begin() override { g_buffer_->Bind(); }
+  void End() override { g_buffer_->Unbind(); }
+ private:
+  Framebuffer* g_buffer_;
+  Framebuffer* SSAO_buffer_;
+};
+
+class BlurPass : public Pass {
+ public:
+  void Init(Framebuffer* in, Framebuffer* out);
+  void Begin() override { in_->Bind(); }
+  void End() override { in_->Unbind(); }
+ private:
+  Framebuffer* in_;
+  Framebuffer* out_;
+};
+
+class LightingPass : public Pass {
+ public:
+  void Init(Framebuffer* in, Framebuffer* out);
+  void Begin() override { in_->Bind(); }
+  void End() override { in_->Unbind(); }
+ private:
+  Framebuffer* in_;
+  Framebuffer* out_;
+};
 } // namespace engine

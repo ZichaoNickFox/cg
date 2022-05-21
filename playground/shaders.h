@@ -215,3 +215,9 @@ class PbrBRDFIntegrationMapGeneratorShader {
   struct Param {};
   PbrBRDFIntegrationMapGeneratorShader(const Param& param, Context* context, EmptyObject* empty_object);
 };
+
+class SSAOShader {
+ public:
+  struct ParamGBuffer {};
+  SSAOShader(const ParamGBuffer& param_g_buffer, Context* context, Object* object);
+};

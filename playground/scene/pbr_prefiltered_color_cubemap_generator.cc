@@ -59,7 +59,7 @@ void PbrPrefilteredColorCubemapGenerator::OnRender(Context *context)
       cube_.OnRender(context);
       color_framebuffers_[level].Unbind();
 
-      *data.mutable_vector(face, level) = color_framebuffers_[level].GetColorTextureData(0);
+      data.UpdateData(face, level, color_framebuffers_[level].GetColorTextureData(0));
     }
   }
   engine::CreateCubemapParam param{kMipmapMaxLevel, kLevel0Size, kLevel0Size, &data};

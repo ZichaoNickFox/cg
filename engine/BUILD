@@ -50,6 +50,7 @@ cc_library(
 cc_library(
   name = "engine",
   srcs = [
+    "any.h",
     "camera.h",
     "camera.cc",
     "constants.h",
@@ -62,6 +63,7 @@ cc_library(
     "material.h",
     "material.cc",
     "math.h",
+    "oneof.h",
     "pass.h",
     "pass.cc",
     "shader.h",
@@ -95,5 +97,31 @@ cc_library(
     "//engine/proto:cc_config_proto",
     "@fmt",
     "@glm",
+  ],
+)
+
+cc_test (
+  name = "any_test",
+  srcs = [
+    "any_test.cc",
+  ],
+  deps = [
+    "//engine:engine",
+    "//engine:util",
+    "@gtest//:gtest",
+    "@gtest//:gtest_main"
+  ],
+)
+
+cc_test (
+  name = "oneof_test",
+  srcs = [
+    "oneof_test.cc",
+  ],
+  deps = [
+    "//engine:engine",
+    "//engine:util",
+    "@gtest//:gtest",
+    "@gtest//:gtest_main"
   ],
 )

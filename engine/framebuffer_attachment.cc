@@ -12,6 +12,7 @@ GLuint FramebufferAttachment::GetAttachmentBase() const {
     return GL_STENCIL_ATTACHMENT;
   } else {
     CGCHECK(false) << "Unsupported attachment type : " << type;
+    return GL_NONE;
   }
 }
 } // namespace engine

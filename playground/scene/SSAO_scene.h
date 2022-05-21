@@ -10,12 +10,13 @@
 #include "playground/object/cube.h"
 #include "playground/object/directional_light.h"
 #include "playground/object/lines.h"
+#include "playground/object/model.h"
 #include "playground/object/plane.h"
 #include "playground/object/point_light.h"
 #include "playground/scene.h"
 #include "playground/shaders.h"
 
-class ForwardShadingScene : public Scene {
+class SSAOScene : public Scene {
  public:
   void OnEnter(Context* context);
   void OnUpdate(Context* context);
@@ -23,26 +24,33 @@ class ForwardShadingScene : public Scene {
   void OnExit(Context* context);
 
  private:
-  void RunDepthBufferPass(Context* context, engine::DepthBufferPass* depth_buffer_pass);
   void RunForwardPass_Deprecated(Context* context, engine::ForwardPass* forward_pass);
 
-  std::string material_name_ = "gold";
+  void SetupBufferAndPass(Context* context);
 
-  std::vector<Cube> cubes_;
-  std::vector<engine::Transform> cube_transforms_;
+  void RunGBufferPass(Context* context, engine::GBufferPass* g_buffer_pass);;
+  void RunSSAOPass(Context* context, engine::SSAOPass* SSAO_pass);
+  void RunBlurPass(Context* context, engine::BlurPass* blue_pass);
+  void RunLightingPass(Context* context, engine::LightingPass* lighting_pass);
+
+  engine::Framebuffer g_buffer_;
+  engine::Framebuffer SSAO_buffer_;
+  engine::Framebuffer blur_buffer_;
+  engine::Framebuffer lighting_buffer_;
+
+  engine::GBufferPass g_buffer_pass_;
+  engine::SSAOPass SSAO_pass_;
+  engine::BlurPass blur_pass_;
+  engine::LightingPass lighting_pass_;
+
+  engine::Texture texture_SSAO_noice_;
 
   int point_lights_num_ = 10;
   std::vector<PointLight> point_lights_;
 
   Coord coord_;
   Plane plane_;
-  DirectionalLight directional_light_;
+  Model nanosuit_;
 
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
-
-  engine::Framebuffer depth_framebuffer_;
-  engine::Framebuffer forward_framebuffer_;
-
-  engine::DepthBufferPass depth_buffer_pass_;
-  engine::ForwardPass forward_pass_;
 };

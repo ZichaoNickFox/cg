@@ -36,7 +36,6 @@ static const char* kAttachmentNameColor = "color";
 static const char* kAttachmentNamePosition = "position";
 static const char* kAttachmentNameNormal = "normal";
 static const char* kAttachmentNameTexcoord = "texcoord";
-static const char* kAttachmentNameFragWorldPos = "frag_world_pos";
 static const char* kAttachmentNameDepth = "depth";
 static const char* kAttachmentNameStencil = "stencil";
 
@@ -51,9 +50,6 @@ static const FramebufferAttachment kAttachmentNormal = {
     4, 16, GL_NEAREST, GL_NEAREST, GL_REPEAT, GL_REPEAT, 1, glm::vec4(0.45f, 0.55f, 0.60f, 1.00f)};
 static const FramebufferAttachment kAttachmentTexcoord = {
     FramebufferAttachment::kColor, kAttachmentNameTexcoord, GL_RGBA, GL_FLOAT, GL_RGBA32F,
-    4, 16, GL_NEAREST, GL_NEAREST, GL_REPEAT, GL_REPEAT, 1, glm::vec4(0.45f, 0.55f, 0.60f, 1.00f)};
-static const FramebufferAttachment kPosAttachmentFragWorldPos = {
-    FramebufferAttachment::kColor, kAttachmentNameFragWorldPos, GL_RGBA, GL_FLOAT, GL_RGBA32F,
     4, 16, GL_NEAREST, GL_NEAREST, GL_REPEAT, GL_REPEAT, 1, glm::vec4(0.45f, 0.55f, 0.60f, 1.00f)};
 static const FramebufferAttachment kAttachmentDepth = {
     FramebufferAttachment::kDepth, kAttachmentNameDepth, GL_DEPTH_COMPONENT, GL_FLOAT, GL_DEPTH_COMPONENT32F,

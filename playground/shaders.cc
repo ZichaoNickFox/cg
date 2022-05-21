@@ -395,3 +395,17 @@ PbrBRDFIntegrationMapGeneratorShader::PbrBRDFIntegrationMapGeneratorShader(const
   material->SetShader(context->GetShader("pbr_BRDF_integration_map_generator"));
   material->PrepareShader();
 }
+
+SSAOShader::SSAOShader(const ParamGBuffer& param_g_buffer, Context* context, Object* object) {
+  engine::Material* material = object->mutable_material();
+  material->SetShader(context->GetShader("SSAO_g_buffer"));
+
+  const engine::Camera& camera = context->camera();
+  glm::mat4 project = camera.GetProjectMatrix();
+  glm::mat4 view = camera.GetViewMatrix();
+  material->SetMat4("project", project);
+  material->SetMat4("view", view);
+  material->SetMat4("model", object->GetModelMatrix());
+
+  material->PrepareShader();
+}
