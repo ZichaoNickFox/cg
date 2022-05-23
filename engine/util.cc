@@ -102,7 +102,7 @@ int64_t DurationMillisecond(const Time& from, const Time& to) {
 }
 
 namespace {
-int RandFromTo(int from, int to) {
+int RandFromToInternal(int from, int to) {
   CHECK(to > from) << "to LE than from";
   std::srand(Now().time_since_epoch().count());
   uint32_t slide = std::max(0, 0 - from);
@@ -116,7 +116,7 @@ int RandFromTo(int from, int to) {
 float RandFromTo(float from, float to) {
   int rand_from = from * 1000;
   int rand_to = to * 1000;
-  int rand_value = RandFromTo(rand_from, rand_to);
+  int rand_value = RandFromToInternal(rand_from, rand_to);
   return rand_value / 1000.0f;
 }
 

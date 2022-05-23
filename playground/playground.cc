@@ -5,6 +5,7 @@
 //#include "playground/scene/AA_scene.h"
 //#include "playground/scene/AA_test_scene.h"
 //#include "playground/scene/deferred_shading_scene.h"
+#include "playground/scene/depth_scene.h"
 #include "playground/scene/forward_shading_scene.h"
 //#include "playground/scene/model_scene.h"
 //#include "playground/scene/mrt_scene.h"
@@ -22,7 +23,7 @@
 //#include "playground/scene/texture_lod_scene.h"
 
 namespace {
-const std::string kDefaultScene = "SSAOScene";
+const std::string kDefaultScene = "DepthScene";
 }
 
 void Playground::Init(const Context::Option& option) {
@@ -49,6 +50,7 @@ void Playground::InitScene() {
   //scene_map_.insert(std::make_pair("TextureLodScene", std::make_unique<TextureLodScene>()));
   scene_map_.insert(std::make_pair("SSAOScene", std::make_unique<SSAOScene>()));
   scene_map_.insert(std::make_pair("ShadowScene", std::make_unique<ShadowScene>()));
+  scene_map_.insert(std::make_pair("DepthScene", std::make_unique<DepthScene>()));
 }
 
 void Playground::BeginFrame() {

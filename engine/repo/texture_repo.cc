@@ -115,14 +115,14 @@ Texture CreateTexture2DImpl(const CreateTexture2DParam& param) {
     glTexSubImage2D_(GL_TEXTURE_2D, level, 0, 0, param.width >> level, param.height >> level,
                      param.format, param.type, param.texture_data(level));
   }
-  glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, param.texture_param_wrap_s);
+  glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, param.texture_param_wrap_t);
   if(param.level_num > 1){
     glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   } else {
-    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, param.texture_param_min_filter);
+    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, param.texture_param_mag_filter);
   }
   glBindTexture_(GL_TEXTURE_2D, 0);
   return Texture(ret, Texture::Texture2D);

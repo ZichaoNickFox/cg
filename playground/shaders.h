@@ -149,8 +149,11 @@ class CubemapLodShader {
 
 class DepthBufferShader {
  public:
-  DepthBufferShader(const engine::Shader& depth_buffer_shader,
-                    std::shared_ptr<const engine::Camera> camera, Object* object);
+  struct Param {
+    std::shared_ptr<const engine::Camera> camera;
+    engine::Shader depth_buffer_shader;
+  };
+  DepthBufferShader(const Param& param, Object* object);
 };
 
 class CubemapShader {
@@ -219,5 +222,12 @@ class PbrBRDFIntegrationMapGeneratorShader {
 class SSAOShader {
  public:
   struct ParamGBuffer {};
-  SSAOShader(const ParamGBuffer& param_g_buffer, Context* context, Object* object);
+  struct ParamSSAO {
+    engine::Texture texture_position_vs;
+    engine::Texture texture_normal_vs;
+    engine::Texture texture_noise;
+    std::array<glm::vec3, 64> sampler_ts;
+  };
+  SSAOShader(const ParamGBuffer& param, Context* context, Object* object);
+  SSAOShader(const ParamSSAO& param, Context* context, Object* object);
 };

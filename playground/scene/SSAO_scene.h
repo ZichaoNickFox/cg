@@ -43,7 +43,7 @@ class SSAOScene : public Scene {
   engine::BlurPass blur_pass_;
   engine::LightingPass lighting_pass_;
 
-  engine::Texture texture_SSAO_noice_;
+  engine::Texture texture_noise_;
 
   int point_lights_num_ = 10;
   std::vector<PointLight> point_lights_;
@@ -51,6 +51,8 @@ class SSAOScene : public Scene {
   Coord coord_;
   Plane plane_;
   Model nanosuit_;
+
+  std::array<glm::vec3, 64> samples_ts_;
 
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
 };

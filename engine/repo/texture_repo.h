@@ -19,9 +19,13 @@ struct CreateTexture2DParam {
     std::vector<void*> raw_data;
     const Texture2DData* full_data;
   } data;
-  int internal_format = GL_RGBA8;
-  int format = GL_RGBA;
-  int type = GL_UNSIGNED_BYTE;
+  GLuint internal_format = GL_RGBA8;
+  GLuint format = GL_RGBA;
+  GLuint type = GL_UNSIGNED_BYTE;
+  GLuint texture_param_min_filter = GL_LINEAR;
+  GLuint texture_param_mag_filter = GL_LINEAR;
+  GLuint texture_param_wrap_s = GL_REPEAT;
+  GLuint texture_param_wrap_t = GL_REPEAT;
 
   const void* texture_data(int level) const;
 };
@@ -30,9 +34,13 @@ struct CreateCubemapParam {
   int width;
   int height;
   CubemapData* data;
-  int internal_format = GL_RGBA8;
-  int format = GL_RGBA;
-  int type = GL_UNSIGNED_BYTE;
+  GLuint internal_format = GL_RGBA8;
+  GLuint format = GL_RGBA;
+  GLuint type = GL_UNSIGNED_BYTE;
+  GLuint texture_param_min_filter = GL_LINEAR;
+  GLuint texture_param_mag_filter = GL_LINEAR;
+  GLuint texture_param_wrap_s = GL_REPEAT;
+  GLuint texture_param_wrap_t = GL_REPEAT;
 };
 engine::Texture LoadModelTexture2D(const std::string& full_path, bool flip_vertically = true);
 

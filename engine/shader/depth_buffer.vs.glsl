@@ -7,10 +7,7 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 project;
 
-out vec2 texcoord_;
-
 void main()
 {
-  texcoord_ = texcoord;
   gl_Position = project * view * model * vec4(pos, 1.0);
 }

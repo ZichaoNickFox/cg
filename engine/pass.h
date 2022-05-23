@@ -44,18 +44,17 @@ class Pass {
 
 class DepthBufferPass : public Pass {
  public:
-  void Init(Framebuffer* depth_framebuffer, const Transform& camera_transform);
+  void Init(Framebuffer* depth_framebuffer, std::shared_ptr<Camera> camera);
   void Begin() override;
   void End() override;
 
-  std::shared_ptr<Camera> mutable_camera() const { return camera_; }
-  std::shared_ptr<const Camera> camera() const { return camera_; }
   glm::mat4 camera_vp() { return camera_->GetProjectMatrix() * camera_->GetViewMatrix(); }
   Texture GetTexture(const std::string& name) { return depth_framebuffer_->GetTexture(name); }
   SceneShadowInfo scene_shadow_info();
+  std::shared_ptr<Camera> camera() { return camera_; }
   
  private:
-  std::shared_ptr<Camera> camera_ = std::make_shared<Camera>();
+  std::shared_ptr<Camera> camera_;
   Framebuffer* depth_framebuffer_;
 };
 
@@ -103,22 +102,27 @@ class GBufferPass : public Pass {
 
 class SSAOPass : public Pass {
  public:
-  void Init(Framebuffer* g_buffer, Framebuffer* SSAO_buffer);
-  void Begin() override { g_buffer_->Bind(); }
-  void End() override { g_buffer_->Unbind(); }
- private:
-  Framebuffer* g_buffer_;
+  void Init(Framebuffer* SSAO_buffer);
+  void Begin() override { SSAO_buffer_->Bind(); }
+  void End() override { SSAO_buffer_->Unbind(); }
+
+  engine::Texture texture_position_vs;
+  engine::Texture texture_normal_vs;
+  engine::Texture texture_noise;
+  std::array<glm::vec3, 64> samples_ts;
+  engine::Texture texture_SSAO() { return SSAO_buffer_->GetTexture(kAttachmentNameColor); }
+  
   Framebuffer* SSAO_buffer_;
 };
 
 class BlurPass : public Pass {
  public:
-  void Init(Framebuffer* in, Framebuffer* out);
-  void Begin() override { in_->Bind(); }
-  void End() override { in_->Unbind(); }
+  void Init(Framebuffer* blur_buffer);
+  void Begin() override { blur_buffer_->Bind(); }
+  void End() override { blur_buffer_->Unbind(); }
+
  private:
-  Framebuffer* in_;
-  Framebuffer* out_;
+  Framebuffer* blur_buffer_;
 };
 
 class LightingPass : public Pass {

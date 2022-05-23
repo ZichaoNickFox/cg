@@ -10,12 +10,13 @@
 #include "playground/object/cube.h"
 #include "playground/object/directional_light.h"
 #include "playground/object/lines.h"
+#include "playground/object/model.h"
 #include "playground/object/plane.h"
 #include "playground/object/point_light.h"
 #include "playground/scene.h"
 #include "playground/shaders.h"
 
-class ForwardShadingScene : public Scene {
+class DepthScene : public Scene {
  public:
   void OnEnter(Context* context);
   void OnUpdate(Context* context);
@@ -26,24 +27,16 @@ class ForwardShadingScene : public Scene {
   void RunDepthBufferPass(Context* context, engine::DepthBufferPass* depth_buffer_pass);
   void RunForwardPass_Deprecated(Context* context, engine::ForwardPass* forward_pass);
 
-  std::string material_name_ = "gold";
-
-  std::vector<Cube> cubes_;
-  std::vector<engine::Transform> cube_transforms_;
-
   int point_lights_num_ = 10;
   std::vector<PointLight> point_lights_;
 
   Coord coord_;
   Plane plane_;
-  DirectionalLight directional_light_;
+
+  Model nanosuit_;
 
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
-  std::shared_ptr<engine::Camera> light_camera_ = std::make_shared<engine::Camera>();
 
   engine::Framebuffer depth_framebuffer_;
-  engine::Framebuffer forward_framebuffer_;
-
   engine::DepthBufferPass depth_buffer_pass_;
-  engine::ForwardPass forward_pass_;
 };

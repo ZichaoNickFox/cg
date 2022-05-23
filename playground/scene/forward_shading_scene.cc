@@ -49,8 +49,9 @@ void ForwardShadingScene::OnEnter(Context *context)
   
   glEnable_(GL_DEPTH_TEST);
 
-  depth_framebuffer_.Init({context->framebuffer_size(), {engine::kAttachmentDepth}});
-  depth_buffer_pass_.Init(&depth_framebuffer_, directional_light_.transform());
+  light_camera_->SetTransform(directional_light_.transform());
+  depth_framebuffer_.Init({context->framebuffer_size(), {engine::kAttachmentColor, engine::kAttachmentDepth}});
+  depth_buffer_pass_.Init(&depth_framebuffer_, light_camera_);
 
   forward_framebuffer_.Init({context->framebuffer_size(), {engine::kAttachmentColor, engine::kAttachmentDepth}});
   forward_pass_.Init(&forward_framebuffer_);
@@ -74,22 +75,6 @@ void ForwardShadingScene::OnUpdate(Context *context)
   ImGui::SliderFloat3("cube0_scale", (float*)cubes_[0].mutable_transform()->mutable_scale(), -2, 2);
 
   ImGui::Separator();
-
-  ImGui::Text("Camera Type");
-  ImGui::SameLine();
-  if (ImGui::Button("Perceptive Camera")) {
-    context->SetCamera(camera_.get());
-    camera_->SetType(engine::Camera::Perspective);
-  }
-  ImGui::SameLine();
-  if (ImGui::Button("Orthographic Camera")) {
-    context->SetCamera(camera_.get());
-    camera_->SetType(engine::Camera::Orthographic);
-  }
-  ImGui::SameLine();
-  if (ImGui::Button("Orthographic Direction Light")) {
-    context->SetCamera(depth_buffer_pass_.mutable_camera().get());
-  }
 
   for (int i = 0; i < point_lights_num_; ++i) {
     point_lights_[i].OnUpdate(context);
@@ -115,12 +100,13 @@ void ForwardShadingScene::OnRender(Context *context)
 void ForwardShadingScene::RunDepthBufferPass(Context* context, engine::DepthBufferPass* depth_buffer_pass) {
   depth_buffer_pass->Begin();
 
+  DepthBufferShader::Param param{depth_buffer_pass->camera(), context->GetShader("depth_buffer")};
   for (int i = 0; i < cubes_.size(); ++i) {
     Cube* cube = &cubes_[i];
-    DepthBufferShader{context->GetShader("depth_buffer"), depth_buffer_pass->camera(), cube};
+    DepthBufferShader{param, cube};
     cube->OnRender(context);
   }
-  DepthBufferShader{context->GetShader("depth_buffer"), depth_buffer_pass->camera(), &plane_};
+  DepthBufferShader{param, &plane_};
   plane_.OnRender(context);
 
   depth_buffer_pass->End();

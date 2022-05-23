@@ -107,6 +107,7 @@ PhongShader::PhongShader(Param* phong, Context* context, Object* object) {
   }
 
   material->SetInt("blinn_phong", phong->use_blinn_phong_);
+  material->PrepareShader();
 }
 
 void PbrShader::Param::Gui() {
@@ -180,6 +181,8 @@ PbrShader::PbrShader(Param* pbr, Context* context, Object* object) {
   if (pbr->scene_shadow_info) {
     UpdateMaterial(pbr->scene_shadow_info.value(), material);
   }
+
+  material->PrepareShader();
 }
 
 NormalShader::NormalShader(Param* normal, Context* context, Object* object) {
@@ -202,6 +205,7 @@ NormalShader::NormalShader(Param* normal, Context* context, Object* object) {
   if (normal->texture_normal) {
     material->SetTexture("texture_normal", normal->texture_normal.value());
   }
+  material->PrepareShader();
 }
 
 void NormalShader::Param::Gui() {
@@ -229,6 +233,7 @@ LinesShader::LinesShader(const Param& param, Context* context, Object* object) {
   material->SetMat4("model", model);
   material->SetVec3("view_pos", camera.transform().translation());
   material->SetFloat("line_width", param.line_width);
+  material->PrepareShader();
 }
 
 ColorShader::ColorShader(const Param& param, Context* context, Object* object) {
@@ -243,6 +248,7 @@ ColorShader::ColorShader(const Param& param, Context* context, Object* object) {
   material->SetMat4("view", view);
   material->SetMat4("model", model);
   material->SetVec4("color", param.color);
+  material->PrepareShader();
 }
 
 TextureShader::TextureShader(const Param& param, Context* context, Object* object) {
@@ -257,6 +263,7 @@ TextureShader::TextureShader(const Param& param, Context* context, Object* objec
   material->SetMat4("view", view);
   material->SetMat4("model", model);
   material->SetTexture("texture0", param.texture0);
+  material->PrepareShader();
 }
 
 Texture2DLodShader::Texture2DLodShader(const Param& param, Context* context, Object* object) {
@@ -273,6 +280,7 @@ Texture2DLodShader::Texture2DLodShader(const Param& param, Context* context, Obj
   CGCHECK(param.texture2D0.type() == engine::Texture::Texture2D);
   material->SetTexture("texture2D0", param.texture2D0);
   material->SetVec3("view_pos_ws", param.view_pos_ws);
+  material->PrepareShader();
 }
 
 CubemapLodShader::CubemapLodShader(const Param& param, Context* context, Object* object) {
@@ -289,19 +297,23 @@ CubemapLodShader::CubemapLodShader(const Param& param, Context* context, Object*
   CGCHECK(param.cubemap.type() == engine::Texture::Cubemap);
   material->SetTexture("texture_cubemap", param.cubemap);
   material->SetVec3("view_pos_ws", param.view_pos_ws);
+  material->PrepareShader();
 }
 
-DepthBufferShader::DepthBufferShader(const engine::Shader& depth_buffer_shader,
-                                     std::shared_ptr<const engine::Camera> camera, Object* object) {
+DepthBufferShader::DepthBufferShader(const DepthBufferShader::Param& param, Object* object) {
   engine::Material* material = CGCHECK_NOTNULL(object->mutable_material(0));
-  material->SetShader(depth_buffer_shader);
+  material->SetShader(param.depth_buffer_shader);
 
-  glm::mat4 project = camera->GetProjectMatrix();
-  glm::mat4 view = camera->GetViewMatrix();
+  glm::mat4 project = param.camera->GetProjectMatrix();
+  glm::mat4 view = param.camera->GetViewMatrix();
   glm::mat4 model = object->GetModelMatrix();
   material->SetMat4("project", project);
   material->SetMat4("view", view);
   material->SetMat4("model", model);
+  material->SetFloat("u_near", param.camera->near_clip());
+  material->SetFloat("u_far", param.camera->far_clip());
+
+  material->PrepareShader();
 }
 
 CubemapShader::CubemapShader(const Param& param, Context* context, Object* object) {
@@ -315,12 +327,15 @@ CubemapShader::CubemapShader(const Param& param, Context* context, Object* objec
   material->SetMat4("view", view);
   material->SetMat4("model", model); 
   material->SetTexture("texture0", param.cubemap);
+
+  material->PrepareShader();
 }
 
 FullscreenQuadShader::FullscreenQuadShader(const Param& param, Context* context, EmptyObject* empty_object) {
   engine::Material* material = CGCHECK_NOTNULL(empty_object->mutable_material(0));
   material->SetShader(context->GetShader("fullscreen_quad"));
   material->SetTexture("texture0", param.texture0); 
+  material->PrepareShader();
 }
 
 PbrEnvironmentCubemapGerneratorShader::PbrEnvironmentCubemapGerneratorShader(const Param& param, Context* context,
@@ -335,6 +350,7 @@ PbrEnvironmentCubemapGerneratorShader::PbrEnvironmentCubemapGerneratorShader(con
   material->SetMat4("view", view);
   material->SetMat4("project", project);
   material->SetTexture("texture2D0", param.texture2D0); 
+  material->PrepareShader();
 }
 
 TexcoordShader::TexcoordShader(const Param& param, Context* context, Object* object) {
@@ -407,5 +423,23 @@ SSAOShader::SSAOShader(const ParamGBuffer& param_g_buffer, Context* context, Obj
   material->SetMat4("view", view);
   material->SetMat4("model", object->GetModelMatrix());
 
+  material->PrepareShader();
+}
+
+SSAOShader::SSAOShader(const ParamSSAO& param, Context* context, Object* object) {
+  engine::Material* material = object->mutable_material();
+  material->SetShader(context->GetShader("SSAO_SSAO"));
+
+  const engine::Camera& camera = context->camera();
+  glm::mat4 project = camera.GetProjectMatrix();
+  glm::mat4 view = camera.GetViewMatrix();
+  material->SetMat4("u_projection", project);
+  material->SetMat4("u_view", view);
+  material->SetTexture("ut_position_vs", param.texture_position_vs);
+  material->SetTexture("ut_normal_vs", param.texture_normal_vs);
+  //material->SetTexture("ut_noise", param.texture_noise);
+  for (int i = 0; i < 64; ++i) {
+    material->SetVec3(util::Format("u_samples_ts[{}]", i).c_str(), param.sampler_ts[i]);
+  }
   material->PrepareShader();
 }

@@ -10,6 +10,8 @@ cc_library(
 #    "AA_test_scene.cc",
     "common.h",
     "common.cc",
+    "depth_scene.h",
+    "depth_scene.cc",
 #    "equirectangular_2_cubemap_tool.h",
 #    "equirectangular_2_cubemap_tool.cc",
 #    "pbr_BRDF_integration_map_generator.h",

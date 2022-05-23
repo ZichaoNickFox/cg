@@ -9,11 +9,9 @@ void SceneLightInfo::Insert(const std::vector<LightInfo>& in_light_infos) {
   infos.insert(infos.end(), in_light_infos.begin(), in_light_infos.end());
 }
 
-void DepthBufferPass::Init(Framebuffer* depth_framebuffer,
-                           const Transform& camera_transform) {
-  camera_->SetType(Camera::Orthographic);
-  camera_->SetTransform(camera_transform);
+void DepthBufferPass::Init(Framebuffer* depth_framebuffer, std::shared_ptr<Camera> camera) {
   depth_framebuffer_ = depth_framebuffer;
+  camera_ = camera;
 }
 
 void DepthBufferPass::Begin() {
@@ -53,14 +51,12 @@ void ShadowPass::Begin() {
 void ShadowPass::End() {
 }
 
-void SSAOPass::Init(Framebuffer* g_buffer, Framebuffer* SSAO_buffer) {
-  g_buffer_ = g_buffer;
+void SSAOPass::Init(Framebuffer* SSAO_buffer) {
   SSAO_buffer_ = SSAO_buffer;
 }
 
-void BlurPass::Init(Framebuffer* in, Framebuffer* out) {
-  in_ = in;
-  out_ = out;
+void BlurPass::Init(Framebuffer* blur_buffer) {
+  blur_buffer_ = blur_buffer;
 }
 
 void LightingPass::Init(Framebuffer* in, Framebuffer* out) {

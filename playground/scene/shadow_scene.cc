@@ -50,7 +50,7 @@ void ShadowScene::OnEnter(Context *context)
   glEnable_(GL_DEPTH_TEST);
 
   depth_framebuffer_.Init({context->framebuffer_size(), {engine::kAttachmentDepth}});
-  depth_buffer_pass_.Init(&depth_framebuffer_, directional_light_.transform());
+  depth_buffer_pass_.Init(&depth_framebuffer_, camera_);
 
   forward_framebuffer_.Init({context->framebuffer_size(), {engine::kAttachmentColor, engine::kAttachmentDepth}});
   forward_pass_.Init(&forward_framebuffer_);
@@ -64,19 +64,6 @@ void ShadowScene::OnUpdate(Context *context)
 
   ImGui::Text("Camera Type");
   ImGui::SameLine();
-  if (ImGui::Button("Perceptive Camera")) {
-    context->SetCamera(camera_.get());
-    camera_->SetType(engine::Camera::Perspective);
-  }
-  ImGui::SameLine();
-  if (ImGui::Button("Orthographic Camera")) {
-    context->SetCamera(camera_.get());
-    camera_->SetType(engine::Camera::Orthographic);
-  }
-  ImGui::SameLine();
-  if (ImGui::Button("Orthographic Direction Light")) {
-    context->SetCamera(depth_buffer_pass_.mutable_camera().get());
-  }
 
   for (int i = 0; i < point_lights_num_; ++i) {
     point_lights_[i].OnUpdate(context);
@@ -102,12 +89,13 @@ void ShadowScene::OnRender(Context *context)
 void ShadowScene::RunDepthBufferPass(Context* context, engine::DepthBufferPass* depth_buffer_pass) {
   depth_buffer_pass->Begin();
 
-  DepthBufferShader{context->GetShader("depth_buffer"), depth_buffer_pass->camera(), &plane_};
+  DepthBufferShader::Param param{depth_buffer_pass->camera(), context->GetShader("depth_buffer")};
+  DepthBufferShader{param, &plane_};
   plane_.OnRender(context);
 
   for (int i = 0; i < nanosuit_.model_part_num(); ++i) {
     ModelPart* model_part = nanosuit_.mutable_model_part(i);
-    DepthBufferShader{context->GetShader("depth_buffer"), depth_buffer_pass->camera(), model_part};
+    DepthBufferShader{param, model_part};
     model_part->OnRender(context);
   }
 
