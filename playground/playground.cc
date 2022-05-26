@@ -7,7 +7,7 @@
 //#include "playground/scene/deferred_shading_scene.h"
 #include "playground/scene/depth_scene.h"
 #include "playground/scene/forward_shading_scene.h"
-//#include "playground/scene/model_scene.h"
+#include "playground/scene/model_scene.h"
 //#include "playground/scene/mrt_scene.h"
 //#include "playground/scene/normal_scene.h"
 //#include "playground/scene/equirectangular_2_cubemap_tool.h"
@@ -23,7 +23,7 @@
 //#include "playground/scene/texture_lod_scene.h"
 
 namespace {
-const std::string kDefaultScene = "DepthScene";
+const std::string kDefaultScene = "SSAOScene";
 }
 
 void Playground::Init(const Context::Option& option) {
@@ -38,7 +38,7 @@ void Playground::InitScene() {
   //scene_map_.insert(std::make_pair("MrtScene", std::make_unique<MrtScene>()));
   //scene_map_.insert(std::make_pair("AAScene", std::make_unique<AAScene>()));
   //scene_map_.insert(std::make_pair("AATestScene", std::make_unique<AATestScene>()));
-  //scene_map_.insert(std::make_pair("ModelScene", std::make_unique<ModelScene>()));
+  scene_map_.insert(std::make_pair("ModelScene", std::make_unique<ModelScene>()));
   scene_map_.insert(std::make_pair("PbrScene", std::make_unique<PbrScene>()));
   //scene_map_.insert(std::make_pair("NormalScene", std::make_unique<NormalScene>()));
   //scene_map_.insert(std::make_pair("ShareScene", std::make_unique<ShareScene>()));

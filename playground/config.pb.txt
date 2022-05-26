@@ -307,9 +307,14 @@ shader_config {
 shader_config {
   name : "SSAO_g_buffer";
   vs_path : [
+    "engine/shader/version.glsl",
+    "engine/shader/convert.glsl",
     "engine/shader/SSAO/SSAO_g_buffer.vs.glsl"
   ];
   fs_path : [
+    "engine/shader/version.glsl",
+    "engine/shader/depth.glsl",
+    "engine/shader/convert.glsl",
     "engine/shader/SSAO/SSAO_g_buffer.fs.glsl"
   ];
 }
@@ -320,6 +325,9 @@ shader_config {
     "engine/shader/fullscreen_quad.vs.glsl"
   ];
   fs_path : [
+    "engine/shader/version.glsl",
+    "engine/shader/depth.glsl",
+    "engine/shader/convert.glsl",
     "engine/shader/SSAO/SSAO_SSAO.fs.glsl"
   ];
 }

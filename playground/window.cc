@@ -65,6 +65,8 @@ int main(int argc, char **argv)
   // Create window with graphics context
   constexpr int kScreenWidth = 3240;
   constexpr int kScreenHeight = 2160;
+  //constexpr int kScreenWidth = 1920;
+  //constexpr int kScreenHeight = 1080;
   GLFWwindow* window = glfwCreateWindow(kScreenWidth, kScreenHeight, "CG",
                                         NULL, NULL);
   CGCHECK(window) << "GLFW create window failed";

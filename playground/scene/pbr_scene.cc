@@ -89,7 +89,7 @@ void PbrScene::OnRender(Context *context)
   PbrShader(&pbr_cerberus, context, &cube_);
   cube_.OnRender(context);
 
-  LinesShader({1.0}, context, &coord_);
+  LinesShader({}, context, &coord_);
   coord_.OnRender(context);
 
   CubemapShader({context->GetTexture("pbr_environment_tropical")}, context, &skybox_);

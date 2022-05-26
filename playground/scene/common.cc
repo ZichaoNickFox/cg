@@ -4,6 +4,8 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include "engine/debug.h"
+#include "playground/object/lines.h"
+#include "playground/shaders.h"
 
 OnUpdateCommon::OnUpdateCommon(Context* context, const std::string& title) {
   bool open = true;
@@ -84,4 +86,27 @@ void OnUpdateCommon::MoveCamera(Context* context) {
     camera->RotateHorizontal(cursor_delta_x);
     camera->RotateVerticle(cursor_delta_y);
   }
+}
+
+OnRenderCommon::OnRenderCommon(Context* context) {
+  DrawWorldCoordAndViewCoord(context);
+}
+
+void OnRenderCommon::DrawWorldCoordAndViewCoord(Context* context) {
+  glDisable_(GL_DEPTH_TEST);
+  enum Type {kWorld = 0, kNum};
+  std::array<glm::vec2, kNum> positions_ss = {glm::vec2{0.5f, 0.1f}};
+  std::array<glm::vec3, kNum> near_positions_ws;
+  std::array<glm::vec3, kNum> far_positions_ws;
+  for (int i = kWorld; i < kNum; ++i) {
+    context->camera().GetPickRay(positions_ss[i], &near_positions_ws[i], &far_positions_ws[i]);
+    glm::vec3 direction = glm::normalize(far_positions_ws[i] - near_positions_ws[i]);
+    glm::vec3 world_coord_pos = near_positions_ws[i] + direction * glm::vec3(0.5, 0.5, 0.5);
+    Coord coord;
+    coord.mutable_transform()->SetTranslation(world_coord_pos);
+    coord.mutable_transform()->SetScale(glm::vec3(0.05, 0.05, 0.05));
+    LinesShader({0.3}, context, &coord);
+    coord.OnRender(context);
+  }
+  glEnable_(GL_DEPTH_TEST);
 }

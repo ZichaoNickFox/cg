@@ -7,7 +7,10 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 project;
 
+out vec4 position_vs_;
+
 void main()
 {
+  position_vs_ = view * model * vec4(pos, 1.0);
   gl_Position = project * view * model * vec4(pos, 1.0);
 }

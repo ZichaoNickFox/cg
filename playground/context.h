@@ -34,7 +34,7 @@ class Context {
 
   void SetCamera(engine::Camera* camera) { camera_ = camera; }
   
-  const engine::Camera& camera() { return *camera_; }
+  const engine::Camera& camera() const { return *camera_; }
   engine::Camera* mutable_camera();
 
   void SetFrameInternal(int frame_interval);

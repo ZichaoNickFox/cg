@@ -23,7 +23,7 @@ void DepthBufferPass::End() {
 }
 
 SceneShadowInfo DepthBufferPass::scene_shadow_info() {
-  return SceneShadowInfo::ShadowInfo{camera_vp(), GetTexture(kAttachmentNameDepth)};
+  return SceneShadowInfo::ShadowInfo{camera_vp(), GetTexture(kAttachmentDepth.name)};
 }
 
 void ForwardPass::Init(Framebuffer* forward_framebuffer) {

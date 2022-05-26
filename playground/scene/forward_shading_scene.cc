@@ -9,6 +9,7 @@
 
 #include "engine/constants.h"
 #include "engine/framebuffer_attachment.h"
+#include "engine/math.h"
 #include "engine/pass.h"
 #include "engine/transform.h"
 #include "engine/util.h"
@@ -19,10 +20,10 @@ void ForwardShadingScene::OnEnter(Context *context)
 {
   for (int i = 0; i < point_lights_num_; ++i) {
     point_lights_.push_back(PointLight());
-    glm::vec3 point_light_pos(util::RandFromTo(-5, 5), util::RandFromTo(0, 5), util::RandFromTo(-5, 5));
+    glm::vec3 point_light_pos(engine::RandFromTo(-5, 5), engine::RandFromTo(0, 5), engine::RandFromTo(-5, 5));
     point_lights_[i].mutable_transform()->SetTranslation(point_light_pos);
     point_lights_[i].mutable_transform()->SetScale(glm::vec3(0.2, 0.2, 0.2));
-    glm::vec4 color(util::RandFromTo(0, 1), util::RandFromTo(0, 1), util::RandFromTo(0, 1), 1.0);
+    glm::vec4 color(engine::RandFromTo(0, 1), engine::RandFromTo(0, 1), engine::RandFromTo(0, 1), 1.0);
     point_lights_[i].SetColor(color);
   }
 
@@ -93,7 +94,7 @@ void ForwardShadingScene::OnRender(Context *context)
   RunForwardPass_Deprecated(context, &forward_pass_);
 
   EmptyObject quad;
-  FullscreenQuadShader({forward_framebuffer_.GetTexture(engine::kAttachmentNameColor)}, context, &quad);
+  FullscreenQuadShader({forward_framebuffer_.GetTexture(engine::kAttachmentColor.name)}, context, &quad);
   quad.OnRender(context);
 }
 

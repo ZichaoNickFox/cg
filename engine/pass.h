@@ -109,8 +109,10 @@ class SSAOPass : public Pass {
   engine::Texture texture_position_vs;
   engine::Texture texture_normal_vs;
   engine::Texture texture_noise;
+  engine::Texture texture_position_ws;
+  engine::Texture texture_normal_ws;
   std::array<glm::vec3, 64> samples_ts;
-  engine::Texture texture_SSAO() { return SSAO_buffer_->GetTexture(kAttachmentNameColor); }
+  engine::Texture texture_SSAO() { return SSAO_buffer_->GetTexture(kAttachmentColor.name); }
   
   Framebuffer* SSAO_buffer_;
 };

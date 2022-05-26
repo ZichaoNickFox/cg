@@ -76,4 +76,11 @@ Texture Framebuffer::GetTexture(const std::string& name) {
   CGCHECK(textures_.count(name) == 1) << " Cannot find texture in framebuffer " << name;
   return textures_[name];
 }
+
+void Framebuffer::Blit(Framebuffer* framebuffer) {
+  glBindFramebuffer_(GL_READ_FRAMEBUFFER, fbo_);
+  glBindFramebuffer_(GL_DRAW_FRAMEBUFFER, framebuffer ? framebuffer->fbo() : 0);
+  glBlitFramebuffer_(0, 0, option_.size.x, option_.size.y, 0, 0, option_.size.x, option_.size.y,
+                     GL_COLOR_BUFFER_BIT, GL_NEAREST);
+}
 }

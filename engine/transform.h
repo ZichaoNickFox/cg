@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 // Quaternion
 // https://krasjet.github.io/quaternion/quaternion.pdf
@@ -9,10 +10,11 @@ namespace engine {
 class Transform {
  public:
   Transform() {}
+  Transform(const Transform& other);
   Transform(const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale);
-  void SetTranslation(const glm::vec3 translation) { translation_ = translation; }
-  void SetRotation(const glm::quat rotation) { rotation_ = glm::normalize(rotation); }
-  void SetScale(const glm::vec3 scale) { scale_ = scale; }
+  void SetTranslation(const glm::vec3& translation) { translation_ = translation; }
+  void SetRotation(const glm::quat& rotation) { rotation_ = glm::normalize(rotation); }
+  void SetScale(const glm::vec3& scale) { scale_ = scale; }
   glm::mat4 GetModelMatrix() const;
 
   const glm::vec3& translation() const { return translation_; }
@@ -31,4 +33,6 @@ class Transform {
   glm::quat rotation_ = glm::quat(glm::vec3(0, 0, 0));
   glm::vec3 scale_ = glm::vec3(1, 1, 1);
 };
+
+Transform operator*(const glm::mat4& transform, const Transform& source);
 }

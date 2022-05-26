@@ -24,8 +24,6 @@ class SSAOScene : public Scene {
   void OnExit(Context* context);
 
  private:
-  void RunForwardPass_Deprecated(Context* context, engine::ForwardPass* forward_pass);
-
   void SetupBufferAndPass(Context* context);
 
   void RunGBufferPass(Context* context, engine::GBufferPass* g_buffer_pass);;

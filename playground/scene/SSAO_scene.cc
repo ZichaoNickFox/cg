@@ -15,25 +15,27 @@
 #include "engine/transform.h"
 #include "engine/util.h"
 #include "playground/object/empty_object.h"
+#include "playground/object/sphere.h"
 #include "playground/scene/common.h"
 
 void SSAOScene::OnEnter(Context *context)
 {
   for (int i = 0; i < point_lights_num_; ++i) {
     point_lights_.push_back(PointLight());
-    glm::vec3 point_light_pos(util::RandFromTo(-5, 5), util::RandFromTo(0, 5), util::RandFromTo(-5, 5));
+    glm::vec3 point_light_pos(engine::RandFromTo(-5, 5), engine::RandFromTo(0, 5), engine::RandFromTo(-5, 5));
     point_lights_[i].mutable_transform()->SetTranslation(point_light_pos);
     point_lights_[i].mutable_transform()->SetScale(glm::vec3(0.2, 0.2, 0.2));
-    glm::vec4 color(util::RandFromTo(0, 1), util::RandFromTo(0, 1), util::RandFromTo(0, 1), 1.0);
+    glm::vec4 color(engine::RandFromTo(0, 1), engine::RandFromTo(0, 1), engine::RandFromTo(0, 1), 1.0);
     point_lights_[i].SetColor(color);
   }
 
-  camera_->mutable_transform()->SetTranslation(glm::vec3(1.78, 0.47, -2.30));
-  camera_->mutable_transform()->SetRotation(glm::quat(-0.66, 0.19, -0.70, -0.18));
+  //camera_->mutable_transform()->SetTranslation(glm::vec3(1.78, 0.47, -2.30));
+  //camera_->mutable_transform()->SetTranslation(glm::vec3(0, 0, 0));
+  //camera_->mutable_transform()->SetRotation(glm::quat(-0.66, 0.19, -0.70, -0.18));
   context->SetCamera(camera_.get());
 
   plane_.mutable_transform()->SetTranslation(glm::vec3(0, -1, 0));
-  plane_.mutable_transform()->SetScale(glm::vec3(10, 0, 10));
+  plane_.mutable_transform()->SetScale(glm::vec3(10, 1, 10));
 
   nanosuit_.Init(context, "nanosuit", "nanosuit");
   for (int i = 0; i < nanosuit_.model_part_num(); ++i) {
@@ -47,21 +49,13 @@ void SSAOScene::OnEnter(Context *context)
 
   SetupBufferAndPass(context);
 
-  std::vector<glm::vec3> SSAO_noice(16);
-  for (int i = 0; i < 4; ++i) {
-    for (int j = 0; j < 4; ++j) {
-      glm::vec3 noice(util::RandFromTo(-1, 1), util::RandFromTo(-1, 1), 0.0);
-      SSAO_noice[i * 4 + j] = noice;
-    }
-  }
-  engine::CreateTexture2DParam param{1, 4, 4, std::vector<void*>{static_cast<void*>(SSAO_noice.data())},
+  
+  std::vector<glm::vec3> SSAO_noise = engine::Noise(4, 4);
+  engine::CreateTexture2DParam param{1, 4, 4, std::vector<void*>{static_cast<void*>(SSAO_noise.data())},
                                      GL_RGB32F, GL_RGB, GL_FLOAT, GL_NEAREST, GL_NEAREST};
   texture_noise_ = context->mutable_texture_repo()->CreateTempTexture2D(param);
 
-  for (int i = 0; i < 64; ++i) {
-    glm::vec3 sample(util::RandFromTo(-1, 1), util::RandFromTo(-1, 1), 0);
-    samples_ts_[i] = glm::normalize(sample);
-  }
+  samples_ts_ = util::AsArray<64>(engine::SampleSemishphere(64));
 }
 
 void SSAOScene::OnUpdate(Context *context)
@@ -70,30 +64,13 @@ void SSAOScene::OnUpdate(Context *context)
 
   ImGui::Separator();
 
-  ImGui::Text("Camera Type");
-  ImGui::SameLine();
-  if (ImGui::Button("Perceptive Camera")) {
-    context->SetCamera(camera_.get());
-    camera_->SetType(engine::Camera::Perspective);
-  }
-  ImGui::SameLine();
-  if (ImGui::Button("Orthographic Camera")) {
-    context->SetCamera(camera_.get());
-    camera_->SetType(engine::Camera::Orthographic);
-  }
-
-  for (int i = 0; i < point_lights_num_; ++i) {
-    point_lights_[i].OnUpdate(context);
-  }
-
-  coord_.OnUpdate(context);
   plane_.OnUpdate(context);
 }
 
 void SSAOScene::SetupBufferAndPass(Context* context) {
   glm::ivec2 screen_size = context->io().screen_size();
-  g_buffer_.Init({screen_size, {engine::kAttachmentPosition, engine::kAttachmentNormal,
-                                engine::kAttachmentColor}});
+  g_buffer_.Init({screen_size, {engine::kAttachmentPositionVS, engine::kAttachmentNormalVS,
+                                engine::kAttachmentColor, engine::kAttachmentDepth}});
   SSAO_buffer_.Init({screen_size, {engine::kAttachmentColor, engine::kAttachmentDepth}});
   blur_buffer_.Init({screen_size, {engine::kAttachmentColor, engine::kAttachmentDepth}});
   lighting_buffer_.Init({screen_size, {engine::kAttachmentColor, engine::kAttachmentDepth}});
@@ -108,50 +85,24 @@ void SSAOScene::OnRender(Context *context)
 {
   RunGBufferPass(context, &g_buffer_pass_);
 
-  engine::Texture texture_position_vs = g_buffer_pass_.g_buffer()->GetTexture(engine::kAttachmentNamePosition);
-  engine::Texture texture_normal_vs = g_buffer_pass_.g_buffer()->GetTexture(engine::kAttachmentNameNormal);
-  SSAO_pass_.texture_position_vs = texture_position_vs;
-  SSAO_pass_.texture_normal_vs = texture_normal_vs;
+  engine::Texture t = g_buffer_pass_.g_buffer()->GetTexture(engine::kAttachmentPositionVS.name);
+
+  SSAO_pass_.texture_position_vs = g_buffer_pass_.g_buffer()->GetTexture(engine::kAttachmentPositionVS.name);
+  SSAO_pass_.texture_normal_vs = g_buffer_pass_.g_buffer()->GetTexture(engine::kAttachmentNormalVS.name);
   SSAO_pass_.texture_noise = texture_noise_;
   SSAO_pass_.samples_ts = samples_ts_;
 
+  RunSSAOPass(context, &SSAO_pass_);
+
   EmptyObject object;
-  FullscreenQuadShader full_screen({texture_position_vs}, context, &object);
+  FullscreenQuadShader full_screen({SSAO_pass_.texture_SSAO()}, context, &object);
   object.OnRender(context);
-
-  //RunSSAOPass(context, &SSAO_pass_);
-
-  //engine::Texture texture_SSAO = SSAO_pass_.texture_SSAO();
-
+  
+return;
   //RunBlurPass(context, &blur_pass_);
   //RunLightingPass(context, &lighting_pass_);
-}
-
-void SSAOScene::RunForwardPass_Deprecated(Context* context, engine::ForwardPass* forward_pass) {
-  forward_pass->Begin();
-
-  const engine::MaterialProperty& material_property = engine::kMaterialProperties.at("gold");
-  PhongShader::Param phong{material_property.ambient, material_property.diffuse,
-                           material_property.specular, material_property.shininess};
-  phong.scene_light_info = AsSceneLightInfo(point_lights_);
-  for (int i = 0; i < point_lights_num_; ++i) {
-    ColorShader({point_lights_[i].color()}, context, &point_lights_[i]);
-    point_lights_[i].OnRender(context);
-  }
-
-  LinesShader({}, context, &coord_);
-  coord_.OnRender(context);
-
-  PhongShader(&phong, context, &plane_);
-  plane_.OnRender(context);
-
-  for (int i = 0; i < nanosuit_.model_part_num(); ++i) {
-    ModelPart* model_part = nanosuit_.mutable_model_part(i);
-    PhongShader(&phong, context, model_part);
-    model_part->OnRender(context);
-  }
-
-  forward_pass->End();
+  
+  OnRenderCommon _(context);
 }
 
 void SSAOScene::RunGBufferPass(Context* context, engine::GBufferPass* g_buffer_pass) {
@@ -167,6 +118,7 @@ void SSAOScene::RunGBufferPass(Context* context, engine::GBufferPass* g_buffer_p
   }
 
   g_buffer_pass->End();
+  g_buffer_pass_.g_buffer()->Blit();
 }
 
 void SSAOScene::RunSSAOPass(Context* context, engine::SSAOPass* SSAO_pass) {

@@ -26,6 +26,7 @@ public:
   GLuint fbo() { return fbo_; }
 
   Texture GetTexture(const std::string& name);
+  void Blit(Framebuffer* framebuffer = nullptr);
 
  private:
   Option option_;

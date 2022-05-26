@@ -12,7 +12,7 @@ TEST(engine_test, util)
   EXPECT_EQ(util::FileExt("a"), "");
 
   for (int i = 0; i < 10000000; ++i) {
-    float rand_value = util::RandFromTo(-10.0, 10.0);
+    float rand_value = engine::RandFromTo(-10.0, 10.0);
     EXPECT_LE(rand_value, 10.0);
     EXPECT_GE(rand_value, -10.0);
   }

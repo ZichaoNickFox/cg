@@ -30,29 +30,28 @@ struct FramebufferAttachment {
   GLuint GetAttachmentBase() const;
 };
 
-static const char* kAttachmentNameColor = "color";
-static const char* kAttachmentNamePosition = "position";
-static const char* kAttachmentNameNormal = "normal";
-static const char* kAttachmentNameTexcoord = "texcoord";
-static const char* kAttachmentNameDepth = "depth";
-static const char* kAttachmentNameStencil = "stencil";
-
 static const FramebufferAttachment kAttachmentColor = {
-    FramebufferAttachment::kColor, kAttachmentNameColor, GL_RGBA, GL_FLOAT, GL_RGBA32F,
-    GL_NEAREST, GL_NEAREST, GL_REPEAT, GL_REPEAT, 1, glm::vec4(0.45f, 0.55f, 0.60f, 1.00f)};
-static const FramebufferAttachment kAttachmentPosition = {
-    FramebufferAttachment::kColor, kAttachmentNamePosition, GL_RGBA, GL_FLOAT, GL_RGBA32F,
-    GL_NEAREST, GL_NEAREST, GL_REPEAT, GL_REPEAT, 1, glm::vec4(0.45f, 0.55f, 0.60f, 1.00f)};
-static const FramebufferAttachment kAttachmentNormal = {
-    FramebufferAttachment::kColor, kAttachmentNameNormal, GL_RGBA, GL_FLOAT, GL_RGBA32F,
-    GL_NEAREST, GL_NEAREST, GL_REPEAT, GL_REPEAT, 1, glm::vec4(0.45f, 0.55f, 0.60f, 1.00f)};
+    FramebufferAttachment::kColor, "color", GL_RGBA, GL_FLOAT, GL_RGBA32F,
+    GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER, 1, glm::vec4(0.45f, 0.55f, 0.60f, 1.00f)};
+static const FramebufferAttachment kAttachmentPositionWS = {
+    FramebufferAttachment::kColor, "position_ws", GL_RGBA, GL_FLOAT, GL_RGBA32F,
+    GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER, 1, glm::vec4(0.45f, 0.55f, 0.60f, 1.00f)};
+static const FramebufferAttachment kAttachmentPositionVS = {
+    FramebufferAttachment::kColor, "position_vs", GL_RGBA, GL_FLOAT, GL_RGBA32F,
+    GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER, 1, glm::vec4(0.45f, 0.55f, 0.60f, 1.00f)};
+static const FramebufferAttachment kAttachmentNormalVS = {
+    FramebufferAttachment::kColor, "normal_vs", GL_RGBA, GL_FLOAT, GL_RGBA32F,
+    GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER, 1, glm::vec4(0.45f, 0.55f, 0.60f, 1.00f)};
+static const FramebufferAttachment kAttachmentNormalWS = {
+    FramebufferAttachment::kColor, "normal_ws", GL_RGBA, GL_FLOAT, GL_RGBA32F,
+    GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER, 1, glm::vec4(0.45f, 0.55f, 0.60f, 1.00f)};
 static const FramebufferAttachment kAttachmentTexcoord = {
-    FramebufferAttachment::kColor, kAttachmentNameTexcoord, GL_RGBA, GL_FLOAT, GL_RGBA32F,
-    GL_NEAREST, GL_NEAREST, GL_REPEAT, GL_REPEAT, 1, glm::vec4(0.45f, 0.55f, 0.60f, 1.00f)};
+    FramebufferAttachment::kColor, "texcoord", GL_RGBA, GL_FLOAT, GL_RGBA32F,
+    GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER, 1, glm::vec4(0.45f, 0.55f, 0.60f, 1.00f)};
 static const FramebufferAttachment kAttachmentDepth = {
-    FramebufferAttachment::kDepth, kAttachmentNameDepth, GL_DEPTH_COMPONENT, GL_FLOAT, GL_DEPTH_COMPONENT32F,
-    GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, 1, glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)};
+    FramebufferAttachment::kDepth, "depth", GL_DEPTH_COMPONENT, GL_FLOAT, GL_DEPTH_COMPONENT32F,
+    GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER, 1, glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)};
 static const FramebufferAttachment kAttachmentStencil = {
-    FramebufferAttachment::kDepth, kAttachmentNameStencil, GL_DEPTH_COMPONENT, GL_FLOAT, GL_DEPTH_COMPONENT32F,
-    GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, 1, glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)};
+    FramebufferAttachment::kDepth, "stencil", GL_DEPTH_COMPONENT, GL_FLOAT, GL_DEPTH_COMPONENT32F,
+    GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER, 1, glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)};
 } // namespace engine

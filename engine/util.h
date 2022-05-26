@@ -48,15 +48,19 @@ template<typename ElemType>
 uint64_t VectorByteSize(const std::vector<ElemType>& v) {
   return sizeof(ElemType) * v.size();
 }
+template<int N, typename ElemType>
+std::array<ElemType, N> AsArray(const std::vector<ElemType>& in) {
+  std::array<ElemType, N> res;
+  std::copy_n(in.begin(), N, res.begin());
+  return res;
+}
 
 // time
 using Time = std::chrono::high_resolution_clock::time_point;
 Time Now();
 int64_t DurationMillisecond(const Time& from, const Time& to);
 
-// random : 3 precisely
-float RandFromTo(float from, float to);
-
+// float
 float FloatEq(float value, float target);
 
 // glm

@@ -41,7 +41,7 @@ class PhongShader {
 
     engine::SceneLightInfo scene_light_info;
     std::optional<engine::SceneShadowInfo> scene_shadow_info;
-  
+
    friend class PhongShader;
   };
   PhongShader(Param* param, Context* context, Object* object);

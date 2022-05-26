@@ -21,6 +21,7 @@ glm::mat4 Camera::GetProjectMatrix() const {
 }
 
 // https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/gluLookAt.xml
+// https://zhuanlan.zhihu.com/p/138157800
 glm::mat4 LookAt(const glm::vec3& transform, const glm::vec3& center, const glm::vec3& world_up) {
   glm::vec3 front = normalize(center - transform);
   glm::vec3 right = normalize(glm::cross(front, world_up));
@@ -41,8 +42,8 @@ glm::mat4 LookAt(const glm::vec3& transform, const glm::vec3& center, const glm:
 
 glm::mat4 Camera::GetViewMatrix() const {
   glm::vec3 center = transform_.translation() + transform_.rotation() * glm::vec3(0, 0, -1);
-  // return glm::lookAt(transform_.translation(), center, world_up_);
-  return LookAt(transform_.translation(), center, world_up_);
+  return glm::lookAt(transform_.translation(), center, world_up_);
+  //return LookAt(transform_.translation(), center, world_up_);
 }
 
 void Camera::MoveForward(float delta) {
@@ -64,10 +65,10 @@ void Camera::RotateVerticle(float delta) {
 }
 
 // https://feepingcreature.github.io/math.html
-void Camera::GetPickRay(const glm::vec2& normalized_cursor_screen_pos, glm::vec3* cursor_world_pos_near,
-                        glm::vec3* cursor_world_pos_far) const {
-  glm::vec3 near_screen_space = glm::vec3(normalized_cursor_screen_pos.x, normalized_cursor_screen_pos.y, 0);
-  glm::vec3 far_screen_space = glm::vec3(normalized_cursor_screen_pos.x, normalized_cursor_screen_pos.y, 1);
+void Camera::GetPickRay(const glm::vec2& normalized_position_ss, glm::vec3* near_position_ws,
+                        glm::vec3* far_position_ws) const {
+  glm::vec3 near_screen_space = glm::vec3(normalized_position_ss.x, normalized_position_ss.y, 0);
+  glm::vec3 far_screen_space = glm::vec3(normalized_position_ss.x, normalized_position_ss.y, 1);
   std::vector<glm::vec3> screen_spaces{near_screen_space, far_screen_space};
   std::vector<glm::vec4> world_spaces(2);
   for (int i = 0; i < screen_spaces.size(); ++i) {
@@ -77,8 +78,8 @@ void Camera::GetPickRay(const glm::vec2& normalized_cursor_screen_pos, glm::vec3
     world_spaces[i] = inverse_vp * glm::vec4(ndc_space, 1.0f);
     world_spaces[i] = world_spaces[i] / world_spaces[i].w;
   }
-  *cursor_world_pos_near = world_spaces[0];
-  *cursor_world_pos_far = world_spaces[1];
+  *near_position_ws = world_spaces[0];
+  *far_position_ws = world_spaces[1];
 }
 
 }

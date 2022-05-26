@@ -8,6 +8,9 @@
 
 namespace engine {
 
+Transform::Transform(const Transform& other)
+    : translation_(other.translation_), rotation_(other.rotation_), scale_(other.scale_) {}
+
 Transform::Transform(const glm::vec3& translation, const glm::quat& rotation, const glm::vec3& scale) {
   translation_ = translation;
   rotation_ = rotation;
@@ -22,4 +25,10 @@ glm::mat4 Transform::GetModelMatrix() const {
   return model;
 }
 
+Transform operator*(const glm::mat4& transform, const Transform& source) {
+  glm::vec3 translation = transform * glm::vec4(source.translation(), 1.0);
+  glm::quat rotation = transform * glm::toMat4(source.rotation());
+  glm::vec3 scale = transform * glm::vec4(source.scale(), 1.0);
+  return Transform(translation, rotation, scale);
+}
 }

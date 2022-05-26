@@ -60,9 +60,12 @@ void Lines::Clear() {
 }
 
 Coord::Coord() {
-  std::vector<glm::vec3> positions{glm::vec3(0, 0, 0), glm::vec3(2, 0, 0), glm::vec3(0, 0, 0), glm::vec3(0, 2, 0),
-                                   glm::vec3(0, 0, 0), glm::vec3(0, 0, 2)};
-  std::vector<glm::vec3> colors{glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0),
+  glm::vec3 translation = transform().translation();
+  std::vector<glm::vec3> positions{glm::vec3(0, 0, 0), glm::vec3(1, 0, 0),
+                                   glm::vec3(0, 0, 0), glm::vec3(0, 1, 0),
+                                   glm::vec3(0, 0, 0), glm::vec3(0, 0, 1)};
+  std::vector<glm::vec3> colors{glm::vec3(1, 0, 0), glm::vec3(1, 0, 0),
+                                glm::vec3(0, 1, 0), glm::vec3(0, 1, 0),
                                 glm::vec3(0, 0, 1), glm::vec3(0, 0, 1)};
   SetMesh({positions, colors, GL_LINES});
 }

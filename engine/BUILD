@@ -63,6 +63,7 @@ cc_library(
     "material.h",
     "material.cc",
     "math.h",
+    "math.cc",
     "oneof.h",
     "pass.h",
     "pass.cc",

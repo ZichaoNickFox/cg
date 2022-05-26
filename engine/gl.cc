@@ -521,3 +521,13 @@ void glFrontFace_(GLenum mode) {
   glFrontFace(mode);
   CGCHECKGL();
 }
+
+void glDepthFunc_(GLenum func) {
+  glDepthFunc(func);
+  CGCHECKGL();
+}
+
+void glDepthMask_(GLboolean flag) {
+  glDepthMask(flag);
+  CGCHECKGL();
+}

@@ -124,3 +124,7 @@ void glUniformMatrix4x3fv_(GLint location, GLsizei count, GLboolean transpose, c
 // Cull face
 void glCullFace_(GLenum mode);
 void glFrontFace_(GLenum mode);
+
+// Depth, Stencil
+void glDepthFunc_(GLenum func);
+void glDepthMask_(GLboolean flag);

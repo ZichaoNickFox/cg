@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "engine/gl.h"
+#include "engine/pass.h"
 #include "engine/repo/model_repo.h"
 #include "engine/util.h"
 #include "playground/scene/common.h"
@@ -23,6 +24,7 @@ void ModelScene::OnEnter(Context *context)
   context->SetCamera(camera_.get());
 
   nanosuit_.Init(context, "nanosuit1", "nanosuit");
+
   point_lights_.push_back(PointLight());
   point_lights_[0].mutable_transform()->SetTranslation(glm::vec3(0, 3, -5));
 }
@@ -86,7 +88,7 @@ void ModelScene::OnRender(Context *context) {
   glFrontFace_(cw_);
 
   static PhongShader::Param phong;
-  phong.scene_light_info = SceneLightInfo(point_lights_);
+  phong.scene_light_info = engine::SceneLightInfo(AsSceneLightInfo(point_lights_));
   for (int i = 0; i < nanosuit_.model_part_num(); ++i) {
     ModelPart* model_part = nanosuit_.mutable_model_part(i);
     model_part->mutable_transform()->SetScale(glm::vec3(0.3, 0.3, 0.3));
