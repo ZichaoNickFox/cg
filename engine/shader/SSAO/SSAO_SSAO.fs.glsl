@@ -10,6 +10,8 @@ uniform vec3 u_samples_ts[64];
 int kernel_size = 64;
 float radius = 1.0;
 
+uniform vec2 u_viewport_size;
+
 uniform mat4 u_model;
 uniform mat4 u_view;
 uniform mat4 u_projection;
@@ -18,17 +20,15 @@ void main() {
   vec3 position_vs = texture(ut_position_vs, texcoord_).xyz;
   vec3 normal_vs = texture(ut_normal_vs, texcoord_).xyz;
 
-  vec3 random_vec = normalize(texture(ut_noise, texcoord_)).xyz;
-
+  vec3 random_vec = texture(ut_noise, texcoord_ * u_viewport_size).xyz;
   vec3 tangent_vs = normalize(random_vec - normal_vs * dot(random_vec, normal_vs));
-  vec3 up = vec3(0, 1, 0);
-  tangent_vs = normalize(cross(up, normal_vs));
+//  vec3 up = vec3(0, 1, 0);
+//  tangent_vs = normalize(cross(up, normal_vs));
   vec3 bitangent_vs = normalize(cross(normal_vs, tangent_vs));
   mat3 TBN_vs = mat3(tangent_vs, bitangent_vs, normal_vs);
 
   float depth_vs = GetLinearDepthFromVS(position_vs.z);
   float occlusion = 0.0;
-  vec3 sample_xyz;
   for (int i = 0; i < 64; ++i) {
     vec3 sample_offset_vs = TBN_vs * u_samples_ts[i];
     vec3 sample_vs = position_vs.xyz + sample_offset_vs * radius;
@@ -42,10 +42,7 @@ void main() {
       float range_check = smoothstep(0.0, 1.0, radius / abs(depth_vs - sample_depth_vs));
       occlusion += range_check;
     }
-    sample_xyz = sample_ss.xyz;
   }
   occlusion = 1.0 - occlusion / kernel_size;
   out_frag_color = vec3(occlusion, occlusion, occlusion);
-
-//  out_frag_color = normal_vs;
 }

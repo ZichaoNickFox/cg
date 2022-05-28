@@ -404,8 +404,6 @@ SSAOShader::SSAOShader(const ParamGBuffer& param_g_buffer, Context* context, Obj
   material->SetMat4("project", project);
   material->SetMat4("view", view);
   material->SetMat4("model", object->GetModelMatrix());
-  //material->SetFloat("u_near", camera.near_clip());
-  //material->SetFloat("u_far", camera.far_clip());
 }
 
 SSAOShader::SSAOShader(const ParamSSAO& param, Context* context, Object* object) {
@@ -414,12 +412,18 @@ SSAOShader::SSAOShader(const ParamSSAO& param, Context* context, Object* object)
 
   const engine::Camera& camera = context->camera();
   material->SetMat4("u_projection", camera.GetProjectMatrix());
-  //material->SetMat4("u_view", camera.GetViewMatrix());
-  //material->SetMat4("u_model", object->GetModelMatrix());
   material->SetTexture("ut_position_vs", param.texture_position_vs);
   material->SetTexture("ut_normal_vs", param.texture_normal_vs);
   material->SetTexture("ut_noise", param.texture_noise);
   for (int i = 0; i < 64; ++i) {
     material->SetVec3(util::Format("u_samples_ts[{}]", i).c_str(), param.sampler_ts[i]);
   }
+}
+
+BlurShader::BlurShader(const Param& param, Context* context, Object* object) {
+  engine::Material* material = object->mutable_material();
+  material->SetShader(context->GetShader("blur"));
+
+  material->SetTexture("u_texture_input", param.texture);
+  material->SetVec2("u_viewport_size", param.viewport_size);
 }

@@ -123,6 +123,9 @@ class BlurPass : public Pass {
   void Begin() override { blur_buffer_->Bind(); }
   void End() override { blur_buffer_->Unbind(); }
 
+  engine::Texture texture_SSAO;
+  engine::Texture texture_blur() { return blur_buffer_->GetTexture(kAttachmentColor.name); }
+
  private:
   Framebuffer* blur_buffer_;
 };

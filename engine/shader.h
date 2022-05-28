@@ -29,6 +29,7 @@ public:
   void SetMat4(const std::string &location_name, const glm::mat4& value) const;
   void SetVec4(const std::string &location_name, const glm::vec4& value) const;
   void SetVec3(const std::string &location_name, const glm::vec3& value) const;
+  void SetVec2(const std::string &location_name, const glm::vec2& value) const;
   GLuint id() const { return id_; }
 
   const std::string& name() { return name_; }

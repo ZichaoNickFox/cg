@@ -87,6 +87,9 @@ void Material::PrepareShader() {
   for (const auto& pair : location_vec3_) {
     shader_->SetVec3(pair.first, pair.second);
   }
+  for (const auto& pair : location_vec2_) {
+    shader_->SetVec2(pair.first, pair.second);
+  }
   for (const auto& pair : location_int_) {
     shader_->SetInt(pair.first, pair.second);
   }
@@ -103,6 +106,10 @@ void Material::SetVec3(const std::string& location, const glm::vec3& value) {
   location_vec3_[location] = value;
 }
 
+void Material::SetVec2(const std::string& location, const glm::vec2& value) {
+  location_vec2_[location] = value;
+}
+
 void Material::SetInt(const std::string& location, int value) {
   location_int_[location] = value;
 }
@@ -117,6 +124,7 @@ void Material::Clear() {
   location_texture_.clear();
   location_vec4_.clear();
   location_vec3_.clear();
+  location_vec2_.clear();
   location_int_.clear();
   location_bool_.clear();
   shader_->Clear();

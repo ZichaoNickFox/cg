@@ -29,7 +29,6 @@ class SSAOScene : public Scene {
   void RunGBufferPass(Context* context, engine::GBufferPass* g_buffer_pass);;
   void RunSSAOPass(Context* context, engine::SSAOPass* SSAO_pass);
   void RunBlurPass(Context* context, engine::BlurPass* blue_pass);
-  void RunLightingPass(Context* context, engine::LightingPass* lighting_pass);
 
   engine::Framebuffer g_buffer_;
   engine::Framebuffer SSAO_buffer_;

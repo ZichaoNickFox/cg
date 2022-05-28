@@ -29,9 +29,8 @@ void SSAOScene::OnEnter(Context *context)
     point_lights_[i].SetColor(color);
   }
 
-  //camera_->mutable_transform()->SetTranslation(glm::vec3(1.78, 0.47, -2.30));
-  //camera_->mutable_transform()->SetTranslation(glm::vec3(0, 0, 0));
-  //camera_->mutable_transform()->SetRotation(glm::quat(-0.66, 0.19, -0.70, -0.18));
+  camera_->mutable_transform()->SetTranslation(glm::vec3(1.78, 0.47, -2.30));
+  camera_->mutable_transform()->SetRotation(glm::quat(-0.66, 0.19, -0.70, -0.18));
   context->SetCamera(camera_.get());
 
   plane_.mutable_transform()->SetTranslation(glm::vec3(0, -1, 0));
@@ -49,7 +48,6 @@ void SSAOScene::OnEnter(Context *context)
 
   SetupBufferAndPass(context);
 
-  
   std::vector<glm::vec3> SSAO_noise = engine::Noise(4, 4);
   engine::CreateTexture2DParam param{1, 4, 4, std::vector<void*>{static_cast<void*>(SSAO_noise.data())},
                                      GL_RGB32F, GL_RGB, GL_FLOAT, GL_NEAREST, GL_NEAREST};
@@ -86,22 +84,19 @@ void SSAOScene::OnRender(Context *context)
   RunGBufferPass(context, &g_buffer_pass_);
 
   engine::Texture t = g_buffer_pass_.g_buffer()->GetTexture(engine::kAttachmentPositionVS.name);
-
   SSAO_pass_.texture_position_vs = g_buffer_pass_.g_buffer()->GetTexture(engine::kAttachmentPositionVS.name);
   SSAO_pass_.texture_normal_vs = g_buffer_pass_.g_buffer()->GetTexture(engine::kAttachmentNormalVS.name);
   SSAO_pass_.texture_noise = texture_noise_;
   SSAO_pass_.samples_ts = samples_ts_;
-
   RunSSAOPass(context, &SSAO_pass_);
 
+  blur_pass_.texture_SSAO = SSAO_pass_.SSAO_buffer_->GetTexture(engine::kAttachmentColor.name);
+  RunBlurPass(context, &blur_pass_);
+
   EmptyObject object;
-  FullscreenQuadShader full_screen({SSAO_pass_.texture_SSAO()}, context, &object);
+  FullscreenQuadShader full_screen({blur_pass_.texture_blur()}, context, &object);
   object.OnRender(context);
-  
-return;
-  //RunBlurPass(context, &blur_pass_);
-  //RunLightingPass(context, &lighting_pass_);
-  
+
   OnRenderCommon _(context);
 }
 
@@ -118,7 +113,6 @@ void SSAOScene::RunGBufferPass(Context* context, engine::GBufferPass* g_buffer_p
   }
 
   g_buffer_pass->End();
-  g_buffer_pass_.g_buffer()->Blit();
 }
 
 void SSAOScene::RunSSAOPass(Context* context, engine::SSAOPass* SSAO_pass) {
@@ -134,9 +128,13 @@ void SSAOScene::RunSSAOPass(Context* context, engine::SSAOPass* SSAO_pass) {
 }
 
 void SSAOScene::RunBlurPass(Context* context, engine::BlurPass* blue_pass) {
-}
+  blur_pass_.Begin();
 
-void SSAOScene::RunLightingPass(Context* context, engine::LightingPass* lighting_pass) {
+  EmptyObject object;
+  BlurShader({blur_pass_.texture_SSAO, context->io().screen_size()}, context, &object);
+  object.OnRender(context);
+
+  blur_pass_.End();
 }
 
 void SSAOScene::OnExit(Context *context)

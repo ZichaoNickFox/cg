@@ -332,6 +332,32 @@ shader_config {
   ];
 }
 
+shader_config {
+  name : "blur";
+  vs_path : [
+    "engine/shader/fullscreen_quad.vs.glsl"
+  ];
+  fs_path : [
+    "engine/shader/blur.fs.glsl"
+  ];
+}
+
+shader_config {
+  name : "SSAO_lighting";
+  vs_path : [
+    "engine/shader/fullscreen_quad.vs.glsl"
+  ];
+  fs_path : [
+    "engine/shader/version.glsl",
+    "engine/shader/light_info.glsl",
+    "engine/shader/phong/phong_material.glsl",
+    "engine/shader/shadow_info.glsl",
+    "engine/shader/phong/phong_model.glsl",
+    "engine/shader/shadow_model.glsl",
+    "engine/shader/phong/phong.fs.glsl"
+  ]
+}
+
 texture_config {
   name : "opengl0";
   level_num : 1;

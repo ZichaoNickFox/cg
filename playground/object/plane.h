@@ -18,6 +18,6 @@ class Plane : public Object {
 
   std::shared_ptr<const engine::Mesh> mesh(Context* context) const override { return context->GetMesh("plane"); }
 
- private: 
+ private:
   engine::Material material_;
 };

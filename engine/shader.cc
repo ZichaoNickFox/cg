@@ -148,10 +148,15 @@ void Shader::SetVec3(const std::string &location_name, const glm::vec3& value) c
   glUniform3fv_(location, 1, glm::value_ptr(value));
 }
 
+void Shader::SetVec2(const std::string &location_name, const glm::vec2& value) const {
+  GLint location = GetUniformLocation(location_name);
+  glUniform2fv_(location, 1, glm::value_ptr(value));
+}
+
 GLint Shader::GetUniformLocation(const std::string& location_name) const {
   GLint res = glGetUniformLocation_(id_, location_name.c_str());
   if (res == -1 || res == GL_INVALID_VALUE || res == GL_INVALID_OPERATION) {
-    CGCHECK(false) << "Cannot find uniform location '" << location_name << "' in shader '" << name_ << "'";
+    CGLOG(ERROR) << "Cannot find uniform location '" << location_name << "' in shader '" << name_ << "'";
   }
   return res;
 }

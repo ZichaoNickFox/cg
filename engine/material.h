@@ -24,6 +24,7 @@ class Material {
   int SetTexture(const std::string& location, Texture value);
   void SetVec4(const std::string& location, const glm::vec4& value);
   void SetVec3(const std::string& location, const glm::vec3& value);
+  void SetVec2(const std::string& location, const glm::vec2& value);
   void SetInt(const std::string& location, int value);
   void SetBool(const std::string& location, bool value);
 
@@ -43,6 +44,7 @@ class Material {
   std::unordered_map<std::string, TextureData> location_texture_;
   std::unordered_map<std::string, glm::vec4> location_vec4_;
   std::unordered_map<std::string, glm::vec3> location_vec3_;
+  std::unordered_map<std::string, glm::vec2> location_vec2_;
   std::unordered_map<std::string, int> location_int_;
   std::unordered_map<std::string, bool> location_bool_;
 };

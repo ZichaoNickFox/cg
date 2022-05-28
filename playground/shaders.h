@@ -42,7 +42,7 @@ class PhongShader {
     engine::SceneLightInfo scene_light_info;
     std::optional<engine::SceneShadowInfo> scene_shadow_info;
 
-   friend class PhongShader;
+    friend class PhongShader;
   };
   PhongShader(Param* param, Context* context, Object* object);
 };
@@ -230,4 +230,13 @@ class SSAOShader {
   };
   SSAOShader(const ParamGBuffer& param, Context* context, Object* object);
   SSAOShader(const ParamSSAO& param, Context* context, Object* object);
+};
+
+class BlurShader {
+ public:
+  struct Param{
+    engine::Texture texture;
+    glm::vec2 viewport_size;
+  };
+  BlurShader(const Param& param, Context* context, Object* object);
 };
