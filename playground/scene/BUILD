@@ -30,6 +30,8 @@ cc_library(
     "model_scene.cc",
 #    "normal_scene.h",
 #    "normal_scene.cc",
+    "path_tracing_scene.h",
+    "path_tracing_scene.cc",
     "pbr_scene.h",
     "pbr_scene.cc",
 #    "sample_scene.h",

@@ -18,6 +18,7 @@ class Playground {
   void Update();
   void Render();
   void EndFrame();
+  void Destoy();
 
   void SwitchScene(const std::string& scene);
   Io* mutable_io() { return context_.mutable_io(); }

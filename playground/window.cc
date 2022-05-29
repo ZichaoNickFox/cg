@@ -129,6 +129,8 @@ int main(int argc, char **argv)
     playground.EndFrame();
   }
 
+  playground.Destoy();
+
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();

@@ -14,6 +14,7 @@
 //#include "playground/scene/pbr_BRDF_integration_map_generator.h"
 //#include "playground/scene/pbr_irradiance_cubemap_generator.h"
 //#include "playground/scene/pbr_prefiltered_color_cubemap_generator.h"
+#include "playground/scene/path_tracing_scene.h"
 #include "playground/scene/pbr_scene.h"
 //#include "playground/scene/sample_scene.h"
 #include "playground/scene/shadow_scene.h"
@@ -23,7 +24,7 @@
 //#include "playground/scene/texture_lod_scene.h"
 
 namespace {
-const std::string kDefaultScene = "SSAOScene";
+const std::string kDefaultScene = "PathTracing";
 }
 
 void Playground::Init(const Context::Option& option) {
@@ -51,6 +52,7 @@ void Playground::InitScene() {
   scene_map_.insert(std::make_pair("SSAOScene", std::make_unique<SSAOScene>()));
   scene_map_.insert(std::make_pair("ShadowScene", std::make_unique<ShadowScene>()));
   scene_map_.insert(std::make_pair("DepthScene", std::make_unique<DepthScene>()));
+  scene_map_.insert(std::make_pair("PathTracing", std::make_unique<PathTracingScene>()));
 }
 
 void Playground::BeginFrame() {
@@ -86,4 +88,10 @@ void Playground::SwitchScene(const std::string& next_scene) {
 
   CGCHECK_NOTNULL(scene_map_[next_scene])->OnEnter(&context_);
   current_scene_ = next_scene;
+}
+
+void Playground::Destoy() {
+  for (auto& scene : scene_map_) {
+    scene.second.release();
+  }
 }
