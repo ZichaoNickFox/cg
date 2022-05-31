@@ -358,6 +358,33 @@ shader_config {
   ]
 }
 
+shader_config {
+  name : "random";
+  cs_path : [
+    "engine/shader/random.cs.glsl"
+  ];
+}
+
+shader_config {
+  name : "simple_model";
+  vs_path : [
+    "engine/shader/simple_model.vs.glsl"
+  ];
+  fs_path : [
+    "engine/shader/simple_model.fs.glsl"
+  ];
+}
+
+shader_config {
+  name : "instance_scene";
+  vs_path : [
+    "engine/shader/instance_scene.vs.glsl"
+  ];
+  fs_path : [
+    "engine/shader/simple_model.fs.glsl"
+  ];
+}
+
 texture_config {
   name : "opengl0";
   level_num : 1;
@@ -577,4 +604,16 @@ model_config {
 model_config {
   name : "teapot";
   mesh_path : "playground/resource/model/teapot.obj";
+}
+
+model_config {
+  name : "rock";
+  mesh_path : "playground/resource/model/rock/rock.obj";
+  texture_dir : "playground/resource/model/rock";
+}
+
+model_config {
+  name : "planet";
+  mesh_path : "playground/resource/model/planet/planet.obj";
+  texture_dir : "playground/resource/model/planet";
 }

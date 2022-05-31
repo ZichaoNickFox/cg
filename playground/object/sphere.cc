@@ -7,7 +7,7 @@
 void Sphere::OnUpdate(Context *context) {
 }
 
-void Sphere::OnRender(Context *context) {
+void Sphere::OnRender(Context *context, int instance_num) {
   material_.PrepareShader();
   mesh(context)->Submit();
 }

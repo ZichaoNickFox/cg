@@ -2,112 +2,39 @@
 
 #include "glm/gtx/intersect.hpp"
 #include "glm/gtx/string_cast.hpp"
+#include "glm/gtc/type_ptr.hpp"
 #include <limits>
 
 #include "engine/debug.h"
 #include "engine/gl.h"
 
 namespace engine {
-namespace {
-// TODO : same as playground::util::VectorByteSize
-template<typename ElemType>
-int VectorSizeInByte(const std::vector<ElemType>& v) {
-  return sizeof(ElemType) * v.size();
-}
-template<typename Type>
-void* AsVoidPtr(Type& var) {
-  return reinterpret_cast<void*>(var);
-}
-}
-
 void Mesh::Setup() {
-  int enabled_component_num = 0;
-  int vertex_size_in_float = 0;
-  vertex_size_in_float += kMeshVertexLayout.at("position").size_in_float; enabled_component_num++;
-  vertex_size_in_float += kMeshVertexLayout.at("normal").size_in_float; enabled_component_num++;
-  vertex_size_in_float += kMeshVertexLayout.at("texcoord").size_in_float; enabled_component_num++;
-  vertex_size_in_float += kMeshVertexLayout.at("tangent").size_in_float; enabled_component_num++;
-  vertex_size_in_float += kMeshVertexLayout.at("bitangent").size_in_float; enabled_component_num++;
-
-  SetupVBO(vertex_size_in_float);
-  SetupVAO(enabled_component_num);
-  SetupEBO();
-}
-
-void Mesh::SetupVBO(int buffer_size_in_float) {
-  int vertex_num = positions_.size();
-  CGCHECK(vertex_num  > 0) << " Vertex size must > 0 : mesh=" << name_;
-
-  std::vector<float> buffer(buffer_size_in_float * vertex_num, 0);
-  glGenBuffers_(1, &vbo_);
-  glBindBuffer_(GL_ARRAY_BUFFER, vbo_);
-  glBufferData_(GL_ARRAY_BUFFER, VectorSizeInByte(buffer), buffer.data(), GL_STATIC_DRAW);
-  uint64_t offset_in_vbo = 0; 
-
-#define ADD_SUB_DATA(component) \
-  if (component.size() == 0) { \
-    component.resize(vertex_num); \
-  } else { \
-    CGCHECK(component.size() == vertex_num) << component.size() << " " << vertex_num; \
-  } \
-  glBufferSubData_(GL_ARRAY_BUFFER, offset_in_vbo, VectorSizeInByte(component), component.data()); \
-  offset_in_vbo += VectorSizeInByte(component);
-
-  ADD_SUB_DATA(positions_);
-  ADD_SUB_DATA(normals_);
-  ADD_SUB_DATA(texcoords_);
-  ADD_SUB_DATA(tangents_);
-  ADD_SUB_DATA(bitangents_);
-
-  glBindBuffer_(GL_ARRAY_BUFFER, 0);
-}
-
-void Mesh::SetupVAO(int enabled_component_num) {
-  glBindBuffer_(GL_ARRAY_BUFFER, vbo_);
-
   glGenVertexArrays_(1, &vao_);
-  glBindVertexArray_(vao_);
-
-  for (int i = 0; i < enabled_component_num; ++i) {
-    glEnableVertexAttribArray_(i);
-  }
-  uint64_t offset_in_vbo = 0;
-  int vertex_component_index = 0;
-#define ENABLE_VERTEX_COMPONENT(component, component_index, size_in_float) \
-  glVertexAttribPointer_(component_index, size_in_float, GL_FLOAT, GL_FALSE, size_in_float * sizeof(float), \
-      AsVoidPtr(offset_in_vbo)); \
-  offset_in_vbo += VectorSizeInByte(component); \
-  vertex_component_index++;
-
-  ENABLE_VERTEX_COMPONENT(positions_, vertex_component_index, kMeshVertexLayout.at("position").size_in_float);
-  ENABLE_VERTEX_COMPONENT(normals_, vertex_component_index, kMeshVertexLayout.at("normal").size_in_float);
-  ENABLE_VERTEX_COMPONENT(texcoords_, vertex_component_index, kMeshVertexLayout.at("texcoord").size_in_float);
-  ENABLE_VERTEX_COMPONENT(tangents_, vertex_component_index, kMeshVertexLayout.at("tangent").size_in_float);
-  ENABLE_VERTEX_COMPONENT(bitangents_, vertex_component_index, kMeshVertexLayout.at("bitangent").size_in_float);
-  
-  glBindVertexArray_(0);
-  glBindBuffer_(GL_ARRAY_BUFFER, 0);
+  AddVertexAttribute(kMeshVertexLayout.at(kVertexAttributePosition), positions_);
+  AddVertexAttribute(kMeshVertexLayout.at(kVertexAttributeNormal), normals_);
+  AddVertexAttribute(kMeshVertexLayout.at(kVertexAttributeTexcoord), texcoords_);
+  AddVertexAttribute(kMeshVertexLayout.at(kVertexAttributeTangent), tangents_);
+  AddVertexAttribute(kMeshVertexLayout.at(kVertexAttributeBitangent), bitangents_);
 }
 
-void Mesh::SetupEBO() {
-  glBindVertexArray_(vao_);
-
-  glGenBuffers_(1, &ebo_);
-  glBindBuffer_(GL_ELEMENT_ARRAY_BUFFER, ebo_);
-  glBufferData_(GL_ELEMENT_ARRAY_BUFFER, VectorSizeInByte(indices_), indices_.data(), GL_STATIC_DRAW);
-
-  glBindVertexArray_(0);
-}
-
-void Mesh::Submit() const {
+void Mesh::Submit(int instance_num) const {
   bool use_ebo = indices_.size() > 0;
   glBindVertexArray_(vao_);
   if (use_ebo) {
     glBindBuffer_(GL_ELEMENT_ARRAY_BUFFER, ebo_);
-    glDrawElements_(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, 0);
+    if (instance_num > 0) {
+      glDrawElementsInstanced_(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, 0, instance_num);
+    } else {
+      glDrawElements_(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, 0);
+    }
     glBindBuffer_(GL_ELEMENT_ARRAY_BUFFER, 0);
   } else {
-    glDrawArrays_(GL_TRIANGLES, 0, positions_.size());
+    if (instance_num > 0) {
+      glDrawArraysInstanced_(GL_TRIANGLES, 0, positions_.size(), instance_num);
+    } else {
+      glDrawArrays_(GL_TRIANGLES, 0, positions_.size());
+    }
   }
   glBindVertexArray_(0);
 }

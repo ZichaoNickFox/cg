@@ -423,6 +423,6 @@ Texture LoadModelTexture2D(const std::string& full_path, bool flip_vertically) {
   glBindTexture_(GL_TEXTURE_2D, 0);
 
   DeleteImage(image);
-  return Texture(id, Texture::Texture2D);
+  return Texture(id, Texture::Texture2D, full_path);
 }
 } // namespace engine

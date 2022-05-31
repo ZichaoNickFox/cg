@@ -14,20 +14,11 @@ class ModelPart : public Object {
  public:
   ModelPart(const engine::ModelRepo::ModelPartData& model_part_data) : model_part_data_(model_part_data) {}
   void OnUpdate(Context *context) override;
-  void OnRender(Context *context) override;
+  void OnRender(Context *context, int instance_num = 1) override;
   void OnDestory(Context *context) override;
 
   int material_num() const override { return 1; }
-  engine::Material* mutable_material(int index = 0) override { return &material_; }
-  std::optional<engine::Texture> texture_diffuse(int i = 0) const;
-  std::optional<engine::Texture> texture_specular(int i = 0) const;
-  std::optional<engine::Texture> texture_normal(int i = 0) const;
-  std::optional<engine::Texture> texture_ambient(int i = 0) const;
-  std::optional<engine::Texture> texture_height(int i = 0) const;
-  std::optional<engine::Texture> texture_albedo(int i = 0) const;
-  std::optional<engine::Texture> texture_metallic(int i = 0) const;
-  std::optional<engine::Texture> texture_roughness(int i = 0) const;
-
+  engine::Material* mutable_material(int index = 0) override { ;return &material_; }
   const engine::ModelRepo::ModelPartData& model_part_data() const { return model_part_data_; }
 
   bool hidden() { return hidden_; }
@@ -35,6 +26,7 @@ class ModelPart : public Object {
   bool* mutable_hidden() { return &hidden_; }
 
   std::shared_ptr<const engine::Mesh> mesh(Context* context) const override { return model_part_data_.mesh; }
+  engine::Mesh* mutable_mesh() { return model_part_data_.mesh.get(); }
 
  private:
   bool hidden_ = false;
@@ -50,6 +42,16 @@ class Model {
 
   int model_part_num() { return model_parts_.size(); }
   ModelPart* mutable_model_part(int i) { return &model_parts_[i]; }
+
+  void OnRender(Context* context, int instance_num = 1);
+  void SetTransform(const engine::Transform& transform);
+  template<typename VertexAttributesType>
+  void AddVertexAttribute(const engine::VertexAttribute& meta_data,
+                          const std::vector<VertexAttributesType>& data) {
+    for (int i = 0; i < model_parts_.size(); ++i) {
+      mutable_model_part(i)->mutable_mesh()->AddVertexAttribute(meta_data, data);
+    }
+  }
 
  private:
   std::vector<ModelPart> model_parts_;

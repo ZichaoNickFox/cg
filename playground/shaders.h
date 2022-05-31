@@ -10,6 +10,7 @@
 #include "engine/texture.h"
 #include "playground/context.h"
 #include "playground/object/empty_object.h"
+#include "playground/object/model.h"
 #include "playground/object/object.h"
 #include "playground/object/point_light.h"
 
@@ -239,4 +240,30 @@ class BlurShader {
     glm::vec2 viewport_size;
   };
   BlurShader(const Param& param, Context* context, Object* object);
+};
+
+class RandomShader {
+ public:
+  struct Param{
+    void* input_data = nullptr;
+    GLuint input_texture_id;
+    int work_group_x;
+    int work_group_y;
+    int work_group_z;
+  };
+  RandomShader(const Param& param, Context* context);
+  void Run(Context* context);
+
+ private:
+  Param param_;
+};
+
+class SimpleModelShader {
+ public:
+  SimpleModelShader(Context* context, Model* model);
+};
+
+class InstanceSceneShader {
+ public:
+  InstanceSceneShader(Context* context, Model* model);
 };

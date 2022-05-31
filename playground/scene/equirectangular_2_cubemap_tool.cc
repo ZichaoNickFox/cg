@@ -41,7 +41,7 @@ void Equirectangular2CubemapTool::OnUpdate(Context *context)
   cube_.OnUpdate(context);
 }
 
-void Equirectangular2CubemapTool::OnRender(Context *context) {
+void Equirectangular2CubemapTool::OnRender(Context *context, int instance_num) {
   // TODO : why * 4 * 4 not * 4
   engine::CubemapData data(1, kEnvironmentCubemapSize * kEnvironmentCubemapSize * 4 * 4);
   for (int face = 0; face < 6; ++face) {

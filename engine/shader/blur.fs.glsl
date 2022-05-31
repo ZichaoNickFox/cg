@@ -1,4 +1,4 @@
-#version 410 core
+#version 430 core
 
 uniform sampler2D u_texture_input;
 uniform vec2 u_viewport_size;

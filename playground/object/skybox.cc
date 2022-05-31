@@ -7,9 +7,9 @@
 void Skybox::OnUpdate(Context *context) {
 }
 
-void Skybox::OnRender(Context *context) {
+void Skybox::OnRender(Context *context, int instance_num) {
   material_.PrepareShader();
-  mesh(context)->Submit(); 
+  mesh(context)->Submit(instance_num); 
 }
 
 void Skybox::OnDestory(Context *context) {

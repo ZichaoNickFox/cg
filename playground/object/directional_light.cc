@@ -19,7 +19,7 @@ void DirectionalLight::OnUpdate(Context* context) {
   lines_.SetMesh(Lines::Mesh{{from, to}, {glm::vec3(1, 1, 1), glm::vec3(1, 1, 1)}, GL_LINES});
 }
 
-void DirectionalLight::OnRender(Context* context) {
+void DirectionalLight::OnRender(Context* context, int instance_num) {
   billboard_.mutable_material()->PrepareShader();
   billboard_.OnRender(context);
   lines_.mutable_material()->PrepareShader();

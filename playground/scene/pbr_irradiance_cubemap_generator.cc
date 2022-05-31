@@ -41,7 +41,7 @@ void PbrIrradianceCubemapGenerator::OnUpdate(Context *context) {
   cube_.OnUpdate(context);
 }
 
-void PbrIrradianceCubemapGenerator::OnRender(Context *context) {
+void PbrIrradianceCubemapGenerator::OnRender(Context *context, int instance_num) {
   engine::CubemapData data(3, kLevel0Size * kLevel0Size * 4 * 4);
   for (int face = 0; face < 6; ++face) {
     color_framebuffer_.Bind();

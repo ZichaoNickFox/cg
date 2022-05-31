@@ -14,6 +14,8 @@ cc_library(
     "depth_scene.cc",
 #    "equirectangular_2_cubemap_tool.h",
 #    "equirectangular_2_cubemap_tool.cc",
+    "instance_scene.h",
+    "instance_scene.cc",
 #    "pbr_BRDF_integration_map_generator.h",
 #    "pbr_BRDF_integration_map_generator.cc",
 #    "pbr_irradiance_cubemap_generator.h",

@@ -66,7 +66,7 @@ cc_library(
     "//engine/proto:cc_config_proto",
     "//engine/repo:repo",
     "//engine:util",
-    "@fmt//:fmt",
+    "@fmt",
   ],
 )
 

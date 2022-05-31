@@ -11,20 +11,22 @@
 #include "engine/texture.h"
 
 namespace engine {
+constexpr char kUniformDiffuse[] = "texture_diffuse";
+constexpr char kUniformSpecular[] = "texture_specular";
+constexpr char kUniformNormal[] = "texture_normal";
+constexpr char kUniformAmbient[] = "texture_ambient";
+constexpr char kUniformHeight[] = "texture_height";
+constexpr char kUniformAlbedo[] = "texture_albedo";
+constexpr char kUniformMetallic[] = "texture_metallic";
+constexpr char kUniformRoughness[] = "texture_roughtness";
+
 class ModelRepo {
  public:
   void Init(const Config& config);
   struct ModelPartData {
-    std::vector<engine::Texture> ambient_textures;
-    std::vector<engine::Texture> diffuse_textures;
-    std::vector<engine::Texture> specular_textures;
-    std::vector<engine::Texture> normal_textures;
-    std::vector<engine::Texture> height_textures;
-
-    std::vector<engine::Texture> albedo_textures;
-    std::vector<engine::Texture> metallic_textures;
-    std::vector<engine::Texture> roughness_textures;
+    std::map<std::string, std::vector<engine::Texture>> uniform_2_texture;
     std::shared_ptr<engine::Mesh> mesh = std::make_shared<engine::Mesh>();
+    engine::Texture texture(const std::string& uniform, int index = 0) const;
   };
   std::vector<ModelPartData> GetOrLoadModel(const std::string& name);
 

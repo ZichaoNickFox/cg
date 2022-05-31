@@ -10,8 +10,8 @@ class DirectionalLight : public Object {
  public:
   void Init(Context* context);
 
-  void OnUpdate(Context *context) override;
-  void OnRender(Context* context) override;
+  void OnUpdate(Context* context) override;
+  void OnRender(Context* context, int instance_num = 1) override;
   void OnDestory(Context* context) override;
   int material_num() const override { return 0; }
   engine::Material* mutable_material(int index = 0) override { return nullptr; }

@@ -10,7 +10,7 @@ class Object {
  public:
   virtual ~Object() {}
   virtual void OnUpdate(Context *context) = 0;
-  virtual void OnRender(Context *context) = 0;
+  virtual void OnRender(Context *context, int instance_num = 1) = 0;
   virtual void OnDestory(Context *context) = 0;
   virtual int material_num() const = 0;
   virtual engine::Material* mutable_material(int index = 0) = 0;

@@ -27,7 +27,7 @@ void PbrBRDFIntegrationMapGenerator::OnUpdate(Context *context) {
   OnUpdateCommon _(context, "PbrBRDFIntegrationMapGenerator");
 }
 
-void PbrBRDFIntegrationMapGenerator::OnRender(Context *context) {
+void PbrBRDFIntegrationMapGenerator::OnRender(Context *context, int instance_num) {
   engine::Texture2DData data(1, kLevel0Size * kLevel0Size * 4 * 4);
 
   color_framebuffer_.Bind();

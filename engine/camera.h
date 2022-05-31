@@ -52,7 +52,9 @@ class Camera {
 
   void GetPickRay(const glm::vec2& cursor_screen_pos, glm::vec3* cursor_world_pos_near,
                   glm::vec3* cursor_world_pos_far) const;
-
+  // TODO : Write a faster by geomtry calculation
+  void GetPickRayFast(const glm::vec2& cursor_screen_pos, glm::vec3* cursor_world_pos_near,
+                      glm::vec3* cursor_world_pos_far) const {}
 private:
   float perspective_fov_ = 30.0;
 

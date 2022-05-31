@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "fmt/format.h"
+#include <fmt/format.h>
 #include <glm/glm.hpp>
 #include <google/protobuf/text_format.h>
 
@@ -21,8 +21,12 @@ void MakeDir(const std::string& dir);
 bool StartsWith(const std::string& str, const std::string& start_with);
 bool EndsWith(const std::string& str, const std::string& end_with);
 template<typename ...Args>
-std::string Format(const char* fmt, const Args&... args) {
-  return fmt::format(fmt, args...);
+std::string Format(const char* format, const Args&... args) {
+  return fmt::format(format, args...);
+}
+template<typename PtrType>
+std::string AsString(PtrType* ptr) {
+  return Format("{}", uint64_t(ptr));
 }
 
 // proto
@@ -45,7 +49,7 @@ std::unordered_map<KeyType, ValueType> ProtoMap2UnorderedMap(const google::proto
 
 // stl
 template<typename ElemType>
-uint64_t VectorByteSize(const std::vector<ElemType>& v) {
+uint64_t VectorSizeInByte(const std::vector<ElemType>& v) {
   return sizeof(ElemType) * v.size();
 }
 template<int N, typename ElemType>
@@ -53,6 +57,10 @@ std::array<ElemType, N> AsArray(const std::vector<ElemType>& in) {
   std::array<ElemType, N> res;
   std::copy_n(in.begin(), N, res.begin());
   return res;
+}
+template<typename Type>
+const void* AsVoidPtr(const Type& var) {
+  return reinterpret_cast<const void*>(var);
 }
 
 // time

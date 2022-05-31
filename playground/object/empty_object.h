@@ -16,7 +16,7 @@ class EmptyObject : public Object {
  public:
   EmptyObject();
   void OnUpdate(Context *context) override;
-  void OnRender(Context *context) override;
+  void OnRender(Context *context, int instance_num = 1) override;
   void OnDestory(Context *context) override;
 
   int material_num() const override { return 1; }

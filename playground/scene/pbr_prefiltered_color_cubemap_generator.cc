@@ -45,7 +45,7 @@ void PbrPrefilteredColorCubemapGenerator::OnUpdate(Context *context)
   cube_.OnUpdate(context);
 }
 
-void PbrPrefilteredColorCubemapGenerator::OnRender(Context *context)
+void PbrPrefilteredColorCubemapGenerator::OnRender(Context *context, int instance_num)
 {
   // TODO why * 4 * 4?
   engine::CubemapData data(kMipmapMaxLevel, kLevel0Size * kLevel0Size * 4 * 4);

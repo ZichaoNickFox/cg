@@ -8,22 +8,42 @@
 #include <memory>
 
 #include "engine/gl.h"
+#include "engine/util.h"
 
 namespace engine {
-struct MeshVertexComponent {
+constexpr char kVertexAttributePosition[] = "position";
+constexpr char kVertexAttributeNormal[] = "normal";
+constexpr char kVertexAttributeTexcoord[] = "texcoord";
+constexpr char kVertexAttributeTangent[] = "tangent";
+constexpr char kVertexAttributeBitangent[] = "bitangent";
+constexpr int kVertexLayoutIndex0 = 0;
+constexpr int kVertexLayoutIndex1 = 1;
+constexpr int kVertexLayoutIndex2 = 2;
+constexpr int kVertexLayoutIndex3 = 3;
+constexpr int kVertexLayoutIndex4 = 4;
+constexpr int kVertexLayoutIndex5 = 5;
+constexpr int kVertexLayoutIndex6 = 6;
+constexpr int kVertexLayoutIndex7 = 7;
+constexpr int kVertexLayoutIndex8 = 8;
+constexpr int kVertexLayoutIndex9 = 9;
+constexpr int kVertexLayoutIndex10 = 10;
+constexpr int kVertexLayoutIndex11 = 11;
+constexpr int kVertexLayoutIndex12 = 12;
+
+// Like positon ~ vec3. model ~ 4 vec4s etc.
+struct VertexAttribute {
   std::string name;
-  GLuint format;
-  GLuint type;
-  GLuint internal_type;
-  uint32_t size_in_float;
-  uint32_t size_in_byte;
+  int atrribute_layout_index_from;
+  int attribute_layout_index_to;
+  int attribute_component_num; // 1 2 3 4
+  int divisor = 0;  // instanced divisor
 };
-static const std::unordered_map<std::string, MeshVertexComponent> kMeshVertexLayout = {
-  {"position", {"position", GL_RGB, GL_FLOAT, GL_RGB32F, 3, 12}},
-  {"normal", {"normal", GL_RGB, GL_FLOAT, GL_RGB32F, 3, 12}},
-  {"texcoord", {"texcoord", GL_RG, GL_FLOAT, GL_RG32F, 2, 8}},
-  {"tangent", {"tangent", GL_RGB, GL_FLOAT, GL_RGB32F, 3, 12}},
-  {"bitangent", {"bitangent", GL_RGB, GL_FLOAT, GL_RGB32F, 3, 12}},
+static const std::unordered_map<std::string, VertexAttribute> kMeshVertexLayout = {
+  {"position", {"position", kVertexLayoutIndex0, kVertexLayoutIndex0, 3, 0}},
+  {"normal", {"normal", kVertexLayoutIndex1, kVertexLayoutIndex1, 3, 0}},
+  {"texcoord", {"texcoord", kVertexLayoutIndex2, kVertexLayoutIndex2, 2, 0}},
+  {"tangent", {"tangent", kVertexLayoutIndex3, kVertexLayoutIndex3, 3, 0}},
+  {"bitangent", {"bitangent", kVertexLayoutIndex4, kVertexLayoutIndex4, 3, 0}},
 };
 
 class Mesh {
@@ -47,25 +67,61 @@ class Mesh {
   const std::vector<GLuint>& indices() const { return indices_; }
 
   void Setup();
-  void Submit() const;
+  void Submit(int instance_num = 1) const;
 
   bool Intersect(const glm::vec3& origin_ls, const glm::vec3& dir_ls,
                  glm::vec3* position_ls, glm::vec3* normal_ls, float* distance_ls,
                  glm::vec3* vertex0_ls, glm::vec3* vertex1_ls, glm::vec3* vertex2_ls) const;
- private:
-  void SetupVBO(int vertex_float_size);
-  void SetupVAO(int enabled_component_num);
-  void SetupEBO();
 
-  GLuint vao_, vbo_, ebo_;
+  template<typename ElementType>
+  void AddVertexAttribute(const VertexAttribute& meta, const std::vector<ElementType>& data);
+
+ private:
+  GLuint vao_;
+  std::vector<GLuint> vbos_;
+  GLuint ebo_;
+  std::vector<GLuint> indices_;
+
   std::vector<glm::vec3> positions_;
   std::vector<glm::vec3> normals_;
   std::vector<glm::vec2> texcoords_;
   std::vector<glm::vec3> tangents_;
   std::vector<glm::vec3> bitangents_;
 
-  std::vector<GLuint> indices_;
-
   std::string name_;
 };
+
+template<typename ElementType>
+void Mesh::AddVertexAttribute(const VertexAttribute& meta, const std::vector<ElementType>& data) {
+  // vbo
+  GLuint vbo;
+  glGenBuffers_(1, &vbo);
+  glBindBuffer_(GL_ARRAY_BUFFER, vbo);
+  glBufferData_(GL_ARRAY_BUFFER, sizeof(ElementType) * data.size(), util::AsVoidPtr(data.data()), GL_STATIC_DRAW);
+  vbos_.push_back(vbo);
+
+  // vao
+  glBindVertexArray_(vao_);
+  int layout_index_num = meta.attribute_layout_index_to - meta.atrribute_layout_index_from + 1;
+  for (int layout_index = meta.atrribute_layout_index_from, i = 0; layout_index <= meta.attribute_layout_index_to; ++layout_index, ++i) {
+    glEnableVertexAttribArray_(layout_index);
+    int attribute_size_in_byte = meta.attribute_component_num * sizeof(GL_FLOAT);
+    int stride = layout_index_num * attribute_size_in_byte;
+    glVertexAttribPointer_(layout_index, meta.attribute_component_num, GL_FLOAT, GL_FALSE,
+                           stride, util::AsVoidPtr(i * attribute_size_in_byte));
+    if (meta.divisor > 0) {
+      glVertexAttribDivisor_(layout_index, meta.divisor);
+    }
+  }
+
+  // ebo
+  if (indices_.size() > 0) {
+    glGenBuffers_(1, &ebo_);
+    glBindBuffer_(GL_ELEMENT_ARRAY_BUFFER, ebo_);
+    glBufferData_(GL_ELEMENT_ARRAY_BUFFER, util::VectorSizeInByte(indices_), indices_.data(), GL_STATIC_DRAW);
+  }
+
+  glBindVertexArray_(0);
+  glBindBuffer_(GL_ARRAY_BUFFER, 0);
+}
 } // namespace engine

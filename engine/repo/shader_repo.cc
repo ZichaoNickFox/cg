@@ -21,6 +21,7 @@ Shader ShaderRepo::GetOrLoadShader(const std::string& name) {
     std::vector<Shader::CodePart> fs(shader_data->config.fs_path_size());
     std::vector<Shader::CodePart> gs(shader_data->config.gs_path_size());
     std::vector<Shader::CodePart> ts(shader_data->config.ts_path_size());
+    std::vector<Shader::CodePart> cs(shader_data->config.cs_path_size());
     for (int i = 0; i < vs.size(); ++i) {
       const std::string path = shader_data->config.vs_path(i);
       vs[i].glsl_path = path;
@@ -45,8 +46,23 @@ Shader ShaderRepo::GetOrLoadShader(const std::string& name) {
       util::ReadFileToString(path, &ts[i].code); 
       CGCHECK(ts[i].code.size() > 0) << " ts path error : " << path;
     }
+    for (int i = 0; i < cs.size(); ++i) {
+      const std::string path = shader_data->config.ts_path(i);
+      cs[i].glsl_path = path;
+      util::ReadFileToString(path, &cs[i].code); 
+      CGCHECK(cs[i].code.size() > 0) << " cs path error : " << path;
+    }
     CGLOG(ERROR) << "Compiling shader " << name;
-    shader_data->shader = Shader(name, vs, fs, gs, ts);
+    if (cs.size() > 0) {
+      shader_data->shader = Shader(name, cs);
+      CGCHECK(vs.size() == 0 && fs.size() == 0 && gs.size() == 0 && ts.size() == 0)
+          << "Compute shader should only has compute shader";
+      CGCHECK(cs.size() > 0) << "Compute Shader size must > 0 " << name;
+    } else {
+      shader_data->shader = Shader(name, vs, fs, gs, ts);
+      CGCHECK(cs.size() == 0) << "Render shader should not has compute shader";
+      CGCHECK(vs.size() > 0 && fs.size() > 0) << "vs and fs size must > 0" << name;
+    }
     shader_data->loaded = true;
   }
   return shader_data->shader;

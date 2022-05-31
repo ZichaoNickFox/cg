@@ -86,8 +86,7 @@ void ForwardShadingScene::OnUpdate(Context *context)
   directional_light_.OnUpdate(context);
 }
 
-void ForwardShadingScene::OnRender(Context *context)
-{
+void ForwardShadingScene::OnRender(Context *context) {
   RunDepthBufferPass(context, &depth_buffer_pass_);
 
   forward_pass_.Update(depth_buffer_pass_.scene_shadow_info());

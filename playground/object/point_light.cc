@@ -8,7 +8,7 @@ void PointLight::OnUpdate(Context *context) {
 
 }
 
-void PointLight::OnRender(Context *context)
+void PointLight::OnRender(Context *context, int instance_num)
 {
   material_.PrepareShader();
   mesh(context)->Submit();

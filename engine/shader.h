@@ -18,8 +18,11 @@ public:
     std::string code;
   };
   Shader() {}  
+  // Render Shader
   Shader(const std::string& name, const std::vector<CodePart>& vs, const std::vector<CodePart>& fs,
          const std::vector<CodePart>& gs, const std::vector<CodePart>& ts);
+  // Compute Shader
+  Shader(const std::string& name, const std::vector<CodePart>& cs);
   Shader& operator=(const Shader& other);
 
   void Use() const;

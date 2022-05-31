@@ -31,6 +31,6 @@ cc_library(
     "//engine:engine",
     "//engine/repo:repo",
     "//playground:context",
-    "@fmt//:fmt",
+    "@fmt",
   ],
 )

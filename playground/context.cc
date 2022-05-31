@@ -18,6 +18,11 @@ void Context::Init(const Option& option) {
   framebuffer_size_ = option.framebuffer_size;
 }
 
+const engine::Camera& Context::camera() const {
+  CGCHECK(camera_) << "camera must be nullptr";
+  return *camera_;
+}
+
 engine::Camera* Context::mutable_camera() {
   return camera_;
 }

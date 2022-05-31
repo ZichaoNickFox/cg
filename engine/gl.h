@@ -35,7 +35,10 @@ void glBindVertexArray_(GLuint array);
 void glEnableVertexAttribArray_(GLuint index);
 void glVertexAttribPointer_(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void * pointer);
 void glDrawArrays_(GLenum mode, GLint first, GLsizei count);
+void glDrawArraysInstanced_(GLenum mode, GLint first, GLsizei count, GLsizei instancecount);
+void glVertexAttribDivisor_(GLuint index, GLuint divisor);
 void glDrawElements_(GLenum mode, GLsizei count, GLenum type, const void* indices);
+void glDrawElementsInstanced_(GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei instancecount);
 void glDeleteVertexArrays_(GLsizei n, const GLuint *arrays);
 void glDeleteBuffers_(GLsizei n, const GLuint * buffers);
 
@@ -87,6 +90,8 @@ void glGetProgramInfoLog_(GLuint program, GLsizei maxLength, GLsizei *length, GL
 void glDeleteShader_(GLuint shader);
 void glUseProgram_(GLuint program);
 GLint glGetUniformLocation_(GLuint program, const GLchar *name);
+void glDispatchCompute_(GLuint num_groups_x, GLuint num_groups_y, GLuint num_groups_z);
+void glMemoryBarrier_(GLbitfield barriers);
 void glUniform1f_(GLint location, GLfloat v0);
 void glUniform2f_(GLint location, GLfloat v0, GLfloat v1);
 void glUniform3f_(GLint location, GLfloat v0, GLfloat v1, GLfloat v2);

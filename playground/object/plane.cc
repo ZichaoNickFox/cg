@@ -7,7 +7,7 @@
 void Plane::OnUpdate(Context *context) {
 }
 
-void Plane::OnRender(Context *context) {
+void Plane::OnRender(Context *context, int instance_num) {
   material_.PrepareShader();
   mesh(context)->Submit();
 }

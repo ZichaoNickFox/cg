@@ -22,9 +22,10 @@
 //#include "playground/scene/skybox_scene.h"
 #include "playground/scene/SSAO_scene.h"
 //#include "playground/scene/texture_lod_scene.h"
+#include "playground/scene/instance_scene.h"
 
 namespace {
-const std::string kDefaultScene = "PathTracing";
+const std::string kDefaultScene = "Instance";
 }
 
 void Playground::Init(const Context::Option& option) {
@@ -53,6 +54,7 @@ void Playground::InitScene() {
   scene_map_.insert(std::make_pair("ShadowScene", std::make_unique<ShadowScene>()));
   scene_map_.insert(std::make_pair("DepthScene", std::make_unique<DepthScene>()));
   scene_map_.insert(std::make_pair("PathTracing", std::make_unique<PathTracingScene>()));
+  scene_map_.insert(std::make_pair("Instance", std::make_unique<InstanceScene>()));
 }
 
 void Playground::BeginFrame() {

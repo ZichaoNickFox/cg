@@ -12,6 +12,9 @@ class PathTracingScene : public Scene {
   void OnExit(Context* context) override;
 
  private:
+  void Resterization(Context* context);
+  void RayTracing(Context* context);
+
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
   Sphere light_;
   Sphere ground_;
@@ -24,4 +27,7 @@ class PathTracingScene : public Scene {
   Sphere metal_ball_;
   Sphere glass_ball_;
   Sphere metal_ball2_;
+
+  std::vector<glm::vec3> canvas_;
+  engine::Texture texture_canvas_;
 };

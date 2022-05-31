@@ -7,7 +7,7 @@
 void Cube::OnUpdate(Context *context) {
 }
 
-void Cube::OnRender(Context *context) {
+void Cube::OnRender(Context *context, int instance_num) {
   material_.PrepareShader();
   mesh(context)->Submit(); 
 }

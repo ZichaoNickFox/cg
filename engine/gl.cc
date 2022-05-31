@@ -111,7 +111,7 @@ void glEnableVertexAttribArray_(GLuint index) {
   CGCHECKGL();
 }
 
-void glVertexAttribPointer_(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void * pointer) {
+void glVertexAttribPointer_(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer) {
   glVertexAttribPointer(index, size, type, normalized, stride, pointer);
   CGCHECKGL();
 }
@@ -121,8 +121,23 @@ void glDrawArrays_(GLenum mode, GLint first, GLsizei count) {
   CGCHECKGL();
 }
 
+void glDrawArraysInstanced_(GLenum mode, GLint first, GLsizei count, GLsizei instancecount) {
+  glDrawArraysInstanced(mode, first, count, instancecount);
+  CGCHECKGL();
+}
+
+void glVertexAttribDivisor_(GLuint index, GLuint divisor) {
+  glVertexAttribDivisor(index, divisor);
+  CGCHECKGL();
+}
+
 void glDrawElements_(GLenum mode, GLsizei count, GLenum type, const void* indices) {
   glDrawElements(mode, count, type, indices);
+  CGCHECKGL();
+}
+
+void glDrawElementsInstanced_(GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei instancecount) {
+  glDrawElementsInstanced(mode, count, type, indices, instancecount);
   CGCHECKGL();
 }
 
@@ -345,6 +360,16 @@ GLint glGetUniformLocation_(GLuint program, const GLchar *name) {
   GLuint res = glGetUniformLocation(program, name);
   CGCHECKGL();
   return res;
+}
+
+void glDispatchCompute_(GLuint num_groups_x, GLuint num_groups_y, GLuint num_groups_z) {
+  glDispatchCompute(num_groups_x, num_groups_y, num_groups_z);
+  CGCHECKGL();
+}
+
+void glMemoryBarrier_(GLbitfield barriers) {
+  glMemoryBarrier(barriers);
+  CGCHECKGL();
 }
 
 void glUniform1f_(GLint location, GLfloat v0) {

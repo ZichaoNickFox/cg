@@ -427,3 +427,48 @@ BlurShader::BlurShader(const Param& param, Context* context, Object* object) {
   material->SetTexture("u_texture_input", param.texture);
   material->SetVec2("u_viewport_size", param.viewport_size);
 }
+
+RandomShader::RandomShader(const Param& param, Context* context) : param_(param) {}
+
+void RandomShader::Run(Context* context) {
+  glUseProgram_(context->GetShader("random").id());
+  glDispatchCompute_(param_.work_group_x, param_.work_group_y, param_.work_group_z);
+  glMemoryBarrier_(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+}
+
+SimpleModelShader::SimpleModelShader(Context* context, Model* model) {
+  for (int i = 0; i < model->model_part_num(); ++i) {
+    ModelPart* model_part = model->mutable_model_part(i);
+    model_part->mutable_material()->SetShader(context->GetShader("simple_model"));
+    model_part->mutable_material()->SetMat4("model", model_part->transform().GetModelMatrix());
+    model_part->mutable_material()->SetMat4("view", context->camera().GetViewMatrix());
+    model_part->mutable_material()->SetMat4("project", context->camera().GetProjectMatrix());
+    for (auto& pair : model_part->model_part_data().uniform_2_texture) {
+      const std::string uniform_name = pair.first;
+      const std::vector<engine::Texture>& textures = pair.second;
+      if (textures.size() > 0) {
+        model_part->mutable_material(0)->SetTexture(uniform_name, textures[0]);
+        std::string use_uniform_name = util::Format("use_{}", uniform_name);
+        model_part->mutable_material(0)->SetBool(use_uniform_name, true);
+      }
+    }
+  }
+}
+
+InstanceSceneShader::InstanceSceneShader(Context* context, Model* model) {
+  for (int i = 0; i < model->model_part_num(); ++i) {
+    ModelPart* model_part = model->mutable_model_part(i);
+    model_part->mutable_material()->SetShader(context->GetShader("instance_scene"));
+    model_part->mutable_material()->SetMat4("view", context->camera().GetViewMatrix());
+    model_part->mutable_material()->SetMat4("project", context->camera().GetProjectMatrix());
+    for (auto& pair : model_part->model_part_data().uniform_2_texture) {
+      const std::string uniform_name = pair.first;
+      const std::vector<engine::Texture>& textures = pair.second;
+      if (textures.size() > 0) {
+        model_part->mutable_material(0)->SetTexture(uniform_name, textures[0]);
+        std::string use_uniform_name = util::Format("use_{}", uniform_name);
+        model_part->mutable_material(0)->SetBool(use_uniform_name, true);
+      }
+    }
+  }
+}

@@ -21,12 +21,12 @@ static void glfw_error_callback(int error, const char *description) {
   fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
-void handler(int sig) {
-  fprintf(stderr, "Error: signal %d:\n", sig);
-  BT();
-  exit(1);
-}
-
+//void handler(int sig) {
+//  fprintf(stderr, "Error: signal %d:\n", sig);
+//  BT();
+//  exit(1);
+//}
+//
 void FillIoInput(GLFWwindow* window, ImGuiIO* imgui_io, Io* io) {
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     io->FeedKeyInput("w");
@@ -52,14 +52,14 @@ void FillIoInput(GLFWwindow* window, ImGuiIO* imgui_io, Io* io) {
 
 int main(int argc, char **argv)
 {
-  signal(SIGSEGV, handler); // install our handler
-  signal(SIGABRT, handler); // install our handler
+  //signal(SIGSEGV, handler); // install our handler
+  //signal(SIGABRT, handler); // install our handler
 
   glfwSetErrorCallback(glfw_error_callback);
   CGCHECK(glfwInit()) << "glfw Init Failed";
 
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // 3.2+ only
 
   // Create window with graphics context

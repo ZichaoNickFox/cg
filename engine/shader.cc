@@ -36,6 +36,16 @@ Shader::Shader(const std::string& name, const std::vector<CodePart>& vs, const s
   LinkShader(id_, objects);
 }
 
+Shader::Shader(const std::string& name, const std::vector<CodePart>& cs) {
+  name_ = name;
+
+  GLuint id_ = glCreateProgram_();
+  GLuint compute_shader_object = 0;
+  compute_shader_object = CompileShader(cs, GL_COMPUTE_SHADER);
+  std::vector<GLuint> objects{compute_shader_object};
+  LinkShader(id_, objects);
+}
+
 namespace {
 // TODO : use util's
 bool StartsWith(const std::string& str, const std::string& start_with) {

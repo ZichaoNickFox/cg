@@ -9,6 +9,10 @@
 #include "engine/util.h"
 
 namespace engine {
+engine::Texture ModelRepo::ModelPartData::texture(const std::string& uniform, int index) const {
+  return uniform_2_texture.at(uniform).at(index);
+}
+
 void ModelRepo::Init(const Config& config) {
   for (const ModelConfig& config : config.model_config()) {
     State state;
@@ -106,45 +110,32 @@ void ModelRepo::ProcessTexture(const aiScene& ai_scene, const aiMesh& ai_mesh, S
 
   ModelPartData* handling_model_part = state->handling_model_part;
 
-  std::vector<engine::Texture> diffuses = LoadTextures(ai_material, aiTextureType_DIFFUSE, state);
-  handling_model_part->diffuse_textures.insert(
-      handling_model_part->diffuse_textures.begin(), diffuses.begin(), diffuses.end());
-
-  std::vector<engine::Texture> speculars = LoadTextures(ai_material, aiTextureType_SPECULAR, state);
-  handling_model_part->specular_textures.insert(
-      handling_model_part->specular_textures.end(), speculars.begin(), speculars.end());
-
-  std::vector<engine::Texture> normals = LoadTextures(ai_material, aiTextureType_NORMALS, state);
-  handling_model_part->normal_textures.insert(
-      handling_model_part->normal_textures.end(), normals.begin(), normals.end());
-
-  std::vector<engine::Texture> heights = LoadTextures(ai_material, aiTextureType_HEIGHT, state);
-  handling_model_part->height_textures.insert(
-      handling_model_part->height_textures.end(), heights.begin(), heights.end());
-
-  std::vector<engine::Texture> ambients = LoadTextures(ai_material, aiTextureType_AMBIENT, state);
-  handling_model_part->ambient_textures.insert(
-      handling_model_part->ambient_textures.end(), ambients.begin(), ambients.end());
-
-  std::vector<engine::Texture> albedos = LoadTextures(ai_material, aiTextureType_BASE_COLOR, state);
-  handling_model_part->albedo_textures.insert(
-      handling_model_part->albedo_textures.end(), albedos.begin(), albedos.end());
-
-  std::vector<engine::Texture> roughnesses = LoadTextures(ai_material, aiTextureType_DIFFUSE_ROUGHNESS, state);
-  handling_model_part->roughness_textures.insert(
-      handling_model_part->roughness_textures.end(), roughnesses.begin(), roughnesses.end());
-
-  std::vector<engine::Texture> metallics = LoadTextures(ai_material, aiTextureType_METALNESS, state);
-  handling_model_part->metallic_textures.insert(
-      handling_model_part->metallic_textures.end(), metallics.begin(), metallics.end());
+  std::map<aiTextureType, std::string> ai_2_uniform = {
+    {aiTextureType_DIFFUSE, kUniformDiffuse},
+    {aiTextureType_SPECULAR, kUniformSpecular},
+    {aiTextureType_NORMALS, kUniformNormal},
+    {aiTextureType_HEIGHT, kUniformHeight},
+    {aiTextureType_AMBIENT, kUniformAmbient},
+    {aiTextureType_BASE_COLOR, kUniformAlbedo},
+    {aiTextureType_DIFFUSE_ROUGHNESS, kUniformRoughness},
+    {aiTextureType_METALNESS, kUniformMetallic}
+  };
+  for (auto& pair : ai_2_uniform) {
+    aiTextureType ai_type = pair.first;
+    std::string uniform = pair.second;
+    std::vector<engine::Texture> textures = LoadTextures(ai_material, ai_type, state);
+    handling_model_part->uniform_2_texture[uniform].insert(
+        handling_model_part->uniform_2_texture[uniform].begin(), textures.begin(), textures.end());
+  }
 
   CGLOG(ERROR) << "Process Texture : model=" << state->name;
   CGLOG(ERROR) << "Texture Begin";
-  CGLOG_IF(ERROR, ambients.size() > 0) << "ambients : size=" << ambients.size();
-  CGLOG_IF(ERROR, diffuses.size() > 0) << "diffuses : size=" << diffuses.size();
-  CGLOG_IF(ERROR, speculars.size() > 0) << "speculars : size=" << speculars.size();
-  CGLOG_IF(ERROR, normals.size() > 0) << "normals : size=" << normals.size();
-  CGLOG_IF(ERROR, heights.size() > 0) << "heights : size=" << heights.size();
+  std::vector<std::string> uniforms = {kUniformAmbient, kUniformDiffuse,
+      kUniformSpecular, kUniformNormal, kUniformHeight};
+  for (const std::string& uniform : uniforms) {
+    int uniform_texture_size = handling_model_part->uniform_2_texture[uniform].size();
+    CGLOG_IF(ERROR, uniform_texture_size > 0) << "{} : size=" << uniform << uniform_texture_size;
+  }
   CGLOG(ERROR) << "Texture End";
 }
 

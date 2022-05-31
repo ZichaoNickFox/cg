@@ -94,20 +94,20 @@ void ModelScene::OnRender(Context *context) {
     model_part->mutable_transform()->SetScale(glm::vec3(0.3, 0.3, 0.3));
 
     if (use_texture_ambient_) {
-      phong.texture_ambient = model_part->texture_ambient(0);
+      phong.texture_ambient = model_part->model_part_data().texture(engine::kUniformAmbient, 0);
     }
     if (use_texture_normal_) {
-      phong.texture_normal = model_part->texture_normal(0);
+      phong.texture_normal = model_part->model_part_data().texture(engine::kUniformNormal, 0);
     }
     // TODO assimp may has some error
     if (use_texture_height_) {
-      phong.texture_normal = model_part->texture_height(0);
+      phong.texture_normal = model_part->model_part_data().texture(engine::kUniformHeight, 0);
     }
     if (use_texture_specular_) {
-      phong.texture_specular = model_part->texture_specular(0);
+      phong.texture_specular = model_part->model_part_data().texture(engine::kUniformSpecular, 0);
     }
     if (use_texture_diffuse_) {
-      phong.texture_diffuse = model_part->texture_diffuse(0);
+      phong.texture_diffuse = model_part->model_part_data().texture(engine::kUniformDiffuse, 0);
     }
     PhongShader(&phong, context, model_part);
     model_part->OnRender(context);

@@ -12,7 +12,7 @@ void EmptyObject::OnUpdate(Context *context) {
 
 }
 
-void EmptyObject::OnRender(Context *context)
+void EmptyObject::OnRender(Context *context, int instance_num)
 {
   material_.PrepareShader();
   glBindVertexArray_(empty_vao_);

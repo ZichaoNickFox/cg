@@ -43,6 +43,7 @@ cc_library(
   deps = [
     "//engine:debug",
     "//engine:gl",
+    "//engine:util",
     "@glm",
   ],
 )
@@ -80,7 +81,6 @@ cc_library(
     "//engine/primitive:primitive",
     "//engine:util",
     "@assimp",
-    "@fmt",
     "@glm",
     "@imgui",
   ],

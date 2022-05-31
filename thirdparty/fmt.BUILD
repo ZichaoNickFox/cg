@@ -12,6 +12,6 @@ cc_library(
     "include/fmt/format-inl.h",
   ],
   includes = [
-    "include"
+    "include",
   ]
 )
