@@ -39,7 +39,7 @@ Shader::Shader(const std::string& name, const std::vector<CodePart>& vs, const s
 Shader::Shader(const std::string& name, const std::vector<CodePart>& cs) {
   name_ = name;
 
-  GLuint id_ = glCreateProgram_();
+  id_ = glCreateProgram_();
   GLuint compute_shader_object = 0;
   compute_shader_object = CompileShader(cs, GL_COMPUTE_SHADER);
   std::vector<GLuint> objects{compute_shader_object};
@@ -125,6 +125,7 @@ void Shader::LinkShader(GLuint program, const std::vector<GLuint>& objects) {
 }
 
 void Shader::Use() const {
+  CGCHECK(glIsProgram_(id_)) << "glIsProgram failed, glCreateProgram? not glDeleteProgram? id ~ " << id_;
   glUseProgram_(id_);
 }
 

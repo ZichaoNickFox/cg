@@ -1,5 +1,4 @@
 #include "engine/repo/texture_repo.h"
-
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -106,7 +105,7 @@ void TryMakeDir(const std::string& path_with_ext) {
   util::MakeDir(file_dir);
 }
 
-Texture CreateTexture2DImpl(const CreateTexture2DParam& param) {
+Texture CreateTextureImpl(const TextureParam& param) {
   GLuint ret;
   glGenTextures_(1, &ret);
   glBindTexture_(GL_TEXTURE_2D, ret);
@@ -115,33 +114,21 @@ Texture CreateTexture2DImpl(const CreateTexture2DParam& param) {
     glTexSubImage2D_(GL_TEXTURE_2D, level, 0, 0, param.width >> level, param.height >> level,
                      param.format, param.type, param.texture_data(level));
   }
-  glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, param.texture_param_wrap_s);
-  glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, param.texture_param_wrap_t);
+  glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, param.wrap_s);
+  glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, param.wrap_t);
   if(param.level_num > 1){
     glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   } else {
-    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, param.texture_param_min_filter);
-    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, param.texture_param_mag_filter);
+    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, param.min_filter);
+    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, param.mag_filter);
   }
   glBindTexture_(GL_TEXTURE_2D, 0);
-  return Texture(ret, Texture::Texture2D);
+  engine::Texture res(ret, Texture::Texture2D);
+  return res;
 }
 
-const void* CreateTexture2DParam::texture_data(int level) const {
-  if (data.raw_data.size() > 0) {
-    CGCHECK(level < data.raw_data.size()) << " level must LT data.size : level -" << level
-                                          << " data.size - " << data.raw_data.size();
-    return data.raw_data[level];
-  } else {
-    CGCHECK(level < data.full_data->level_num()) << " level must LT data.size : level -" << level
-                                                 << " data.size - " << data.full_data->level_num();
-    return data.full_data->data(level);
-  }
-}
-
-
-Texture ResetCubemapImpl(const CreateCubemapParam& param) {
+Texture ResetCubemapImpl(const CubemapParam& param) {
   GLuint ret;
   glGenTextures_(1, &ret);
   glBindTexture_(GL_TEXTURE_CUBE_MAP, ret);
@@ -169,7 +156,7 @@ Texture ResetCubemapImpl(const CreateCubemapParam& param) {
 //    py
 // nx pz px nz
 //    ny
-engine::Texture CreateCubemapPreviewTexture2DImpl(const CreateCubemapParam& param) {
+engine::Texture CreateCubemapPreviewTexture2DImpl(const CubemapParam& param) {
   GLuint ret;
   glGenTextures_(1, &ret);
   glBindTexture_(GL_TEXTURE_2D, ret);
@@ -378,26 +365,26 @@ void TextureRepo::SaveCubemap(const std::string& name) {
   SaveCubemapImpl(path, state->texture.id(), state->level_num);
 }
 
-void TextureRepo::ResetTexture2D(const std::string& name, const CreateTexture2DParam& param) {
+void TextureRepo::ResetTexture2D(const std::string& name, const TextureParam& param) {
   CGCHECK(textures_.count(name) > 0) << name;
   LOG(ERROR) << "TextureRepo::ResetTexture2D " << name;
   State* state = &textures_[name];
-  state->texture = CreateTexture2DImpl(param);
+  state->texture = CreateTextureImpl(param);
   state->loaded = true;
   state->texture_type = engine::Texture::Texture2D;
 }
 
-Texture TextureRepo::CreateTempTexture2D(const CreateTexture2DParam& param) {
-  LOG(ERROR) << "TextureRepo::CreateTempTexture2D ";
-  return CreateTexture2DImpl(param);
+Texture TextureRepo::CreateTexture(const TextureParam& param) {
+  LOG(ERROR) << "TextureRepo::CreateTexture ";
+  return CreateTextureImpl(param);
 }
 
-Texture TextureRepo::CreateCubemapPreviewTexture2D(const CreateCubemapParam& param) {
+Texture TextureRepo::CreateCubemapPreviewTexture2D(const CubemapParam& param) {
   LOG(ERROR) << "TextureRepo::CreateCubemapPreviewTexture2D";
   return CreateCubemapPreviewTexture2DImpl(param);
 }
 
-void TextureRepo::ResetCubemap(const std::string& name, const CreateCubemapParam& param) {
+void TextureRepo::ResetCubemap(const std::string& name, const CubemapParam& param) {
   CGCHECK(textures_.count(name) > 0) << name;
   LOG(ERROR) << "TextureRepo::ResetCubemap " << name;
   State* state = &textures_[name];

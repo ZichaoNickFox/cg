@@ -50,12 +50,7 @@ void OnUpdateCommon::ReloadShaders(Context* context) {
 }
 
 void OnUpdateCommon::GuiFps(Context* context) {
-  ImGui::Text("frame interval : ");
-  ImGui::SameLine();
-  ImGui::Text("%d", context->frame_interval());
-  ImGui::Text("FPS : ");
-  ImGui::SameLine();
-  ImGui::Text("%d", context->fps());
+  context->frame_stat().Gui();
 }
 
 void OnUpdateCommon::MoveCamera(Context* context) {

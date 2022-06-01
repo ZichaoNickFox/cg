@@ -4,7 +4,7 @@
 
 #include "engine/debug.h"
 
-#define CGCHECKGL() int error = glGetError(); CGCHECK(error == 0) << error << " "
+#define CGCHECKGL() int error = glGetError(); CGCHECK(error == 0) << std::hex << error << std::dec << " "
 
 // glew
 GLenum glewInit_();
@@ -46,6 +46,8 @@ void glDeleteBuffers_(GLsizei n, const GLuint * buffers);
 void glGenTextures_(GLsizei n, GLuint *textures);
 void glGetTexImage_(GLenum target, GLint level, GLenum format, GLenum type, void * pixels);
 void glBindTexture_(GLenum target, GLuint texture);
+void glBindImageTexture_(GLuint unit, GLuint texture, GLint level, GLboolean layered,
+                         GLint layer, GLenum access, GLenum format);
 void glActiveTexture_(GLenum texture);
 void glTexImage2D_(GLenum target, GLint level, GLint internalformat, GLsizei width,
                    GLsizei height, GLint border, GLenum format, GLenum type, const void * data);
@@ -88,6 +90,7 @@ void glLinkProgram_(GLuint program);
 void glGetProgramiv_(GLuint program, GLenum pname, GLint *params);
 void glGetProgramInfoLog_(GLuint program, GLsizei maxLength, GLsizei *length, GLchar *infoLog);
 void glDeleteShader_(GLuint shader);
+GLboolean glIsProgram_(GLuint program);
 void glUseProgram_(GLuint program);
 GLint glGetUniformLocation_(GLuint program, const GLchar *name);
 void glDispatchCompute_(GLuint num_groups_x, GLuint num_groups_y, GLuint num_groups_z);

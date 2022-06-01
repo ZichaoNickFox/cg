@@ -245,14 +245,16 @@ class BlurShader {
 class RandomShader {
  public:
   struct Param{
-    void* input_data = nullptr;
-    GLuint input_texture_id;
-    int work_group_x;
-    int work_group_y;
-    int work_group_z;
+    std::string shader_name;
+    int work_group_x = 0;
+    int work_group_y = 0;
+    int work_group_z = 0;
+    engine::Texture input_texture;
+    engine::Texture output_texture;
   };
   RandomShader(const Param& param, Context* context);
   void Run(Context* context);
+  void CheckInternalFormat(engine::Texture texture);
 
  private:
   Param param_;

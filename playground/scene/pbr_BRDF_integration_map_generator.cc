@@ -38,7 +38,7 @@ void PbrBRDFIntegrationMapGenerator::OnRender(Context *context, int instance_num
 
   data.UpdateData(0, color_framebuffer_.GetColorTextureData(0));
 
-  engine::CreateTexture2DParam param{1, kLevel0Size, kLevel0Size, &data};
+  engine::TextureParam param{1, kLevel0Size, kLevel0Size, &data};
   context->ResetTexture2D("pbr_BRDF_integration_map", param);
   context->SaveTexture2D("pbr_BRDF_integration_map");
   exit(0);

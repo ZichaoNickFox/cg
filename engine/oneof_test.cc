@@ -1,7 +1,6 @@
 #include <memory>
 
 #include "glog/logging.h"
-#include <google/protobuf/util/message_differencer.h>
 #include "gtest/gtest.h"
 
 #include "engine/oneof.h"

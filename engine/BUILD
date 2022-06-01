@@ -55,6 +55,8 @@ cc_library(
     "camera.h",
     "camera.cc",
     "constants.h",
+    "frame_stat.h",
+    "frame_stat.cc",
     "framebuffer.h",
     "framebuffer.cc",
     "framebuffer_attachment.h",

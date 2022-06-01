@@ -62,7 +62,7 @@ void PbrPrefilteredColorCubemapGenerator::OnRender(Context *context, int instanc
       data.UpdateData(face, level, color_framebuffers_[level].GetColorTextureData(0));
     }
   }
-  engine::CreateCubemapParam param{kMipmapMaxLevel, kLevel0Size, kLevel0Size, &data};
+  engine::CubemapParam param{kMipmapMaxLevel, kLevel0Size, kLevel0Size, &data};
   context->ResetCubemap(output, param);
   context->SaveCubemap(output);
   exit(0);

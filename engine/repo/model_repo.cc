@@ -6,6 +6,7 @@
 
 #include "engine/debug.h"
 #include "engine/repo/texture_repo.h"
+#include "engine/texture.h"
 #include "engine/util.h"
 
 namespace engine {

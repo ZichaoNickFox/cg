@@ -4,6 +4,7 @@
 
 #include "engine/debug.h"
 #include "engine/camera.h"
+#include "engine/frame_stat.h"
 #include "engine/io.h"
 #include "engine/proto/config.pb.h"
 #include "engine/repo/mesh_repo.h"
@@ -37,21 +38,19 @@ class Context {
   const engine::Camera& camera() const;
   engine::Camera* mutable_camera();
 
-  void SetFrameInternal(int frame_interval);
-  int frame_interval() const { return frame_interval_; }
-  int fps() const { return fps_; }
+  void StatFrame(int frame_interval);
 
   const glm::vec4 clear_color() const { return clear_color_; }
 
   engine::Shader GetShader(const std::string& name);
 
   engine::Texture GetTexture(const std::string& name, bool flip_vertically = false, bool equirectangular = false);
-  void ResetTexture2D(const std::string& name, const engine::CreateTexture2DParam& param);
-  void ResetCubemap(const std::string& name, const engine::CreateCubemapParam& param);
-  engine::Texture CreateCubemapPreviewTexture2D(const engine::CreateCubemapParam& param);
+  void ResetTexture2D(const std::string& name, const engine::TextureParam& param);
+  void ResetCubemap(const std::string& name, const engine::CubemapParam& param);
+  engine::Texture CreateCubemapPreviewTexture2D(const engine::CubemapParam& param);
   void SaveTexture2D(const std::string& name);
   void SaveCubemap(const std::string& name);
-  engine::Texture CreateTempTexture2D(const engine::CreateTexture2DParam& param);
+  engine::Texture CreateTexture(const engine::TextureParam& param);
 
   std::shared_ptr<const engine::Mesh> GetMesh(const std::string& name);
   std::vector<engine::ModelRepo::ModelPartData> GetModel(const std::string& name);
@@ -62,6 +61,7 @@ class Context {
   float camera_rotate_speed() { return camera_rotate_speed_; }
 
   const glm::ivec2& framebuffer_size() const { return framebuffer_size_; }
+  const engine::FrameStat& frame_stat() const { return frame_stat_; }
 
  private:
   engine::ShaderRepo shader_repo_;
@@ -74,8 +74,7 @@ class Context {
   // Move camera outside context
   engine::Camera* camera_ = nullptr;
 
-  int frame_interval_;
-  int fps_;
+  engine::FrameStat frame_stat_;
 
   glm::vec4 clear_color_;
 

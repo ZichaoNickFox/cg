@@ -27,9 +27,8 @@ engine::Camera* Context::mutable_camera() {
   return camera_;
 }
 
-void Context::SetFrameInternal(int frame_interval) {
-  frame_interval_ = frame_interval;
-  fps_ = 1e3 / frame_interval_;
+void Context::StatFrame(int last_frame_interval) {
+  frame_stat_.OnFrame(last_frame_interval);
 }
 
 engine::Shader Context::GetShader(const std::string& name) {
@@ -48,19 +47,19 @@ void Context::SaveCubemap(const std::string& name) {
   texture_repo_.SaveCubemap(name);
 }
 
-void Context::ResetTexture2D(const std::string& name, const engine::CreateTexture2DParam& param) {
+void Context::ResetTexture2D(const std::string& name, const engine::TextureParam& param) {
   texture_repo_.ResetTexture2D(name, param);
 }
 
-void Context::ResetCubemap(const std::string& name, const engine::CreateCubemapParam& param) {
+void Context::ResetCubemap(const std::string& name, const engine::CubemapParam& param) {
   texture_repo_.ResetCubemap(name, param);
 }
 
-engine::Texture Context::CreateTempTexture2D(const engine::CreateTexture2DParam& param) {
-  return texture_repo_.CreateTempTexture2D(param);
+engine::Texture Context::CreateTexture(const engine::TextureParam& param) {
+  return texture_repo_.CreateTexture(param);
 }
 
-engine::Texture Context::CreateCubemapPreviewTexture2D(const engine::CreateCubemapParam& param) {
+engine::Texture Context::CreateCubemapPreviewTexture2D(const engine::CubemapParam& param) {
   return texture_repo_.CreateCubemapPreviewTexture2D(param);
 }
 

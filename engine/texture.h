@@ -5,6 +5,9 @@
 #include <string>
 #include <vector>
 
+#include "glm/glm.hpp"
+
+#include "engine/debug.h"
 #include "engine/gl.h"
 
 namespace engine {
@@ -31,6 +34,44 @@ struct CubemapData {
   std::array<Texture2DData, 6> data_;
 };
 
+struct TextureParam {
+ public:
+  TextureParam(int in_width, int in_height, const std::vector<glm::vec3>& in_raw_data,
+               GLuint in_min_filter = GL_LINEAR, GLuint in_mag_filter = GL_LINEAR,
+               GLuint in_wrap_s = GL_REPEAT, GLuint in_wrap_t = GL_REPEAT);
+  TextureParam(int in_width, int in_height, const std::vector<glm::vec4>& in_raw_data,
+               GLuint in_min_filter = GL_LINEAR, GLuint in_mag_filter = GL_LINEAR,
+               GLuint in_wrap_s = GL_REPEAT, GLuint in_wrap_t = GL_REPEAT);
+  const void* texture_data(int level) const;
+
+  int level_num;
+  int width;
+  int height;
+  GLuint internal_format = GL_RGBA8;
+  GLuint format = GL_RGBA;
+  GLuint type = GL_UNSIGNED_BYTE;
+  GLuint min_filter = GL_LINEAR;
+  GLuint mag_filter = GL_LINEAR;
+  GLuint wrap_s = GL_REPEAT;
+  GLuint wrap_t = GL_REPEAT;
+  std::vector<const void*> raw_data;
+  const Texture2DData* full_data;
+};
+
+struct CubemapParam {
+  int level_num;
+  int width;
+  int height;
+  CubemapData* data;
+  GLuint internal_format = GL_RGBA8;
+  GLuint format = GL_RGBA;
+  GLuint type = GL_UNSIGNED_BYTE;
+  GLuint min_filter = GL_LINEAR;
+  GLuint mag_filter = GL_LINEAR;
+  GLuint wrap_s = GL_REPEAT;
+  GLuint wrap_t = GL_REPEAT;
+};
+
 class Texture {
  public:
   enum Type{
@@ -47,6 +88,7 @@ class Texture {
   Type type() const  {return textureType_;}
   void SetInfo(const std::string& info) { info_ = info; }
   std::string info() const { return info_; }
+  GLuint internal_format() const;
 
  private:
   GLuint id_ = std::numeric_limits<GLuint>::max();

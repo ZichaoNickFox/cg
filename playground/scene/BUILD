@@ -1,5 +1,4 @@
 package(default_visibility=["//visibility:public"])
-load("@rules_proto//proto:defs.bzl", "proto_library")
 
 cc_library(
   name = "scenes",
@@ -10,6 +9,8 @@ cc_library(
 #    "AA_test_scene.cc",
     "common.h",
     "common.cc",
+    "compute_shader_scene.h",
+    "compute_shader_scene.cc",
     "depth_scene.h",
     "depth_scene.cc",
 #    "equirectangular_2_cubemap_tool.h",

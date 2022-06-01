@@ -52,7 +52,7 @@ void PbrIrradianceCubemapGenerator::OnRender(Context *context, int instance_num)
 
     data.UpdateData(face, 0, color_framebuffer_.GetColorTextureData(0));
   }
-  engine::CreateCubemapParam param{1, kLevel0Size, kLevel0Size, &data};
+  engine::CubemapParam param{1, kLevel0Size, kLevel0Size, &data};
   context->ResetCubemap(output, param);
   context->SaveCubemap(output);
   exit(0);

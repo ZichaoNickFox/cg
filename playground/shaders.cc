@@ -2,6 +2,7 @@
 
 #include "glm/gtc/type_ptr.hpp"
 #include "imgui.h"
+#include <set>
 
 #include "engine/constants.h"
 #include "engine/debug.h"
@@ -428,12 +429,32 @@ BlurShader::BlurShader(const Param& param, Context* context, Object* object) {
   material->SetVec2("u_viewport_size", param.viewport_size);
 }
 
-RandomShader::RandomShader(const Param& param, Context* context) : param_(param) {}
+ComputeShader::ComputeShader(const Param& param, Context* context) : param_(param) {}
 
-void RandomShader::Run(Context* context) {
-  glUseProgram_(context->GetShader("random").id());
+void ComputeShader::CheckInternalFormat(engine::Texture texture) {
+  GLuint internal_format = texture.internal_format();
+  std::set<GLint> supported_format = { GL_RGBA, GL_RGBA32F };
+  if (supported_format.count(internal_format) <= 0) {
+    CGCHECK(false) << "Unsupported Internal Format : " << std::hex << internal_format << std::dec;
+  }
+}
+
+void ComputeShader::Run(Context* context) {
+  CheckInternalFormat(param_.input_texture);
+  CheckInternalFormat(param_.output_texture);
+
+  glActiveTexture_(GL_TEXTURE0);
+  glBindTexture_(GL_TEXTURE_2D, param_.input_texture.id());
+
+  glActiveTexture_(GL_TEXTURE1);
+  glBindTexture_(GL_TEXTURE_2D, param_.output_texture.id());
+
+  glBindImageTexture_(0, param_.input_texture.id(), 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
+  glBindImageTexture_(1, param_.output_texture.id(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+
+  context->GetShader(param_.shader_name).Use();
   glDispatchCompute_(param_.work_group_x, param_.work_group_y, param_.work_group_z);
-  glMemoryBarrier_(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+  glMemoryBarrier_(GL_ALL_BARRIER_BITS);
 }
 
 SimpleModelShader::SimpleModelShader(Context* context, Model* model) {

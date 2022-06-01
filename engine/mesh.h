@@ -103,12 +103,13 @@ void Mesh::AddVertexAttribute(const VertexAttribute& meta, const std::vector<Ele
   // vao
   glBindVertexArray_(vao_);
   int layout_index_num = meta.attribute_layout_index_to - meta.atrribute_layout_index_from + 1;
-  for (int layout_index = meta.atrribute_layout_index_from, i = 0; layout_index <= meta.attribute_layout_index_to; ++layout_index, ++i) {
+  for (int layout_index = meta.atrribute_layout_index_from, i = 0; layout_index <= meta.attribute_layout_index_to;
+      ++layout_index, ++i) {
     glEnableVertexAttribArray_(layout_index);
     int attribute_size_in_byte = meta.attribute_component_num * sizeof(GL_FLOAT);
     int stride = layout_index_num * attribute_size_in_byte;
     glVertexAttribPointer_(layout_index, meta.attribute_component_num, GL_FLOAT, GL_FALSE,
-                           stride, util::AsVoidPtr(i * attribute_size_in_byte));
+                           stride, util::AsVoidPtr(static_cast<uint64_t>(i * attribute_size_in_byte)));
     if (meta.divisor > 0) {
       glVertexAttribDivisor_(layout_index, meta.divisor);
     }

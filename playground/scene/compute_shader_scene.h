@@ -12,6 +12,8 @@ class ComputeShaderScene : public Scene {
   void OnExit(Context* context) override;
 
  private:
-  std::vector<glm::vec3> canvas_;
-  engine::Texture texture_canvas_;
+  std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
+  
+  engine::Texture input_texture_;
+  engine::Texture output_texture_;
 };

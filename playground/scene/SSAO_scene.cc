@@ -49,9 +49,7 @@ void SSAOScene::OnEnter(Context *context)
   SetupBufferAndPass(context);
 
   std::vector<glm::vec3> SSAO_noise = engine::Noise(4, 4);
-  engine::CreateTexture2DParam param{1, 4, 4, std::vector<void*>{static_cast<void*>(SSAO_noise.data())},
-                                     GL_RGB32F, GL_RGB, GL_FLOAT, GL_NEAREST, GL_NEAREST};
-  texture_noise_ = context->mutable_texture_repo()->CreateTempTexture2D(param);
+  texture_noise_ = context->CreateTexture({4, 4, SSAO_noise, GL_NEAREST, GL_NEAREST});
 
   samples_ts_ = util::AsArray<64>(engine::SampleSemishphere(64));
 }

@@ -6,7 +6,7 @@ exts = [".cc", ".h", ".cpp", ".hpp", ".glsl"]
 
 all_file = []
 for dir in dirs:
-  for root, subdirs, files in os.walk("engine"):
+  for root, subdirs, files in os.walk(dir):
     for file in files:
       all_file.append(root + "\\" + file)
 
@@ -17,12 +17,12 @@ for file in all_file:
   if ext in exts:
     file_num = file_num + 1
 
-    f = open(file, "r")
+    f = open(file, "rb")
     line_count = 0
-    for line in file:
-        if line != "\n":
-            line_count += 1
+    for line in f:
+      line_count += 1
     f.close()
+    print(file, line_count)
     line_num = line_num + line_count
 
 print("file_num", file_num)

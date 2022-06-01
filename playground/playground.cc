@@ -4,6 +4,7 @@
 
 //#include "playground/scene/AA_scene.h"
 //#include "playground/scene/AA_test_scene.h"
+#include "playground/scene/compute_shader_scene.h"
 //#include "playground/scene/deferred_shading_scene.h"
 #include "playground/scene/depth_scene.h"
 #include "playground/scene/forward_shading_scene.h"
@@ -25,7 +26,7 @@
 #include "playground/scene/instance_scene.h"
 
 namespace {
-const std::string kDefaultScene = "Instance";
+const std::string kDefaultScene = "ComputeShader";
 }
 
 void Playground::Init(const Context::Option& option) {
@@ -55,6 +56,7 @@ void Playground::InitScene() {
   scene_map_.insert(std::make_pair("DepthScene", std::make_unique<DepthScene>()));
   scene_map_.insert(std::make_pair("PathTracing", std::make_unique<PathTracingScene>()));
   scene_map_.insert(std::make_pair("Instance", std::make_unique<InstanceScene>()));
+  scene_map_.insert(std::make_pair("ComputeShader", std::make_unique<ComputeShaderScene>()));
 }
 
 void Playground::BeginFrame() {
@@ -77,7 +79,7 @@ void Playground::EndFrame() {
   context_.mutable_io()->ClearKeyInput();
   util::Time frame_end_time = std::chrono::high_resolution_clock::now();
   int64_t frame_interval_millisecond = util::DurationMillisecond(frame_start_time_, frame_end_time);
-  context_.SetFrameInternal(frame_interval_millisecond);
+  context_.StatFrame(frame_interval_millisecond);
 }
 
 void Playground::SwitchScene(const std::string& next_scene) {

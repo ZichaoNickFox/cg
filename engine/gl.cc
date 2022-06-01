@@ -189,6 +189,12 @@ void glBindTexture_(GLenum target, GLuint texture) {
   CGCHECKGL() << target << " " << texture;
 }
 
+void glBindImageTexture_(GLuint unit, GLuint texture, GLint level, GLboolean layered,
+                         GLint layer, GLenum access, GLenum format) {
+  glBindImageTexture(unit, texture, level, layered, layer, access, format);
+  CGCHECKGL();
+}
+
 void glActiveTexture_(GLenum texture) {
   glActiveTexture(texture);
   CGCHECKGL();
@@ -349,6 +355,12 @@ void glGetProgramInfoLog_(GLuint program, GLsizei maxLength, GLsizei *length, GL
 void glDeleteShader_(GLuint shader) {
   glDeleteShader(shader);
   CGCHECKGL();
+}
+
+GLboolean glIsProgram_(GLuint program) {
+  bool res = glIsProgram(program);
+  CGCHECKGL();
+  return res;
 }
 
 void glUseProgram_(GLuint program) {

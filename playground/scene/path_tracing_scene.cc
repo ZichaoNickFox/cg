@@ -23,15 +23,12 @@ void PathTracingScene::OnEnter(Context* context) {
   context->SetCamera(camera_.get());
 
   // path tracing
-  glm::vec2 viewport_size = context->io().screen_size();
+  glm::ivec2 viewport_size = context->io().screen_size();
   canvas_.resize(viewport_size.x * viewport_size.y);
   for (glm::vec3& elem : canvas_) {
     elem = glm::vec3(0,0,0);
   }
-  engine::CreateTexture2DParam param{1, int(viewport_size.x), int(viewport_size.y),
-                                     std::vector<void*>{static_cast<void*>(canvas_.data())},
-                                     GL_RGB32F, GL_RGB, GL_FLOAT, GL_NEAREST, GL_NEAREST};
-  texture_canvas_ = context->mutable_texture_repo()->CreateTempTexture2D(param);
+  texture_canvas_ = context->CreateTexture({viewport_size.x, viewport_size.y, canvas_, GL_NEAREST, GL_NEAREST});
 
   glEnable_(GL_DEPTH_TEST);
 }

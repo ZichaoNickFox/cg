@@ -47,7 +47,7 @@ Shader ShaderRepo::GetOrLoadShader(const std::string& name) {
       CGCHECK(ts[i].code.size() > 0) << " ts path error : " << path;
     }
     for (int i = 0; i < cs.size(); ++i) {
-      const std::string path = shader_data->config.ts_path(i);
+      const std::string path = shader_data->config.cs_path(i);
       cs[i].glsl_path = path;
       util::ReadFileToString(path, &cs[i].code); 
       CGCHECK(cs[i].code.size() > 0) << " cs path error : " << path;

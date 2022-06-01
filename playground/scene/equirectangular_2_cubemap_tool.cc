@@ -53,7 +53,7 @@ void Equirectangular2CubemapTool::OnRender(Context *context, int instance_num) {
 
     data.UpdateData(face, 0, color_framebuffer_.GetColorTextureData(0));
   }
-  engine::CreateCubemapParam param{1, kEnvironmentCubemapSize, kEnvironmentCubemapSize, &data};
+  engine::CubemapParam param{1, kEnvironmentCubemapSize, kEnvironmentCubemapSize, &data};
   context->ResetCubemap(output, param);
   context->SaveCubemap(output);
   exit(0);
