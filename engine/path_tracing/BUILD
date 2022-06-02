@@ -8,5 +8,6 @@ cc_library(
     "path_tracing.cc",
   ],
   deps = [
+    "@glm"
   ]
 )

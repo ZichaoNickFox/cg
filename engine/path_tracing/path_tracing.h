@@ -4,6 +4,12 @@
 #include <vector>
 
 namespace engine {
+struct SphereData {
+  glm::vec3 translation;
+  glm::vec4 color;
+  float radius;
+};
+
 struct Ray {
   glm::vec3 origin;
   glm::vec3 dirction;

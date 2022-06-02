@@ -6,6 +6,7 @@
 #include "engine/camera.h"
 #include "engine/material.h"
 #include "engine/pass.h"
+#include "engine/path_tracing/path_tracing.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
@@ -268,4 +269,14 @@ class SimpleModelShader {
 class InstanceSceneShader {
  public:
   InstanceSceneShader(Context* context, Model* model);
+};
+
+class ColorOnlyShader {
+ public:
+  struct Param {
+    engine::Camera* camera = nullptr;
+    std::vector<engine::SphereData> sphere_data;
+    engine::Texture texture_output;
+  };
+  ColorOnlyShader(Context* context);
 };

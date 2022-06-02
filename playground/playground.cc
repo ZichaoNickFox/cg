@@ -26,7 +26,7 @@
 #include "playground/scene/instance_scene.h"
 
 namespace {
-const std::string kDefaultScene = "ComputeShader";
+const std::string kDefaultScene = "PathTracingScene";
 }
 
 void Playground::Init(const Context::Option& option) {
@@ -54,9 +54,9 @@ void Playground::InitScene() {
   scene_map_.insert(std::make_pair("SSAOScene", std::make_unique<SSAOScene>()));
   scene_map_.insert(std::make_pair("ShadowScene", std::make_unique<ShadowScene>()));
   scene_map_.insert(std::make_pair("DepthScene", std::make_unique<DepthScene>()));
-  scene_map_.insert(std::make_pair("PathTracing", std::make_unique<PathTracingScene>()));
-  scene_map_.insert(std::make_pair("Instance", std::make_unique<InstanceScene>()));
-  scene_map_.insert(std::make_pair("ComputeShader", std::make_unique<ComputeShaderScene>()));
+  scene_map_.insert(std::make_pair("PathTracingScene", std::make_unique<PathTracingScene>()));
+  scene_map_.insert(std::make_pair("InstanceScene", std::make_unique<InstanceScene>()));
+  scene_map_.insert(std::make_pair("ComputeShaderScene", std::make_unique<ComputeShaderScene>()));
 }
 
 void Playground::BeginFrame() {

@@ -52,6 +52,7 @@ cc_library(
   ],
   deps = [
     "//engine:engine",
+    "//engine/path_tracing:path_tracing",
     "//engine/repo:repo",
     "//playground:context",
     "//playground:scene",
