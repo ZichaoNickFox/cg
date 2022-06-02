@@ -4,7 +4,7 @@
 #include "playground/object/sphere.h"
 #include "playground/scene.h"
 
-class ComputeShaderScene : public Scene {
+class RandomScene : public Scene {
  public:
   void OnEnter(Context* context) override;
   void OnUpdate(Context* context) override;
@@ -14,6 +14,6 @@ class ComputeShaderScene : public Scene {
  private:
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
   
-  engine::Texture input_texture_;
-  engine::Texture output_texture_;
+  engine::Texture input_;
+  engine::Texture output_;
 };

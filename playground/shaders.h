@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 
 #include "engine/camera.h"
+#include "engine/compute_shader.h"
 #include "engine/material.h"
 #include "engine/pass.h"
 #include "engine/path_tracing/path_tracing.h"
@@ -243,19 +244,14 @@ class BlurShader {
   BlurShader(const Param& param, Context* context, Object* object);
 };
 
-class RandomShader {
+class RandomShader : public engine::ComputeShader {
  public:
   struct Param{
-    std::string shader_name;
-    int work_group_x = 0;
-    int work_group_y = 0;
-    int work_group_z = 0;
-    engine::Texture input_texture;
-    engine::Texture output_texture;
+    glm::ivec2 screen_size;
+    engine::Texture input;
+    engine::Texture output;
   };
   RandomShader(const Param& param, Context* context);
-  void Run(Context* context);
-  void CheckInternalFormat(engine::Texture texture);
 
  private:
   Param param_;
@@ -278,5 +274,5 @@ class ColorOnlyShader {
     std::vector<engine::SphereData> sphere_data;
     engine::Texture texture_output;
   };
-  ColorOnlyShader(Context* context);
+  ColorOnlyShader();
 };

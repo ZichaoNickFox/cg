@@ -4,7 +4,6 @@
 
 //#include "playground/scene/AA_scene.h"
 //#include "playground/scene/AA_test_scene.h"
-#include "playground/scene/compute_shader_scene.h"
 //#include "playground/scene/deferred_shading_scene.h"
 #include "playground/scene/depth_scene.h"
 #include "playground/scene/forward_shading_scene.h"
@@ -17,6 +16,7 @@
 //#include "playground/scene/pbr_prefiltered_color_cubemap_generator.h"
 #include "playground/scene/path_tracing_scene.h"
 #include "playground/scene/pbr_scene.h"
+#include "playground/scene/random_scene.h"
 //#include "playground/scene/sample_scene.h"
 #include "playground/scene/shadow_scene.h"
 //#include "playground/scene/share_scene.h"
@@ -26,7 +26,7 @@
 #include "playground/scene/instance_scene.h"
 
 namespace {
-const std::string kDefaultScene = "PathTracingScene";
+const std::string kDefaultScene = "RandomScene";
 }
 
 void Playground::Init(const Context::Option& option) {
@@ -56,7 +56,7 @@ void Playground::InitScene() {
   scene_map_.insert(std::make_pair("DepthScene", std::make_unique<DepthScene>()));
   scene_map_.insert(std::make_pair("PathTracingScene", std::make_unique<PathTracingScene>()));
   scene_map_.insert(std::make_pair("InstanceScene", std::make_unique<InstanceScene>()));
-  scene_map_.insert(std::make_pair("ComputeShaderScene", std::make_unique<ComputeShaderScene>()));
+  scene_map_.insert(std::make_pair("RandomScene", std::make_unique<RandomScene>()));
 }
 
 void Playground::BeginFrame() {

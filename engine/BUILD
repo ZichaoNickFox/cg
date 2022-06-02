@@ -54,6 +54,8 @@ cc_library(
     "any.h",
     "camera.h",
     "camera.cc",
+    "compute_shader.h",
+    "compute_shader.cc",
     "constants.h",
     "frame_stat.h",
     "frame_stat.cc",
