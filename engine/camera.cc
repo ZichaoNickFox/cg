@@ -42,7 +42,7 @@ glm::mat4 LookAt(const glm::vec3& transform, const glm::vec3& center, const glm:
 
 glm::mat4 Camera::GetViewMatrix() const {
   glm::vec3 center = transform_.translation() + transform_.rotation() * glm::vec3(0, 0, -1);
-  return glm::lookAt(transform_.translation(), center, world_up_);
+  return glm::lookAtRH(transform_.translation(), center, world_up_);
   //return LookAt(transform_.translation(), center, world_up_);
 }
 
