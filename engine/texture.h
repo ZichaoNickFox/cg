@@ -11,8 +11,22 @@
 #include "engine/gl.h"
 
 namespace engine {
-void FlipVertically(GLubyte* pixels, int width, int height, int channel, int byte_per_channel);
-void GetInternalFormatSize(int internal_format, int* channel, int* byte_per_channel, int* format, int* type);
+template<typename ChannelType>
+void FlipVertically(ChannelType* pixels, int width, int height, int channel, int byte_per_channel) {
+  int size_per_pixel = channel * byte_per_channel / sizeof(ChannelType);
+  int size_per_line = width * size_per_pixel;
+  int h1 = height - 1;
+  int h2 = 0;
+  while (h2 < h1) {
+    int h1_first_type = h1 * size_per_line;
+    int h2_first_type = h2 * size_per_line;
+    for (int byte_in_line = 0; byte_in_line < size_per_line; ++ byte_in_line) {
+      std::swap(pixels[h1_first_type + byte_in_line], pixels[h2_first_type + byte_in_line]);
+    }
+    h2++;
+    h1--;
+  }
+}
 
 struct Texture2DData {
   Texture2DData() = default;
@@ -88,11 +102,37 @@ class Texture {
   Type type() const  {return textureType_;}
   void SetInfo(const std::string& info) { info_ = info; }
   std::string info() const { return info_; }
-  GLuint internal_format() const;
+  template<typename ChannelType>
+  void GetTextureData(std::vector<ChannelType>* data) const;
+  int width() const;
+  int height() const;
+  // TODO may not stable
+  int internal_format() const;
+  int external_format() const;
+  int external_type() const;
+  int channel_num() const;
+  int channel_size_in_byte() const;
 
  private:
   GLuint id_ = std::numeric_limits<GLuint>::max();
   Type textureType_ = Texture2D;
   std::string info_;
 };
+template<typename ChannelType>
+void Texture::GetTextureData(std::vector<ChannelType>* data) const {
+  glBindTexture_(GL_TEXTURE_2D, id_);
+  int w = width();
+  int h = height();
+  int internal_format = -1;
+  // TODO this method is not stable
+  glGetTexLevelParameteriv_(GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &internal_format);
+  
+  data->resize(w * h * channel_num() * channel_size_in_byte() / sizeof(ChannelType));
+
+  glGetTexImage_(GL_TEXTURE_2D, 0, external_format(), external_type(), data->data());
+  FlipVertically(data->data(), w, h, channel_num(), channel_size_in_byte());
+
+  CGCHECK(w > 0) << "Widget must > 0";
+  CGCHECK(h > 0) << "Height must > 0";
+}
 } // namespace engine

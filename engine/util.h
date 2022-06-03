@@ -62,6 +62,22 @@ template<typename Type>
 const void* AsVoidPtr(const Type& var) {
   return reinterpret_cast<const void*>(var);
 }
+template<typename KeyType, typename ValueType>
+std::vector<ValueType> AsValueVector(const std::unordered_map<KeyType, ValueType>& in) {
+  std::vector<ValueType> res;
+  for (auto& pair : in) {
+    res.push_back(pair.second);
+  }
+  return res;
+}
+template<typename KeyType, typename ValueType>
+std::vector<KeyType> AsKeyVector(const std::unordered_map<KeyType, ValueType>& in) {
+  std::vector<KeyType> res;
+  for (auto& pair : in) {
+    res.push_back(pair.first);
+  }
+  return res;
+}
 
 // time
 using Time = std::chrono::high_resolution_clock::time_point;

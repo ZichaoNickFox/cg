@@ -385,6 +385,18 @@ shader_config {
   ];
 }
 
+shader_config {
+  name : "color_only";
+  cs_path : [
+    "engine/shader/version.glsl",
+    "engine/shader/convert.glsl",
+    "engine/shader/camera_geometry.glsl",
+    "engine/shader/geometry.glsl",
+    "engine/shader/hit.glsl",
+    "engine/shader/path_tracing/color_only.cs.glsl"
+  ]
+}
+
 texture_config {
   name : "opengl0";
   level_num : 1;

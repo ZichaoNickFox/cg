@@ -5,13 +5,9 @@
 #include <map>
 
 #include "engine/debug.h"
+#include "engine/util.h"
 
 namespace engine {
-Shader& Shader::operator=(const Shader& other) {
-  id_ = other.id_;
-  name_ = other.name_;
-  return *this;
-}
 
 Shader::Shader(const std::string& name, const std::vector<CodePart>& vs, const std::vector<CodePart>& fs,
                const std::vector<CodePart>& gs, const std::vector<CodePart>& ts) {
@@ -51,16 +47,22 @@ namespace {
 bool StartsWith(const std::string& str, const std::string& start_with) {
   return str.rfind(start_with, 0) == 0;
 }
-void CorrectCompileMessage(const std::vector<Shader::CodePart>& code_parts, std::string* gl_log) {
-  const std::string starting = "ERROR: 0:";
+} 
+
+std::string Shader::GetOneLineCompilerError430(const std::vector<Shader::CodePart>& code_parts,
+                                               const std::string& gl_log) {
+  std::string res = gl_log;
   int source_line_num = 0;
-  if (StartsWith(*gl_log, starting)) {
-    gl_log->erase(0, starting.size());
-    int line_end = gl_log->find_first_of(":");
-    std::string str_line_num = gl_log->substr(0, line_end);
-    source_line_num = std::atoi(str_line_num.c_str());
-    gl_log->erase(0, line_end);
-  }
+  const std::string starting = "0(";
+  res.erase(0, starting.size());
+
+  int line_num_end = res.find_first_of(")");
+  source_line_num = std::atoi(res.substr(0, line_num_end).c_str());
+  res.erase(0, line_num_end);
+
+  const std::string next = ") ";
+  res.erase(0, next.size());
+
   int line_sum = 1;
   for (const Shader::CodePart& code_part : code_parts) {
     int line_num_in_file = 1;
@@ -69,15 +71,35 @@ void CorrectCompileMessage(const std::vector<Shader::CodePart>& code_parts, std:
         line_sum++;
         line_num_in_file ++;
         if (line_sum == source_line_num) {
-          *gl_log = code_part.glsl_path + " " + std::to_string(line_num_in_file) + *gl_log;
-          LOG(ERROR) << *gl_log;
-          return;
+          return util::Format("\"{}\" {} {}", code_part.glsl_path, line_num_in_file, res);
         }
       }
     }
   }
-} 
+  CGKILL("Cannot find a file?");
+  return "";
 }
+
+std::string Shader::GetMultipleLineCompileError(const std::vector<Shader::CodePart>& code_parts,
+                                                const std::string& gl_log) {
+  std::vector<std::string> error_logs;
+  std::string one_error;
+  for (const char c : gl_log) {
+    if (c == '\n') {
+      error_logs.push_back(one_error);
+      one_error = "";
+    } else {
+      one_error += c;
+    }
+  }
+  std::string res = "\n";
+  for (const std::string& one_error : error_logs) {
+    res += GetOneLineCompilerError430(code_parts, one_error);
+    res += "\n";
+  }
+  return res;
+}
+
 GLuint Shader::CompileShader(const std::vector<CodePart>& code_parts, GLuint shader_type) {
   GLuint object = glCreateShader_(shader_type);
    
@@ -96,9 +118,8 @@ GLuint Shader::CompileShader(const std::vector<CodePart>& code_parts, GLuint sha
   if (!success)
   {
     glGetShaderInfoLog_(object, 1024, NULL, info_log);
-    std::string correct_compile_message(info_log);
-    CorrectCompileMessage(code_parts, &correct_compile_message);
-    CGCHECK(false) << name_ << " compile error : " << correct_compile_message;
+    std::string compile_error_info(info_log);
+    CGKILL("Shader Compile Error") << GetMultipleLineCompileError(code_parts, compile_error_info);
   }
   
   return object;

@@ -19,3 +19,12 @@ vec3 NormalWS2VS(mat4 view, vec3 normal_ws) {
 vec3 PositionWS2VS(mat4 view, vec3 position_ws) {
   return vec3(view * vec4(position_ws, 1.0));
 }
+
+// pos_ss must in [0, 1]
+vec3 PositionSS2WS(vec3 pos_ss, mat4 view, mat4 project) {
+  vec3 pos_ns = pos_ss * vec3(2.0) - vec3(1.0);
+  mat4 inverse_vp = inverse(project * view);
+  vec4 pos_ws = inverse_vp * vec4(pos_ns, 1.0);
+  pos_ws = pos_ws / pos_ws.w;
+  return pos_ws.xyz;
+}

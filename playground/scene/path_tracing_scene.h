@@ -3,7 +3,7 @@
 #include <unordered_map>
 
 #include "engine/camera.h"
-#include "engine/path_tracing/path_tracing.h"
+#include "engine/geometry.h"
 #include "playground/object/sphere.h"
 #include "playground/scene.h"
 
@@ -21,7 +21,7 @@ class PathTracingScene : public Scene {
 
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
 
-  std::unordered_map<std::string, engine::SphereData> sphere_data_map_ = {
+  std::unordered_map<std::string, engine::SphereGeometry> sphere_geometry_map_ = {
     {"light", {{0, 5.4, 1}, {10, 10, 10, 10}, 3}},
     {"ground", {{0, -100.5, 1}, {0.8, 0.8, 0.8, 1.0}, 100}},
     {"ceiling", {{0, 102.5, 1}, {0.8, 0.8, 0.8, 1.0}, 100}},
@@ -46,6 +46,5 @@ class PathTracingScene : public Scene {
     {"metal2_ball", Sphere()}
   };
 
-  std::vector<glm::vec3> canvas_;
-  engine::Texture texture_canvas_;
+  engine::Texture canvas_;
 };

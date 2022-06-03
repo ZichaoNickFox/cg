@@ -63,12 +63,12 @@ Texture LoadTexture2D(const std::unordered_map<std::string, std::string>& paths,
   glGenTextures_(1, &id);
   glBindTexture_(GL_TEXTURE_2D, id);
   if (equirectangular) {
-    int width, height, nr_components;
+    int width, height, nr_channels;
     // For width, height
-    CGCHECK(stbi_loadf(GetTexture2DPath(paths, 0).c_str(), &width, &height, &nr_components, 0));
+    CGCHECK(stbi_loadf(GetTexture2DPath(paths, 0).c_str(), &width, &height, &nr_channels, 0));
     glTexStorage2D_(GL_TEXTURE_2D, level_num, GL_RGBA16F, width, height);
     for (int level = 0; level < level_num; ++level) {
-      float* image = stbi_loadf(GetTexture2DPath(paths, level).c_str(), &width, &height, &nr_components, 0);
+      float* image = stbi_loadf(GetTexture2DPath(paths, level).c_str(), &width, &height, &nr_channels, 0);
       CGCHECK(image);
       glTexSubImage2D_(GL_TEXTURE_2D, level, 0, 0, width, height, GL_RGBA, GL_FLOAT, image);
       free(image);
@@ -210,29 +210,22 @@ void SaveTexture2DImpl(const std::unordered_map<std::string, std::string>& paths
                        const engine::Texture& texture, int level_num, bool multiple_sample = false) {
   GLuint target = multiple_sample ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
   glBindTexture_(target, texture.id());
-
+  int w = texture.width();
+  int h = texture.height();
+  int channel_num = texture.channel_num();
+  int channel_size_in_byte = texture.channel_size_in_byte();
+  int external_format = texture.external_format();
+  int external_type = texture.external_type();
   for (int level = 0; level < level_num; ++level) {
     std::string path = GetTexture2DPath(paths, level);
-    int width = -1, height = -1, internal_format = -1;
-    glGetTexLevelParameteriv_(target, level, GL_TEXTURE_WIDTH, &width);
-    glGetTexLevelParameteriv_(target, level, GL_TEXTURE_HEIGHT, &height);
-    glGetTexLevelParameteriv_(target, level, GL_TEXTURE_INTERNAL_FORMAT, &internal_format);
-    
-    int channel = -1, byte_per_channel = -1, format = -1, type = -1;
-    GetInternalFormatSize(internal_format, &channel, &byte_per_channel, &format, &type);
-
-    std::vector<GLubyte> pixels(width * height * channel * byte_per_channel);
-
-    glGetTexImage_(target, level, format, type, pixels.data());
-    FlipVertically(pixels.data(), width, height, channel, byte_per_channel);
-
-    CGCHECK(width > 0) << "Widget must > 0";
-    CGCHECK(height > 0) << "Height must > 0";
-
-    CGCHECK(VarifyChannel(path, channel)); 
-
+    std::vector<GLubyte> pixels(w * h * channel_num * channel_size_in_byte);
+    glGetTexImage_(target, level, external_format, external_type, pixels.data());
+    FlipVertically(pixels.data(), w, h, channel_num, channel_size_in_byte);
+    CGCHECK(w > 0) << "Widget must > 0";
+    CGCHECK(h > 0) << "Height must > 0";
+    CGCHECK(VarifyChannel(path, channel_num)); 
     TryMakeDir(path);
-    SaveImage(path, width, height, channel, pixels.data());
+    SaveImage(path, w, h, channel_num, pixels.data());
   }
 }
 
@@ -289,28 +282,23 @@ Texture LoadCubeMap(const std::unordered_map<std::string, std::string>& paths, i
   return ret;
 }
 
-int SaveCubemapImpl(const std::unordered_map<std::string, std::string>& paths, GLuint texture, int level_num) {
-  glBindTexture_(GL_TEXTURE_CUBE_MAP, texture);
-
+int SaveCubemapImpl(const std::unordered_map<std::string, std::string>& paths,
+                    const engine::Texture& texture, int level_num) {
+  glBindTexture_(GL_TEXTURE_CUBE_MAP, texture.id());
+  int w = texture.width();
+  int h = texture.height();
+  int channel_num = texture.channel_num();
+  int channel_size_in_byte = texture.channel_size_in_byte();
+  int external_format = texture.external_format();
+  int external_type = texture.external_type();
   for(int texture_unit_offset = 0; texture_unit_offset < 6; ++texture_unit_offset){
     for (int level = 0; level < level_num; ++level) {
-      int width = -1, height = -1, internal_format = -1;
-      int texture_unit = GL_TEXTURE_CUBE_MAP_POSITIVE_X + texture_unit_offset;
-      glGetTexLevelParameteriv_(texture_unit, level, GL_TEXTURE_WIDTH, &width);
-      glGetTexLevelParameteriv_(texture_unit, level, GL_TEXTURE_HEIGHT, &height);
-      glGetTexLevelParameteriv_(texture_unit, level, GL_TEXTURE_INTERNAL_FORMAT, &internal_format);
-
-      int channel = -1, byte_per_channel = -1, format = -1, type = -1;
-      GetInternalFormatSize(internal_format, &channel, &byte_per_channel, &format, &type);
-
-      std::vector<GLubyte> pixels(width * height * channel * byte_per_channel);
-
-      glGetTexImage_(texture_unit, level, format, type, pixels.data());
-      FlipVertically(pixels.data(), width, height, channel, byte_per_channel);
-
+      std::vector<GLubyte> pixels(w * h * channel_num * channel_size_in_byte);
+      glGetTexImage_(GL_TEXTURE_CUBE_MAP + texture_unit_offset, level, external_format, external_type, pixels.data());
+      FlipVertically(pixels.data(), w, h, channel_num, channel_size_in_byte);
       std::string file_path = GetCubemapPath(paths, level, texture_unit_offset);
       TryMakeDir(file_path);
-      SaveImage(file_path, width, height, channel, pixels.data());
+      SaveImage(file_path, w, h, channel_num, pixels.data());
     }
   }
   glBindTexture_(GL_TEXTURE_CUBE_MAP, 0);
@@ -362,7 +350,7 @@ void TextureRepo::SaveCubemap(const std::string& name) {
   State* state = &textures_[name];
   CGCHECK(state->texture.type() == engine::Texture::Type::Cubemap);
   const std::unordered_map<std::string, std::string>& path = state->paths;
-  SaveCubemapImpl(path, state->texture.id(), state->level_num);
+  SaveCubemapImpl(path, state->texture, state->level_num);
 }
 
 void TextureRepo::ResetTexture2D(const std::string& name, const TextureParam& param) {

@@ -23,7 +23,6 @@ public:
          const std::vector<CodePart>& gs, const std::vector<CodePart>& ts);
   // Compute Shader
   Shader(const std::string& name, const std::vector<CodePart>& cs);
-  Shader& operator=(const Shader& other);
 
   void Use() const;
   void SetBool(const std::string &location_name, bool value) const;
@@ -40,6 +39,8 @@ public:
   void Clear();
 
 private:
+  std::string GetOneLineCompilerError430(const std::vector<Shader::CodePart>& code_parts, const std::string& gl_log);
+  std::string GetMultipleLineCompileError(const std::vector<Shader::CodePart>& code_parts, const std::string& gl_log);
   GLuint CompileShader(const std::vector<CodePart>& code, GLuint shader_type);
   void LinkShader(GLuint program, const std::vector<GLuint>& objects);
 

@@ -63,6 +63,8 @@ cc_library(
     "framebuffer.cc",
     "framebuffer_attachment.h",
     "framebuffer_attachment.cc",
+    "geometry.h",
+    "geometry.cc",
     "io.h",
     "io.cc",
     "material.h",

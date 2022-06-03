@@ -41,7 +41,7 @@ void FillIoInput(GLFWwindow* window, ImGuiIO* imgui_io, Io* io) {
   
   double xpos, ypos; 
   glfwGetCursorPos(window, &xpos, &ypos);
-  io->FeedCursorPos(xpos, ypos);
+  io->FeedCursorPos({xpos, ypos});
 
   int left_button_state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1);
   int right_button_state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2);

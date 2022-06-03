@@ -1,6 +1,6 @@
 #version 430 core
 
-layout (local_size_x = 16, local_size_y = 16) in;
+layout (local_size_x = 32, local_size_y = 32) in;
 // https://www.khronos.org/opengl/wiki/Layout_Qualifier_(GLSL)
 // Only suport Not support rgb32f, 
 layout (rgba32f, binding = 0) uniform image2D input_texture;

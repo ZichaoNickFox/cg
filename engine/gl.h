@@ -4,7 +4,7 @@
 
 #include "engine/debug.h"
 
-#define CGCHECKGL() int error = glGetError(); CGCHECK(error == 0) << std::hex << error << std::dec << " "
+#define CGCHECKGL() int error = glGetError(); CGCHECK(error == 0) << std::hex << error << std::dec << " | "
 
 // glew
 GLenum glewInit_();

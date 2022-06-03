@@ -7,7 +7,6 @@
 #include "engine/compute_shader.h"
 #include "engine/material.h"
 #include "engine/pass.h"
-#include "engine/path_tracing/path_tracing.h"
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
@@ -267,12 +266,13 @@ class InstanceSceneShader {
   InstanceSceneShader(Context* context, Model* model);
 };
 
-class ColorOnlyShader {
+class ColorOnlyShader : public engine::ComputeShader {
  public:
   struct Param {
+    glm::ivec2 screen_size;
     engine::Camera* camera = nullptr;
-    std::vector<engine::SphereData> sphere_data;
-    engine::Texture texture_output;
+    std::vector<engine::SphereGeometry> sphere_geometries;
+    engine::Texture output;
   };
-  ColorOnlyShader();
+  ColorOnlyShader(const Param& param, Context* context);
 };

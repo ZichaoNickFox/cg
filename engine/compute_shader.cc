@@ -1,8 +1,17 @@
 #include "engine/compute_shader.h"
 
+#include <glm/gtx/string_cast.hpp>
 #include <set>
 
+#include "engine/geometry.h"
+#include "engine/util.h"
+
 namespace engine {
+
+ComputeShader::ComputeShader(const Shader& shader) {
+  shader_ = shader;
+  shader_.Use();
+}
 
 void ComputeShader::Run() {
   CGCHECK(textures_.size() == texture_metas_.size());
@@ -40,6 +49,31 @@ void ComputeShader::CheckInternalFormat(const engine::Texture& texture) {
   if (supported_format.count(internal_format) <= 0) {
     CGCHECK(false) << "Unsupported Internal Format : " << std::hex << internal_format << std::dec;
   }
+}
+
+void ComputeShader::SetCameraGeometry(Camera* camera, bool with_view, bool with_project) {
+  shader_.SetVec3("camera_geometry.pos_ws", camera->transform().translation());
+  shader_.SetFloat("camera_geometry.near", camera->near_clip());
+  shader_.SetFloat("camera_geometry.far", camera->far_clip());
+  if (with_view) {
+    shader_.SetMat4("view", camera->GetViewMatrix());
+  }
+  if (with_project) {
+    shader_.SetMat4("project", camera->GetProjectMatrix());
+  }
+}
+
+void ComputeShader::SetSphereGeometries(const std::vector<SphereGeometry>& sphere_geometries) {
+  for (int i = 0; i < sphere_geometries.size(); ++i) {
+    const SphereGeometry& sphere_geometry  = sphere_geometries[i];
+    shader_.SetVec3(util::Format("sphere_geometries[{}].center_pos_ws", i), sphere_geometry.translation);
+    shader_.SetVec4(util::Format("sphere_geometries[{}].color", i), sphere_geometry.color);
+    shader_.SetFloat(util::Format("sphere_geometries[{}].radius", i), sphere_geometry.radius);
+  }
+}
+
+void ComputeShader::SetScreenSize(const glm::vec2& screen_size) {
+  shader_.SetVec2("screen_size", screen_size);
 }
 
 };

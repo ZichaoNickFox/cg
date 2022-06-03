@@ -158,7 +158,7 @@ void glGenTextures_(GLsizei n, GLuint *textures) {
 
 void glGetTexImage_(GLenum target, GLint level, GLenum format, GLenum type, void * pixels) {
   glGetTexImage(target, level, format, type, pixels);
-  CGCHECKGL();
+  CGCHECKGL() << "glGetTextureImage";
 }
 
 void glTexImage2D_(GLenum target, GLint level, GLint internalformat, GLsizei width,
@@ -456,7 +456,9 @@ void glUniform2fv_(GLint location, GLsizei count, const GLfloat *value) {
 
 void glUniform3fv_(GLint location, GLsizei count, const GLfloat *value) {
   glUniform3fv(location, count, value);
-  CGCHECKGL();
+  CGCHECKGL() << "glUniform3fv_ :"
+              << " location ~ " << location
+              << " count ~ " << count;
 }
 
 void glUniform4fv_(GLint location, GLsizei count, const GLfloat *value) {

@@ -39,8 +39,34 @@
   LOG_IF(FATAL, GOOGLE_PREDICT_BRANCH_NOT_TAKEN(!(condition))) \
     << "Check failed: " #condition " "
 
+#define CGKILL(info) \
+  BT(); \
+  LOG(FATAL) << "KILL : " #info " "
+  
+
 #define CGLOG(...) LOG(ERROR)
 
 #define CGLOG_IF(verbose, condition) LOG_IF(verbose, condition)
 
 #define CGCHECK_NOTNULL(p) CHECK_NOTNULL(p)
+
+#define CG1 CGLOG(ERROR) << "1111111111";
+#define CG2 CGLOG(ERROR) << "2222222222";
+#define CG3 CGLOG(ERROR) << "3333333333";
+#define CG4 CGLOG(ERROR) << "4444444444";
+#define CG5 CGLOG(ERROR) << "5555555555";
+#define CG6 CGLOG(ERROR) << "6666666666";
+#define CG7 CGLOG(ERROR) << "7777777777";
+#define CG8 CGLOG(ERROR) << "8888888888";
+#define CG9 CGLOG(ERROR) << "9999999999";
+
+#define CGA CGLOG(ERROR) << "aaaaaaaaaa";
+#define CGB CGLOG(ERROR) << "bbbbbbbbbb";
+#define CGC CGLOG(ERROR) << "cccccccccc";
+#define CGD CGLOG(ERROR) << "dddddddddd";
+#define CGE CGLOG(ERROR) << "eeeeeeeeee";
+#define CGF CGLOG(ERROR) << "ffffffffff";
+#define CGG CGLOG(ERROR) << "gggggggggg";
+#define CGH CGLOG(ERROR) << "hhhhhhhhhh";
+#define CGI CGLOG(ERROR) << "iiiiiiiiii";
+

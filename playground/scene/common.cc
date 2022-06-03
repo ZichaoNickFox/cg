@@ -1,9 +1,11 @@
 #include "playground/scene/common.h"
 
 #include "imgui.h"
+#include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
 
 #include "engine/debug.h"
+#include "engine/io.h"
 #include "playground/object/lines.h"
 #include "playground/shaders.h"
 
@@ -34,13 +36,18 @@ void OnUpdateCommon::InspectCamera(Context* context) {
   ImGui::Text("camera_location %s", glm::to_string(context->camera().transform().translation()).c_str());
   ImGui::Text("camera_rotation %s", glm::to_string(context->camera().transform().rotation()).c_str());
   ImGui::Text("camera_front %s", glm::to_string(context->camera().front()).c_str());
+  glm::vec3 near_pos_ws, far_pos_ws;
+  context->camera().GetPickRay(context->io().normalized_cursor_screen_pos(), &near_pos_ws, &far_pos_ws);
+  ImGui::Text("camera_near_pos_ws %s", glm::to_string(near_pos_ws).c_str());
+  ImGui::Text("camera_far_pos_ws %s", glm::to_string(far_pos_ws).c_str());
+  ImGui::Text("pick dir %s", glm::to_string(glm::normalize(far_pos_ws - near_pos_ws)).c_str());
 }
 
 void OnUpdateCommon::InSpectCursor(Context* context) {
-  ImGui::Text("cursor pos x %lf", context->io().cursor_screen_pos_x());
-  ImGui::Text("cursor pos y %lf", context->io().cursor_screen_pos_y());
-  ImGui::Text("cursor screen space x %lf", context->io().cursor_screen_pos_x() / context->io().screen_size().x);
-  ImGui::Text("cursor screen space y %lf", context->io().cursor_screen_pos_y() / context->io().screen_size().y);
+  ImGui::Text("cursor pos x %lf", context->io().cursor_screen_pos().x);
+  ImGui::Text("cursor pos y %lf", context->io().cursor_screen_pos().y);
+  ImGui::Text("cursor screen space x %lf", context->io().normalized_cursor_screen_pos().x);
+  ImGui::Text("cursor screen space y %lf", context->io().normalized_cursor_screen_pos().y);
 }
 
 void OnUpdateCommon::ReloadShaders(Context* context) {
@@ -76,8 +83,8 @@ void OnUpdateCommon::MoveCamera(Context* context) {
   }
   
   if (context->io().left_button_pressed()) {
-    double cursor_delta_x = context->io().GetCursorDeltaX() * camera_rotate_speed;
-    double cursor_delta_y = context->io().GetCursorDeltaY() * camera_rotate_speed;
+    double cursor_delta_x = context->io().GetCursorDelta().x * camera_rotate_speed;
+    double cursor_delta_y = context->io().GetCursorDelta().y * camera_rotate_speed;
     camera->RotateHorizontal(cursor_delta_x);
     camera->RotateVerticle(cursor_delta_y);
   }
@@ -104,4 +111,10 @@ void OnRenderCommon::DrawWorldCoordAndViewCoord(Context* context) {
     coord.OnRender(context);
   }
   glEnable_(GL_DEPTH_TEST);
+}
+
+TextureDebugFullScreen::TextureDebugFullScreen(const engine::Texture& in, Context* context) {
+  EmptyObject object;
+  FullscreenQuadShader({in}, context, &object);
+  object.OnRender(context);
 }

@@ -1,7 +1,8 @@
 #include "playground/scene/random_scene.h"
 
-#include "engine/transform.h"
+#include "engine/geometry.h"
 #include "engine/math.h"
+#include "engine/transform.h"
 #include "playground/object/empty_object.h"
 #include "playground/scene/common.h"
 #include "playground/shaders.h"
@@ -24,7 +25,7 @@ void RandomScene::OnUpdate(Context* context) {
 
 void RandomScene::OnRender(Context* context) {
   glm::ivec2 screen_size = context->io().screen_size();
-  RandomShader({screen_size, input_, output_}, context).Run();
+  RandomShader({screen_size, input_, output_}, context);
 
   EmptyObject e;
   FullscreenQuadShader({output_}, context, &e);

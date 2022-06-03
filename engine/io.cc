@@ -1,10 +1,8 @@
 #include "engine/io.h"
 
-void Io::FeedCursorPos(double x, double y) {
-  last_cursor_pos_x_ = cursor_pos_x_;
-  last_cursor_pos_y_ = cursor_pos_y_;
-  cursor_pos_x_ = x;
-  cursor_pos_y_ = y;
+void Io::FeedCursorPos(const glm::vec2& cursor_pos) {
+  last_cursor_pos_ = cursor_pos_;
+  cursor_pos_ = cursor_pos;
 }
 
 void Io::FeedKeyInput(const std::string& key) {
