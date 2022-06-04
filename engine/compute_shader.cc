@@ -53,7 +53,6 @@ void ComputeShader::CheckInternalFormat(const engine::Texture& texture) {
 
 void ComputeShader::SetCameraGeometry(Camera* camera, bool with_view, bool with_project) {
   shader_.SetVec3("camera_geometry.pos_ws", camera->transform().translation());
-  shader_.SetFloat("camera_geometry.near", camera->near_clip());
   shader_.SetFloat("camera_geometry.far", camera->far_clip());
   if (with_view) {
     shader_.SetMat4("view", camera->GetViewMatrix());

@@ -1,6 +1,6 @@
 struct HitSphereResult {
   bool hitted;
-  vec3 hit_pos_ws;
+  vec3 pos_ws;
   float dist;
   vec3 normal_ws;
 };
@@ -20,14 +20,14 @@ HitSphereResult hit_sphere(SphereGeometry sphere_geometry, vec3 origin_ws, vec3 
     float root2 = (-b + sqrtd) / (2 * a);
     if (root1 > 0) {
       res.dist = root1;
-      res.hit_pos_ws = origin_ws + res.dist * normalized_dir_ws;
+      res.pos_ws = origin_ws + res.dist * normalized_dir_ws;
       res.hitted = true;
-      res.normal_ws = normalize(res.hit_pos_ws - sphere_geometry.center_pos_ws);
+      res.normal_ws = normalize(res.pos_ws - sphere_geometry.center_pos_ws);
     } else if (root2 > 0) {
       res.dist = root2;
-      res.hit_pos_ws = origin_ws + res.dist * normalized_dir_ws;
+      res.pos_ws = origin_ws + res.dist * normalized_dir_ws;
       res.hitted = true;
-      res.normal_ws = normalize(res.hit_pos_ws - sphere_geometry.center_pos_ws);
+      res.normal_ws = normalize(res.pos_ws - sphere_geometry.center_pos_ws);
     }
   }
   return res;
