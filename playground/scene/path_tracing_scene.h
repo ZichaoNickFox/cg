@@ -16,8 +16,8 @@ class PathTracingScene : public Scene {
 
  private:
   void Resterization(Context* context);
-  void ColorOnly(Context* context);
   void RayTracing(Context* context);
+  void PathTracing(Context* context);
 
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
 

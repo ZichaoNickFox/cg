@@ -266,7 +266,7 @@ class InstanceSceneShader {
   InstanceSceneShader(Context* context, Model* model);
 };
 
-class ColorOnlyShader : public engine::ComputeShader {
+class RayTracingShader : public engine::ComputeShader {
  public:
   struct Param {
     glm::ivec2 screen_size;
@@ -274,5 +274,5 @@ class ColorOnlyShader : public engine::ComputeShader {
     std::vector<engine::SphereGeometry> sphere_geometries;
     engine::Texture output;
   };
-  ColorOnlyShader(const Param& param, Context* context);
+  RayTracingShader(const Param& param, Context* context);
 };
