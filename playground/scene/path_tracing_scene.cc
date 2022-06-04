@@ -36,8 +36,8 @@ void PathTracingScene::OnUpdate(Context* context) {
 
 void PathTracingScene::OnRender(Context* context) {
   //Resterization(context);
-  RayTracing(context);
   //RayTracing(context);
+  PathTracing(context);
 }
 
 void PathTracingScene::OnExit(Context* context) {
@@ -59,8 +59,10 @@ void PathTracingScene::RayTracing(Context* context) {
   RayTracingShader({context->io().screen_size(), camera_.get(),
                    util::AsValueVector(sphere_geometry_map_), canvas_}, context);
   TextureDebugFullScreen(canvas_, context);
-  //TextureDebugValue<float> _(canvas_);
 }
 
 void PathTracingScene::PathTracing(Context* context) {
+  PathTracingShader({context->io().screen_size(), camera_.get(),
+                   util::AsValueVector(sphere_geometry_map_), canvas_}, context);
+  TextureDebugFullScreen(canvas_, context);
 }

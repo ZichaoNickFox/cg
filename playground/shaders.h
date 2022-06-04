@@ -276,3 +276,14 @@ class RayTracingShader : public engine::ComputeShader {
   };
   RayTracingShader(const Param& param, Context* context);
 };
+
+class PathTracingShader : public engine::ComputeShader {
+ public:
+  struct Param {
+    glm::ivec2 screen_size;
+    engine::Camera* camera = nullptr;
+    std::vector<engine::SphereGeometry> sphere_geometries;
+    engine::Texture output;
+  };
+  PathTracingShader(const Param& param, Context* context);
+};
