@@ -12,12 +12,12 @@ struct RayTracingResult {
   struct HitSphereResult hit_info;
 };
 
-RayTracingResult RayTracing(SphereGeometry spheres[10], vec3 from_ws, vec3 dir_ws) {
+RayTracingResult RayTracing(SphereGeometry spheres[10], vec3 from_ws, vec3 dir_ws, float limit) {
   RayTracingResult res;
   float t_min = 99999;
   for (int i = 0; i < 10; ++i) {
     SphereGeometry sphere = spheres[i];
-    HitSphereResult hit_result = hit_sphere(sphere, from_ws, dir_ws);
+    HitSphereResult hit_result = hit_sphere(sphere, from_ws, dir_ws, limit);
     if (hit_result.hitted && hit_result.dist <= camera_geometry.far && t_min >= hit_result.dist) {
       t_min = hit_result.dist;
       res = RayTracingResult(sphere, hit_result);
@@ -30,24 +30,51 @@ void main() {
   vec3 near_pos_ss = vec3(gl_GlobalInvocationID.xy / screen_size, 0.0);
   vec3 near_pos_ws = PositionSS2WS(near_pos_ss, view, project);
   vec3 dir = normalize(near_pos_ws - camera_geometry.pos_ws);
+  const vec4 clear_color = vec4(0, 0, 1, 1);
 
-  SphereGeometry light = SphereGeometry(vec3(0, 2.0, 1), vec4(10, 10, 10, 10), 1);
+  const int depth_num = 4;
+  vec4 weights[depth_num] = vec4[depth_num](vec4(0.6, 0.6, 0.6, 1.0),
+                                            vec4(0.3, 0.3, 0.3, 1.0),
+                                            vec4(0.1, 0.1, 0.1, 1.0),
+                                            vec4(0, 0, 0, 1.0));
+  vec4 colors[depth_num] = vec4[depth_num](vec4(0, 0, 0, 1),
+                                           vec4(0, 0, 0, 1),
+                                           vec4(0, 0, 0, 1),
+                                           vec4(0, 0, 0, 1));
+  int depth_iter = 0;
 
-  vec4 color = vec4(0, 0, 1, 1);
-  RayTracingResult color_result = RayTracing(sphere_geometries, camera_geometry.pos_ws, dir);
-  if (color_result.hit_info.hitted) {
-    vec3 L = normalize(light.center_pos_ws - color_result.hit_info.pos_ws);
-    vec3 N = normalize(color_result.hit_info.pos_ws - color_result.sphere.center_pos_ws);
-    color = max(dot(L, N), 0) * color_result.sphere.color;
+  SphereGeometry light = SphereGeometry(vec3(0, 2.0, 1.1), vec4(10, 10, 10, 10), 0);
+  const float bias = 0.0001;
+  vec3 ray_dir = dir;
+  vec3 ray_from = camera_geometry.pos_ws + bias * ray_dir;
+  while (depth_iter < depth_num) {
+    RayTracingResult color_result = RayTracing(sphere_geometries, ray_from, ray_dir, 50);
+    if (!color_result.hit_info.hitted) {
+      break;
+    }
+    vec3 L = vec3(0, 0, 0);
+    vec3 N = vec3(0, 0, 0);
+    L = normalize(light.center_pos_ws - color_result.hit_info.pos_ws);
+    N = normalize(color_result.hit_info.pos_ws - color_result.sphere.center_pos_ws);
+    colors[depth_iter] = max(dot(L, N), 0) * color_result.sphere.color;
+
+    // shadow
+    vec3 origin = color_result.hit_info.pos_ws + color_result.hit_info.normal_ws * bias;
+    vec3 light_dir = normalize(light.center_pos_ws - color_result.hit_info.pos_ws);
+    float light_dist = length(light.center_pos_ws - color_result.hit_info.pos_ws);
+    RayTracingResult shadow_result = RayTracing(sphere_geometries, origin, light_dir, 50);
+    if (shadow_result.hit_info.hitted && light_dist >= shadow_result.hit_info.dist) {
+      colors[depth_iter] = colors[depth_iter] / 2;
+    }
+
+    ray_dir = reflect(ray_dir, N);
+    ray_from = color_result.hit_info.pos_ws + bias * ray_dir;
+    depth_iter = depth_iter + 1;
   }
 
-  const float bias = 0.00001;
-  vec3 origin = color_result.hit_info.pos_ws + color_result.hit_info.normal_ws * bias;
-  vec3 light_dir = normalize(light.center_pos_ws - color_result.hit_info.pos_ws);
-  float light_dist = length(light.center_pos_ws - color_result.hit_info.pos_ws);
-  RayTracingResult shadow_result = RayTracing(sphere_geometries, origin, light_dir);
-  if (shadow_result.hit_info.hitted && light_dist >= shadow_result.hit_info.dist) {
-    color = color / 2;
+  vec4 color = vec4(0, 0, 0, 1);
+  for (int i = 0; i < depth_num; ++i) {
+    color = color + colors[i] * weights[i];
   }
 
   // Lambert model
