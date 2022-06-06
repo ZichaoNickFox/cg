@@ -8,7 +8,7 @@
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
-#include "playground/object/cube.h"
+#include "playground/object/cube_object.h"
 #include "playground/object/empty_object.h"
 #include "playground/scene.h"
 #include "playground/shaders.h"

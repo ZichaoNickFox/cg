@@ -1,37 +1,37 @@
-#include "playground/object/model.h"
+#include "playground/object/model_object.h"
 
 #include "imgui.h"
 
 #include "engine/repo/model_repo.h"
 #include "engine/util.h"
 
-void ModelPart::OnUpdate(Context *context) {
+void ModelPartObject::OnUpdate(Context *context) {
 
 }
 
-void ModelPart::OnRender(Context *context, int instance_num) {
+void ModelPartObject::OnRender(Context *context, int instance_num) {
   if (!hidden_) {
     material_.PrepareShader();
     model_part_data_.mesh->Submit(instance_num);
   }
 }
 
-void ModelPart::OnDestory(Context *context) {
+void ModelPartObject::OnDestory(Context *context) {
 
 }
 
-void Model::Init(Context* context, const std::string& object_name, const std::string& model_name) {
+void ModelObject::Init(Context* context, const std::string& object_name, const std::string& model_name) {
   std::vector<engine::ModelRepo::ModelPartData> model_parts_data = context->GetModel(model_name);
   for (const engine::ModelRepo::ModelPartData& model_part_data : model_parts_data) {
-    model_parts_.push_back(ModelPart(model_part_data));
+    model_parts_.push_back(ModelPartObject(model_part_data));
   }
 }
 
-void Model::ModelInspector() {
+void ModelObject::ModelInspector() {
   if (ImGui::TreeNode("Mesh Parts")) {
     ImGui::PushID("Mesh Parts");
     for (int i = 0; i < model_part_num(); ++i) {
-      ModelPart* model_part = &model_parts_[i];
+      ModelPartObject* model_part = &model_parts_[i];
       const engine::ModelRepo::ModelPartData& model_part_data = model_part->model_part_data();
       if (ImGui::TreeNode(util::Format("{}", model_part_data.mesh->name()).c_str())) {
         ImGui::PushID(model_part_data.mesh->name().c_str());
@@ -60,13 +60,13 @@ void Model::ModelInspector() {
   }
 }
 
-void Model::OnRender(Context* context, int instance_num) {
+void ModelObject::OnRender(Context* context, int instance_num) {
   for (int i = 0; i < model_part_num(); ++i) {
     mutable_model_part(i)->OnRender(context, instance_num);
   }
 }
 
-void Model::SetTransform(const engine::Transform& transform) {
+void ModelObject::SetTransform(const engine::Transform& transform) {
   for (int i = 0; i < model_part_num(); ++i) {
     mutable_model_part(i)->SetTransform(transform);
   }

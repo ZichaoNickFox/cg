@@ -11,14 +11,14 @@
 #include "engine/texture.h"
 #include "playground/context.h"
 #include "playground/object/empty_object.h"
-#include "playground/object/model.h"
+#include "playground/object/model_object.h"
 #include "playground/object/object.h"
-#include "playground/object/point_light.h"
+#include "playground/object/point_light_object.h"
 
 void UpdateMaterial(const engine::SceneLightInfo& scene_light_info, engine::Material* material);
 void UpdateMaterial(const engine::SceneShadowInfo& scene_shadow_info, engine::Material* material);
-engine::SceneLightInfo::LightInfo AsLightInfo(const PointLight& point_light);
-engine::SceneLightInfo AsSceneLightInfo(const std::vector<PointLight>& point_lights);
+engine::SceneLightInfo::LightInfo AsLightInfo(const PointLightObject& point_light);
+engine::SceneLightInfo AsSceneLightInfo(const std::vector<PointLightObject>& point_lights);
 
 class PhongShader {
  public:
@@ -258,12 +258,12 @@ class RandomShader : public engine::ComputeShader {
 
 class SimpleModelShader {
  public:
-  SimpleModelShader(Context* context, Model* model);
+  SimpleModelShader(Context* context, ModelObject* model);
 };
 
 class InstanceSceneShader {
  public:
-  InstanceSceneShader(Context* context, Model* model);
+  InstanceSceneShader(Context* context, ModelObject* model);
 };
 
 class RayTracingShader : public engine::ComputeShader {
@@ -271,7 +271,7 @@ class RayTracingShader : public engine::ComputeShader {
   struct Param {
     glm::ivec2 screen_size;
     engine::Camera* camera = nullptr;
-    std::vector<engine::SphereGeometry> sphere_geometries;
+    std::vector<engine::Sphere> spheres;
     engine::Texture output;
   };
   RayTracingShader(const Param& param, Context* context);
@@ -282,7 +282,7 @@ class PathTracingShader : public engine::ComputeShader {
   struct Param {
     glm::ivec2 screen_size;
     engine::Camera* camera = nullptr;
-    std::vector<engine::SphereGeometry> sphere_geometries;
+    std::vector<engine::Sphere> spheres;
     engine::Texture output;
   };
   PathTracingShader(const Param& param, Context* context);

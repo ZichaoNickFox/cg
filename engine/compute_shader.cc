@@ -51,9 +51,9 @@ void ComputeShader::CheckInternalFormat(const engine::Texture& texture) {
   }
 }
 
-void ComputeShader::SetCameraGeometry(Camera* camera, bool with_view, bool with_project) {
-  shader_.SetVec3("camera_geometry.pos_ws", camera->transform().translation());
-  shader_.SetFloat("camera_geometry.far", camera->far_clip());
+void ComputeShader::SetCamera(Camera* camera, bool with_view, bool with_project) {
+  shader_.SetVec3("camera.pos_ws", camera->transform().translation());
+  shader_.SetFloat("camera.far", camera->far_clip());
   if (with_view) {
     shader_.SetMat4("view", camera->GetViewMatrix());
   }
@@ -62,12 +62,12 @@ void ComputeShader::SetCameraGeometry(Camera* camera, bool with_view, bool with_
   }
 }
 
-void ComputeShader::SetSphereGeometries(const std::vector<SphereGeometry>& sphere_geometries) {
-  for (int i = 0; i < sphere_geometries.size(); ++i) {
-    const SphereGeometry& sphere_geometry  = sphere_geometries[i];
-    shader_.SetVec3(util::Format("sphere_geometries[{}].center_pos_ws", i), sphere_geometry.translation);
-    shader_.SetVec4(util::Format("sphere_geometries[{}].color", i), sphere_geometry.color);
-    shader_.SetFloat(util::Format("sphere_geometries[{}].radius", i), sphere_geometry.radius);
+void ComputeShader::SetSpheres(const std::vector<Sphere>& spheres) {
+  for (int i = 0; i < spheres.size(); ++i) {
+    const Sphere& sphere  = spheres[i];
+    shader_.SetVec3(util::Format("spheres[{}].center_pos", i), sphere.translation);
+    shader_.SetVec4(util::Format("spheres[{}].color", i), sphere.color);
+    shader_.SetFloat(util::Format("spheres[{}].radius", i), sphere.radius);
   }
 }
 

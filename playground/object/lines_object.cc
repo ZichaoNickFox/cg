@@ -1,4 +1,4 @@
-#include "playground/object/lines.h"
+#include "playground/object/lines_object.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -6,12 +6,12 @@
 
 #include "engine/util.h"
 
-void Lines::SetMesh(const Mesh& data) {
+void LinesObject::SetMesh(const Mesh& data) {
   Clear();
   OnInit(data);
 }
 
-void Lines::OnInit(const Mesh& data) {
+void LinesObject::OnInit(const Mesh& data) {
   primitive_mode_ = data.primitive_mode;
   vertex_size_ = data.points.size();
 
@@ -40,21 +40,21 @@ void Lines::OnInit(const Mesh& data) {
   glBindVertexArray_(0);
 }
 
-void Lines::OnUpdate(Context *context) {
+void LinesObject::OnUpdate(Context *context) {
 
 }
 
-void Lines::OnRender(Context *context, int instance_num) {
+void LinesObject::OnRender(Context *context, int instance_num) {
   material_.PrepareShader();
   glBindVertexArray_(vao_);
   glDrawArrays_(primitive_mode_, 0, vertex_size_);
 }
 
-void Lines::OnDestory(Context *context) {
+void LinesObject::OnDestory(Context *context) {
   Clear();
 }
 
-void Lines::Clear() {
+void LinesObject::Clear() {
   glDeleteVertexArrays_(1, &vao_);
   glDeleteBuffers_(1, &vbo_);
 }

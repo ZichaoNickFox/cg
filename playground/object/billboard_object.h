@@ -1,9 +1,9 @@
 #pragma once
 
-#include "playground/object/plane.h"
+#include "playground/object/plane_object.h"
 #include "playground/object/object.h"
 
-class Billboard : public Plane {
+class BillboardObject : public PlaneObject {
  public:
   struct Data {
     std::string texture;

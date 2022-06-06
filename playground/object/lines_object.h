@@ -8,7 +8,7 @@
 #include "playground/context.h"
 #include "playground/object/object.h"
 
-class Lines : public Object {
+class LinesObject : public Object {
  public:
   struct Mesh {
     std::vector<glm::vec3> points;
@@ -38,7 +38,7 @@ class Lines : public Object {
   GLuint vbo_;
 };
 
-class Coord : public Lines {
+class Coord : public LinesObject {
  public:
   Coord();
 };

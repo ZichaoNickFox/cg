@@ -7,12 +7,12 @@
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
-#include "playground/object/cube.h"
-#include "playground/object/directional_light.h"
-#include "playground/object/lines.h"
-#include "playground/object/plane.h"
-#include "playground/object/point_light.h"
-#include "playground/object/sphere.h"
+#include "playground/object/cube_object.h"
+#include "playground/object/directional_light_object.h"
+#include "playground/object/lines_object.h"
+#include "playground/object/plane_object.h"
+#include "playground/object/point_light_object.h"
+#include "playground/object/sphere_object.h"
 #include "playground/scene.h"
 #include "playground/shaders.h"
 
@@ -44,11 +44,11 @@ class ShareScene : public Scene {
   bool show_triangle_ = false;
   float shininess_ = 0.0;
 
-  PointLight point_light_;
-  Plane plane_;
-  Sphere sphere_;
+  PointLightObject point_light_;
+  PlaneObject plane_;
+  SphereObject sphere_;
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
-  DirectionalLight directional_light_;
+  DirectionalLightObject directional_light_;
 
   DepthBufferPass depth_buffer_pass_;
   ForwardPass forward_pass_;
@@ -60,8 +60,8 @@ class ShareScene : public Scene {
 
   glm::vec3 kLineFrom = glm::vec3(0.8, 1, 0.8);
   glm::vec3 kLineTo = glm::vec3(0.1, -1, 0.1);
-  Lines line_;
-  std::unique_ptr<Lines> intersect_line_;
+  LinesObject line_;
+  std::unique_ptr<LinesObject> intersect_line_;
 
   const glm::vec4 kLightColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
 

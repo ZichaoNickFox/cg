@@ -20,7 +20,7 @@
 void ShadowScene::OnEnter(Context *context)
 {
   for (int i = 0; i < point_lights_num_; ++i) {
-    point_lights_.push_back(PointLight());
+    point_lights_.push_back(PointLightObject());
     glm::vec3 point_light_pos(engine::RandFromTo(-5, 5), engine::RandFromTo(0, 5), engine::RandFromTo(-5, 5));
     point_lights_[i].mutable_transform()->SetTranslation(point_light_pos);
     point_lights_[i].mutable_transform()->SetScale(glm::vec3(0.2, 0.2, 0.2));
@@ -94,7 +94,7 @@ void ShadowScene::RunDepthBufferPass(Context* context, engine::DepthBufferPass* 
   plane_.OnRender(context);
 
   for (int i = 0; i < nanosuit_.model_part_num(); ++i) {
-    ModelPart* model_part = nanosuit_.mutable_model_part(i);
+    ModelPartObject* model_part = nanosuit_.mutable_model_part(i);
     DepthBufferShader{param, model_part};
     model_part->OnRender(context);
   }
@@ -126,7 +126,7 @@ void ShadowScene::RunForwardPass_Deprecated(Context* context, engine::ForwardPas
   directional_light_.OnRender(context);
 
   for (int i = 0; i < nanosuit_.model_part_num(); ++i) {
-    ModelPart* model_part = nanosuit_.mutable_model_part(i);
+    ModelPartObject* model_part = nanosuit_.mutable_model_part(i);
     PhongShader(&phong, context, model_part);
     model_part->OnRender(context);
   }

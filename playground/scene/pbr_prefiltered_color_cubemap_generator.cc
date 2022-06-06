@@ -9,7 +9,7 @@
 #include "engine/repo/texture_repo.h"
 #include "engine/transform.h"
 #include "engine/util.h"
-#include "playground/object/sphere.h"
+#include "playground/object/sphere_object.h"
 #include "playground/scene/common.h"
 
 std::string input = "pbr_environment_tropical";

@@ -5,10 +5,10 @@
 #include "engine/texture.h"
 #include "engine/transform.h"
 #include "playground/context.h"
-#include "playground/object/cube.h"
-#include "playground/object/lines.h"
-#include "playground/object/model.h"
-#include "playground/object/point_light.h"
+#include "playground/object/cube_object.h"
+#include "playground/object/lines_object.h"
+#include "playground/object/model_object.h"
+#include "playground/object/point_light_object.h"
 #include "playground/scene.h"
 
 class ModelScene : public Scene {
@@ -34,8 +34,8 @@ class ModelScene : public Scene {
   float rotate_speed_ = 0.01;
 
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
-  Model nanosuit_;
-  std::vector<PointLight> point_lights_;
+  ModelObject nanosuit_;
+  std::vector<PointLightObject> point_lights_;
 
   bool enable_cull_face_ = false;
   int call_face_ = GL_BACK;

@@ -7,7 +7,7 @@
 #include "engine/texture.h"
 #include "engine/transform.h"
 #include "playground/context.h"
-#include "playground/object/cube.h"
+#include "playground/object/cube_object.h"
 #include "playground/object/empty_object.h"
 #include "playground/scene.h"
 
@@ -24,7 +24,7 @@ class AATestScene : public Scene {
   glm::vec3 cube_positions_[kCubeNum];
 
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
-  std::vector<std::unique_ptr<Cube>> cubes_;
+  std::vector<std::unique_ptr<CubeObject>> cubes_;
   engine::ColorFramebuffer color_framebuffer_;
   engine::MSFramebuffer ms_framebuffer_;
 };

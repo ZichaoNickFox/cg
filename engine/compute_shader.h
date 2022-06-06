@@ -26,8 +26,8 @@ class ComputeShader {
   void SetTextures(const std::vector<Texture>& textures);
   void SetTextureMetas(const std::vector<TextureMeta>& texture_metas);
 
-  void SetCameraGeometry(Camera* camera, bool with_view, bool with_project);
-  void SetSphereGeometries(const std::vector<SphereGeometry>& sphere_geometries);
+  void SetCamera(Camera* camera, bool with_view, bool with_project);
+  void SetSpheres(const std::vector<Sphere>& spheres);
   void SetScreenSize(const glm::vec2& screen_size);
 
   Shader* mutable_shader() { return &shader_; }

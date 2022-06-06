@@ -4,9 +4,9 @@
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
-#include "playground/object/cube.h"
-#include "playground/object/lines.h"
-#include "playground/object/skybox.h"
+#include "playground/object/cube_object.h"
+#include "playground/object/lines_object.h"
+#include "playground/object/skybox_object.h"
 #include "playground/scene.h"
 
 class SkyboxScene : public Scene {
@@ -18,7 +18,7 @@ class SkyboxScene : public Scene {
 
  private:
   Coord coord_;
-  Skybox skybox_;
+  SkyboxObject skybox_;
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
 };
 #pragma once

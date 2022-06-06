@@ -4,13 +4,13 @@
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
-#include "playground/object/cube.h"
-#include "playground/object/lines.h"
-#include "playground/object/model.h"
-#include "playground/object/plane.h"
-#include "playground/object/point_light.h"
-#include "playground/object/skybox.h"
-#include "playground/object/sphere.h"
+#include "playground/object/cube_object.h"
+#include "playground/object/lines_object.h"
+#include "playground/object/model_object.h"
+#include "playground/object/plane_object.h"
+#include "playground/object/point_light_object.h"
+#include "playground/object/skybox_object.h"
+#include "playground/object/sphere_object.h"
 #include "playground/scene.h"
 #include "playground/shaders.h"
 
@@ -26,14 +26,14 @@ class PbrScene : public Scene {
   glm::vec3 albedo_ = glm::vec3(1, 0, 0);
 
   int light_num = 4;
-  std::vector<PointLight> point_lights_;
-  Sphere sphere_;
+  std::vector<PointLightObject> point_lights_;
+  SphereObject sphere_;
   Coord coord_;
-  Skybox skybox_;
-  Plane plane_;
-  Cube cube_;
+  SkyboxObject skybox_;
+  PlaneObject plane_;
+  CubeObject cube_;
 
-  Model teapot_;
+  ModelObject teapot_;
 
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
 

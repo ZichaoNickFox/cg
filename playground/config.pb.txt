@@ -390,9 +390,8 @@ shader_config {
   cs_path : [
     "engine/shader/version.glsl",
     "engine/shader/convert.glsl",
-    "engine/shader/camera_geometry.glsl",
+    "engine/shader/camera.glsl",
     "engine/shader/geometry.glsl",
-    "engine/shader/hit.glsl",
     "engine/shader/ray_tracing.cs.glsl"
   ]
 }
@@ -402,9 +401,8 @@ shader_config {
   cs_path : [
     "engine/shader/version.glsl",
     "engine/shader/convert.glsl",
-    "engine/shader/camera_geometry.glsl",
+    "engine/shader/camera.glsl",
     "engine/shader/geometry.glsl",
-    "engine/shader/hit.glsl",
     "engine/shader/path_tracing.cs.glsl"
   ]
 }

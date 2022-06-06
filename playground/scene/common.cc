@@ -6,7 +6,7 @@
 
 #include "engine/debug.h"
 #include "engine/io.h"
-#include "playground/object/lines.h"
+#include "playground/object/lines_object.h"
 #include "playground/shaders.h"
 
 OnUpdateCommon::OnUpdateCommon(Context* context, const std::string& title) {

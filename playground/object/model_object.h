@@ -10,9 +10,9 @@
 #include "engine/texture.h"
 #include "playground/object/object.h"
 
-class ModelPart : public Object {
+class ModelPartObject : public Object {
  public:
-  ModelPart(const engine::ModelRepo::ModelPartData& model_part_data) : model_part_data_(model_part_data) {}
+  ModelPartObject(const engine::ModelRepo::ModelPartData& model_part_data) : model_part_data_(model_part_data) {}
   void OnUpdate(Context *context) override;
   void OnRender(Context *context, int instance_num = 1) override;
   void OnDestory(Context *context) override;
@@ -35,13 +35,13 @@ class ModelPart : public Object {
   engine::Material material_;
 };
 
-class Model {
+class ModelObject {
  public:
   void Init(Context* context, const std::string& object_name, const std::string& model_name);
   void ModelInspector();
 
   int model_part_num() { return model_parts_.size(); }
-  ModelPart* mutable_model_part(int i) { return &model_parts_[i]; }
+  ModelPartObject* mutable_model_part(int i) { return &model_parts_[i]; }
 
   void OnRender(Context* context, int instance_num = 1);
   void SetTransform(const engine::Transform& transform);
@@ -54,5 +54,5 @@ class Model {
   }
 
  private:
-  std::vector<ModelPart> model_parts_;
+  std::vector<ModelPartObject> model_parts_;
 };

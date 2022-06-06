@@ -6,10 +6,10 @@
 #include "engine/texture.h"
 #include "engine/transform.h"
 #include "playground/context.h"
-#include "playground/object/lines.h"
+#include "playground/object/lines_object.h"
 #include "playground/object/object.h"
 
-class PointLight : public Object {
+class PointLightObject : public Object {
  public:
   void OnUpdate(Context *context) override;
   void OnRender(Context *context, int instance_num = 1) override;

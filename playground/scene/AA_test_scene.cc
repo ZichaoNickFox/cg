@@ -20,7 +20,7 @@ void AATestScene::OnEnter(Context *context)
   cube_positions_[0] = glm::vec3(0.0f, 0.0f, 0.0f);
 
   for (int i = 0; i < kCubeNum; ++i) {
-    std::unique_ptr<Cube> cube = std::make_unique<Cube>();
+    std::unique_ptr<CubeObject> cube = std::make_unique<CubeObject>();
     cube->mutable_transform()->SetTranslation(cube_positions_[i]);
     cube->mutable_material()->SetShader(context->GetShader("aa_test_scene"));
     cubes_.push_back(std::move(cube));
@@ -40,7 +40,7 @@ void AATestScene::OnUpdate(Context *context)
 void AATestScene::OnRender(Context *context)
 {
   ms_framebuffer_.Bind();
-  for (const std::unique_ptr<Cube>& cube : cubes_) {
+  for (const std::unique_ptr<CubeObject>& cube : cubes_) {
     cube->OnRender(context);
   }
   ms_framebuffer_.Unbind();

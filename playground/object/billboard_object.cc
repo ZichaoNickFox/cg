@@ -1,13 +1,13 @@
-#include "playground/object/billboard.h"
+#include "playground/object/billboard_object.h"
 
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/string_cast.hpp>
 
-void Billboard::Init(Context *context, const Data& data) {
+void BillboardObject::Init(Context *context, const Data& data) {
   mutable_transform()->SetScale(glm::vec3(0.1, 0.1, 0.1));
 }
 
-void Billboard::OnUpdate(Context *context) {
+void BillboardObject::OnUpdate(Context *context) {
   glm::vec3 plane_translate = transform_.translation();
   mutable_transform()->SetTranslation(plane_translate);
 

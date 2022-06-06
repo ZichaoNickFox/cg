@@ -17,7 +17,7 @@ void PbrScene::OnEnter(Context *context)
   std::vector<glm::vec3> light_poses{glm::vec3(2, 2, 0), glm::vec3(2, 0, 2),
                                      glm::vec3(0, 2, 2), glm::vec3(2, 2, 2)};
   for (int i = 0; i < light_num; ++i) {
-    point_lights_.push_back(PointLight());
+    point_lights_.push_back(PointLightObject());
     point_lights_[i].mutable_transform()->SetTranslation(light_poses[i]);
     point_lights_[i].mutable_transform()->SetScale(kLightScale);
     point_lights_[i].SetColor(kLightColor);

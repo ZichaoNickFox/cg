@@ -8,7 +8,7 @@
 
 #include "engine/repo/texture_repo.h"
 #include "engine/transform.h"
-#include "playground/object/sphere.h"
+#include "playground/object/sphere_object.h"
 #include "playground/scene/common.h"
 
 constexpr int kLevel0Size = 512;
@@ -82,12 +82,12 @@ void TextureLodScene::OnUpdate(Context *context) {
 }
 
 void TextureLodScene::OnRender(Context *context) {
-  Cube cube1;
+  CubeObject cube1;
   cube1.mutable_transform()->SetTranslation(glm::vec3(-1.5, 0, 0));
   Texture2DLodShader({lod_texture2d_, context->camera().transform().translation()}, context, &cube1);
   cube1.OnRender(context);
 
-  Cube cube2;
+  CubeObject cube2;
   cube1.mutable_transform()->SetTranslation(glm::vec3(1.5, 0, 0));
   CubemapLodShader({lod_cubemap_, context->camera().transform().translation()}, context, &cube2);
   cube2.OnRender(context);

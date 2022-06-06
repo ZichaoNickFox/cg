@@ -9,7 +9,7 @@
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
-#include "playground/object/cube.h"
+#include "playground/object/cube_object.h"
 #include "playground/object/empty_object.h"
 #include "playground/scene.h"
 #include "playground/shaders.h"
@@ -23,7 +23,7 @@ class PbrIrradianceCubemapGenerator : public Scene {
 
  private:
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
-  Cube cube_;
+  CubeObject cube_;
 
   engine::Camera cubemap_cameras_[6];
   std::vector<engine::Transform> transforms_ = {

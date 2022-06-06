@@ -1,8 +1,8 @@
 #pragma once
 
 #include "engine/camera.h"
-#include "playground/object/model.h"
-#include "playground/object/sphere.h"
+#include "playground/object/model_object.h"
+#include "playground/object/sphere_object.h"
 #include "playground/scene.h"
 
 class InstanceScene : public Scene {
@@ -15,8 +15,8 @@ class InstanceScene : public Scene {
  private:
   void InitModelMatrices();
 
-  Model rock_;
-  Model planet_;
+  ModelObject rock_;
+  ModelObject planet_;
 
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
 

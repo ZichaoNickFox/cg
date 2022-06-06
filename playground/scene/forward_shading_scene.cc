@@ -19,7 +19,7 @@
 void ForwardShadingScene::OnEnter(Context *context)
 {
   for (int i = 0; i < point_lights_num_; ++i) {
-    point_lights_.push_back(PointLight());
+    point_lights_.push_back(PointLightObject());
     glm::vec3 point_light_pos(engine::RandFromTo(-5, 5), engine::RandFromTo(0, 5), engine::RandFromTo(-5, 5));
     point_lights_[i].mutable_transform()->SetTranslation(point_light_pos);
     point_lights_[i].mutable_transform()->SetScale(glm::vec3(0.2, 0.2, 0.2));
@@ -32,8 +32,8 @@ void ForwardShadingScene::OnEnter(Context *context)
   cube_transforms_.push_back(engine::Transform(glm::vec3(2, 2, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
   cube_transforms_.push_back(engine::Transform(glm::vec3(1, 2, 2), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
   for (int i = 0; i < cube_transforms_.size(); ++i) {
-    cubes_.push_back(Cube());
-    Cube* cube = &cubes_[i];
+    cubes_.push_back(CubeObject());
+    CubeObject* cube = &cubes_[i];
     cube->SetTransform(cube_transforms_[i]);
   }
 
@@ -102,7 +102,7 @@ void ForwardShadingScene::RunDepthBufferPass(Context* context, engine::DepthBuff
 
   DepthBufferShader::Param param{depth_buffer_pass->camera(), context->GetShader("depth_buffer")};
   for (int i = 0; i < cubes_.size(); ++i) {
-    Cube* cube = &cubes_[i];
+    CubeObject* cube = &cubes_[i];
     DepthBufferShader{param, cube};
     cube->OnRender(context);
   }
@@ -121,7 +121,7 @@ void ForwardShadingScene::RunForwardPass_Deprecated(Context* context, engine::Fo
   phong.scene_shadow_info = forward_pass->prepass_shadow_info();
   phong.scene_light_info = AsSceneLightInfo(point_lights_);
   for (int i = 0; i < cubes_.size(); ++i) {
-    Cube* cube = &cubes_[i];
+    CubeObject* cube = &cubes_[i];
     PhongShader(&phong, context, cube);
     cube->OnRender(context);
   }
@@ -146,7 +146,7 @@ void ForwardShadingScene::RunForwardPass_Deprecated(Context* context, engine::Fo
 void ForwardShadingScene::OnExit(Context *context)
 {
   for (int i = 0; i < cubes_.size(); ++i) {
-    Cube* cube = &cubes_[i];
+    CubeObject* cube = &cubes_[i];
     cube->OnDestory(context);
   }
   for (int i = 0; i < point_lights_num_; ++i) {

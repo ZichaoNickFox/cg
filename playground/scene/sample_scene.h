@@ -4,13 +4,13 @@
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
-#include "playground/object/cube.h"
-#include "playground/object/lines.h"
-#include "playground/object/model.h"
-#include "playground/object/plane.h"
-#include "playground/object/point_light.h"
-#include "playground/object/skybox.h"
-#include "playground/object/sphere.h"
+#include "playground/object/cube_object.h"
+#include "playground/object/lines_object.h"
+#include "playground/object/model_object.h"
+#include "playground/object/plane_object.h"
+#include "playground/object/point_light_object.h"
+#include "playground/object/skybox_object.h"
+#include "playground/object/sphere_object.h"
 #include "playground/scene.h"
 #include "playground/shaders.h"
 
@@ -22,6 +22,6 @@ class SampleScene : public Scene {
   void OnExit(Context* context);
 
  private:
-  Sphere sphere_;
+  SphereObject sphere_;
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
 };

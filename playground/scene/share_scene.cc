@@ -39,7 +39,7 @@ void ShareScene::OnEnter(Context *context)
     int line_width = 1;
   };
 
-  Lines::Mesh line_data{{kLineFrom, kLineTo},
+  LinesObject::Mesh line_data{{kLineFrom, kLineTo},
                         {glm::vec3(1, 0, 0), glm::vec3(1, 0, 0)}, GL_LINES};
   line_.SetMesh(line_data);
 
@@ -106,7 +106,7 @@ void ShareScene::OnUpdate(Context *context)
   intersect_line_.reset();
   Object::IntersectResult intersect_result;
   if (sphere_.Intersect(context, kLineFrom, kLineTo - kLineFrom, &intersect_result)) {
-    intersect_line_ = std::make_unique<Lines>();
+    intersect_line_ = std::make_unique<LinesObject>();
     intersect_line_->SetMesh({{intersect_result.position_ws, intersect_result.position_ws + intersect_result.normal_ws * 10.0f},
                               {glm::vec3(1, 0, 0), glm::vec3(1, 0, 0)}, GL_LINES});
   }

@@ -2,11 +2,11 @@
 
 #include "engine/camera.h"
 #include "playground/context.h"
-#include "playground/object/billboard.h"
-#include "playground/object/lines.h"
+#include "playground/object/billboard_object.h"
+#include "playground/object/lines_object.h"
 #include "playground/object/object.h"
 
-class DirectionalLight : public Object {
+class DirectionalLightObject : public Object {
  public:
   void Init(Context* context);
 
@@ -17,12 +17,12 @@ class DirectionalLight : public Object {
   engine::Material* mutable_material(int index = 0) override { return nullptr; }
   std::shared_ptr<const engine::Mesh> mesh(Context* context) const override { return nullptr; }
 
-  Billboard* mutable_billboard() { return &billboard_; }
-  Lines* mutable_lines() { return &lines_; }
+  BillboardObject* mutable_billboard() { return &billboard_; }
+  LinesObject* mutable_lines() { return &lines_; }
 
  private:
   static int directional_light_num_;
 
-  Billboard billboard_;
-  Lines lines_;
+  BillboardObject billboard_;
+  LinesObject lines_;
 };

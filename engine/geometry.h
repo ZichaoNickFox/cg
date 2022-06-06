@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 
 namespace engine {
-struct SphereGeometry {
+struct Sphere {
   glm::vec3 translation;
   glm::vec4 color;
   float radius;

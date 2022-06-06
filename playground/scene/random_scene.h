@@ -1,7 +1,7 @@
 #pragma once
 
 #include "engine/camera.h"
-#include "playground/object/sphere.h"
+#include "playground/object/sphere_object.h"
 #include "playground/scene.h"
 
 class RandomScene : public Scene {

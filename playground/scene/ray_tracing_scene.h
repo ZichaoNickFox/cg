@@ -4,10 +4,10 @@
 
 #include "engine/camera.h"
 #include "engine/geometry.h"
-#include "playground/object/sphere.h"
+#include "playground/object/sphere_object.h"
 #include "playground/scene.h"
 
-class PathTracingScene : public Scene {
+class RayTracingScene : public Scene {
  public:
   void OnEnter(Context* context) override;
   void OnUpdate(Context* context) override;
@@ -21,7 +21,7 @@ class PathTracingScene : public Scene {
 
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
 
-  std::unordered_map<std::string, engine::SphereGeometry> sphere_geometry_map_ = {
+  std::unordered_map<std::string, engine::Sphere> sphere_map_ = {
     {"light", {{0, 5.4, 1}, {10, 10, 10, 10}, 3}},
     {"ground", {{0, -100.5, 1}, {0.8, 0.8, 0.8, 1.0}, 100}},
     {"ceiling", {{0, 102.5, 1}, {0.8, 0.8, 0.8, 1.0}, 100}},
@@ -33,17 +33,17 @@ class PathTracingScene : public Scene {
     {"glass_ball", {{-0.7, 0, 0.5}, {1.0, 1.0, 1.0, 1.0}, 0.5}},
     {"metal2_ball", {{-0.6, -0.3, 2}, {0.8, 0.6, 0.2, 1.0}, 0.2}}
   };
-  std::unordered_map<std::string, Sphere> sphere_map_ = {
-    {"light", Sphere()},
-    {"ground", Sphere()},
-    {"ceiling", Sphere()},
-    {"back_wall", Sphere()},
-    {"left_wall", Sphere()},
-    {"right_wall", Sphere()},
-    {"diffuse_ball", Sphere()},
-    {"metal_ball", Sphere()},
-    {"glass_ball", Sphere()},
-    {"metal2_ball", Sphere()}
+  std::unordered_map<std::string, SphereObject> sphere_object_map_ = {
+    {"light", SphereObject()},
+    {"ground", SphereObject()},
+    {"ceiling", SphereObject()},
+    {"back_wall", SphereObject()},
+    {"left_wall", SphereObject()},
+    {"right_wall", SphereObject()},
+    {"diffuse_ball", SphereObject()},
+    {"metal_ball", SphereObject()},
+    {"glass_ball", SphereObject()},
+    {"metal2_ball", SphereObject()}
   };
 
   engine::Texture canvas_;

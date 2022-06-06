@@ -6,12 +6,12 @@
 #include "engine/shader.h"
 #include "engine/texture.h"
 #include "playground/context.h"
-#include "playground/object/cube.h"
-#include "playground/object/directional_light.h"
+#include "playground/object/cube_object.h"
+#include "playground/object/directional_light_object.h"
 #include "playground/object/empty_object.h"
-#include "playground/object/lines.h"
-#include "playground/object/plane.h"
-#include "playground/object/point_light.h"
+#include "playground/object/lines_object.h"
+#include "playground/object/plane_object.h"
+#include "playground/object/point_light_object.h"
 #include "playground/scene.h"
 
 // TODO : I don't know why cannot use
@@ -40,14 +40,14 @@ class AAScene : public Scene {
     51.2};
   MaterialProperty material_property_ = gold_;
 
-  std::vector<Cube> cubes_;
+  std::vector<CubeObject> cubes_;
   std::vector<engine::Transform> cube_transforms_;
 
   int point_lights_num_ = 100;
-  std::vector<PointLight> point_lights_;
+  std::vector<PointLightObject> point_lights_;
   Coord coord_;
-  Plane plane_;
-  DirectionalLight directional_light_;
+  PlaneObject plane_;
+  DirectionalLightObject directional_light_;
 
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
 

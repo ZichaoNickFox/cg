@@ -9,7 +9,7 @@
 #include "engine/texture.h"
 #include "engine/transform.h"
 #include "playground/context.h"
-#include "playground/object/lines.h"
+#include "playground/object/lines_object.h"
 #include "playground/object/object.h"
 
 class EmptyObject : public Object {

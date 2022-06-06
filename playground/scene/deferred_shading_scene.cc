@@ -15,7 +15,7 @@
 void DeferredShadingScene::OnEnter(Context *context)
 {
   for (int i = 0; i < point_lights_num_; ++i) {
-    point_lights_.push_back(PointLight());
+    point_lights_.push_back(PointLightObject());
     glm::vec3 point_light_pos(engine::RandFromTo(-5, 5), engine::RandFromTo(0, 5), engine::RandFromTo(-5, 5));
     point_lights_[i].mutable_transform()->SetTranslation(point_light_pos);
     point_lights_[i].mutable_transform()->SetScale(glm::vec3(0.2, 0.2, 0.2));
@@ -28,8 +28,8 @@ void DeferredShadingScene::OnEnter(Context *context)
   cube_transforms_.push_back(engine::Transform(glm::vec3(2, 2, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
   cube_transforms_.push_back(engine::Transform(glm::vec3(1, 2, 2), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
   for (int i = 0; i < cube_transforms_.size(); ++i) {
-    cubes_.push_back(Cube());
-    Cube* cube = &cubes_[i];
+    cubes_.push_back(CubeObject());
+    CubeObject* cube = &cubes_[i];
     cube->SetTransform(cube_transforms_[i]);
     cube->mutable_material()->SetShader(context->GetShader("phong_shadow"));
   }
@@ -101,7 +101,7 @@ void DeferredShadingScene::OnUpdate(Context *context)
   ImGui::SliderFloat3("cube0_scale", (float*)cubes_[0].mutable_transform()->mutable_scale(), -2, 2);
 
   for (int i = 0; i < cubes_.size(); ++i) {
-    Cube* cube = &cubes_[i];
+    CubeObject* cube = &cubes_[i];
     cube->mutable_material()->SetVec3("material.ambient", context->material_property_ambient(material_name_));
     cube->mutable_material()->SetVec3("material.diffuse", context->material_property_diffuse(material_name_));
     cube->mutable_material()->SetVec3("material.specular", context->material_property_specular(material_name_));
@@ -129,7 +129,7 @@ void DeferredShadingScene::OnUpdate(Context *context)
   }
 
   for (int i = 0; i < cubes_.size(); ++i) {
-    Cube* cube = &cubes_[i];
+    CubeObject* cube = &cubes_[i];
     cube->OnUpdate(context);
     /*
     cube->mutable_material()->SetInt("light_count", point_lights_num_);
@@ -166,7 +166,7 @@ void DeferredShadingScene::OnRender(Context *context)
 
 void DeferredShadingScene::RenderShadowMap(Context* context) {
   for (int i = 0; i < cubes_.size(); ++i) {
-    Cube* cube = &cubes_[i];
+    CubeObject* cube = &cubes_[i];
     cube->OnRender(context);
   }
   plane_.OnRender(context);
@@ -175,7 +175,7 @@ void DeferredShadingScene::RenderShadowMap(Context* context) {
 void DeferredShadingScene::ForwardShading(Context* context, const glm::mat4& shadow_map_vp,
                                           const engine::Texture& shadow_map_texture) {
   for (int i = 0; i < cubes_.size(); ++i) {
-    Cube* cube = &cubes_[i];
+    CubeObject* cube = &cubes_[i];
     cube->mutable_material()->SetTexture("shadow_map_texture", shadow_map_texture);
     cube->mutable_material()->SetMat4("shadow_map_vp", shadow_map_vp);
     cube->OnRender(context);
@@ -195,7 +195,7 @@ void DeferredShadingScene::DeferredShading(Context* context, const glm::mat4& sh
   gbuffer_.Bind();
   engine::Shader deferred_shading_geometry = context->GetShader("deferred_shading_geometry");
   for (int i = 0; i < cubes_.size(); ++i) {
-    Cube* cube = &cubes_[i];
+    CubeObject* cube = &cubes_[i];
     cube->mutable_material()->SetShader(deferred_shading_geometry);
     cube->OnRender(context);
   }
@@ -223,7 +223,7 @@ void DeferredShadingScene::DeferredShading(Context* context, const glm::mat4& sh
 void DeferredShadingScene::OnExit(Context *context)
 {
   for (int i = 0; i < cubes_.size(); ++i) {
-    Cube* cube = &cubes_[i];
+    CubeObject* cube = &cubes_[i];
     cube->OnDestory(context);
   }
   for (int i = 0; i < point_lights_num_; ++i) {

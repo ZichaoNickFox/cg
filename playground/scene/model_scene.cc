@@ -25,7 +25,7 @@ void ModelScene::OnEnter(Context *context)
 
   nanosuit_.Init(context, "nanosuit1", "nanosuit");
 
-  point_lights_.push_back(PointLight());
+  point_lights_.push_back(PointLightObject());
   point_lights_[0].mutable_transform()->SetTranslation(glm::vec3(0, 3, -5));
 }
 
@@ -73,7 +73,7 @@ void ModelScene::OnUpdate(Context *context)
 
   glm::quat rotate = glm::angleAxis(rotate_speed_, glm::vec3(0, 1, 0));
   for (int i = 0; i < nanosuit_.model_part_num(); ++i) {
-    ModelPart* model_part = nanosuit_.mutable_model_part(i);
+    ModelPartObject* model_part = nanosuit_.mutable_model_part(i);
     model_part->mutable_transform()->Rotate(rotate);
   }
 }
@@ -90,7 +90,7 @@ void ModelScene::OnRender(Context *context) {
   static PhongShader::Param phong;
   phong.scene_light_info = engine::SceneLightInfo(AsSceneLightInfo(point_lights_));
   for (int i = 0; i < nanosuit_.model_part_num(); ++i) {
-    ModelPart* model_part = nanosuit_.mutable_model_part(i);
+    ModelPartObject* model_part = nanosuit_.mutable_model_part(i);
     model_part->mutable_transform()->SetScale(glm::vec3(0.3, 0.3, 0.3));
 
     if (use_texture_ambient_) {

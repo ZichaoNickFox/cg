@@ -20,7 +20,7 @@ void MrtScene::OnEnter(Context *context)
   mrt_framebuffer_.Init(option);
   
   for (int i = 0; i < point_lights_num_; ++i) {
-    point_lights_.push_back(PointLight());
+    point_lights_.push_back(PointLightObject());
     glm::vec3 point_light_pos(engine::RandFromTo(-5, 5), engine::RandFromTo(0, 5), engine::RandFromTo(-5, 5));
     point_lights_[i].mutable_transform()->SetTranslation(point_light_pos);
     point_lights_[i].mutable_transform()->SetScale(glm::vec3(0.2, 0.2, 0.2));
@@ -33,8 +33,8 @@ void MrtScene::OnEnter(Context *context)
   cube_transforms_.push_back(engine::Transform(glm::vec3(2, 2, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
   cube_transforms_.push_back(engine::Transform(glm::vec3(1, 2, 2), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
   for (int i = 0; i < cube_transforms_.size(); ++i) {
-    cubes_.push_back(Cube());
-    Cube* cube = &cubes_[i];
+    cubes_.push_back(CubeObject());
+    CubeObject* cube = &cubes_[i];
     cube->SetTransform(cube_transforms_[i]);
     cube->mutable_material()->SetShader(context->GetShader("forward_shading"));
   }
@@ -68,7 +68,7 @@ void MrtScene::OnUpdate(Context *context)
   }
 
   for (int i = 0; i < cubes_.size(); ++i) {
-    Cube* cube = &cubes_[i];
+    CubeObject* cube = &cubes_[i];
     cube->OnUpdate(context);
     // cube->mutable_material()->SetInt("light_count", point_lights_num_);
     // for (int i = 0; i < point_lights_num_; ++i) {
@@ -102,7 +102,7 @@ void MrtScene::OnRender(Context *context)
 void MrtScene::RenderShadowMap(Context* context) {
   // directional_light_.ShadowMappingPassBegin(context);
   for (int i = 0; i < cubes_.size(); ++i) {
-    Cube* cube = &cubes_[i];
+    CubeObject* cube = &cubes_[i];
     cube->mutable_material()->SetShader(context->GetShader("shadow_map"));
     cube->OnRender(context);
   }
@@ -115,7 +115,7 @@ void MrtScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
                            const engine::Texture& shadow_map_texture) {
   mrt_framebuffer_.Bind();
   for (int i = 0; i < cubes_.size(); ++i) {
-    Cube* cube = &cubes_[i];
+    CubeObject* cube = &cubes_[i];
     cube->mutable_material()->SetTexture("shadow_map_texture", shadow_map_texture);
     cube->mutable_material()->SetMat4("shadow_map_vp", shadow_map_vp);
     cube->OnRender(context);
@@ -142,7 +142,7 @@ void MrtScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
 void MrtScene::OnExit(Context *context)
 {
   for (int i = 0; i < cubes_.size(); ++i) {
-    Cube* cube = &cubes_[i];
+    CubeObject* cube = &cubes_[i];
     cube->OnDestory(context);
   }
   for (int i = 0; i < point_lights_num_; ++i) {

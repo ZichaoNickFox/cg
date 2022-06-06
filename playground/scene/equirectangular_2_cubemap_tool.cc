@@ -8,7 +8,7 @@
 
 #include "engine/repo/texture_repo.h"
 #include "engine/transform.h"
-#include "playground/object/sphere.h"
+#include "playground/object/sphere_object.h"
 #include "playground/scene/common.h"
 
 constexpr int kEnvironmentCubemapSize = 2048;
