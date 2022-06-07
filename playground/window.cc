@@ -94,8 +94,12 @@ int main(int argc, char **argv)
   glm::ivec2 screen_size;
   glfwGetWindowSize(window, &screen_size.x, &screen_size.y);
 
+  auto SetClipboardStringFunc = [window] (const std::string& content) {
+    glfwSetClipboardString(window, content.c_str());
+  };
+
   Playground playground;
-  playground.Init({kConfigPath, clear_color, framebuffer_size});
+  playground.Init({kConfigPath, clear_color, framebuffer_size, SetClipboardStringFunc});
   playground.mutable_io()->SetScreenSize(screen_size);
 
   while (!glfwWindowShouldClose(window)) {

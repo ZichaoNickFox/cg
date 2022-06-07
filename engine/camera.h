@@ -37,11 +37,11 @@ class Camera {
   engine::Transform* mutable_transform() { return &transform_; }
   const Transform& transform() const { return transform_; }
 
-  glm::vec3 front() const { return transform_.rotation() * glm::vec3(0, 0, -1); }
-  glm::vec3 right() const { return transform_.rotation() * glm::vec3(1, 0, 0); }
+  glm::vec3 front_ws() const { return transform_.rotation() * glm::vec3(0, 0, -1); }
+  glm::vec3 right_ws() const { return transform_.rotation() * glm::vec3(1, 0, 0); }
 
-  void MoveForward(float delta);
-  void MoveRight(float delta);
+  void MoveForwardWS(float delta);
+  void MoveRightWS(float delta);
   void RotateHorizontal(float delta);
   void RotateVerticle(float delta);
 

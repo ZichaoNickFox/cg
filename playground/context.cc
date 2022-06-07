@@ -16,6 +16,7 @@ void Context::Init(const Option& option) {
 
   clear_color_ = option.clear_color;
   framebuffer_size_ = option.framebuffer_size;
+  set_clipboard_string_func_ = option.set_clipboard_string_func;
 }
 
 const engine::Camera& Context::camera() const {

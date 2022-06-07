@@ -67,6 +67,7 @@ cc_library(
     "//engine/repo:repo",
     "//engine:util",
     "@fmt",
+    "@glfw",
   ],
 )
 

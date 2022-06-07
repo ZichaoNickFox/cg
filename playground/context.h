@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <stack>
 
 #include "engine/debug.h"
@@ -18,6 +19,7 @@ class Context {
     std::string config_path;
     glm::vec4 clear_color;
     glm::vec2 framebuffer_size;
+    std::function<void(const std::string& content)> set_clipboard_string_func;
   };
   void Init(const Option& option);
 
@@ -63,6 +65,8 @@ class Context {
   const glm::ivec2& framebuffer_size() const { return framebuffer_size_; }
   const engine::FrameStat& frame_stat() const { return frame_stat_; }
 
+  std::function<void(const std::string& content)> set_clipboard_string_func() { return set_clipboard_string_func_; }
+
  private:
   engine::ShaderRepo shader_repo_;
   engine::TextureRepo texture_repo_;
@@ -82,4 +86,6 @@ class Context {
   float camera_rotate_speed_ = 5;
 
   glm::ivec2 framebuffer_size_;
+
+  std::function<void(const std::string& content)> set_clipboard_string_func_;
 };

@@ -33,6 +33,8 @@ void main() {
   vec3 dir = normalize(near_pos_ws - camera.pos_ws);
   const vec4 clear_color = vec4(0, 0, 1, 1);
 
+  bool is_debug_frag = length(gl_GlobalInvocationID.xy / screen_size- vec2(0.5, 0.5)) < 0.00001;
+
   const int depth_num = 4;
   /*
   vec4 weights[depth_num] = vec4[depth_num](vec4(0.3, 0.3, 0.3, 1.0),
@@ -56,7 +58,9 @@ void main() {
   vec3 ray_dir = dir;
   vec3 ray_from = camera.pos_ws + bias * ray_dir;
   while (depth_iter < depth_num) {
-//    light_path[depth_iter] = ray_from;
+    if (is_debug_frag) {
+      light_path[depth_iter] = vec4(ray_from, 1.0);
+    }
     Ray color_ray = Ray(ray_from, ray_dir);
     RayTracingResult color_result = RayTracing(spheres, color_ray, 50);
     if (!color_result.hit_info.hitted) {
@@ -99,12 +103,6 @@ void main() {
   for (int i = 2; i < 3; ++i) {
     color = color + colors[i] * weights[i];
     color = colors[i];
-  }
-
-  if (length(gl_GlobalInvocationID.xy / screen_size- vec2(0.5, 0.5)) < 0.00001) {
-  for (int i =0; i< 20; ++i) {
-    light_path[i] = vec4(i, i, i, 1);
-  }
   }
 
   // Lambert model

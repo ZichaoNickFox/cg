@@ -46,12 +46,12 @@ glm::mat4 Camera::GetViewMatrix() const {
   //return LookAt(transform_.translation(), center, world_up_);
 }
 
-void Camera::MoveForward(float delta) {
-  transform_.Translate(delta * front());
+void Camera::MoveForwardWS(float delta) {
+  transform_.Translate(delta * front_ws());
 }
 
-void Camera::MoveRight(float delta) {
-  transform_.Translate(delta * right());
+void Camera::MoveRightWS(float delta) {
+  transform_.Translate(delta * right_ws());
 }
 
 void Camera::RotateHorizontal(float delta) {
@@ -60,7 +60,7 @@ void Camera::RotateHorizontal(float delta) {
 }
 
 void Camera::RotateVerticle(float delta) {
-  glm::quat q = glm::angleAxis(-delta, right());
+  glm::quat q = glm::angleAxis(-delta, right_ws());
   transform_.Rotate(q);
 }
 

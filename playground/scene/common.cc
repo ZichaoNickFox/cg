@@ -33,9 +33,21 @@ OnUpdateCommon::~OnUpdateCommon() {
 }
 
 void OnUpdateCommon::InspectCamera(Context* context) {
-  ImGui::Text("camera_location %s", glm::to_string(context->camera().transform().translation()).c_str());
+  std::string camera_pos_ws = glm::to_string(context->camera().transform().translation()).c_str();
+  ImGui::Text("camera_pos_ws %s", camera_pos_ws.c_str());
+  ImGui::SameLine();
+  if (ImGui::Button("Copy##camera_pos_ws")) {
+    context->set_clipboard_string_func()(camera_pos_ws.c_str());
+  }
+
+  std::string camera_dir_ws = glm::to_string(context->camera().front_ws()).c_str();
+  ImGui::Text("camera_dir_ws %s", camera_dir_ws.c_str());
+  ImGui::SameLine();
+  if (ImGui::Button("Copy##camera_dir_ws")) {
+    context->set_clipboard_string_func()(camera_dir_ws.c_str());
+  }
+
   ImGui::Text("camera_rotation %s", glm::to_string(context->camera().transform().rotation()).c_str());
-  ImGui::Text("camera_front %s", glm::to_string(context->camera().front()).c_str());
   glm::vec3 near_pos_ws, far_pos_ws;
   context->camera().GetPickRay(context->io().normalized_cursor_screen_pos(), &near_pos_ws, &far_pos_ws);
   ImGui::Text("camera_near_pos_ws %s", glm::to_string(near_pos_ws).c_str());
@@ -71,13 +83,13 @@ void OnUpdateCommon::MoveCamera(Context* context) {
   }
   engine::Camera* camera = context->mutable_camera();
   if (context->io().HadKeyInput("w")) {
-    camera->MoveForward(camera_move_speed);
+    camera->MoveForwardWS(camera_move_speed);
   } else if (context->io().HadKeyInput("s")) {
-    camera->MoveForward(-camera_move_speed);
+    camera->MoveForwardWS(-camera_move_speed);
   } else if (context->io().HadKeyInput("a")) {
-    camera->MoveRight(-camera_move_speed);
+    camera->MoveRightWS(-camera_move_speed);
   } else if (context->io().HadKeyInput("d")) {
-    camera->MoveRight(camera_move_speed);
+    camera->MoveRightWS(camera_move_speed);
   } else if (context->io().HadKeyInput("esc")) {
     exit(0);
   }
