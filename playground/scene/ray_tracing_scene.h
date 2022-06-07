@@ -4,6 +4,7 @@
 
 #include "engine/camera.h"
 #include "engine/geometry.h"
+#include "engine/SSBO.h"
 #include "playground/object/sphere_object.h"
 #include "playground/scene.h"
 
@@ -47,4 +48,6 @@ class RayTracingScene : public Scene {
   };
 
   engine::Texture canvas_;
+
+  engine::SSBO light_path_ssbo_;
 };

@@ -28,7 +28,11 @@ void glGetInternalformativ_(GLenum target, GLenum internalformat, GLenum pname, 
 // Mesh
 void glGenBuffers_(GLsizei n, GLuint* buffers);
 void glBindBuffer_(GLenum target, GLuint buffer);
+void glBindBufferBase_(GLenum target, GLuint index, GLuint buffer);
 void glBufferData_(GLenum target, GLsizeiptr size, const void * data, GLenum usage);
+void* glMapBuffer_(GLenum target, GLenum access);
+void* glMapBufferRange_(GLenum target, GLintptr offset, GLsizeiptr length, GLbitfield access);
+GLboolean glUnmapBuffer_(GLenum target);
 void glBufferSubData_(GLenum target, GLintptr offset, GLsizeiptr size, const void * data);
 void glGenVertexArrays_(GLsizei n, GLuint *arrays);
 void glBindVertexArray_(GLuint array);

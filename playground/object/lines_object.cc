@@ -15,8 +15,8 @@ void LinesObject::OnInit(const Mesh& data) {
   primitive_mode_ = data.primitive_mode;
   vertex_size_ = data.points.size();
 
-  CGCHECK(data.points.size() == data.colors.size());
-  std::vector<glm::vec3> buffer(data.points.size() + data.colors.size(), glm::vec3());
+  CGCHECK(data.points.size() == data.colors.size()) << " " << data.points.size() << ":" << data.colors.size();
+  std::vector<glm::vec4> buffer(data.points.size() + data.colors.size(), glm::vec4());
   glGenBuffers_(1, &vbo_);
   glBindBuffer_(GL_ARRAY_BUFFER, vbo_);
   glBufferData_(GL_ARRAY_BUFFER, util::VectorSizeInByte(buffer), buffer.data(), GL_STATIC_DRAW);
@@ -32,8 +32,8 @@ void LinesObject::OnInit(const Mesh& data) {
 
   // Stride param must assign to vertex size 8 * sizeof(float)
   // Offset param means offset in a vertex
-  glVertexAttribPointer_(kPosLayout, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-  glVertexAttribPointer_(kColorLayout, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+  glVertexAttribPointer_(kPosLayout, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
+  glVertexAttribPointer_(kColorLayout, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
                          reinterpret_cast<void *>(util::VectorSizeInByte(data.points)));
 
   glBindBuffer_(GL_ARRAY_BUFFER, 0);
@@ -61,11 +61,11 @@ void LinesObject::Clear() {
 
 Coord::Coord() {
   glm::vec3 translation = transform().translation();
-  std::vector<glm::vec3> positions{glm::vec3(0, 0, 0), glm::vec3(1, 0, 0),
-                                   glm::vec3(0, 0, 0), glm::vec3(0, 1, 0),
-                                   glm::vec3(0, 0, 0), glm::vec3(0, 0, 1)};
-  std::vector<glm::vec3> colors{glm::vec3(1, 0, 0), glm::vec3(1, 0, 0),
-                                glm::vec3(0, 1, 0), glm::vec3(0, 1, 0),
-                                glm::vec3(0, 0, 1), glm::vec3(0, 0, 1)};
+  std::vector<glm::vec4> positions{glm::vec4(0, 0, 0, 0), glm::vec4(1, 0, 0, 1),
+                                   glm::vec4(0, 0, 0, 0), glm::vec4(0, 1, 0, 1),
+                                   glm::vec4(0, 0, 0, 0), glm::vec4(0, 0, 1, 1)};
+  std::vector<glm::vec4> colors{glm::vec4(1, 0, 0, 1), glm::vec4(1, 0, 0, 1),
+                                glm::vec4(0, 1, 0, 1), glm::vec4(0, 1, 0, 1),
+                                glm::vec4(0, 0, 1, 1), glm::vec4(0, 0, 1, 1)};
   SetMesh({positions, colors, GL_LINES});
 }

@@ -86,14 +86,53 @@ void glBindBuffer_(GLenum target, GLuint buffer) {
   CGCHECKGL();
 }
 
-void glBufferData_(GLenum target, GLsizeiptr size, const void * data, GLenum usage) {
-  glBufferData(target, size, data, usage);
+void glBindBufferBase_(GLenum target, GLuint index, GLuint buffer) {
+  glBindBufferBase(target, index, buffer);
   CGCHECKGL();
+}
+
+void glBufferData_(GLenum target, GLsizeiptr size, const void* data, GLenum usage) {
+  glBufferData(target, size, data, usage);
+  CGCHECKGL() << "glBufferData" << std::hex
+              << " target~" << target
+              << " size~" << size
+              << " data~" << data
+              << " usage~" << usage << std::dec;
+}
+
+void* glMapBuffer_(GLenum target, GLenum access) {
+  void* res = CGCHECK_NOTNULL(glMapBuffer(target, access));
+  CGCHECKGL() << "glMapBuffer" << std::hex
+              << " target~" << target
+              << " access~" << access << std::dec;
+  return res;
+}
+
+void* glMapBufferRange_(GLenum target, GLintptr offset, GLsizeiptr length, GLbitfield access) {
+  void* res = CGCHECK_NOTNULL(glMapBufferRange(target, offset, length, access));
+  CGCHECKGL() << "glMapBufferRange" << std::hex
+              << " target~" << target
+              << " offset~" << offset
+              << " length~" << length
+              << " access~" << access << std::dec;
+  return res;
+}
+
+GLboolean glUnmapBuffer_(GLenum target) {
+  GLboolean res = glUnmapBuffer(target);
+  CGCHECKGL() << "glUnmapBuffer" << std::hex << " target~" << target;
+  CGCHECK(res) << "glUnmapBuffer" << std::hex << " target~" << target;
+  return res;
 }
 
 void glBufferSubData_(GLenum target, GLintptr offset, GLsizeiptr size, const void * data) {
   glBufferSubData(target, offset, size, data);
-  CGCHECKGL();
+  CGCHECKGL() << "glBufferSubData" << std::hex
+              << " target~" << target
+              << " offset~" << offset
+              << " size~" << size
+              << " data~" << data
+              << std::dec;
 }
 
 void glGenVertexArrays_(GLsizei n, GLuint *arrays) {

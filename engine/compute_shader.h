@@ -29,6 +29,7 @@ class ComputeShader {
   void SetCamera(Camera* camera, bool with_view, bool with_project);
   void SetSpheres(const std::vector<Sphere>& spheres);
   void SetScreenSize(const glm::vec2& screen_size);
+  void SetTimeSeed();
 
   Shader* mutable_shader() { return &shader_; }
  private:

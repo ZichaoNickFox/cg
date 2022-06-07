@@ -10,10 +10,6 @@
 #include <glog/logging.h>
 #endif
 
-// Variable Argument Macro (VA_MACRO) upto 6 arguments
-#define NUM_ARGS_(_1, _2, _3, _4, _5, _6, TOTAL, ...) TOTAL
-#define NUM_ARGS(...) NUM_ARGS_(__VA_ARGS__, 6, 5, 4, 3, 2, 1)
-
 #define CONCATE_(X, Y) X##Y  // Fixed the double '_' from previous code
 #define CONCATE(MACRO, NUMBER) CONCATE_(MACRO, NUMBER)
 #define VA_MACRO(MACRO, ...) CONCATE(MACRO, NUM_ARGS(__VA_ARGS__))(__VA_ARGS__)
@@ -50,23 +46,23 @@
 
 #define CGCHECK_NOTNULL(p) CHECK_NOTNULL(p)
 
-#define CG1 CGLOG(ERROR) << "1111111111";
-#define CG2 CGLOG(ERROR) << "2222222222";
-#define CG3 CGLOG(ERROR) << "3333333333";
-#define CG4 CGLOG(ERROR) << "4444444444";
-#define CG5 CGLOG(ERROR) << "5555555555";
-#define CG6 CGLOG(ERROR) << "6666666666";
-#define CG7 CGLOG(ERROR) << "7777777777";
-#define CG8 CGLOG(ERROR) << "8888888888";
-#define CG9 CGLOG(ERROR) << "9999999999";
+#define CGLOG1 CGLOG(ERROR) << "1111111111";
+#define CGLOG2 CGLOG(ERROR) << "2222222222";
+#define CGLOG3 CGLOG(ERROR) << "3333333333";
+#define CGLOG4 CGLOG(ERROR) << "4444444444";
+#define CGLOG5 CGLOG(ERROR) << "5555555555";
+#define CGLOG6 CGLOG(ERROR) << "6666666666";
+#define CGLOG7 CGLOG(ERROR) << "7777777777";
+#define CGLOG8 CGLOG(ERROR) << "8888888888";
+#define CGLOG9 CGLOG(ERROR) << "9999999999";
 
-#define CGA CGLOG(ERROR) << "aaaaaaaaaa";
-#define CGB CGLOG(ERROR) << "bbbbbbbbbb";
-#define CGC CGLOG(ERROR) << "cccccccccc";
-#define CGD CGLOG(ERROR) << "dddddddddd";
-#define CGE CGLOG(ERROR) << "eeeeeeeeee";
-#define CGF CGLOG(ERROR) << "ffffffffff";
-#define CGG CGLOG(ERROR) << "gggggggggg";
-#define CGH CGLOG(ERROR) << "hhhhhhhhhh";
-#define CGI CGLOG(ERROR) << "iiiiiiiiii";
+#define CGLOGA CGLOG(ERROR) << "aaaaaaaaaa";
+#define CGLOGB CGLOG(ERROR) << "bbbbbbbbbb";
+#define CGLOGC CGLOG(ERROR) << "cccccccccc";
+#define CGLOGD CGLOG(ERROR) << "dddddddddd";
+#define CGLOGE CGLOG(ERROR) << "eeeeeeeeee";
+#define CGLOGF CGLOG(ERROR) << "ffffffffff";
+#define CGLOGG CGLOG(ERROR) << "gggggggggg";
+#define CGLOGH CGLOG(ERROR) << "hhhhhhhhhh";
+#define CGLOGI CGLOG(ERROR) << "iiiiiiiiii";
 

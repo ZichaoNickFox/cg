@@ -28,3 +28,8 @@ vec3 PositionSS2WS(vec3 pos_ss, mat4 view, mat4 project) {
   pos_ws = pos_ws / pos_ws.w;
   return pos_ws.xyz;
 }
+
+vec3 PositionWS2SS(vec3 position_ws, mat4 view, mat4 project) {
+  vec4 pos_cs = project * view * vec4(position_ws, 1.0);
+  return (pos_cs / pos_cs.w * 0.5 + 0.5).xyz;
+}

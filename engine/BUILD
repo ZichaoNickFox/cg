@@ -76,6 +76,8 @@ cc_library(
     "pass.cc",
     "shader.h",
     "shader.cc",
+    "SSBO.h",
+    "SSBO.cc",
     "texture.h",
     "texture.cc",
     "transform.h",

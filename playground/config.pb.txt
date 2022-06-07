@@ -361,6 +361,8 @@ shader_config {
 shader_config {
   name : "random";
   cs_path : [
+    "engine/shader/version.glsl",
+    "engine/shader/random.glsl",
     "engine/shader/random.cs.glsl"
   ];
 }
@@ -403,6 +405,7 @@ shader_config {
     "engine/shader/convert.glsl",
     "engine/shader/camera.glsl",
     "engine/shader/geometry.glsl",
+    "engine/shader/random.glsl",
     "engine/shader/path_tracing.cs.glsl"
   ]
 }

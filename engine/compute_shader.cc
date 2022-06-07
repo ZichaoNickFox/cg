@@ -75,4 +75,8 @@ void ComputeShader::SetScreenSize(const glm::vec2& screen_size) {
   shader_.SetVec2("screen_size", screen_size);
 }
 
+void ComputeShader::SetTimeSeed() {
+  shader_.SetFloat("time_for_seed", util::AsFloat(util::Now()));
+}
+
 };

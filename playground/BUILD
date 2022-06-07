@@ -91,8 +91,11 @@ cc_test (
       "test.cc",
   ],
   deps = [
+    "//engine:engine",
     "//engine:util",
     "@gtest//:gtest",
-    "@gtest//:gtest_main"
+    "@gtest//:gtest_main",
+    "@glew",
+    "@glm",
   ],
 )

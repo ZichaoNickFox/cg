@@ -1,10 +1,10 @@
 #pragma once
 
-#include <string>
-
 #include <fmt/format.h>
 #include <glm/glm.hpp>
 #include <google/protobuf/text_format.h>
+#include <string>
+#include <vector>
 
 #include "engine/debug.h"
 
@@ -78,11 +78,21 @@ std::vector<KeyType> AsKeyVector(const std::unordered_map<KeyType, ValueType>& i
   }
   return res;
 }
+template <typename ArrayElemType, int N>
+std::vector<ArrayElemType> AsVector(const ArrayElemType (&array)[N]) {   
+ int num = (sizeof(array) / sizeof(array[0])); 
+ return {array, array + num};
+};
+template<typename VectorElemType>
+std::vector<VectorElemType> SubVector(const std::vector<VectorElemType>& source, int begin, int end) {
+  return {source.begin() + begin, source.begin() + end};
+}
 
 // time
 using Time = std::chrono::high_resolution_clock::time_point;
 Time Now();
 int64_t DurationMillisecond(const Time& from, const Time& to);
+float AsFloat(const Time& time);
 
 // float
 float FloatEq(float value, float target);

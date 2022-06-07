@@ -14,9 +14,9 @@ void DirectionalLightObject::OnUpdate(Context* context) {
   billboard_.SetTransform(transform_);
   billboard_.OnUpdate(context);
 
-  glm::vec3 from = transform_.translation();
-  glm::vec3 to = transform_.translation() + transform_.rotation() * glm::vec3(0, 0, -10);
-  lines_.SetMesh(LinesObject::Mesh{{from, to}, {glm::vec3(1, 1, 1), glm::vec3(1, 1, 1)}, GL_LINES});
+  glm::vec4 from = glm::vec4(transform_.translation(), 1.0);
+  glm::vec4 to = glm::vec4(transform_.translation(), 1.0) + transform_.rotation() * glm::vec4(0, 0, -10, 1);
+  lines_.SetMesh(LinesObject::Mesh{{from, to}, {glm::vec4(1, 1, 1, 1), glm::vec4(1, 1, 1, 1)}, GL_LINES});
 }
 
 void DirectionalLightObject::OnRender(Context* context, int instance_num) {

@@ -11,8 +11,8 @@
 class LinesObject : public Object {
  public:
   struct Mesh {
-    std::vector<glm::vec3> points;
-    std::vector<glm::vec3> colors;
+    std::vector<glm::vec4> points;
+    std::vector<glm::vec4> colors;
     GLuint primitive_mode;    // line_style : GL_LINES, GL_LINE_STRIP, GL_LINE_LOOP
   };
   void SetMesh(const Mesh& data);

@@ -26,9 +26,12 @@ class OnRenderCommon {
   void DrawWorldCoordAndViewCoord(Context* context);
 };
 
-class TextureDebugFullScreen {
+class RaytracingDebugCommon {
  public:
-  TextureDebugFullScreen(const engine::Texture& in, Context* context);
+  struct LightPath {
+    glm::vec4 light_path[20];
+  };
+  RaytracingDebugCommon(const engine::Texture& in, Context* context, const LightPath& light_path);
 };
 
 template<typename ChannelType>

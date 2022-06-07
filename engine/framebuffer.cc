@@ -48,9 +48,12 @@ void Framebuffer::Init(const Option& option) {
     CGCHECK(false) << "Framebuffer Status Error : State - " << framebuffer_status;
   }
   glBindFramebuffer_(GL_FRAMEBUFFER, 0);
+
+  inited_ = true;
 }
 
 void Framebuffer::Bind() {
+  CGCHECK(inited_);
   glGetIntegerv_(GL_VIEWPORT, resumption_viewport_);
   glGetIntegerv_(GL_FRAMEBUFFER_BINDING, &resumption_fbo_);
   glViewport_(0, 0, option_.size.x, option_.size.y);

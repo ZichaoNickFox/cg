@@ -113,8 +113,27 @@ void OnRenderCommon::DrawWorldCoordAndViewCoord(Context* context) {
   glEnable_(GL_DEPTH_TEST);
 }
 
-TextureDebugFullScreen::TextureDebugFullScreen(const engine::Texture& in, Context* context) {
-  EmptyObject object;
-  FullscreenQuadShader({in}, context, &object);
-  object.OnRender(context);
+RaytracingDebugCommon::RaytracingDebugCommon(const engine::Texture& in, Context* context, const LightPath& light_path) {
+  EmptyObject empty_object;
+  FullscreenQuadShader({in}, context, &empty_object);
+  empty_object.OnRender(context);
+
+  glDisable_(GL_DEPTH_TEST);
+
+  std::vector<glm::vec4> colors{{1, 0, 0, 1}, {1, 156 / 255.0, 0, 1}, {1, 1, 0, 1}, {0, 1, 0, 1},
+                                {0, 1, 1, 1}, {0, 0, 1, 1}, {1, 0, 1, 1}, {1, 1, 1, 1},
+                                {1, 1, 1, 1}, {1, 1, 1, 1}, {1, 1, 1, 1}, {1, 1, 1, 1},
+                                {1, 1, 1, 1}, {1, 1, 1, 1}, {1, 1, 1, 1}, {1, 1, 1, 1},
+                                {1, 1, 1, 1}, {1, 1, 1, 1}, {1, 1, 1, 1}, {1, 1, 1, 1}};
+  LinesObject::Mesh mesh{util::AsVector(light_path.light_path), colors, GL_LINE_STRIP};
+  LinesObject lines_object;
+  lines_object.SetMesh(mesh);
+  LinesShader({}, context, &lines_object);
+  lines_object.OnRender(context);
+
+  Coord coord;
+  LinesShader({}, context, &coord);
+  coord.OnRender(context);
+  glEnable_(GL_DEPTH_TEST);
+
 }

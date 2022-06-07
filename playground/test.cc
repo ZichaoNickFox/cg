@@ -1,8 +1,10 @@
 #include "gtest/gtest.h"
 
+#include <glm/glm.hpp>
 #include <map>
 #include <math.h>
 
+#include "engine/math.h"
 #include "engine/util.h"
 
 TEST(engine_test, util)
@@ -37,4 +39,7 @@ TEST(engine_test, util)
   EXPECT_EQ(util::ReplaceBackslash("a\\abc.png"), "a/abc.png");
   EXPECT_EQ(util::ReplaceBackslash("\\"), "/");
   EXPECT_EQ(util::ReplaceBackslash("a/abc.png"), "a/abc.png");
+
+  glm::vec3 array[] = {{1, 1, 1}, {2, 2, 2}, {3, 3, 3}};
+  EXPECT_EQ(util::AsVector(array).size(), 3);
 }

@@ -101,6 +101,10 @@ int64_t DurationMillisecond(const Time& from, const Time& to) {
   return duration.count() / 1e6;
 }
 
+float AsFloat(const Time& time) {
+  return time.time_since_epoch().count() / float(1e19);
+}
+
 float FloatEq(float value, float target) {
   return value < target + std::numeric_limits<float>::epsilon()
       && value > target - std::numeric_limits<float>::epsilon();
