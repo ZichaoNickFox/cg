@@ -17,6 +17,7 @@ struct Ray {
 };
 
 struct Sphere {
+  int id;
   vec3 center_pos;
   vec4 color;
   float radius;

@@ -65,6 +65,7 @@ void ComputeShader::SetCamera(Camera* camera, bool with_view, bool with_project)
 void ComputeShader::SetSpheres(const std::vector<Sphere>& spheres) {
   for (int i = 0; i < spheres.size(); ++i) {
     const Sphere& sphere  = spheres[i];
+    shader_.SetInt(util::Format("spheres[{}].id", i), sphere.id);
     shader_.SetVec3(util::Format("spheres[{}].center_pos", i), sphere.translation);
     shader_.SetVec4(util::Format("spheres[{}].color", i), sphere.color);
     shader_.SetFloat(util::Format("spheres[{}].radius", i), sphere.radius);

@@ -4,6 +4,7 @@
 
 namespace engine {
 struct Sphere {
+  int id;
   glm::vec3 translation;
   glm::vec4 color;
   float radius;
