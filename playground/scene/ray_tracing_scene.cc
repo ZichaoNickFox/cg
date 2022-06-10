@@ -39,8 +39,8 @@ void RayTracingScene::OnUpdate(Context* context) {
 
 void RayTracingScene::OnRender(Context* context) {
   //Resterization(context);
-  RayTracing(context);
-  //PathTracing(context);
+//  RayTracing(context);
+  PathTracing(context);
 }
 
 void RayTracingScene::OnExit(Context* context) {
@@ -65,9 +65,7 @@ void RayTracingScene::RayTracing(Context* context) {
 }
 
 void RayTracingScene::PathTracing(Context* context) {
-/*
   PathTracingShader({context->io().screen_size(), camera_.get(),
-                   util::AsValueVector(sphere_map_), canvas_}, context);
-  RaytracingDebugCommon(canvas_, context);
-  */
+                    util::AsValueVector(sphere_map_), canvas_}, context);
+  RaytracingDebugCommon(canvas_, context, light_path_ssbo_.GetData<RaytracingDebugCommon::LightPath>());
 }

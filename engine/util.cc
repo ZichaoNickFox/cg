@@ -102,7 +102,7 @@ int64_t DurationMillisecond(const Time& from, const Time& to) {
 }
 
 float AsFloat(const Time& time) {
-  return time.time_since_epoch().count() / float(1e19);
+  return time.time_since_epoch().count() / float(1e10);
 }
 
 float FloatEq(float value, float target) {

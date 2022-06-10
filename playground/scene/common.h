@@ -29,6 +29,7 @@ class OnRenderCommon {
 class RaytracingDebugCommon {
  public:
   struct LightPath {
+    LightPath();
     glm::vec4 light_path[20];
   };
   RaytracingDebugCommon(const engine::Texture& in, Context* context, const LightPath& light_path);

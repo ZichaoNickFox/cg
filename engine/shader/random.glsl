@@ -1,34 +1,14 @@
-// https://stackoverflow.com/questions/4200224/random-noise-functions-for-glsl
 uniform float time_for_seed;
 
-uint hash( uint x ) {
-  x += ( x << 10u );
-  x ^= ( x >>  6u );
-  x += ( x <<  3u );
-  x ^= ( x >> 11u );
-  x += ( x << 15u );
-  return x;
+// https://www.shadertoy.com/view/4djSRW
+float hash12(vec2 p)
+{
+  vec3 p3  = fract(vec3(p.xyx) * .1031);
+  p3 += dot(p3, p3.yzx + 33.33);
+  return fract((p3.x + p3.y) * p3.z);
 }
 
-// Compound versions of the hashing algorithm I whipped together.
-uint hash( uvec2 v ) { return hash( v.x ^ hash(v.y)                         ); }
-uint hash( uvec3 v ) { return hash( v.x ^ hash(v.y) ^ hash(v.z)             ); }
-uint hash( uvec4 v ) { return hash( v.x ^ hash(v.y) ^ hash(v.z) ^ hash(v.w) ); }
-
-// Construct a float with half-open range [0:1] using low 23 bits.
-// All zeroes yields 0.0, all ones yields the next smallest representable value below 1.0.
-float floatConstruct( uint m ) {
-  const uint ieeeMantissa = 0x007FFFFFu; // binary32 mantissa bitmask
-  const uint ieeeOne      = 0x3F800000u; // 1.0 in IEEE binary32
-
-  m &= ieeeMantissa;                     // Keep only mantissa bits (fractional part)
-  m |= ieeeOne;                          // Add fractional part to 1.0
-
-  float  f = uintBitsToFloat( m );       // Range [1:2]
-  return f - 1.0;                        // Range [0:1]
+float random_cs(float id){
+  vec2 co = gl_GlobalInvocationID.xy + vec2(time_for_seed) + vec2(id);
+  return hash12(co);
 }
-
-// Pseudo-random value in half-open range [0:1].
-float random(float x) { return floatConstruct(hash(floatBitsToUint(vec2(x, time_for_seed)))); }
-float random(vec2 v) { return floatConstruct(hash(floatBitsToUint(vec3(v, time_for_seed)))); }
-float random(vec3 v) { return floatConstruct(hash(floatBitsToUint(vec4(v, time_for_seed)))); }

@@ -125,6 +125,12 @@ void OnRenderCommon::DrawWorldCoordAndViewCoord(Context* context) {
   glEnable_(GL_DEPTH_TEST);
 }
 
+RaytracingDebugCommon::LightPath::LightPath() {
+  for (int i = 0; i < 20; ++i) {
+    light_path[i] = glm::vec4(9999, 9999, 9999, 1);
+  }
+}
+
 RaytracingDebugCommon::RaytracingDebugCommon(const engine::Texture& in, Context* context, const LightPath& light_path) {
   EmptyObject empty_object;
   FullscreenQuadShader({in}, context, &empty_object);

@@ -6,7 +6,7 @@ layout (rgba32f, binding = 1) uniform image2D output_texture;
 
 void main() {
   ivec2 pos = ivec2(gl_GlobalInvocationID.xy);
-  float r = random(pos);
+  float r = random_cs(0);
   vec4 color = vec4(r, r, r, 1);
   imageStore(output_texture, pos, color);
 }
