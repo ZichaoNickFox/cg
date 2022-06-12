@@ -17,7 +17,7 @@
 #include "playground/scene/ray_tracing_scene.h"
 #include "playground/scene/pbr_scene.h"
 #include "playground/scene/random_scene.h"
-//#include "playground/scene/sample_scene.h"
+#include "playground/scene/sample_scene.h"
 #include "playground/scene/shadow_scene.h"
 //#include "playground/scene/share_scene.h"
 //#include "playground/scene/skybox_scene.h"
@@ -47,7 +47,7 @@ void Playground::InitScene() {
   //scene_map_.insert(std::make_pair("ShareScene", std::make_unique<ShareScene>()));
   //scene_map_.insert(std::make_pair("Equirectangular2CubemapTool", std::make_unique<Equirectangular2CubemapTool>()));
   //scene_map_.insert(std::make_pair("PbrIrradianceCubemapGenerator", std::make_unique<PbrIrradianceCubemapGenerator>()));
-  //scene_map_.insert(std::make_pair("SampleScene", std::make_unique<SampleScene>()));
+  scene_map_.insert(std::make_pair("SampleScene", std::make_unique<SampleScene>()));
   //scene_map_.insert(std::make_pair("PbrPrefilteredColorCubemapGenerator", std::make_unique<PbrPrefilteredColorCubemapGenerator>()));
   //scene_map_.insert(std::make_pair("PbrBRDFIntegrationMapGenerator", std::make_unique<PbrBRDFIntegrationMapGenerator>()));
   //scene_map_.insert(std::make_pair("TextureLodScene", std::make_unique<TextureLodScene>()));

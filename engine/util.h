@@ -87,12 +87,23 @@ template<typename VectorElemType>
 std::vector<VectorElemType> SubVector(const std::vector<VectorElemType>& source, int begin, int end) {
   return {source.begin() + begin, source.begin() + end};
 }
+template<typename VectorElemType>
+void Remove(const VectorElemType& elem, std::vector<VectorElemType>* elems) {
+  for (std::vector<VectorElemType>::iterator iter = elems->begin(); iter < elems->end();) {
+    if (elem == *iter) {
+      iter = elems->erase(iter);
+    } else {
+      iter++;
+    }
+  }
+}
 
 // time
 using Time = std::chrono::high_resolution_clock::time_point;
 Time Now();
 int64_t DurationMillisecond(const Time& from, const Time& to);
 float AsFloat(const Time& time);
+int AsInt(const Time& time);
 
 // float
 float FloatEq(float value, float target);

@@ -105,6 +105,10 @@ float AsFloat(const Time& time) {
   return time.time_since_epoch().count() / float(1e10);
 }
 
+int AsInt(const Time& time) {
+  return time.time_since_epoch().count();
+}
+
 float FloatEq(float value, float target) {
   return value < target + std::numeric_limits<float>::epsilon()
       && value > target - std::numeric_limits<float>::epsilon();

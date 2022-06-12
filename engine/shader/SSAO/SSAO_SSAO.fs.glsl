@@ -1,3 +1,7 @@
+#include "engine/shader/version.glsl"
+#include "engine/shader/depth.glsl"
+#include "engine/shader/convert.glsl"
+
 out vec3 out_frag_color;
 
 in vec2 texcoord_;

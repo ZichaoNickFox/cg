@@ -1,3 +1,7 @@
+#include "engine/shader/version.glsl"
+#include "engine/shader/depth.glsl"
+#include "engine/shader/convert.glsl"
+
 layout (location = 0) out vec3 position_vs;
 layout (location = 1) out vec3 normal_vs;
 layout (location = 2) out vec4 albedo;

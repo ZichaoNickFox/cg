@@ -13,12 +13,12 @@ class ShaderRepo {
   void ReloadShaders();
 
  private:
-  struct ShaderData {
-    ShaderData(const ShaderConfig& in_config) { config = in_config; }
+  struct ShaderLoadState {
+    ShaderLoadState(const ShaderConfig& in_config) { config = in_config; }
     bool loaded = false;
     engine::Shader shader;
     ShaderConfig config;
   };
-  std::unordered_map<std::string, ShaderData> shaders_;
+  std::unordered_map<std::string, ShaderLoadState> shaders_;
 };
 } // namespace engine

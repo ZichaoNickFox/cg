@@ -1,3 +1,14 @@
+#include "engine/shader/version.glsl"
+#include "engine/shader/convert.glsl"
+#include "engine/shader/camera.glsl"
+#include "engine/shader/geometry.glsl"
+#include "engine/shader/random.glsl"
+#include "engine/shader/sample.glsl"
+#include "engine/shader/pbr/pbr_geometry.glsl"
+#include "engine/shader/pbr/pbr_fresnel.glsl"
+#include "engine/shader/pbr/pbr_NDF.glsl"
+#include "engine/shader/pbr/pbr_BRDF.glsl"
+
 uniform vec2 screen_size;
 uniform Camera camera;
 uniform Sphere spheres[10];
@@ -5,29 +16,26 @@ uniform mat4 view;
 uniform mat4 project;
 
 layout (local_size_x = 32, local_size_y = 32) in;
-layout (rgba32f, binding = 0) uniform image2D texture_output;
+layout (rgba32f, binding = 0) uniform image2D canvas;
 layout (std430, binding = 0) buffer LightPath { vec4 light_path[20]; };
 
 const float pi = 3.1415926;
 const float bias = 0.0001;
 
 // https://www.bilibili.com/video/BV1X7411F744?p=16 0:58:08
-vec4 path_tracing(Sphere spheres2[10], Ray ray) {
-  vec4 res = vec4(0, 0, 0, 1);
+vec4 path_tracing(Sphere spheres2[10], Ray ray, vec4 color) {
   Ray ray_iter = ray;
   vec4 color_iter = vec4(1, 1, 1, 1);
 
-//  bool is_debug_frag = length(gl_GlobalInvocationID.xy / screen_size - vec2(0.5, 0.5)) < 0.00001;
-  bool is_debug_frag = false;
+  bool is_debug_frag = length(gl_GlobalInvocationID.xy / screen_size - vec2(0.5, 0.5)) < 0.00001;
   if (is_debug_frag) {
     ray_iter.origin = vec3(0.000000, 1.000000, 5.000000);
-    ray_iter.dir = vec3(-0.023336, -0.358501, -0.933238);
+    ray_iter.dir = vec3(0.251670, -0.375554, -0.891976);
   }
 
   int count = 0;
   while(true) {
     if (count >= 20) {
-      res = vec4(0, 0, 0, 1);
       break;
     }
 
@@ -37,9 +45,8 @@ vec4 path_tracing(Sphere spheres2[10], Ray ray) {
 
     count += 1;
 
-    const float P_RR = 0.8;
-    if (random_cs(count) > P_RR) {
-      res = vec4(0, 0, 0, 1);
+    const float P_RR = 0.9;
+    if (random() > P_RR) {
       break;
     }
 
@@ -55,28 +62,35 @@ vec4 path_tracing(Sphere spheres2[10], Ray ray) {
       }
     }
 
-    // light
     if (sphere.id == 1) {
-      res = sphere.color * dot(result.normal, -ray_iter.dir) / (pi * 2) / P_RR * color_iter;
+      // light
+      color = color_iter * sphere.color * max(dot(result.normal, -ray_iter.dir), 0.0) / (pi * 2) / P_RR;
       if (is_debug_frag) {
         light_path[count] = vec4(result.pos, 1.0);
       }
-      break;
-    } else {
-      // hemisphere sphere tangent space 
-      vec3 x_ts_base = cross(vec3(0, 1, 0), result.normal);
-      vec3 z_ts_base = cross(x_ts_base, result.normal);
-      vec3 y_ts_base = result.normal;
-      float x_ts = random_cs(1) * 2 - 1;
-      float z_ts = random_cs(2) * 2 - 1;
-      float y_ts = random_cs(3);
-      vec3 dir_ws = mat3(x_ts_base, y_ts_base, z_ts_base) * vec3(x_ts, y_ts, z_ts);
-      dir_ws = normalize(dir_ws);
+//    } else if (sphere.id == 9) {
+      // glass
+//      vec3 dir_ws = SampleSphereRandomDirction(result.normal);
+//      if (dot(dir_ws, result.normal) < 0) {
+        
+//      }
+    } else if (sphere.id == 8) {
+      // right big metal ball
+      vec3 dir_ws = SampleUnitHemisphereDir(result.normal);
+      float f_r = BRDF(-ray_iter.dir, dir_ws, result.normal, 0.1);
+//      float f_r = 1;
+      color_iter = color_iter * sphere.color * max(dot(result.normal, -ray_iter.dir), 0.0) * f_r / /*(pi * 2) */ P_RR;
       ray_iter = Ray(result.pos + bias * dir_ws, dir_ws);
-      color_iter = color_iter * sphere.color * dot(result.normal, dir_ws) / (pi * 2) / P_RR;
+    } else {
+      // other
+      vec3 dir_ws = SampleUnitHemisphereDir(result.normal);
+      float f_r = BRDF(-ray_iter.dir, dir_ws, result.normal, 0.5);
+//      float f_r = 1.0;
+      color_iter = color_iter * sphere.color * max(dot(result.normal, -ray_iter.dir), 0.0) * f_r / /*(pi * 2) */ P_RR;
+      ray_iter = Ray(result.pos + bias * dir_ws, dir_ws);
     }
   }
-  return res;
+  return color;
 }
 
 void main() {
@@ -84,10 +98,9 @@ void main() {
   vec3 near_pos_ws = PositionSS2WS(near_pos_ss, view, project);
   vec3 camera_dir_ws = normalize(near_pos_ws - camera.pos_ws);
   
+  vec4 color = imageLoad(canvas, ivec2(gl_GlobalInvocationID.xy));
   Ray ray = Ray(camera.pos_ws + bias * camera_dir_ws, camera_dir_ws);
-  vec4 color = path_tracing(spheres, ray); 
+  color = path_tracing(spheres, ray, color); 
 
-  if (color != vec4(0, 0, 0, 1)) {
-    imageStore(texture_output, ivec2(gl_GlobalInvocationID.xy), color);
-  }
+  imageStore(canvas, ivec2(gl_GlobalInvocationID.xy), color);
 }

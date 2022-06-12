@@ -1,413 +1,222 @@
 shader_config {
   name : "triangle";
-  vs_path : [
-    "engine/shader/triangle.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/triangle.fs.glsl"
-  ];
+  vs_path : "engine/shader/triangle.vs.glsl";
+  fs_path : "engine/shader/triangle.fs.glsl";
 }
 
 shader_config {
   name : "texture";
-  vs_path : [
-    "engine/shader/texture.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/texture.fs.glsl"
-  ];
+  vs_path : "engine/shader/texture.vs.glsl";
+  fs_path : "engine/shader/texture.fs.glsl";
 }
 
 shader_config {
   name : "texture2d_lod";
-  vs_path : [
-    "engine/shader/texture2d_lod.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/texture2d_lod.fs.glsl"
-  ];
+  vs_path : "engine/shader/texture2d_lod.vs.glsl";
+  fs_path : "engine/shader/texture2d_lod.fs.glsl";
 }
 
 shader_config {
   name : "cubemap_lod";
-  vs_path : [
-    "engine/shader/cubemap_lod.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/cubemap_lod.fs.glsl"
-  ];
+  vs_path : "engine/shader/cubemap_lod.vs.glsl";
+  fs_path : "engine/shader/cubemap_lod.fs.glsl";
 }
 
 shader_config {
   name : "normal";
-  vs_path : [
-    "engine/shader/normal.vs.glsl"
-  ];
-  gs_path : [
-    "engine/shader/normal.gs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/normal.fs.glsl"
-  ];
+  vs_path : "engine/shader/normal.vs.glsl";
+  gs_path : "engine/shader/normal.gs.glsl";
+  fs_path : "engine/shader/normal.fs.glsl";
 }
 
 shader_config {
   name : "phong";
-  vs_path : [
-    "engine/shader/version.glsl",
-    "engine/shader/shadow_info.glsl",
-    "engine/shader/phong/phong.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/version.glsl",
-    "engine/shader/light_info.glsl",
-    "engine/shader/phong/phong_material.glsl",
-    "engine/shader/shadow_info.glsl",
-    "engine/shader/phong/phong_model.glsl",
-    "engine/shader/shadow_model.glsl",
-    "engine/shader/phong/phong.fs.glsl"
-  ]
+  vs_path : "engine/shader/phong/phong.vs.glsl";
+  fs_path : "engine/shader/phong/phong.fs.glsl";
 }
 
 shader_config {
   name : "phong_shadow";
-  vs_path : [
-    "engine/shader/phong/phong_shadow.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/phong/phong_shadow.fs.glsl"
-  ];
+  vs_path : "engine/shader/phong/phong_shadow.vs.glsl";
+  fs_path : "engine/shader/phong/phong_shadow.fs.glsl";
 }
 
 shader_config {
   name : "point_light";
-  vs_path : [
-    "engine/shader/point_light.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/point_light.fs.glsl"
-  ];
+  vs_path : "engine/shader/point_light.vs.glsl";
+  fs_path : "engine/shader/point_light.fs.glsl";
 }
 
 shader_config {
   name : "lines";
-  vs_path : [
-    "engine/shader/lines.vs.glsl"
-  ];
-  gs_path : [
-    "engine/shader/lines.gs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/lines.fs.glsl"
-  ];
+  vs_path : "engine/shader/lines.vs.glsl";
+  gs_path : "engine/shader/lines.gs.glsl";
+  fs_path : "engine/shader/lines.fs.glsl";
 }
 
 shader_config {
   name : "skybox";
-  vs_path : [
-    "engine/shader/skybox.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/skybox.fs.glsl"
-  ];
+  vs_path : "engine/shader/skybox.vs.glsl";
+  fs_path : "engine/shader/skybox.fs.glsl";
 }
 
 shader_config {
   name : "depth_buffer";
-  vs_path : [
-    "engine/shader/depth_buffer.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/version.glsl",
-    "engine/shader/depth.glsl",
-    "engine/shader/depth_buffer.fs.glsl"
-  ];
+  vs_path : "engine/shader/depth_buffer.vs.glsl";
+  fs_path : "engine/shader/depth_buffer.fs.glsl";
 }
 
 shader_config {
   name : "mrt_fusion";
-  vs_path : [
-    "engine/shader/mrt_fusion.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/mrt_fusion.fs.glsl"
-  ];
+  vs_path : "engine/shader/mrt_fusion.vs.glsl";
+  fs_path : "engine/shader/mrt_fusion.fs.glsl";
 }
 
 shader_config {
   name : "aa_test_scene";
-  vs_path : [
-    "engine/shader/aa_test_scene.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/aa_test_scene.fs.glsl"
-  ];
+  vs_path : "engine/shader/aa_test_scene.vs.glsl";
+  fs_path : "engine/shader/aa_test_scene.fs.glsl";
 }
 
 shader_config {
   name : "fullscreen_quad";
-  vs_path : [
-    "engine/shader/fullscreen_quad.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/fullscreen_quad.fs.glsl"
-  ];
+  vs_path : "engine/shader/fullscreen_quad.vs.glsl";
+  fs_path : "engine/shader/fullscreen_quad.fs.glsl";
 }
 
 shader_config {
   name : "nanosuit";
-  vs_path : [
-    "engine/shader/nanosuit.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/nanosuit.fs.glsl"
-  ];
+  vs_path : "engine/shader/nanosuit.vs.glsl";
+  fs_path : "engine/shader/nanosuit.fs.glsl";
 }
 
 shader_config {
   name : "model_test";
-  vs_path : [
-    "engine/shader/model_test.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/model_test.fs.glsl"
-  ];
+  vs_path : "engine/shader/model_test.vs.glsl";
+  fs_path : "engine/shader/model_test.fs.glsl";
 }
 
 shader_config {
   name : "deferred_shading_geometry";
-  vs_path : [
-    "engine/shader/deferred_shading_geometry.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/deferred_shading_geometry.fs.glsl"
-  ];
+  vs_path : "engine/shader/deferred_shading_geometry.vs.glsl";
+  fs_path : "engine/shader/deferred_shading_geometry.fs.glsl";
 }
 
 shader_config {
   name : "deferred_shading_lighting";
-  vs_path : [
-    "engine/shader/deferred_shading_lighting.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/deferred_shading_lighting.fs.glsl"
-  ];
+  vs_path : "engine/shader/deferred_shading_lighting.vs.glsl";
+  fs_path : "engine/shader/deferred_shading_lighting.fs.glsl";
 }
 
 shader_config {
   name : "pbr";
-  vs_path : [
-    "engine/shader/version.glsl",
-    "engine/shader/pbr.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/version.glsl",
-    "engine/shader/pbr/pbr_material.glsl",
-    "engine/shader/light_info.glsl",
-    "engine/shader/pbr/pbr_NDF.glsl",
-    "engine/shader/pbr/pbr_geometry.glsl",
-    "engine/shader/pbr/pbr_fresnel.glsl",
-    "engine/shader/pbr/pbr_model.glsl",
-    "engine/shader/pbr/pbr.fs.glsl"
-  ];
+  vs_path : "engine/shader/pbr.vs.glsl";
+  fs_path : "engine/shader/pbr/pbr.fs.glsl";
 }
 
 shader_config {
   name : "TBN";
-  vs_path : [
-    "engine/shader/TBN.vs.glsl"
-  ];
-  gs_path : [
-    "engine/shader/TBN.gs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/TBN.fs.glsl"
-  ];
+  vs_path : "engine/shader/TBN.vs.glsl";
+  gs_path : "engine/shader/TBN.gs.glsl";
+  fs_path : "engine/shader/TBN.fs.glsl";
 }
 
 shader_config {
   name : "color";
-  vs_path : [
-    "engine/shader/color.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/color.fs.glsl"
-  ];
+  vs_path : "engine/shader/color.vs.glsl";
+  fs_path : "engine/shader/color.fs.glsl";
 }
 
 shader_config {
   name : "equirectangular_2_cubemap_tool";
-  vs_path : [
-    "engine/shader/equirectangular_2_cubemap_tool.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/version.glsl",
-    "engine/shader/sample.glsl",
-    "engine/shader/equirectangular_2_cubemap_tool.fs.glsl"
-  ];
+  vs_path : "engine/shader/equirectangular_2_cubemap_tool.vs.glsl";
+  fs_path : "engine/shader/equirectangular_2_cubemap_tool.fs.glsl";
 }
 
 shader_config {
   name : "texcoord";
-  vs_path : [
-    "engine/shader/texcoord.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/texcoord.fs.glsl"
-  ];
+  vs_path : "engine/shader/texcoord.vs.glsl";
+  fs_path : "engine/shader/texcoord.fs.glsl";
 }
 
 shader_config {
   name : "pbr_irradiance_cubemap_generator";
-  vs_path : [
-    "engine/shader/pbr/pbr_irradiance_cubemap_generator.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/pbr/pbr_irradiance_cubemap_generator.fs.glsl"
-  ];
+  vs_path : "engine/shader/pbr/pbr_irradiance_cubemap_generator.vs.glsl";
+  fs_path : "engine/shader/pbr/pbr_irradiance_cubemap_generator.fs.glsl";
 }
 
 shader_config {
   name : "sample";
-  vs_path : [
-    "engine/shader/version.glsl",
-    "engine/shader/sample.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/version.glsl",
-    "engine/shader/sample.glsl",
-    "engine/shader/sample.fs.glsl"
-  ];
+  vs_path : "engine/shader/sample.vs.glsl";
+  fs_path : "engine/shader/sample.fs.glsl";
 }
 
 shader_config {
   name : "pbr_prefiltered_color_cubemap_generator";
-  vs_path : [
-    "engine/shader/pbr/pbr_prefiltered_color_cubemap_generator.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/version.glsl",
-    "engine/shader/sample.glsl",
-    "engine/shader/pbr/pbr_prefiltered_color_cubemap_generator.fs.glsl"
-  ];
+  vs_path : "engine/shader/pbr/pbr_prefiltered_color_cubemap_generator.vs.glsl";
+  fs_path : "engine/shader/pbr/pbr_prefiltered_color_cubemap_generator.fs.glsl";
 }
 
 shader_config {
   name : "pbr_BRDF_integration_map_generator";
-  vs_path : [
-    "engine/shader/pbr/pbr_BRDF_integration_map_generator.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/version.glsl",
-    "engine/shader/sample.glsl",
-    "engine/shader/pbr/pbr_BRDF_integration_map_generator.fs.glsl"
-  ];
+  vs_path : "engine/shader/pbr/pbr_BRDF_integration_map_generator.vs.glsl";
+  fs_path : "engine/shader/pbr/pbr_BRDF_integration_map_generator.fs.glsl";
 }
 
 shader_config {
   name : "SSAO_g_buffer";
-  vs_path : [
-    "engine/shader/version.glsl",
-    "engine/shader/convert.glsl",
-    "engine/shader/SSAO/SSAO_g_buffer.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/version.glsl",
-    "engine/shader/depth.glsl",
-    "engine/shader/convert.glsl",
-    "engine/shader/SSAO/SSAO_g_buffer.fs.glsl"
-  ];
+  vs_path : "engine/shader/SSAO/SSAO_g_buffer.vs.glsl";
+  fs_path : "engine/shader/SSAO/SSAO_g_buffer.fs.glsl";
 }
 
 shader_config {
   name : "SSAO_SSAO";
-  vs_path : [
-    "engine/shader/fullscreen_quad.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/version.glsl",
-    "engine/shader/depth.glsl",
-    "engine/shader/convert.glsl",
-    "engine/shader/SSAO/SSAO_SSAO.fs.glsl"
-  ];
+  vs_path : "engine/shader/fullscreen_quad.vs.glsl";
+  fs_path : "engine/shader/SSAO/SSAO_SSAO.fs.glsl";
 }
 
 shader_config {
   name : "blur";
-  vs_path : [
-    "engine/shader/fullscreen_quad.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/blur.fs.glsl"
-  ];
+  vs_path : "engine/shader/fullscreen_quad.vs.glsl";
+  fs_path : "engine/shader/blur.fs.glsl";
 }
 
 shader_config {
   name : "SSAO_lighting";
-  vs_path : [
-    "engine/shader/fullscreen_quad.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/version.glsl",
-    "engine/shader/light_info.glsl",
-    "engine/shader/phong/phong_material.glsl",
-    "engine/shader/shadow_info.glsl",
-    "engine/shader/phong/phong_model.glsl",
-    "engine/shader/shadow_model.glsl",
-    "engine/shader/phong/phong.fs.glsl"
-  ]
+  vs_path : "engine/shader/fullscreen_quad.vs.glsl";
+  fs_path : "engine/shader/phong/phong.fs.glsl";
 }
 
 shader_config {
   name : "random";
-  cs_path : [
-    "engine/shader/version.glsl",
-    "engine/shader/random.glsl",
-    "engine/shader/random.cs.glsl"
-  ];
+  cs_path : "engine/shader/random.cs.glsl";
 }
 
 shader_config {
   name : "simple_model";
-  vs_path : [
-    "engine/shader/simple_model.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/simple_model.fs.glsl"
-  ];
+  vs_path : "engine/shader/simple_model.vs.glsl";
+  fs_path : "engine/shader/simple_model.fs.glsl";
 }
 
 shader_config {
   name : "instance_scene";
-  vs_path : [
-    "engine/shader/instance_scene.vs.glsl"
-  ];
-  fs_path : [
-    "engine/shader/simple_model.fs.glsl"
-  ];
+  vs_path : "engine/shader/instance_scene.vs.glsl";
+  fs_path : "engine/shader/simple_model.fs.glsl";
 }
 
 shader_config {
   name : "ray_tracing";
-  cs_path : [
-    "engine/shader/version.glsl",
-    "engine/shader/convert.glsl",
-    "engine/shader/camera.glsl",
-    "engine/shader/geometry.glsl",
-    "engine/shader/ray_tracing.cs.glsl"
-  ]
+  cs_path : "engine/shader/ray_tracing.cs.glsl";
 }
 
 shader_config {
   name : "path_tracing";
-  cs_path : [
-    "engine/shader/version.glsl",
-    "engine/shader/convert.glsl",
-    "engine/shader/camera.glsl",
-    "engine/shader/geometry.glsl",
-    "engine/shader/random.glsl",
-    "engine/shader/path_tracing.cs.glsl"
-  ]
+  cs_path : "engine/shader/path_tracing.cs.glsl";
+}
+
+shader_config {
+  name : "pbr_BRDF";
+  cs_path : "engine/shader/pbr/pbr_BRDF.glsl";
 }
 
 texture_config {

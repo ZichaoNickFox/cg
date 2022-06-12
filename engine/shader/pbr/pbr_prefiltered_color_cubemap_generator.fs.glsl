@@ -1,3 +1,7 @@
+#include "engine/shader/version.glsl"
+#include "engine/shader/random.glsl"
+#include "engine/shader/sample.glsl"
+
 uniform samplerCube environment_map;
 uniform float roughness;
 

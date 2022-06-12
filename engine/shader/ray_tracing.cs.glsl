@@ -1,3 +1,8 @@
+#include "engine/shader/version.glsl"
+#include "engine/shader/convert.glsl"
+#include "engine/shader/camera.glsl"
+#include "engine/shader/geometry.glsl"
+
 uniform vec2 screen_size;
 uniform Camera camera;
 uniform Sphere spheres[10];
@@ -5,7 +10,7 @@ uniform mat4 view;
 uniform mat4 project;
 
 layout (local_size_x = 32, local_size_y = 32) in;
-layout (rgba32f, binding = 0) uniform image2D texture_output;
+layout (rgba32f, binding = 0) uniform image2D canvas;
 layout (std430, binding = 0) buffer LightPath { vec4 light_path[20]; };
 
 struct RayTracingResult {
@@ -52,8 +57,8 @@ void main() {
   vec3 ray_dir = dir;
   vec3 ray_from = camera.pos_ws + bias * ray_dir;
   if (is_debug_frag) {
-    ray_dir =vec3(-0.173258, 0.089883, -0.980766);
-    ray_from = vec3(0.202552, 2.053668, -0.123271);
+    ray_dir =vec3(-0.137081, -0.281153, -0.949822);
+    ray_from = vec3(0.000000, 1.000000, 5.000000);
   }
 
   while (depth_iter < depth_num) {
@@ -101,11 +106,11 @@ void main() {
   }
 
   vec4 color = vec4(0, 0, 0, 1);
-  for (int i = 0; i < 1; ++i) {
+  for (int i = 0; i < 4; ++i) {
     color = color + colors[i] * weights[i];
     color.w = 1.0;
   }
 
   // Lambert model
-  imageStore(texture_output, ivec2(gl_GlobalInvocationID.xy), color);
+  imageStore(canvas, ivec2(gl_GlobalInvocationID.xy), color);
 }

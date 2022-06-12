@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 
+#include "engine/automic_counter.h"
 #include "engine/camera.h"
 #include "engine/geometry.h"
 #include "engine/SSBO.h"
@@ -48,6 +49,8 @@ class RayTracingScene : public Scene {
   };
 
   engine::Texture canvas_;
+
+  engine::AutomicCounter automic_counter_;
 
   engine::SSBO light_path_ssbo_;
 };

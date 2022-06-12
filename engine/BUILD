@@ -52,6 +52,8 @@ cc_library(
   name = "engine",
   srcs = [
     "any.h",
+    "automic_counter.h",
+    "automic_counter.cc",
     "camera.h",
     "camera.cc",
     "compute_shader.h",
@@ -76,6 +78,8 @@ cc_library(
     "pass.cc",
     "shader.h",
     "shader.cc",
+    "shader_loader.h",
+    "shader_loader.cc",
     "SSBO.h",
     "SSBO.cc",
     "texture.h",
@@ -91,6 +95,7 @@ cc_library(
     "@assimp",
     "@glm",
     "@imgui",
+    "@ordered_map",
   ],
 )
 

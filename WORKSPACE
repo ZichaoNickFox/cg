@@ -110,3 +110,11 @@ http_archive(
 
 load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_deps")
 boost_deps()
+
+http_archive(
+  name = "ordered_map",
+  build_file = "@//:thirdparty/ordered_map.BUILD",
+  sha256 = "49cd436b8bdacb01d5f4afd7aab0c0d6fa57433dfc29d65f08a5f1ed1e2af26b",
+  strip_prefix = "ordered-map-1.0.0",
+  urls = ["https://github.com/Tessil/ordered-map/archive/refs/tags/v1.0.0.tar.gz"],
+)

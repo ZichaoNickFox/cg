@@ -1,3 +1,5 @@
+// Depend random.glsl
+
 // random x:[0,1] y[0,1] in uv
 //---------------------------------------------------------------------
 
@@ -54,4 +56,25 @@ vec3 ImportancleSampleGGX(vec2 Xi, vec3 N, float roughness) {
 
   vec3 sample_vec = H.x * tangent + H.y * bitangent + H.z * N;
   return normalize(sample_vec);
+}
+
+// Hemisphere random direction sample
+vec3 SampleUnitHemisphereDir(vec3 normal) {
+  vec3 x_ts_base = cross(vec3(0, 1, 0), normal);
+  vec3 z_ts_base = cross(x_ts_base, normal);
+  vec3 y_ts_base = normal;
+  float x_ts = random() * 2 - 1;
+  float z_ts = random() * 2 - 1;
+  float y_ts = random();
+  vec3 dir = mat3(x_ts_base, y_ts_base, z_ts_base) * vec3(x_ts, y_ts, z_ts);
+  dir = normalize(dir);
+  return dir;
+}
+
+// Sphere random direction sample
+vec3 SampleUnitSphereDir(vec3 normal) {
+  float x = random() * 2 - 1;
+  float y = random() * 2 - 1;
+  float z = random() * 2 - 1;
+  return normalize(vec3(x, y ,z));
 }

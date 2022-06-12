@@ -8,7 +8,7 @@ float hash12(vec2 p)
   return fract((p3.x + p3.y) * p3.z);
 }
 
-float random_cs(float id){
-  vec2 co = gl_GlobalInvocationID.xy + vec2(time_for_seed) + vec2(id);
-  return hash12(co);
+int i  =0;
+float random(){
+return 0;
 }

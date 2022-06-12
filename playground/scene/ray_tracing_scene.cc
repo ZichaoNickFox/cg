@@ -30,6 +30,9 @@ void RayTracingScene::OnEnter(Context* context) {
   RaytracingDebugCommon::LightPath light_path;
   light_path_ssbo_.Init(0, light_path);
 
+  automic_counter_.Init(0);
+  automic_counter_.Reset(0);
+
   glEnable_(GL_DEPTH_TEST);
 }
 
@@ -39,7 +42,7 @@ void RayTracingScene::OnUpdate(Context* context) {
 
 void RayTracingScene::OnRender(Context* context) {
   //Resterization(context);
-//  RayTracing(context);
+  //RayTracing(context);
   PathTracing(context);
 }
 

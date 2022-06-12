@@ -119,7 +119,7 @@ GLuint Shader::CompileShader(const std::vector<CodePart>& code_parts, GLuint sha
   {
     glGetShaderInfoLog_(object, 1024, NULL, info_log);
     std::string compile_error_info(info_log);
-    CGKILL("Shader Compile Error") << GetMultipleLineCompileError(code_parts, compile_error_info);
+    CGKILL("Shader Compile Error : name~") << name_ << GetMultipleLineCompileError(code_parts, compile_error_info);
   }
   
   return object;

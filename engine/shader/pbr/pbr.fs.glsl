@@ -1,3 +1,11 @@
+#include "engine/shader/version.glsl"
+#include "engine/shader/pbr/pbr_material.glsl"
+#include "engine/shader/light_info.glsl"
+#include "engine/shader/pbr/pbr_NDF.glsl"
+#include "engine/shader/pbr/pbr_geometry.glsl"
+#include "engine/shader/pbr/pbr_fresnel.glsl"
+#include "engine/shader/pbr/pbr_model.glsl"
+
 out vec4 FragColor;
 
 in vec3 frag_world_pos_;

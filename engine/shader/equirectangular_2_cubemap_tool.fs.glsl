@@ -1,3 +1,7 @@
+#include "engine/shader/version.glsl"
+#include "engine/shader/random.glsl"
+#include "engine/shader/sample.glsl"
+
 out vec4 FragColor;
 in vec3 local_pos_;
 

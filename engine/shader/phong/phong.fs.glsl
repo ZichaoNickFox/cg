@@ -1,3 +1,10 @@
+#include "engine/shader/version.glsl"
+#include "engine/shader/light_info.glsl"
+#include "engine/shader/phong/phong_material.glsl"
+#include "engine/shader/shadow_info.glsl"
+#include "engine/shader/phong/phong_model.glsl"
+#include "engine/shader/shadow_model.glsl"
+
 out vec4 FragColor;
 
 uniform PhongMaterial phong_material;

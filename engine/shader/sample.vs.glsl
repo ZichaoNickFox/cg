@@ -1,3 +1,5 @@
+#include "engine/shader/version.glsl"
+
 layout (location = 0) in vec3 pos;
 layout (location = 1) in vec3 normal;
 layout (location = 2) in vec2 texcoord;
@@ -9,6 +11,7 @@ uniform mat4 view;
 uniform mat4 project;
 
 out vec3 local_pos_;
+out vec2 texcoord_;
 
 void main()
 {
