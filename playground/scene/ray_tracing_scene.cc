@@ -69,6 +69,6 @@ void RayTracingScene::RayTracing(Context* context) {
 
 void RayTracingScene::PathTracing(Context* context) {
   PathTracingShader({context->io().screen_size(), camera_.get(),
-                    util::AsValueVector(sphere_map_), canvas_}, context);
+                    util::AsValueVector(sphere_map_), context->frame_stat().frame_num(), canvas_}, context);
   RaytracingDebugCommon(canvas_, context, light_path_ssbo_.GetData<RaytracingDebugCommon::LightPath>());
 }

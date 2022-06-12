@@ -1,6 +1,7 @@
 #include "engine/shader/version.glsl"
-#include "engine/shader/depth.glsl"
+
 #include "engine/shader/convert.glsl"
+#include "engine/shader/depth.glsl"
 
 out vec3 out_frag_color;
 

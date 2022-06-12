@@ -23,7 +23,7 @@ class OnRenderCommon {
   OnRenderCommon(Context* context);
 
  private:
-  void DrawWorldCoordAndViewCoord(Context* context);
+  void DrawViewCoord(Context* context);
 };
 
 class RaytracingDebugCommon {

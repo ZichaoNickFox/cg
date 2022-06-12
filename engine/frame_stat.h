@@ -14,6 +14,7 @@ class FrameStat {
   int avg_fps() const { return 1e3 / (avg_frame_interval() ? avg_frame_interval() : 1); }
   int avg_frame_num() const { return acc_frame_num_; }
   void Gui() const;
+  int frame_num() const { return frame_num_; }
 
  private:
   int last_frame_interval_ms_ = 0;

@@ -1,13 +1,11 @@
 #include "engine/shader/version.glsl"
-#include "engine/shader/convert.glsl"
+
 #include "engine/shader/camera.glsl"
+#include "engine/shader/convert.glsl"
 #include "engine/shader/geometry.glsl"
+#include "engine/shader/pbr/pbr_BRDF.glsl"
 #include "engine/shader/random.glsl"
 #include "engine/shader/sample.glsl"
-#include "engine/shader/pbr/pbr_geometry.glsl"
-#include "engine/shader/pbr/pbr_fresnel.glsl"
-#include "engine/shader/pbr/pbr_NDF.glsl"
-#include "engine/shader/pbr/pbr_BRDF.glsl"
 
 uniform vec2 screen_size;
 uniform Camera camera;
@@ -46,7 +44,7 @@ vec4 path_tracing(Sphere spheres2[10], Ray ray, vec4 color) {
     count += 1;
 
     const float P_RR = 0.9;
-    if (random() > P_RR) {
+    if (Random() > P_RR) {
       break;
     }
 
@@ -94,6 +92,8 @@ vec4 path_tracing(Sphere spheres2[10], Ray ray, vec4 color) {
 }
 
 void main() {
+  InitRNG(gl_GlobalInvocationID.xy);
+
   vec3 near_pos_ss = vec3(gl_GlobalInvocationID.xy / screen_size, 0.0);
   vec3 near_pos_ws = PositionSS2WS(near_pos_ss, view, project);
   vec3 camera_dir_ws = normalize(near_pos_ws - camera.pos_ws);

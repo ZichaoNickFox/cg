@@ -445,7 +445,9 @@ void glUniform4f_(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3
 
 void glUniform1i_(GLint location, GLint v0) {
   glUniform1i(location, v0);
-  CGCHECKGL();
+  CGCHECKGL() << "glUniform1i_" << std::hex
+              << " location~" << location
+              << " v0~" << v0 << std::dec;
 }
 
 void glUniform2i_(GLint location, GLint v0, GLint v1) {

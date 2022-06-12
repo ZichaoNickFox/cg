@@ -26,7 +26,7 @@
 #include "playground/scene/instance_scene.h"
 
 namespace {
-const std::string kDefaultScene = "RayTracingScene";
+const std::string kDefaultScene = "SSAOScene";
 }
 
 void Playground::Init(const Context::Option& option) {

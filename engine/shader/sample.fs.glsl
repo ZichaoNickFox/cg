@@ -1,8 +1,12 @@
 #include "engine/shader/version.glsl"
-#include "engine/shader/random.glsl"
+
+#include "engine/shader/convert.glsl"
 #include "engine/shader/sample.glsl"
 
 out vec4 FragColor;
+
+uniform mat4 view;
+uniform mat4 project;
 
 in vec3 local_pos_;
 in vec2 texcoord_;
@@ -21,7 +25,14 @@ void TestHammersley() {
 }
 
 void TestSampleUnitHemisphereDir() {
-  for(int i = 0; i < ) {
+  for(int i = 0; i < 100; ++i) {
+    vec3 p_ws = SampleUnitHemisphereDir(vec3(-1, -1, -1));
+    vec3 p_ss = PositionWS2SS(p_ws, view, project);
+    if (distance(texcoord_, p_ss.xy) < 0.005) {
+      FragColor  = vec4(1, 0, 0, 1);
+    } else {
+      FragColor = vec4(0, 1, 0, 1);
+    }
   }
 }
 

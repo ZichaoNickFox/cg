@@ -1,6 +1,7 @@
 #include "engine/shader/version.glsl"
-#include "engine/shader/convert.glsl"
+
 #include "engine/shader/camera.glsl"
+#include "engine/shader/convert.glsl"
 #include "engine/shader/geometry.glsl"
 
 uniform vec2 screen_size;

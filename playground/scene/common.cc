@@ -103,25 +103,20 @@ void OnUpdateCommon::MoveCamera(Context* context) {
 }
 
 OnRenderCommon::OnRenderCommon(Context* context) {
-  DrawWorldCoordAndViewCoord(context);
+  DrawViewCoord(context);
 }
 
-void OnRenderCommon::DrawWorldCoordAndViewCoord(Context* context) {
+void OnRenderCommon::DrawViewCoord(Context* context) {
   glDisable_(GL_DEPTH_TEST);
-  enum Type {kWorld = 0, kNum};
-  std::array<glm::vec2, kNum> positions_ss = {glm::vec2{0.5f, 0.1f}};
-  std::array<glm::vec3, kNum> near_positions_ws;
-  std::array<glm::vec3, kNum> far_positions_ws;
-  for (int i = kWorld; i < kNum; ++i) {
-    context->camera().GetPickRay(positions_ss[i], &near_positions_ws[i], &far_positions_ws[i]);
-    glm::vec3 direction = glm::normalize(far_positions_ws[i] - near_positions_ws[i]);
-    glm::vec3 world_coord_pos = near_positions_ws[i] + direction * glm::vec3(0.5, 0.5, 0.5);
-    Coord coord;
-    coord.mutable_transform()->SetTranslation(world_coord_pos);
-    coord.mutable_transform()->SetScale(glm::vec3(0.05, 0.05, 0.05));
-    LinesShader({0.3}, context, &coord);
-    coord.OnRender(context);
-  }
+  glm::vec3 near_pos_ws, far_pos_ws;
+  context->camera().GetPickRay(glm::vec2(0.5, 0.1), &near_pos_ws, &far_pos_ws);
+  glm::vec3 direction = glm::normalize(far_pos_ws - near_pos_ws);
+  glm::vec3 world_coord_pos = near_pos_ws + direction * glm::vec3(0.5, 0.5, 0.5);
+  Coord coord;
+  coord.mutable_transform()->SetTranslation(world_coord_pos);
+  coord.mutable_transform()->SetScale(glm::vec3(0.05, 0.05, 0.05));
+  LinesShader({0.3}, context, &coord);
+  coord.OnRender(context);
   glEnable_(GL_DEPTH_TEST);
 }
 

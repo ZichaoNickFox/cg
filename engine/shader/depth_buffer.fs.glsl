@@ -1,4 +1,5 @@
 #include "engine/shader/version.glsl"
+
 #include "engine/shader/depth.glsl"
 
 out vec4 FragColor;

@@ -3,7 +3,6 @@
 layout (lines) in;
 layout (triangle_strip, max_vertices = 6) out;
 
-uniform mat4 model;
 uniform mat4 view;
 uniform mat4 project;
 uniform vec3 view_pos;

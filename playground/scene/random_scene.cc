@@ -25,7 +25,7 @@ void RandomScene::OnUpdate(Context* context) {
 
 void RandomScene::OnRender(Context* context) {
   glm::ivec2 screen_size = context->io().screen_size();
-  RandomShader({screen_size, input_, output_}, context);
+  RandomShader({screen_size, input_, output_, context->frame_stat().frame_num()}, context);
 
   EmptyObject e;
   FullscreenQuadShader({output_}, context, &e);

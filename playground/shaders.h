@@ -249,6 +249,7 @@ class RandomShader : public engine::ComputeShader {
     glm::ivec2 screen_size;
     engine::Texture input;
     engine::Texture output;
+    int frame_num;
   };
   RandomShader(const Param& param, Context* context);
 
@@ -283,6 +284,7 @@ class PathTracingShader : public engine::ComputeShader {
     glm::ivec2 screen_size;
     engine::Camera* camera = nullptr;
     std::vector<engine::Sphere> spheres;
+    int frame_num;
     engine::Texture output;
   };
   PathTracingShader(const Param& param, Context* context);

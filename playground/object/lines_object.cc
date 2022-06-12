@@ -60,10 +60,9 @@ void LinesObject::Clear() {
 }
 
 Coord::Coord() {
-  glm::vec3 translation = transform().translation();
-  std::vector<glm::vec4> positions{glm::vec4(0, 0, 0, 0), glm::vec4(1, 0, 0, 1),
-                                   glm::vec4(0, 0, 0, 0), glm::vec4(0, 1, 0, 1),
-                                   glm::vec4(0, 0, 0, 0), glm::vec4(0, 0, 1, 1)};
+  std::vector<glm::vec4> positions{glm::vec4(0, 0, 0, 1), glm::vec4(1, 0, 0, 1),
+                                   glm::vec4(0, 0, 0, 1), glm::vec4(0, 1, 0, 1),
+                                   glm::vec4(0, 0, 0, 1), glm::vec4(0, 0, 1, 1)};
   std::vector<glm::vec4> colors{glm::vec4(1, 0, 0, 1), glm::vec4(1, 0, 0, 1),
                                 glm::vec4(0, 1, 0, 1), glm::vec4(0, 1, 0, 1),
                                 glm::vec4(0, 0, 1, 1), glm::vec4(0, 0, 1, 1)};

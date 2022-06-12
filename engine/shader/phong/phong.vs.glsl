@@ -1,4 +1,3 @@
-#include "engine/shader/version.glsl"
 #include "engine/shader/shadow_info.glsl"
 
 layout (location = 0) in vec3 pos;

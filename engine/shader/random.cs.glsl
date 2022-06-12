@@ -1,4 +1,5 @@
 #include "engine/shader/version.glsl"
+
 #include "engine/shader/random.glsl"
 
 layout (local_size_x = 32, local_size_y = 32) in;
