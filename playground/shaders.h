@@ -289,3 +289,12 @@ class PathTracingShader : public engine::ComputeShader {
   };
   PathTracingShader(const Param& param, Context* context);
 };
+
+class RayTracingCanvasShader {
+ public:
+  struct Param {
+    engine::Texture texture0;
+    int sample_frame_num = 1;
+  };
+  RayTracingCanvasShader(const Param& param, Context* context, EmptyObject* empty_object);
+};

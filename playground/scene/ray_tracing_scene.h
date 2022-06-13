@@ -24,7 +24,7 @@ class RayTracingScene : public Scene {
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
 
   std::unordered_map<std::string, engine::Sphere> sphere_map_ = {
-    {"light", {1, {0, 5.4, 1}, {100, 100, 100, 100}, 3}},
+    {"light", {1, {0, 5.4, 1}, {1, 1, 1, 1}, 3}},
     {"ground", {2, {0, -100.5, 1}, {0.8, 0.8, 0.8, 1.0}, 100}},
     {"ceiling", {3, {0, 102.5, 1}, {0.8, 0.8, 0.8, 1.0}, 100}},
     {"back_wall", {4, {0, 1, -101}, {0.8, 0.8, 0.8, 1.0}, 100}},

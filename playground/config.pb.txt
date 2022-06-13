@@ -219,6 +219,12 @@ shader_config {
   cs_path : "engine/shader/pbr/pbr_BRDF.glsl";
 }
 
+shader_config {
+  name : "ray_tracing_canvas";
+  vs_path : "engine/shader/fullscreen_quad.vs.glsl";
+  fs_path : "engine/shader/ray_tracing_canvas.fs.glsl";
+}
+
 texture_config {
   name : "opengl0";
   level_num : 1;

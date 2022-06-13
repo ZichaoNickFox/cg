@@ -21,11 +21,12 @@ const float pi = 3.1415926;
 const float bias = 0.0001;
 
 // https://www.bilibili.com/video/BV1X7411F744?p=16 0:58:08
-vec4 path_tracing(Sphere spheres2[10], Ray ray, vec4 color) {
+vec4 path_tracing(Ray ray, vec4 color) {
   Ray ray_iter = ray;
-  vec4 color_iter = vec4(1, 1, 1, 1);
+  vec4 radiance = vec4(1, 1, 1, 1);
 
-  bool is_debug_frag = length(gl_GlobalInvocationID.xy / screen_size - vec2(0.5, 0.5)) < 0.00001;
+//  bool is_debug_frag = length(gl_GlobalInvocationID.xy / screen_size - vec2(0.5, 0.5)) < 0.00001;
+  bool is_debug_frag = false;
   if (is_debug_frag) {
     ray_iter.origin = vec3(0.000000, 1.000000, 5.000000);
     ray_iter.dir = vec3(0.251670, -0.375554, -0.891976);
@@ -33,17 +34,15 @@ vec4 path_tracing(Sphere spheres2[10], Ray ray, vec4 color) {
 
   int count = 0;
   while(true) {
-    if (count >= 20) {
-      break;
-    }
-
     if (is_debug_frag) {
       light_path[count] = vec4(ray_iter.origin, 1.0);
     }
-
+    if (count >= 10) {
+      break;
+    }
     count += 1;
 
-    const float P_RR = 0.9;
+    const float P_RR = 0.95;
     if (Random() > P_RR) {
       break;
     }
@@ -60,31 +59,21 @@ vec4 path_tracing(Sphere spheres2[10], Ray ray, vec4 color) {
       }
     }
 
+    const float pdf = 1 / (2 * pi);
     if (sphere.id == 1) {
       // light
-      color = color_iter * sphere.color * max(dot(result.normal, -ray_iter.dir), 0.0) / (pi * 2) / P_RR;
+      color = radiance * sphere.color / P_RR;
       if (is_debug_frag) {
         light_path[count] = vec4(result.pos, 1.0);
       }
-//    } else if (sphere.id == 9) {
-      // glass
-//      vec3 dir_ws = SampleSphereRandomDirction(result.normal);
-//      if (dot(dir_ws, result.normal) < 0) {
-        
-//      }
-    } else if (sphere.id == 8) {
+    } else {
       // right big metal ball
       vec3 dir_ws = SampleUnitHemisphereDir(result.normal);
-      float f_r = BRDF(-ray_iter.dir, dir_ws, result.normal, 0.1);
-//      float f_r = 1;
-      color_iter = color_iter * sphere.color * max(dot(result.normal, -ray_iter.dir), 0.0) * f_r / /*(pi * 2) */ P_RR;
-      ray_iter = Ray(result.pos + bias * dir_ws, dir_ws);
-    } else {
-      // other
-      vec3 dir_ws = SampleUnitHemisphereDir(result.normal);
-      float f_r = BRDF(-ray_iter.dir, dir_ws, result.normal, 0.5);
-//      float f_r = 1.0;
-      color_iter = color_iter * sphere.color * max(dot(result.normal, -ray_iter.dir), 0.0) * f_r / /*(pi * 2) */ P_RR;
+      float f_r_specular = BRDF_specular(-ray_iter.dir, dir_ws, result.normal, 0.5);
+      vec4 f_r_deffuse = BRDF_diffuse(sphere.color);
+      vec4 f_r = 0.0 * f_r_specular + 1.0 * f_r_deffuse;
+      float cosine = max(dot(result.normal, dir_ws), 0.0);
+      radiance = radiance * f_r * cosine / pdf / P_RR;
       ray_iter = Ray(result.pos + bias * dir_ws, dir_ws);
     }
   }
@@ -100,7 +89,11 @@ void main() {
   
   vec4 color = imageLoad(canvas, ivec2(gl_GlobalInvocationID.xy));
   Ray ray = Ray(camera.pos_ws + bias * camera_dir_ws, camera_dir_ws);
-  color = path_tracing(spheres, ray, color); 
-
+  vec4 acc_color = color;
+  const int sample_num = 3;
+  for (int i = 0; i < sample_num; ++i) {
+    acc_color += path_tracing(ray, color);
+  }
+  color = acc_color / (sample_num + 1);
   imageStore(canvas, ivec2(gl_GlobalInvocationID.xy), color);
 }
