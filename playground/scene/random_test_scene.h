@@ -4,7 +4,7 @@
 #include "playground/object/sphere_object.h"
 #include "playground/scene.h"
 
-class RandomScene : public Scene {
+class RandomTestScene : public Scene {
  public:
   void OnEnter(Context* context) override;
   void OnUpdate(Context* context) override;

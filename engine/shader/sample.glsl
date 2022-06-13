@@ -61,10 +61,16 @@ vec3 ImportancleSampleGGX(vec2 Xi, vec3 N, float roughness) {
 }
 
 // Hemisphere random direction sample
-vec3 SampleUnitHemisphereDir(vec3 normal) {
-  vec3 x_ts_base = cross(vec3(0, 1, 0), normal);
-  vec3 z_ts_base = cross(x_ts_base, normal);
-  vec3 y_ts_base = normal;
+vec3 SampleUnitHemisphereDir(vec3 normal) { 
+  if (normal == vec3(0, 1, 0)) {
+    normal = vec3(0.005, 0.99, 0.005);
+  } else if (normal == vec3(0, -1, 0)) {
+    normal = vec3(0.005, -0.99, -0.005);
+  }
+
+  vec3 x_ts_base = normalize(cross(vec3(0, 1, 0), normal));
+  vec3 z_ts_base = normalize(cross(x_ts_base, normal));
+  vec3 y_ts_base = normalize(normal);
   float x_ts = Random() * 2 - 1;
   float z_ts = Random() * 2 - 1;
   float y_ts = Random();

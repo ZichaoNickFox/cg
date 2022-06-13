@@ -1,4 +1,4 @@
-#include "playground/scene/random_scene.h"
+#include "playground/scene/random_test_scene.h"
 
 #include "engine/geometry.h"
 #include "engine/math.h"
@@ -7,7 +7,7 @@
 #include "playground/scene/common.h"
 #include "playground/shaders.h"
 
-void RandomScene::OnEnter(Context* context) {
+void RandomTestScene::OnEnter(Context* context) {
   glm::ivec2 screen_size = context->io().screen_size();
 
   std::vector<glm::vec4> input_data(screen_size.x * screen_size.y);
@@ -19,11 +19,11 @@ void RandomScene::OnEnter(Context* context) {
   context->SetCamera(camera_.get());
 }
 
-void RandomScene::OnUpdate(Context* context) {
+void RandomTestScene::OnUpdate(Context* context) {
   OnUpdateCommon _(context, "RandomScene");
 }
 
-void RandomScene::OnRender(Context* context) {
+void RandomTestScene::OnRender(Context* context) {
   glm::ivec2 screen_size = context->io().screen_size();
   RandomShader({screen_size, input_, output_, context->frame_stat().frame_num()}, context);
 
@@ -34,5 +34,5 @@ void RandomScene::OnRender(Context* context) {
   OnRenderCommon _(context);
 }
 
-void RandomScene::OnExit(Context* context) {
+void RandomTestScene::OnExit(Context* context) {
 }

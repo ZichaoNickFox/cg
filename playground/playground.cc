@@ -16,8 +16,8 @@
 //#include "playground/scene/pbr_prefiltered_color_cubemap_generator.h"
 #include "playground/scene/ray_tracing_scene.h"
 #include "playground/scene/pbr_scene.h"
-#include "playground/scene/random_scene.h"
-#include "playground/scene/sample_scene.h"
+#include "playground/scene/random_test_scene.h"
+#include "playground/scene/sample_test_scene.h"
 #include "playground/scene/shadow_scene.h"
 //#include "playground/scene/share_scene.h"
 //#include "playground/scene/skybox_scene.h"
@@ -26,7 +26,7 @@
 #include "playground/scene/instance_scene.h"
 
 namespace {
-const std::string kDefaultScene = "SSAOScene";
+const std::string kDefaultScene = "RayTracingScene";
 }
 
 void Playground::Init(const Context::Option& option) {
@@ -47,7 +47,7 @@ void Playground::InitScene() {
   //scene_map_.insert(std::make_pair("ShareScene", std::make_unique<ShareScene>()));
   //scene_map_.insert(std::make_pair("Equirectangular2CubemapTool", std::make_unique<Equirectangular2CubemapTool>()));
   //scene_map_.insert(std::make_pair("PbrIrradianceCubemapGenerator", std::make_unique<PbrIrradianceCubemapGenerator>()));
-  scene_map_.insert(std::make_pair("SampleScene", std::make_unique<SampleScene>()));
+  scene_map_.insert(std::make_pair("SampleTestScene", std::make_unique<SampleTestScene>()));
   //scene_map_.insert(std::make_pair("PbrPrefilteredColorCubemapGenerator", std::make_unique<PbrPrefilteredColorCubemapGenerator>()));
   //scene_map_.insert(std::make_pair("PbrBRDFIntegrationMapGenerator", std::make_unique<PbrBRDFIntegrationMapGenerator>()));
   //scene_map_.insert(std::make_pair("TextureLodScene", std::make_unique<TextureLodScene>()));
@@ -56,7 +56,7 @@ void Playground::InitScene() {
   scene_map_.insert(std::make_pair("DepthScene", std::make_unique<DepthScene>()));
   scene_map_.insert(std::make_pair("RayTracingScene", std::make_unique<RayTracingScene>()));
   scene_map_.insert(std::make_pair("InstanceScene", std::make_unique<InstanceScene>()));
-  scene_map_.insert(std::make_pair("RandomScene", std::make_unique<RandomScene>()));
+  scene_map_.insert(std::make_pair("RandomTestScene", std::make_unique<RandomTestScene>()));
 }
 
 void Playground::BeginFrame() {

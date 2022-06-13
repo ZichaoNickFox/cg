@@ -146,9 +146,9 @@ shader_config {
 }
 
 shader_config {
-  name : "sample";
-  vs_path : "engine/shader/sample.vs.glsl";
-  fs_path : "engine/shader/sample.fs.glsl";
+  name : "sample_test";
+  vs_path : "engine/shader/sample_test.vs.glsl";
+  fs_path : "engine/shader/sample_test.fs.glsl";
 }
 
 shader_config {
@@ -188,8 +188,8 @@ shader_config {
 }
 
 shader_config {
-  name : "random";
-  cs_path : "engine/shader/random.cs.glsl";
+  name : "random_test";
+  cs_path : "engine/shader/random_test.cs.glsl";
 }
 
 shader_config {
