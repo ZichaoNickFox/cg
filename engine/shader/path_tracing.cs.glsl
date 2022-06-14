@@ -69,9 +69,9 @@ vec4 path_tracing(Ray ray, vec4 color) {
     } else {
       // right big metal ball
       vec3 dir_ws = SampleUnitHemisphereDir(result.normal);
-      float f_r_specular = BRDF_specular(-ray_iter.dir, dir_ws, result.normal, 0.5);
+      float f_r_specular = BRDF_specular(-ray_iter.dir, dir_ws, result.normal, 0.2);
       vec4 f_r_deffuse = BRDF_diffuse(sphere.color);
-      vec4 f_r = 0.0 * f_r_specular + 1.0 * f_r_deffuse;
+      vec4 f_r = 0.5 * f_r_specular + 1.0 * f_r_deffuse;
       float cosine = max(dot(result.normal, dir_ws), 0.0);
       radiance = radiance * f_r * cosine / pdf / P_RR;
       ray_iter = Ray(result.pos + bias * dir_ws, dir_ws);
