@@ -22,10 +22,10 @@ void SSAOScene::OnEnter(Context *context)
 {
   for (int i = 0; i < point_lights_num_; ++i) {
     point_lights_.push_back(PointLightObject());
-    glm::vec3 point_light_pos(engine::RandFromTo(-5, 5), engine::RandFromTo(0, 5), engine::RandFromTo(-5, 5));
+    glm::vec3 point_light_pos(util::RandFromTo(-5, 5), util::RandFromTo(0, 5), util::RandFromTo(-5, 5));
     point_lights_[i].mutable_transform()->SetTranslation(point_light_pos);
     point_lights_[i].mutable_transform()->SetScale(glm::vec3(0.2, 0.2, 0.2));
-    glm::vec4 color(engine::RandFromTo(0, 1), engine::RandFromTo(0, 1), engine::RandFromTo(0, 1), 1.0);
+    glm::vec4 color(util::RandFromTo(0, 1), util::RandFromTo(0, 1), util::RandFromTo(0, 1), 1.0);
     point_lights_[i].SetColor(color);
   }
 
@@ -48,10 +48,10 @@ void SSAOScene::OnEnter(Context *context)
 
   SetupBufferAndPass(context);
 
-  std::vector<glm::vec3> SSAO_noise = engine::Noise(4, 4);
+  std::vector<glm::vec3> SSAO_noise = util::Noise(4, 4);
   texture_noise_ = context->CreateTexture({4, 4, SSAO_noise, GL_NEAREST, GL_NEAREST});
 
-  samples_ts_ = util::AsArray<64>(engine::SampleSemishphere(64));
+  samples_ts_ = util::AsArray<64>(util::SampleSemishphere(64));
 }
 
 void SSAOScene::OnUpdate(Context *context)

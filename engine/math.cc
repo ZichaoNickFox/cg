@@ -3,10 +3,20 @@
 #include "engine/debug.h"
 #include "engine/util.h"
 
-namespace engine {
+namespace util {
 
-float lerp(float from, float to, float scale) {
+float Lerp(float from, float to, float scale) {
   return from + (to - from) * scale;
+}
+
+float Clamp(float value, float min, float max) {
+  if (value <= min) {
+    return min;
+  } else if (value >= max) {
+    return max;
+  } else {
+    return value;
+  }
 }
 
 namespace {
@@ -31,11 +41,11 @@ float RandFromTo(float from, float to) {
 std::vector<glm::vec3> SampleSemishphere(int num) {
   std::vector<glm::vec3> res(num);
   for (int i = 0; i < num; ++i) {
-    glm::vec3 sample(engine::RandFromTo(-1, 1), engine::RandFromTo(-1, 1), engine::RandFromTo(0, 1));
+    glm::vec3 sample(RandFromTo(-1, 1), RandFromTo(-1, 1), RandFromTo(0, 1));
     sample = glm::normalize(sample);
     float scale = float(i) / num;
-    scale = lerp(0.1, 1.0, scale * scale);
-    sample = sample * engine::RandFromTo(0, 1) * scale;
+    scale = Lerp(0.1, 1.0, scale * scale);
+    sample = sample * util::RandFromTo(0, 1) * scale;
     res[i] = sample;
   }
   return res;
@@ -45,10 +55,10 @@ std::vector<glm::vec3> Noise(int row_num, int col_num) {
   std::vector<glm::vec3> res(row_num * col_num);
   for (int i = 0; i < row_num; ++i) {
     for (int j = 0; j < col_num; ++j) {
-      glm::vec3 noice(engine::RandFromTo(-1, 1), engine::RandFromTo(-1, 1), 0.0);
+      glm::vec3 noice(util::RandFromTo(-1, 1), util::RandFromTo(-1, 1), 0.0);
       res[i * col_num + j] = noice;
     }
   }
   return res;
 }
-} // engine
+} // namespace util

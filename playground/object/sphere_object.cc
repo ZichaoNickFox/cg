@@ -9,7 +9,7 @@ void SphereObject::OnUpdate(Context *context) {
 
 void SphereObject::OnRender(Context *context, int instance_num) {
   material_.PrepareShader();
-  mesh(context)->Submit();
+  GetMesh(context)->Submit();
 }
 
 void SphereObject::OnDestory(Context *context) {

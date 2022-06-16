@@ -1,6 +1,7 @@
 #pragma once
 
 #include "engine/camera.h"
+#include "engine/geometry.h"
 #include "engine/material.h"
 #include "engine/repo/shader_repo.h"
 #include "engine/shader.h"
@@ -11,6 +12,8 @@
 class LinesObject : public Object {
  public:
   struct Mesh {
+    Mesh(const std::vector<glm::vec4>& points, const std::vector<glm::vec4>& colors, GLuint primitive_mode);
+    Mesh(const std::vector<engine::AABB>& aabbs, const glm::vec4& color);
     std::vector<glm::vec4> points;
     std::vector<glm::vec4> colors;
     GLuint primitive_mode;    // line_style : GL_LINES, GL_LINE_STRIP, GL_LINE_LOOP
@@ -24,7 +27,7 @@ class LinesObject : public Object {
   int material_num() const override { return 1; }
   engine::Material* mutable_material(int index = 0) override { return &material_; }
 
-  std::shared_ptr<const engine::Mesh> mesh(Context* context) const override { return nullptr; }
+  std::shared_ptr<const engine::Mesh> GetMesh(Context* context) const override { return nullptr; }
 
  private: 
   void OnInit(const Mesh& data);

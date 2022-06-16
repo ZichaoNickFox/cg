@@ -9,7 +9,7 @@ void CubeObject::OnUpdate(Context *context) {
 
 void CubeObject::OnRender(Context *context, int instance_num) {
   material_.PrepareShader();
-  mesh(context)->Submit(); 
+  GetMesh(context)->Submit(); 
 }
 
 void CubeObject::OnDestory(Context *context) {

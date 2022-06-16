@@ -24,7 +24,7 @@ RayTracingResult RayTracing(Sphere spheres[10], Ray ray, float limit) {
   float t_min = 99999;
   for (int i = 0; i < 10; ++i) {
     Sphere sphere = spheres[i];
-    RaySphereResult hit_result = ray_sphere(sphere, ray, limit);
+    RaySphereResult hit_result = RaySphere(sphere, ray, limit);
     if (hit_result.hitted && hit_result.dist <= camera.far && t_min >= hit_result.dist) {
       t_min = hit_result.dist;
       res = RayTracingResult(sphere, hit_result);

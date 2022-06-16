@@ -15,6 +15,6 @@ cc_library(
   ],
   deps = [
     "//engine:debug",
-    "//engine:mesh",
+    "//engine:engine",
   ]
 )

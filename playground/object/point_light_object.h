@@ -25,7 +25,7 @@ class PointLightObject : public Object {
   void SetAttenuationMetre(int metre) { attenuation_metre_ = metre; }
   int attenuation_metre() const { return attenuation_metre_; }
 
-  std::shared_ptr<const engine::Mesh> mesh(Context* context) const override { return context->GetMesh("cube"); }
+  std::shared_ptr<const engine::Mesh> GetMesh(Context* context) const override { return context->GetMesh("cube"); }
 
  private: 
   glm::vec4 color_ = glm::vec4(1, 1, 1, 1);

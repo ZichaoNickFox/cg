@@ -44,20 +44,20 @@ void InstanceScene::InitModelMatrices() {
     glm::mat4 model(1);
     // 1. 位移：分布在半径为 'radius' 的圆形上，偏移的范围是 [-offset, offset]
     float angle = (float)i / (float)instance_num * 360.0f;
-    float displacement = engine::RandFromTo(0, (int)(2 * offset * 100)) / 100.0f;
+    float displacement = util::RandFromTo(0, (int)(2 * offset * 100)) / 100.0f;
     float x = sin(angle) * radius + displacement;
-    displacement = engine::RandFromTo(0, (int)(2 * offset * 100)) / 100.0f;
+    displacement = util::RandFromTo(0, (int)(2 * offset * 100)) / 100.0f;
     float y = displacement * 0.4f; // 让行星带的高度比x和z的宽度要小
-    displacement = engine::RandFromTo(0, (int)(2 * offset * 100)) / 100.0f;
+    displacement = util::RandFromTo(0, (int)(2 * offset * 100)) / 100.0f;
     float z = cos(angle) * radius + displacement;
     model = glm::translate(model, glm::vec3(x, y, z));
 
     // 2. 缩放：在 0.05 和 0.25f 之间缩放
-    float scale = engine::RandFromTo(0, 20) / 1000.0f + 0.05;
+    float scale = util::RandFromTo(0, 20) / 1000.0f + 0.05;
     model = glm::scale(model, glm::vec3(scale, scale, scale));
 
     // 3. 旋转：绕着一个（半）随机选择的旋转轴向量进行随机的旋转
-    float rotAngle = engine::RandFromTo(0, 360);
+    float rotAngle = util::RandFromTo(0, 360);
     model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
 
     models_[i] = model;

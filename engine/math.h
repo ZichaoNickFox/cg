@@ -11,10 +11,11 @@
 #include <glm/glm.hpp>
 #include <vector>
 
-namespace engine {
+namespace util {
 
 // util
-float lerp(float from, float to, float scale);
+float Lerp(float from, float to, float scale);
+float Clamp(float value, float min, float max);
 
 // sample
 std::vector<glm::vec3> SampleSemishphere(int num);
@@ -26,4 +27,4 @@ std::vector<glm::vec3> Noise(int row_num, int col_num);
 float RandFromTo(float from, float to);
 
 
-} // namespace engine
+} // namespace util

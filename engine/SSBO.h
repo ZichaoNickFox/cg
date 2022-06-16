@@ -11,7 +11,7 @@ class SSBO {
   ~SSBO();
 
   template<typename DataStruct>
-  void Init(int binding_point, const DataStruct& data);
+  void Init(int binding_point, int size_in_byte, const DataStruct* data);
 
   template<typename DataType>
   DataType GetData();
@@ -24,10 +24,10 @@ class SSBO {
 };
 
 template<typename DataStruct>
-void SSBO::Init(int binding_point, const DataStruct& data) {
+void SSBO::Init(int binding_point, int size_in_byte, const DataStruct* data) {
   binding_point_ = binding_point;
   glBindBuffer_(GL_SHADER_STORAGE_BUFFER, ssbo_);
-  glBufferData_(GL_SHADER_STORAGE_BUFFER, sizeof(data), &data, GL_STREAM_COPY);
+  glBufferData_(GL_SHADER_STORAGE_BUFFER, size_in_byte, data, GL_STREAM_COPY);
   glBindBufferBase_(GL_SHADER_STORAGE_BUFFER, binding_point, ssbo_);
 }
 

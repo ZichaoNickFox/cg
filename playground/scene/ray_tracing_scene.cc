@@ -28,10 +28,7 @@ void RayTracingScene::OnEnter(Context* context) {
   canvas_ = context->CreateTexture({viewport_size.x, viewport_size.y, canvas, GL_NEAREST, GL_NEAREST});
 
   RaytracingDebugCommon::LightPath light_path;
-  light_path_ssbo_.Init(0, light_path);
-
-  automic_counter_.Init(0);
-  automic_counter_.Reset(0);
+  light_path_ssbo_.Init(0, sizeof(light_path), &light_path);
 
   glEnable_(GL_DEPTH_TEST);
 }
@@ -68,7 +65,7 @@ void RayTracingScene::RayTracing(Context* context) {
 }
 
 void RayTracingScene::PathTracing(Context* context) {
-  PathTracingShader({context->io().screen_size(), camera_.get(),
+  PathTracingDemoShader({context->io().screen_size(), camera_.get(),
                     util::AsValueVector(sphere_map_), context->frame_stat().frame_num(), canvas_}, context);
   RaytracingDebugCommon(canvas_, context, light_path_ssbo_.GetData<RaytracingDebugCommon::LightPath>());
 }

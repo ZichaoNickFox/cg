@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "engine/geometry.h"
 #include "engine/material.h"
 #include "engine/transform.h"
 #include "playground/context.h"
@@ -14,12 +15,14 @@ class Object {
   virtual void OnDestory(Context *context) = 0;
   virtual int material_num() const = 0;
   virtual engine::Material* mutable_material(int index = 0) = 0;
-  virtual std::shared_ptr<const engine::Mesh> mesh(Context* context) const = 0;
+  virtual std::shared_ptr<const engine::Mesh> GetMesh(Context* context) const = 0;
 
   void SetTransform(const engine::Transform& transform) { transform_ = transform; }
   engine::Transform* mutable_transform() { return &transform_; }
   const engine::Transform& transform() const { return transform_; }
   glm::mat4 GetModelMatrix() const { return transform_.GetModelMatrix(); }
+
+  std::vector<engine::AABB> GetAABBs(Context* context);
 
   struct IntersectResult {
     glm::vec3 position_ws;

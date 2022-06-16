@@ -9,7 +9,7 @@ void PlaneObject::OnUpdate(Context *context) {
 
 void PlaneObject::OnRender(Context *context, int instance_num) {
   material_.PrepareShader();
-  mesh(context)->Submit();
+  GetMesh(context)->Submit();
 }
 
 void PlaneObject::OnDestory(Context *context) {

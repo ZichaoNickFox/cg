@@ -11,7 +11,7 @@ void PointLightObject::OnUpdate(Context *context) {
 void PointLightObject::OnRender(Context *context, int instance_num)
 {
   material_.PrepareShader();
-  mesh(context)->Submit();
+  GetMesh(context)->Submit();
 }
 
 void PointLightObject::OnDestory(Context *context) {

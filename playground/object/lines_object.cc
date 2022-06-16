@@ -6,6 +6,39 @@
 
 #include "engine/util.h"
 
+LinesObject::Mesh::Mesh(const std::vector<glm::vec4>& in_points, const std::vector<glm::vec4>& in_colors,
+                        GLuint in_primitive_mode)
+    : points(in_points), colors(in_colors), primitive_mode(in_primitive_mode) {}
+
+LinesObject::Mesh::Mesh(const std::vector<engine::AABB>& aabbs, const glm::vec4& color) {
+  points.resize(aabbs.size() * 24);
+  colors = std::vector<glm::vec4>(points.size(), color);
+  primitive_mode = GL_LINES;
+  int i = 0;
+  for (const engine::AABB& aabb : aabbs) {
+    glm::vec4 a{aabb.minimum.x, aabb.minimum.y, aabb.minimum.z, 1.0};
+    glm::vec4 b{aabb.minimum.x, aabb.maximum.y, aabb.minimum.z, 1.0};
+    glm::vec4 c{aabb.minimum.x, aabb.maximum.y, aabb.maximum.z, 1.0};
+    glm::vec4 d{aabb.minimum.x, aabb.minimum.y, aabb.maximum.z, 1.0};
+    glm::vec4 e{aabb.maximum.x, aabb.minimum.y, aabb.minimum.z, 1.0};
+    glm::vec4 f{aabb.maximum.x, aabb.maximum.y, aabb.minimum.z, 1.0};
+    glm::vec4 g{aabb.maximum.x, aabb.maximum.y, aabb.maximum.z, 1.0};
+    glm::vec4 h{aabb.maximum.x, aabb.minimum.y, aabb.maximum.z, 1.0};
+    points[i++] = a;  points[i++] = b;
+    points[i++] = b;  points[i++] = c;
+    points[i++] = c;  points[i++] = d;
+    points[i++] = d;  points[i++] = a;
+    points[i++] = a;  points[i++] = e;
+    points[i++] = b;  points[i++] = f;
+    points[i++] = c;  points[i++] = g;
+    points[i++] = d;  points[i++] = h;
+    points[i++] = e;  points[i++] = f;
+    points[i++] = f;  points[i++] = g;
+    points[i++] = g;  points[i++] = h;
+    points[i++] = h;  points[i++] = e;
+  }
+}
+
 void LinesObject::SetMesh(const Mesh& data) {
   Clear();
   OnInit(data);

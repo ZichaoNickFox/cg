@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "engine/geometry.h"
 #include "engine/mesh.h"
 #include "engine/repo/model_repo.h"
 #include "engine/shader.h"
@@ -25,7 +26,7 @@ class ModelPartObject : public Object {
   void SetHidden(bool hidden) { hidden_ = hidden; }
   bool* mutable_hidden() { return &hidden_; }
 
-  std::shared_ptr<const engine::Mesh> mesh(Context* context) const override { return model_part_data_.mesh; }
+  std::shared_ptr<const engine::Mesh> GetMesh(Context* context) const override { return model_part_data_.mesh; }
   engine::Mesh* mutable_mesh() { return model_part_data_.mesh.get(); }
 
  private:
@@ -52,6 +53,7 @@ class ModelObject {
       mutable_model_part(i)->mutable_mesh()->AddVertexAttribute(meta_data, data);
     }
   }
+  std::vector<engine::AABB> GetAABBs(Context* context);
 
  private:
   std::vector<ModelPartObject> model_parts_;

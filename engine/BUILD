@@ -35,25 +35,13 @@ cc_library (
 )
 
 cc_library(
-  name = "mesh",
-  srcs = [
-    "mesh.h",
-    "mesh.cc",
-  ],
-  deps = [
-    "//engine:debug",
-    "//engine:gl",
-    "//engine:util",
-    "@glm",
-  ],
-)
-
-cc_library(
   name = "engine",
   srcs = [
     "any.h",
     "automic_counter.h",
     "automic_counter.cc",
+    "bvh.h",
+    "bvh.cc",
     "camera.h",
     "camera.cc",
     "compute_shader.h",
@@ -73,6 +61,8 @@ cc_library(
     "material.cc",
     "math.h",
     "math.cc",
+    "mesh.h",
+    "mesh.cc",
     "oneof.h",
     "pass.h",
     "pass.cc",
@@ -84,13 +74,14 @@ cc_library(
     "SSBO.cc",
     "texture.h",
     "texture.cc",
+    "texture_buffer.h",
+    "texture_buffer.cc",
     "transform.h",
     "transform.cc",
   ],
   deps = [
     "//engine:debug",
     "//engine:gl",
-    "//engine/primitive:primitive",
     "//engine:util",
     "@assimp",
     "@glm",

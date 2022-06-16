@@ -71,3 +71,12 @@ void ModelObject::SetTransform(const engine::Transform& transform) {
     mutable_model_part(i)->SetTransform(transform);
   }
 }
+
+std::vector<engine::AABB> ModelObject::GetAABBs(Context* context) {
+  std::vector<engine::AABB> res;
+  for (int i = 0; i < model_part_num(); ++i) {
+    std::vector<engine::AABB> aabbs = model_parts_[i].GetAABBs(context);
+    res.insert(res.end(), aabbs.begin(), aabbs.end());
+  }
+  return res;
+}

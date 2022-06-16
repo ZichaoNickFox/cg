@@ -7,6 +7,7 @@
 #include "engine/shader/random.glsl"
 #include "engine/shader/sample.glsl"
 
+/*
 uniform vec2 screen_size;
 uniform Camera camera;
 uniform Sphere spheres[10];
@@ -47,17 +48,7 @@ vec4 path_tracing(Ray ray, vec4 color) {
       break;
     }
 
-    Sphere sphere;
-    RaySphereResult result;
-    float min_dist = 9999;
-    for (int i = 0; i < 10; ++i) {
-      RaySphereResult temp_result = ray_sphere(spheres[i], ray_iter, 50);
-      if (temp_result.hitted && temp_result.dist < min_dist) {
-        sphere = spheres[i];
-        result = temp_result;
-        min_dist = temp_result.dist;
-      }
-    }
+    BVHResult result = RayBVH(ray_iter);
 
     const float pdf = 1 / (2 * pi);
     if (sphere.id == 1) {
@@ -69,9 +60,9 @@ vec4 path_tracing(Ray ray, vec4 color) {
     } else {
       // right big metal ball
       vec3 dir_ws = SampleUnitHemisphereDir(result.normal);
-      float f_r_specular = BRDF_specular(-ray_iter.dir, dir_ws, result.normal, 0.2);
+      float f_r_specular = BRDF_specular(-ray_iter.dir, dir_ws, result.normal, 0.5);
       vec4 f_r_deffuse = BRDF_diffuse(sphere.color);
-      vec4 f_r = 0.5 * f_r_specular + 1.0 * f_r_deffuse;
+      vec4 f_r = 0.0 * f_r_specular + 1.0 * f_r_deffuse;
       float cosine = max(dot(result.normal, dir_ws), 0.0);
       radiance = radiance * f_r * cosine / pdf / P_RR;
       ray_iter = Ray(result.pos + bias * dir_ws, dir_ws);
@@ -97,3 +88,4 @@ void main() {
   color = acc_color / (sample_num + 1);
   imageStore(canvas, ivec2(gl_GlobalInvocationID.xy), color);
 }
+*/

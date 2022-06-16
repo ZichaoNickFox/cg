@@ -50,7 +50,5 @@ class RayTracingScene : public Scene {
 
   engine::Texture canvas_;
 
-  engine::AutomicCounter automic_counter_;
-
   engine::SSBO light_path_ssbo_;
 };

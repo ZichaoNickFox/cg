@@ -19,7 +19,7 @@ class CubeObject : public Object {
   int material_num() const override { return 1; }
   engine::Material* mutable_material(int index = 0) override { return &material_; }
 
-  std::shared_ptr<const engine::Mesh> mesh(Context* context) const override { return context->GetMesh("cube"); }
+  std::shared_ptr<const engine::Mesh> GetMesh(Context* context) const override { return context->GetMesh("cube"); }
 
  private: 
   std::shared_ptr<const engine::Mesh> mesh_;

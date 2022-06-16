@@ -15,7 +15,7 @@ class DirectionalLightObject : public Object {
   void OnDestory(Context* context) override;
   int material_num() const override { return 0; }
   engine::Material* mutable_material(int index = 0) override { return nullptr; }
-  std::shared_ptr<const engine::Mesh> mesh(Context* context) const override { return nullptr; }
+  std::shared_ptr<const engine::Mesh> GetMesh(Context* context) const override { return nullptr; }
 
   BillboardObject* mutable_billboard() { return &billboard_; }
   LinesObject* mutable_lines() { return &lines_; }

@@ -24,7 +24,7 @@ void SampleTestScene::OnEnter(Context *context)
     glm::vec4 samples[500];
   };
   Samples samples;
-  samples_ssbo_.Init(0, samples);
+  samples_ssbo_.Init(0, sizeof(samples), &samples);
 
   glEnable_(GL_DEPTH_TEST);
 }

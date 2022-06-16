@@ -278,6 +278,27 @@ class RayTracingShader : public engine::ComputeShader {
   RayTracingShader(const Param& param, Context* context);
 };
 
+class PathTracingDemoShader : public engine::ComputeShader {
+ public:
+  struct Param {
+    glm::ivec2 screen_size;
+    engine::Camera* camera = nullptr;
+    std::vector<engine::Sphere> spheres;
+    int frame_num;
+    engine::Texture output;
+  };
+  PathTracingDemoShader(const Param& param, Context* context);
+};
+
+class RayTracingCanvasShader {
+ public:
+  struct Param {
+    engine::Texture texture0;
+    int sample_frame_num = 1;
+  };
+  RayTracingCanvasShader(const Param& param, Context* context, EmptyObject* empty_object);
+};
+
 class PathTracingShader : public engine::ComputeShader {
  public:
   struct Param {
@@ -288,13 +309,4 @@ class PathTracingShader : public engine::ComputeShader {
     engine::Texture output;
   };
   PathTracingShader(const Param& param, Context* context);
-};
-
-class RayTracingCanvasShader {
- public:
-  struct Param {
-    engine::Texture texture0;
-    int sample_frame_num = 1;
-  };
-  RayTracingCanvasShader(const Param& param, Context* context, EmptyObject* empty_object);
 };

@@ -206,12 +206,17 @@ shader_config {
 
 shader_config {
   name : "ray_tracing";
-  cs_path : "engine/shader/ray_tracing.cs.glsl";
+  cs_path : "engine/shader/ray_tracing/ray_tracing.cs.glsl";
+}
+
+shader_config {
+  name : "path_tracing_demo";
+  cs_path : "engine/shader/ray_tracing/path_tracing_demo.cs.glsl";
 }
 
 shader_config {
   name : "path_tracing";
-  cs_path : "engine/shader/path_tracing.cs.glsl";
+  cs_path : "engine/shader/ray_tracing/path_tracing.cs.glsl";
 }
 
 shader_config {
@@ -456,4 +461,34 @@ model_config {
   name : "planet";
   mesh_path : "playground/resource/model/planet/planet.obj";
   texture_dir : "playground/resource/model/planet";
+}
+
+model_config {
+  name : "conell_box_floor";
+  mesh_path : "playground/resource/model/conell_box/floor.obj";
+}
+
+model_config {
+  name : "conell_box_left";
+  mesh_path : "playground/resource/model/conell_box/left.obj";
+}
+
+model_config {
+  name : "conell_box_light";
+  mesh_path : "playground/resource/model/conell_box/light.obj";
+}
+
+model_config {
+  name : "conell_box_right";
+  mesh_path : "playground/resource/model/conell_box/right.obj";
+}
+
+model_config {
+  name : "conell_box_short_box";
+  mesh_path : "playground/resource/model/conell_box/short_box.obj";
+}
+
+model_config {
+  name : "conell_box_tall_box";
+  mesh_path : "playground/resource/model/conell_box/tall_box.obj";
 }
