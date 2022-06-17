@@ -1,5 +1,6 @@
 #include "engine/shader/version.glsl"
 
+/*
 #include "engine/shader/camera.glsl"
 #include "engine/shader/convert.glsl"
 #include "engine/shader/geometry.glsl"
@@ -7,7 +8,6 @@
 #include "engine/shader/random.glsl"
 #include "engine/shader/sample.glsl"
 
-/*
 uniform vec2 screen_size;
 uniform Camera camera;
 uniform Sphere spheres[10];

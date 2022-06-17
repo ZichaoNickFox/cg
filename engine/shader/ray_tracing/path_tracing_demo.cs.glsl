@@ -1,13 +1,13 @@
 #include "engine/shader/version.glsl"
 
-#include "engine/shader/bvh.glsl"
 #include "engine/shader/camera.glsl"
 #include "engine/shader/convert.glsl"
 #include "engine/shader/geometry.glsl"
 #include "engine/shader/pbr/pbr_BRDF.glsl"
 #include "engine/shader/random.glsl"
 #include "engine/shader/sample.glsl"
-#include "engine/shader/uniform.glsl"
+#include "engine/shader/bvh.glsl"
+#include "engine/shader/ray_tracing/uniforms.glsl"
 
 const float pi = 3.1415926;
 const float bias = 0.0001;

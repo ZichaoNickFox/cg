@@ -26,8 +26,8 @@ void ShaderParser::ParseAFile(const std::string& file_path) {
   const std::string kIncludeIdentifierPrefix = "#include \"";
   const std::string kIncludeIdentifierSuffix = "\"";
   std::ifstream file(file_path);
-  CGCHECK(file.is_open()) << " Cannot open file (Reason1 FilePath. Reason2 Recursive include) : file_path~"
-      << file_path << " name~" << name_;
+  CGCHECK(file.is_open()) << " Cannot open file (Reason1 FilePath. Reason2 Recursive include) : include_path~"
+      << file_path << " compiling_name~" << name_;
   std::string line;
   int line_num = 0;
   std::string file_content;

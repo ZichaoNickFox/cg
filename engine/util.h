@@ -97,6 +97,15 @@ void Remove(const VectorElemType& elem, std::vector<VectorElemType>* elems) {
     }
   }
 }
+template<typename ElemType>
+void VectorOverride(const std::vector<ElemType>& copy_from, int copy_begin, int copy_end,
+                    std::vector<ElemType>* overriden, int overriden_begin) {
+  int len = copy_end - copy_begin; 
+  if (overriden->size() - overriden_begin < len) {
+    overriden->resize(overriden_begin + len);
+  }
+  memcpy(overriden->data() + overriden_begin, copy_from.data() + copy_begin, len * sizeof(ElemType));
+}
 
 // time
 using Time = std::chrono::high_resolution_clock::time_point;

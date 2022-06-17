@@ -1,5 +1,7 @@
 #include "playground/scene/path_tracing_scene.h"
 
+#include "glm/gtx/string_cast.hpp"
+
 #include "engine/transform.h"
 #include "engine/math.h"
 #include "playground/scene/common.h"
@@ -19,16 +21,25 @@ void PathTracingScene::OnEnter(Context* context) {
   canvas_ = context->CreateTexture({viewport_size.x, viewport_size.y, canvas, GL_NEAREST, GL_NEAREST});
 
   RaytracingDebugCommon::LightPath light_path;
-  light_path_ssbo_.Init(0, light_path);
+  light_path_ssbo_.Init(0, sizeof(light_path), &light_path);
 
-  std::vector<AABB> aabbs;
+  std::vector<engine::BVH::Primitive> primitives;
   for (auto& p : conell_box_) {
-    p.second.Init(p.first);
-    std::vector<AABB> model_aabbs = p.second.GetAABBs(context);
-    aabbs.insert(aabbs.end(), model_aabbs.begin(), model_aabbs.end());
+    p.second.object.Init(context, p.first, p.first);
+    std::vector<engine::AABB> model_aabbs = p.second.object.GetAABBs(context);
+    for (const engine::AABB& model_aabb : model_aabbs) {
+      primitives.push_back({model_aabb, p.second.primitive_index});
+    }
   }
-  bvh_.Build(aabbs, {5, 64});
-  bvh_aabbs_ = bvh_.GetAABBs();
+  bvh_.Build(&primitives, {3, 12});
+
+  //std::vector<engine::AABB> aabbs = sphere_.GetAABBs(context);
+  //std::vector<engine::BVH::Primitive> primitives(aabbs.size());
+  //const int kSpherePrimitiveIndex = 0;
+  //for (int i = 0; i < primitives.size(); ++i) {
+  //  primitives[i] = {aabbs[i], kSpherePrimitiveIndex};
+  //}
+  //bvh_.Build(&primitives, {5, 64});
 
   glEnable_(GL_DEPTH_TEST);
 }
@@ -46,18 +57,29 @@ void PathTracingScene::OnExit(Context* context) {
 }
 
 void PathTracingScene::Rasterization(Context* context) {
+  //ColorShader({glm::vec4(1, 1, 1, 1)}, context, &sphere_);
+  //sphere_.OnRender(context);
+
   for (auto& p : conell_box_) {
-    p.second.OnRender(context);
+    ColorShader _({p.second.color}, context, &p.second.object);
+    p.second.object.OnRender(context);
   }
+
+  std::vector<engine::AABB> aabbs = bvh_.GetAABBs();
   LinesObject lines_object;
-  LinesObject::Mesh lines_mesh(bvh_aabbs_, glm::vec4(1, 0, 0, 1));
+  LinesObject::Mesh lines_mesh(aabbs, glm::vec4(0, 0, 1, 1));
   lines_object.SetMesh(lines_mesh);
   LinesShader lines_shader({}, context, &lines_object);
   lines_object.OnRender(context);
 }
 
 void PathTracingScene::PathTracing(Context* context) {
-  PathTracingDemoShader({context->io().screen_size(), camera_.get(),
-                    util::AsValueVector(sphere_map_), context->frame_stat().frame_num(), canvas_}, context);
+  PathTracingShader::Param param;
+  param.screen_size = context->io().screen_size();
+  param.camera = camera_.get();
+  param.frame_num = context->frame_stat().frame_num();
+  param.output = canvas_;
+
+  PathTracingShader(param, context);
   RaytracingDebugCommon(canvas_, context, light_path_ssbo_.GetData<RaytracingDebugCommon::LightPath>());
 }

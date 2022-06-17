@@ -46,23 +46,24 @@
 
 #define CGCHECK_NOTNULL(p) CHECK_NOTNULL(p)
 
-#define CGLOG1 CGLOG(ERROR) << "1111111111";
-#define CGLOG2 CGLOG(ERROR) << "2222222222";
-#define CGLOG3 CGLOG(ERROR) << "3333333333";
-#define CGLOG4 CGLOG(ERROR) << "4444444444";
-#define CGLOG5 CGLOG(ERROR) << "5555555555";
-#define CGLOG6 CGLOG(ERROR) << "6666666666";
-#define CGLOG7 CGLOG(ERROR) << "7777777777";
-#define CGLOG8 CGLOG(ERROR) << "8888888888";
-#define CGLOG9 CGLOG(ERROR) << "9999999999";
+#define CGLOG1() CGLOG(ERROR) << "1111111111";
+#define CGLOG2() CGLOG(ERROR) << "2222222222";
+#define CGLOG3() CGLOG(ERROR) << "3333333333";
+#define CGLOG4() CGLOG(ERROR) << "4444444444";
+#define CGLOG5() CGLOG(ERROR) << "5555555555";
+#define CGLOG6() CGLOG(ERROR) << "6666666666";
+#define CGLOG7() CGLOG(ERROR) << "7777777777";
+#define CGLOG8() CGLOG(ERROR) << "8888888888";
+#define CGLOG9() CGLOG(ERROR) << "9999999999";
 
-#define CGLOGA CGLOG(ERROR) << "aaaaaaaaaa";
-#define CGLOGB CGLOG(ERROR) << "bbbbbbbbbb";
-#define CGLOGC CGLOG(ERROR) << "cccccccccc";
-#define CGLOGD CGLOG(ERROR) << "dddddddddd";
-#define CGLOGE CGLOG(ERROR) << "eeeeeeeeee";
-#define CGLOGF CGLOG(ERROR) << "ffffffffff";
-#define CGLOGG CGLOG(ERROR) << "gggggggggg";
-#define CGLOGH CGLOG(ERROR) << "hhhhhhhhhh";
-#define CGLOGI CGLOG(ERROR) << "iiiiiiiiii";
+#define CGLOGA() CGLOG(ERROR) << "aaaaaaaaaa";
+#define CGLOGB() CGLOG(ERROR) << "bbbbbbbbbb";
+#define CGLOGC() CGLOG(ERROR) << "cccccccccc";
+#define CGLOGD() CGLOG(ERROR) << "dddddddddd";
+#define CGLOGE() CGLOG(ERROR) << "eeeeeeeeee";
+#define CGLOGF() CGLOG(ERROR) << "ffffffffff";
+#define CGLOGG() CGLOG(ERROR) << "gggggggggg";
+#define CGLOGH() CGLOG(ERROR) << "hhhhhhhhhh";
+#define CGLOGI() CGLOG(ERROR) << "iiiiiiiiii";
 
+#define DEBUG_SLOW

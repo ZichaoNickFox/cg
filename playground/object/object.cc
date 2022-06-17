@@ -38,11 +38,12 @@ std::vector<engine::AABB> Object::GetAABBs(Context* context) {
       int mesh_index_i = mesh->indices()[i];
       int mesh_index_j = mesh->indices()[j];
       int mesh_index_k = mesh->indices()[k];
-      engine::Triangle triangle{world_positions[mesh_index_i], world_positions[mesh_index_j], world_positions[mesh_index_k]};
+      engine::Triangle triangle{world_positions[mesh_index_i], world_positions[mesh_index_j],
+                                world_positions[mesh_index_k]};
       res.push_back(triangle.AsAABB());
     }
   } else {
-    for (int i = 0, j = 1, k = 2; k < mesh->indices().size(); ++i, ++j, ++k) {
+    for (int i = 0, j = 1, k = 2; k < mesh->positions().size(); ++i, ++j, ++k) {
       engine::Triangle triangle{world_positions[i], world_positions[j], world_positions[k]};
       res.push_back(triangle.AsAABB());
     }

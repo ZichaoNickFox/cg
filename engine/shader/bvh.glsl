@@ -1,8 +1,4 @@
-#include "engine/shader/ray_tracing/uniform.glsl"
 #include "engine/shader/geometry.glsl"
-
-layout (std430, binding = bvn_nodes_binding) buffer BVHNodes { BVHNode bvh_nodes[]; };
-layout (std430, binding = triangles_binding) buffer Triangles { Triangle triangles[]; };
 
 struct BVHNode {
   AABB aabb;
@@ -12,6 +8,7 @@ struct BVHNode {
   int right;
 };
 
+/*
 struct RayBVHNodeResult {
   bool hitted;
   vec3 pos;
@@ -19,7 +16,7 @@ struct RayBVHNodeResult {
   int triangle_index;
 };
 
-Result RayBVHNode(Ray ray) {
+RayBVHNodeResult RayBVHNode(Ray ray) {
   Result res;
   res.hitted = false;
 
@@ -63,3 +60,4 @@ Result RayBVHNode(Ray ray) {
   }
   return res;
 }
+*/

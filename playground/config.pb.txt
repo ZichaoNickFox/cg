@@ -464,31 +464,31 @@ model_config {
 }
 
 model_config {
-  name : "conell_box_floor";
-  mesh_path : "playground/resource/model/conell_box/floor.obj";
+  name : "cornell_box_floor";
+  mesh_path : "playground/resource/model/cornell_box/floor.obj";
 }
 
 model_config {
-  name : "conell_box_left";
-  mesh_path : "playground/resource/model/conell_box/left.obj";
+  name : "cornell_box_left";
+  mesh_path : "playground/resource/model/cornell_box/left.obj";
 }
 
 model_config {
-  name : "conell_box_light";
-  mesh_path : "playground/resource/model/conell_box/light.obj";
+  name : "cornell_box_light";
+  mesh_path : "playground/resource/model/cornell_box/light.obj";
 }
 
 model_config {
-  name : "conell_box_right";
-  mesh_path : "playground/resource/model/conell_box/right.obj";
+  name : "cornell_box_right";
+  mesh_path : "playground/resource/model/cornell_box/right.obj";
 }
 
 model_config {
-  name : "conell_box_short_box";
-  mesh_path : "playground/resource/model/conell_box/short_box.obj";
+  name : "cornell_box_short_box";
+  mesh_path : "playground/resource/model/cornell_box/short_box.obj";
 }
 
 model_config {
-  name : "conell_box_tall_box";
-  mesh_path : "playground/resource/model/conell_box/tall_box.obj";
+  name : "cornell_box_tall_box";
+  mesh_path : "playground/resource/model/cornell_box/tall_box.obj";
 }

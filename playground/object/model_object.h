@@ -36,15 +36,22 @@ class ModelPartObject : public Object {
   engine::Material material_;
 };
 
-class ModelObject {
+class ModelObject : public Object {
  public:
   void Init(Context* context, const std::string& object_name, const std::string& model_name);
   void ModelInspector();
 
-  int model_part_num() { return model_parts_.size(); }
-  ModelPartObject* mutable_model_part(int i) { return &model_parts_[i]; }
+  void OnUpdate(Context *context) override;
+  void OnRender(Context *context, int instance_num = 1) override;
+  void OnDestory(Context *context) override;
+  int material_num() const override { return model_part(0).material_num(); }
+  engine::Material* mutable_material(int index = 0) override { return mutable_model_part(0)->mutable_material(); }
+  std::shared_ptr<const engine::Mesh> GetMesh(Context* context) const override;
 
-  void OnRender(Context* context, int instance_num = 1);
+  int model_part_num() const { return model_parts_.size(); }
+  ModelPartObject* mutable_model_part(int i) { return &model_parts_[i]; }
+  const ModelPartObject& model_part(int i) const { return model_parts_[i]; }
+
   void SetTransform(const engine::Transform& transform);
   template<typename VertexAttributesType>
   void AddVertexAttribute(const engine::VertexAttribute& meta_data,

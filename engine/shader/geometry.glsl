@@ -113,7 +113,7 @@ RayTriangleResult RayTriangle(Ray ray, Triangle triangle) {
   vec3 s2 = cross(s, e1);
 
   float denominator = dot(s1, e1);
-  float t = dot(s2, e2) / denomiator;
+  float t = dot(s2, e2) / denominator;
   float b1 = dot(s1, s) / denominator;
   float b2 = dot(s2, ray.dir) / denominator;
   

@@ -15,6 +15,7 @@
 //#include "playground/scene/pbr_irradiance_cubemap_generator.h"
 //#include "playground/scene/pbr_prefiltered_color_cubemap_generator.h"
 #include "playground/scene/ray_tracing_scene.h"
+#include "playground/scene/path_tracing_scene.h"
 #include "playground/scene/pbr_scene.h"
 #include "playground/scene/random_test_scene.h"
 #include "playground/scene/sample_test_scene.h"
@@ -26,7 +27,7 @@
 #include "playground/scene/instance_scene.h"
 
 namespace {
-const std::string kDefaultScene = "RayTracingScene";
+const std::string kDefaultScene = "PathTracingScene";
 }
 
 void Playground::Init(const Context::Option& option) {
@@ -57,6 +58,7 @@ void Playground::InitScene() {
   scene_map_.insert(std::make_pair("RayTracingScene", std::make_unique<RayTracingScene>()));
   scene_map_.insert(std::make_pair("InstanceScene", std::make_unique<InstanceScene>()));
   scene_map_.insert(std::make_pair("RandomTestScene", std::make_unique<RandomTestScene>()));
+  scene_map_.insert(std::make_pair("PathTracingScene", std::make_unique<PathTracingScene>()));
 }
 
 void Playground::BeginFrame() {

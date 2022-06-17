@@ -8,6 +8,7 @@
 #include <unistd.h>
 #endif
 
+#include "glog/logging.h"
 #include "imgui.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
@@ -54,6 +55,10 @@ int main(int argc, char **argv)
 {
   //signal(SIGSEGV, handler); // install our handler
   //signal(SIGABRT, handler); // install our handler
+  FLAGS_log_dir = "log";
+  FLAGS_timestamp_in_logfile_name = false;
+  google::InitGoogleLogging(argv[0]);
+  google::SetLogDestination(google::GLOG_INFO, "log/log.txt");
 
   glfwSetErrorCallback(glfw_error_callback);
   CGCHECK(glfwInit()) << "glfw Init Failed";
@@ -141,6 +146,8 @@ int main(int argc, char **argv)
 
   glfwDestroyWindow(window);
   glfwTerminate();
+
+  google::ShutdownGoogleLogging();
 
   return 0;
 }

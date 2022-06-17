@@ -66,6 +66,12 @@ void ModelObject::OnRender(Context* context, int instance_num) {
   }
 }
 
+void ModelObject::OnUpdate(Context *context) {
+  for (int i = 0; i < model_part_num(); ++i) {
+    mutable_model_part(i)->OnUpdate(context);
+  }
+}
+
 void ModelObject::SetTransform(const engine::Transform& transform) {
   for (int i = 0; i < model_part_num(); ++i) {
     mutable_model_part(i)->SetTransform(transform);
@@ -79,4 +85,12 @@ std::vector<engine::AABB> ModelObject::GetAABBs(Context* context) {
     res.insert(res.end(), aabbs.begin(), aabbs.end());
   }
   return res;
+}
+
+void ModelObject::OnDestory(Context *context) {
+
+}
+
+std::shared_ptr<const engine::Mesh> ModelObject::GetMesh(Context* context) const {
+  return model_part(0).GetMesh(context);
 }

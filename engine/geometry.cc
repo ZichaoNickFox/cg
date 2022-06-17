@@ -1,6 +1,9 @@
 #include "engine/geometry.h"
 
+#include "glm/gtx/string_cast.hpp"
+
 #include "engine/debug.h"
+#include "engine/util.h"
 
 namespace engine {
 glm::vec3 GetFootOfPerpendicular(const glm::vec3& p, const glm::vec3& a, const glm::vec3& b) {
@@ -50,6 +53,9 @@ float AABB::GetLengthByAxis(Axis axis) const {
     return delta.y;
   } else if (axis == Axis::kZ) {
     return delta.z;
+  } else {
+    CGCHECK(false) << "Logic Error";
+    return 0;
   }
 }
 
@@ -59,20 +65,38 @@ float AABB::GetCenterByAxis(Axis axis) const {
     return center.x;
   } else if (axis == Axis::kY) {
     return center.y;
-  } else {
+  } else if (axis == Axis::kZ) {
     return center.z;
+  } else {
+    CGCHECK(false) << "Logic Error";
+    return 0;
   }
 }
 
-AABB UnionAABB(const std::vector<AABB>& aabbs, int begin, int end) {
-  CGCHECK(end - begin > 0) << " Union AABB size < 1";
-  CGCHECK(begin < aabbs.size()) << " begin index error";
-  CGCHECK(end <= aabbs.size()) << " end index error";
-  AABB res;
-  for (const AABB& aabb : aabbs) {
-    res.Union(aabb);
+float AABB::GetMinimumByAxis(Axis axis) const {
+  if (axis == Axis::kX) {
+    return minimum.x;
+  } else if (axis == Axis::kY) {
+    return minimum.y;
+  } else if (axis == Axis::kZ) {
+    return minimum.z;
+  } else {
+    CGCHECK(false) << "Logic Error";
+    return 0;
   }
-  return res;
+}
+
+float AABB::GetMaximumByAxis(Axis axis) const {
+  if (axis == Axis::kX) {
+    return maximum.x;
+  } else if (axis == Axis::kY) {
+    return maximum.y;
+  } else if (axis == Axis::kZ) {
+    return maximum.z;
+  } else {
+    CGCHECK(false) << "Logic Error";
+    return 0;
+  }
 }
 
 AABB Triangle::AsAABB() {
@@ -82,6 +106,37 @@ AABB Triangle::AsAABB() {
   float minimum_x = std::min(std::min(a.x, b.x), c.x);
   float minimum_y = std::min(std::min(a.y, b.y), c.y);
   float minimum_z = std::min(std::min(a.z, b.z), c.z);
-  return AABB{{maximum_x, maximum_y, maximum_z}, {minimum_x, minimum_y, minimum_z}};
+  return {{maximum_x, maximum_y, maximum_z}, {minimum_x, minimum_y, minimum_z}};
+}
+
+std::string AABB::AsString() const {
+  return util::Format("{},{},{}|{},{},{}",
+                      maximum.x, maximum.y, maximum.z, minimum.x, minimum.y, minimum.z);
+}
+
+bool AABB::CheckValid() const {
+#ifdef DEBUG_SLOW
+  if (maximum.x == std::numeric_limits<float>::lowest() || maximum.y == std::numeric_limits<float>::lowest()
+      || maximum.z == std::numeric_limits<float>::lowest()) {
+    CGCHECK(maximum.x == std::numeric_limits<float>::lowest() && maximum.y == std::numeric_limits<float>::lowest()
+      && maximum.z == std::numeric_limits<float>::lowest());
+  }
+  if (minimum.x == std::numeric_limits<float>::max() || minimum.y == std::numeric_limits<float>::max()
+      || minimum.z == std::numeric_limits<float>::max()) {
+    CGCHECK(minimum.x == std::numeric_limits<float>::max() && minimum.y == std::numeric_limits<float>::max()
+      && minimum.z == std::numeric_limits<float>::max());
+  }
+#endif
+  return true;
+}
+
+bool AABB::CheckNotNull() const {
+#ifdef DEBUG_SLOW
+  CGCHECK(maximum.x != std::numeric_limits<float>::lowest() && maximum.y != std::numeric_limits<float>::lowest()
+    && maximum.z != std::numeric_limits<float>::lowest());
+  CGCHECK(minimum.x != std::numeric_limits<float>::max() && minimum.y != std::numeric_limits<float>::max()
+    && minimum.z != std::numeric_limits<float>::max());
+#endif
+  return true;
 }
 } // namespace engine
