@@ -51,8 +51,9 @@ LinesObject::Mesh::Mesh(const engine::Triangle& triangle, const glm::vec4& color
   points.resize(6);
   colors.assign(6, color);
   points[0] = glm::vec4(triangle.a, 1.0); points[1] = glm::vec4(triangle.b, 1.0);
-  points[1] = glm::vec4(triangle.b, 1.0); points[2] = glm::vec4(triangle.c, 1.0);
-  points[2] = glm::vec4(triangle.c, 1.0); points[0] = glm::vec4(triangle.a, 1.0);
+  points[2] = glm::vec4(triangle.b, 1.0); points[3] = glm::vec4(triangle.c, 1.0);
+  points[4] = glm::vec4(triangle.c, 1.0); points[5] = glm::vec4(triangle.a, 1.0);
+  primitive_mode = GL_LINES;
 }
 
 void LinesObject::SetMesh(const Mesh& data) {

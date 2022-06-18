@@ -37,6 +37,8 @@ cc_library(
 #    "pbr_irradiance_cubemap_generator.cc",
 #    "pbr_prefiltered_color_cubemap_generator.h",
 #    "pbr_prefiltered_color_cubemap_generator.cc",
+    "ray_triangle_scene.h",
+    "ray_triangle_scene.cc",
     "ray_tracing_scene.h",
     "ray_tracing_scene.cc",
     "sample_test_scene.h",

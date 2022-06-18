@@ -1,5 +1,7 @@
 #include "engine/math.h"
 
+#include <random>
+
 #include "engine/debug.h"
 #include "engine/util.h"
 
@@ -19,23 +21,12 @@ float Clamp(float value, float min, float max) {
   }
 }
 
-namespace {
-int RandFromToInternal(int from, int to) {
-  CHECK(to > from) << "to LE than from";
-  std::srand(util::Now().time_since_epoch().count());
-  uint32_t slide = std::max(0, 0 - from);
-  uint32_t rand_from = from + slide;
-  uint32_t rand_to = to + slide;
-  uint32_t rand_value = rand_from + uint32_t(std::rand()) % (rand_to - rand_from + 1);
-  return rand_value - slide;
-}
-}
-
 float RandFromTo(float from, float to) {
-  int rand_from = from * 1000;
-  int rand_to = to * 1000;
-  int rand_value = RandFromToInternal(rand_from, rand_to);
-  return rand_value / 1000.0f;
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<> distr(from * 1000, to * 1000);
+  int res = distr(gen);
+  return res / 1000.0;
 }
 
 std::vector<glm::vec3> SampleSemishphere(int num) {

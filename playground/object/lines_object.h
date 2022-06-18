@@ -17,7 +17,7 @@ class LinesObject : public Object {
     Mesh(const engine::Triangle& triangle, const glm::vec4& color);
     std::vector<glm::vec4> points;
     std::vector<glm::vec4> colors;
-    GLuint primitive_mode;    // line_style : GL_LINES, GL_LINE_STRIP, GL_LINE_LOOP
+    GLuint primitive_mode = GL_LINES;    // line_style : GL_LINES, GL_LINE_STRIP, GL_LINE_LOOP
   };
   void SetMesh(const Mesh& data);
 

@@ -238,6 +238,7 @@ RayTriangleResult RayTriangle(const Ray& ray, const Triangle& triangle) {
     return res;
   }
 
+  res.hitted = true;
   res.dist = t;
   res.normal = glm::normalize(glm::cross(edge1, edge2));
   res.pos = ray.origin + ray.dir * t;
