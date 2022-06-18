@@ -2,10 +2,18 @@
 
 #include "glm/gtx/string_cast.hpp"
 
+#include "engine/color.h"
 #include "engine/debug.h"
 #include "engine/util.h"
 
 namespace engine {
+std::string Ray::AsString() const {
+  std::string res;
+  res += "origin ~ " + glm::to_string(origin);
+  res += "dir ~ " + glm::to_string(dir);
+  return res;
+}
+
 glm::vec3 GetFootOfPerpendicular(const glm::vec3& p, const glm::vec3& a, const glm::vec3& b) {
   glm::vec3 ap = p - a;
   glm::vec3 ab = b - a;
@@ -99,7 +107,7 @@ float AABB::GetMaximumByAxis(Axis axis) const {
   }
 }
 
-AABB Triangle::AsAABB() {
+AABB Triangle::AsAABB() const {
   float maximum_x = std::max(std::max(a.x, b.x), c.x);
   float maximum_y = std::max(std::max(a.y, b.y), c.y);
   float maximum_z = std::max(std::max(a.z, b.z), c.z);
@@ -114,8 +122,8 @@ std::string AABB::AsString() const {
                       maximum.x, maximum.y, maximum.z, minimum.x, minimum.y, minimum.z);
 }
 
-bool AABB::CheckValid() const {
-#ifdef DEBUG_SLOW
+#if CGDEBUG
+bool AABB::DebugCheckValid() const {
   if (maximum.x == std::numeric_limits<float>::lowest() || maximum.y == std::numeric_limits<float>::lowest()
       || maximum.z == std::numeric_limits<float>::lowest()) {
     CGCHECK(maximum.x == std::numeric_limits<float>::lowest() && maximum.y == std::numeric_limits<float>::lowest()
@@ -126,17 +134,113 @@ bool AABB::CheckValid() const {
     CGCHECK(minimum.x == std::numeric_limits<float>::max() && minimum.y == std::numeric_limits<float>::max()
       && minimum.z == std::numeric_limits<float>::max());
   }
-#endif
   return true;
 }
 
-bool AABB::CheckNotNull() const {
-#ifdef DEBUG_SLOW
+bool AABB::DebugCheckNotNull() const {
   CGCHECK(maximum.x != std::numeric_limits<float>::lowest() && maximum.y != std::numeric_limits<float>::lowest()
     && maximum.z != std::numeric_limits<float>::lowest());
   CGCHECK(minimum.x != std::numeric_limits<float>::max() && minimum.y != std::numeric_limits<float>::max()
     && minimum.z != std::numeric_limits<float>::max());
-#endif
   return true;
+}
+
+void AABB::SetColor(int level) {
+  if (level == 0) { debug_color = kRed; }
+  else if (level == 1) { debug_color = kOrange; }
+  else if (level == 2) { debug_color = kYellow; }
+  else if (level == 3) { debug_color = kGreen; }
+  else if (level == 4) { debug_color = kCyan; }
+  else if (level == 5) { debug_color = kBlue; }
+  else if (level == 6) { debug_color = kPurple; }
+  else if (level == 7) { debug_color = kBlack; }
+  else if (level == 8) { debug_color = kWhite; }
+  else { debug_color = kGray; }
+}
+#endif
+
+RayAABBResult RayAABB(const Ray& ray, const AABB& aabb) {
+  RayAABBResult res;
+
+  const float inf = 99999;
+  float t_enter_x = inf, t_exit_x = inf, t_enter_y = -inf, t_exit_y = inf, t_enter_z = -inf, t_exit_z = inf;
+  if (ray.dir.x > 0) {
+    t_enter_x = (aabb.minimum.x - ray.origin.x) / ray.dir.x;
+    t_exit_x = (aabb.maximum.x - ray.origin.x) / ray.dir.x;
+  } else if (ray.dir.x < 0) {
+    t_enter_x = (aabb.maximum.x - ray.origin.x) / ray.dir.x;
+    t_exit_x = (aabb.minimum.x - ray.origin.x) / ray.dir.x;
+  }
+
+  if (ray.dir.y > 0) {
+    t_enter_y = (aabb.minimum.y - ray.origin.y) / ray.dir.y;
+    t_exit_y = (aabb.maximum.y - ray.origin.y) / ray.dir.y;
+  } else if (ray.dir.y < 0) {
+    t_enter_y = (aabb.maximum.y - ray.origin.y) / ray.dir.y;
+    t_exit_y = (aabb.minimum.y - ray.origin.y) / ray.dir.y;
+  }
+
+  if (ray.dir.z > 0) {
+    t_enter_z = (aabb.minimum.z - ray.origin.z) / ray.dir.z;
+    t_exit_z = (aabb.maximum.z - ray.origin.z) / ray.dir.z;
+  } else if (ray.dir.z < 0) {
+    t_enter_z = (aabb.maximum.z - ray.origin.z) / ray.dir.z;
+    t_exit_z = (aabb.minimum.z - ray.origin.z) / ray.dir.z;
+  }
+
+  float t_enter = std::max(std::max(t_enter_x, t_enter_y), t_enter_z);
+  float t_exit = std::min(std::min(t_exit_x, t_exit_y), t_exit_z);
+
+  res.hitted = t_enter < t_exit && t_exit >= 0;
+
+  return res;
+}
+
+std::string Triangle::AsString() const {
+  std::string res;
+  res += "a ~ " + glm::to_string(a);
+  res += "b ~ " + glm::to_string(b);
+  res += "c ~ " + glm::to_string(c);
+  return res;
+}
+
+// Mollar Trumbore Algorithm
+// wikipedia
+// https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
+// GAMES101
+// https://www.bilibili.com/video/BV1X7411F744?p=13 0:51:50
+RayTriangleResult RayTriangle(const Ray& ray, const Triangle& triangle) {
+  RayTriangleResult res;
+  res.hitted = false;
+
+  glm::vec3 edge1, edge2, h, s, q;
+  float a,f,u,v;
+
+  edge1 = triangle.b - triangle.a;
+  edge2 = triangle.c - triangle.a;
+  h = glm::cross(ray.dir, edge2);
+  a = glm::dot(edge1, h);
+  if (std::abs(a) < std::numeric_limits<float>::epsilon()) {
+    return res; // The ray is parallel to the triangle
+  }
+  f = 1.0 / a;
+  s = ray.origin - triangle.a;
+  u = f * glm::dot(s, h);
+  if (u < 0.0 || u > 1.0)
+    return res;
+  q = glm::cross(s, edge1);
+  v = f * glm::dot(ray.dir, q);
+  if (v < 0.0 || u + v > 1.0) {
+    return res;
+  }
+  float t = f * glm::dot(edge2, q); // Find out where the intersection point is on the line
+  if (t < 0) {
+    return res;
+  }
+
+  res.dist = t;
+  res.normal = glm::normalize(glm::cross(edge1, edge2));
+  res.pos = ray.origin + ray.dir * t;
+  return res;
 }
 } // namespace engine

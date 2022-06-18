@@ -28,7 +28,7 @@ class PbrScene : public Scene {
   int light_num = 4;
   std::vector<PointLightObject> point_lights_;
   SphereObject sphere_;
-  Coord coord_;
+  CoordObject coord_;
   SkyboxObject skybox_;
   PlaneObject plane_;
   CubeObject cube_;

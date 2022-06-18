@@ -1,9 +1,11 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include "engine/geometry.h"
 #include "engine/material.h"
+#include "engine/primitive.h"
 #include "engine/transform.h"
 #include "playground/context.h"
 
@@ -22,7 +24,7 @@ class Object {
   const engine::Transform& transform() const { return transform_; }
   glm::mat4 GetModelMatrix() const { return transform_.GetModelMatrix(); }
 
-  std::vector<engine::AABB> GetAABBs(Context* context);
+  std::vector<engine::Primitive> GetPrimitives(Context* context, int primitive_index);
 
   struct IntersectResult {
     glm::vec3 position_ws;

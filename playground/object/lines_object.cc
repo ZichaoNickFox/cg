@@ -4,15 +4,23 @@
 #include <glm/gtx/string_cast.hpp>
 #include "glog/logging.h"
 
+#include "engine/color.h"
 #include "engine/util.h"
 
 LinesObject::Mesh::Mesh(const std::vector<glm::vec4>& in_points, const std::vector<glm::vec4>& in_colors,
                         GLuint in_primitive_mode)
     : points(in_points), colors(in_colors), primitive_mode(in_primitive_mode) {}
 
-LinesObject::Mesh::Mesh(const std::vector<engine::AABB>& aabbs, const glm::vec4& color) {
+LinesObject::Mesh::Mesh(const std::vector<engine::AABB>& aabbs, const glm::vec4& default_color) {
   points.resize(aabbs.size() * 24);
-  colors = std::vector<glm::vec4>(points.size(), color);
+#if CGDEBUG
+  colors.resize(points.size());
+  for (int i = 0; i < points.size(); ++i) {
+    colors[i] = aabbs[i / 24].debug_color;
+  }
+#else
+  colors = std::vector<glm::vec4>(points.size(), default_color);
+#endif
   primitive_mode = GL_LINES;
   int i = 0;
   for (const engine::AABB& aabb : aabbs) {
@@ -37,6 +45,14 @@ LinesObject::Mesh::Mesh(const std::vector<engine::AABB>& aabbs, const glm::vec4&
     points[i++] = g;  points[i++] = h;
     points[i++] = h;  points[i++] = e;
   }
+}
+
+LinesObject::Mesh::Mesh(const engine::Triangle& triangle, const glm::vec4& color) {
+  points.resize(6);
+  colors.assign(6, color);
+  points[0] = glm::vec4(triangle.a, 1.0); points[1] = glm::vec4(triangle.b, 1.0);
+  points[1] = glm::vec4(triangle.b, 1.0); points[2] = glm::vec4(triangle.c, 1.0);
+  points[2] = glm::vec4(triangle.c, 1.0); points[0] = glm::vec4(triangle.a, 1.0);
 }
 
 void LinesObject::SetMesh(const Mesh& data) {
@@ -92,12 +108,12 @@ void LinesObject::Clear() {
   glDeleteBuffers_(1, &vbo_);
 }
 
-Coord::Coord() {
+CoordObject::CoordObject() {
   std::vector<glm::vec4> positions{glm::vec4(0, 0, 0, 1), glm::vec4(1, 0, 0, 1),
                                    glm::vec4(0, 0, 0, 1), glm::vec4(0, 1, 0, 1),
                                    glm::vec4(0, 0, 0, 1), glm::vec4(0, 0, 1, 1)};
-  std::vector<glm::vec4> colors{glm::vec4(1, 0, 0, 1), glm::vec4(1, 0, 0, 1),
-                                glm::vec4(0, 1, 0, 1), glm::vec4(0, 1, 0, 1),
-                                glm::vec4(0, 0, 1, 1), glm::vec4(0, 0, 1, 1)};
+  std::vector<glm::vec4> colors{engine::kRed, engine::kRed,
+                                engine::kBlue, engine::kBlue,
+                                engine::kGreen, engine::kGreen};
   SetMesh({positions, colors, GL_LINES});
 }

@@ -41,5 +41,5 @@ class ModelScene : public Scene {
   int call_face_ = GL_BACK;
   int cw_ = GL_CW;
 
-  Coord coord_;
+  CoordObject coord_;
 };

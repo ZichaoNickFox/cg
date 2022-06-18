@@ -66,4 +66,4 @@
 #define CGLOGH() CGLOG(ERROR) << "hhhhhhhhhh";
 #define CGLOGI() CGLOG(ERROR) << "iiiiiiiiii";
 
-#define DEBUG_SLOW
+#define CGDEBUG 1

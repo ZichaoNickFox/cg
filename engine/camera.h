@@ -6,6 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "engine/debug.h"
+#include "engine/geometry.h"
 #include "engine/transform.h"
 
 namespace engine {
@@ -52,9 +53,8 @@ class Camera {
 
   void GetPickRay(const glm::vec2& cursor_screen_pos, glm::vec3* cursor_world_pos_near,
                   glm::vec3* cursor_world_pos_far) const;
-  // TODO : Write a faster by geomtry calculation
-  void GetPickRayFast(const glm::vec2& cursor_screen_pos, glm::vec3* cursor_world_pos_near,
-                      glm::vec3* cursor_world_pos_far) const {}
+  engine::Ray GetPickRay(const glm::vec2& cursor_screen_pos) const;
+  
 private:
   float perspective_fov_ = 30.0;
 

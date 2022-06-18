@@ -56,7 +56,7 @@ class ShareScene : public Scene {
 
   std::string material_property_name_ = "gold";
 
-  Coord coord_;
+  CoordObject coord_;
 
   glm::vec3 kLineFrom = glm::vec3(0.8, 1, 0.8);
   glm::vec3 kLineTo = glm::vec3(0.1, -1, 0.1);

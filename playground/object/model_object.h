@@ -60,7 +60,7 @@ class ModelObject : public Object {
       mutable_model_part(i)->mutable_mesh()->AddVertexAttribute(meta_data, data);
     }
   }
-  std::vector<engine::AABB> GetAABBs(Context* context);
+  std::vector<engine::Primitive> GetPrimitives(Context* context, int primitive_index);
 
  private:
   std::vector<ModelPartObject> model_parts_;

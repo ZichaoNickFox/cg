@@ -76,13 +76,14 @@ void ModelObject::SetTransform(const engine::Transform& transform) {
   for (int i = 0; i < model_part_num(); ++i) {
     mutable_model_part(i)->SetTransform(transform);
   }
+  Object::SetTransform(transform);
 }
 
-std::vector<engine::AABB> ModelObject::GetAABBs(Context* context) {
-  std::vector<engine::AABB> res;
+std::vector<engine::Primitive> ModelObject::GetPrimitives(Context* context, int primitive_index) {
+  std::vector<engine::Primitive> res;
   for (int i = 0; i < model_part_num(); ++i) {
-    std::vector<engine::AABB> aabbs = model_parts_[i].GetAABBs(context);
-    res.insert(res.end(), aabbs.begin(), aabbs.end());
+    std::vector<engine::Primitive> primitives = model_parts_[i].GetPrimitives(context, primitive_index);
+    res.insert(res.end(), primitives.begin(), primitives.end());
   }
   return res;
 }

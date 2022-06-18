@@ -45,7 +45,7 @@ class AAScene : public Scene {
 
   int point_lights_num_ = 100;
   std::vector<PointLightObject> point_lights_;
-  Coord coord_;
+  CoordObject coord_;
   PlaneObject plane_;
   DirectionalLightObject directional_light_;
 

@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
 
+#include "engine/color.h"
 #include "engine/debug.h"
 #include "engine/io.h"
 #include "playground/object/lines_object.h"
@@ -33,33 +34,39 @@ OnUpdateCommon::~OnUpdateCommon() {
 }
 
 void OnUpdateCommon::InspectCamera(Context* context) {
-  std::string camera_pos_ws = glm::to_string(context->camera().transform().translation()).c_str();
+  std::string camera_pos_ws = glm::to_string(context->camera().transform().translation());
   ImGui::Text("camera_pos_ws %s", camera_pos_ws.c_str());
   ImGui::SameLine();
   if (ImGui::Button("Copy##camera_pos_ws")) {
     context->set_clipboard_string_func()(camera_pos_ws.c_str());
   }
 
-  std::string camera_dir_ws = glm::to_string(context->camera().front_ws()).c_str();
+  std::string camera_dir_ws = glm::to_string(context->camera().front_ws());
   ImGui::Text("camera_dir_ws %s", camera_dir_ws.c_str());
   ImGui::SameLine();
   if (ImGui::Button("Copy##camera_dir_ws")) {
     context->set_clipboard_string_func()(camera_dir_ws.c_str());
   }
 
-  ImGui::Text("camera_rotation %s", glm::to_string(context->camera().transform().rotation()).c_str());
+  std::string camera_rotation_quat = glm::to_string(context->camera().transform().rotation());
+  ImGui::Text("camera_rotation %s", camera_rotation_quat.c_str());
+  ImGui::SameLine();
+  if (ImGui::Button("Copy##camera_roatation_quat")) {
+    context->set_clipboard_string_func()(camera_rotation_quat.c_str());
+  }
+
   glm::vec3 near_pos_ws, far_pos_ws;
-  context->camera().GetPickRay(context->io().normalized_cursor_screen_pos(), &near_pos_ws, &far_pos_ws);
+  context->camera().GetPickRay(context->io().GetCursorPosSS(), &near_pos_ws, &far_pos_ws);
   ImGui::Text("camera_near_pos_ws %s", glm::to_string(near_pos_ws).c_str());
   ImGui::Text("camera_far_pos_ws %s", glm::to_string(far_pos_ws).c_str());
   ImGui::Text("pick dir %s", glm::to_string(glm::normalize(far_pos_ws - near_pos_ws)).c_str());
 }
 
 void OnUpdateCommon::InSpectCursor(Context* context) {
-  ImGui::Text("cursor pos x %lf", context->io().cursor_screen_pos().x);
-  ImGui::Text("cursor pos y %lf", context->io().cursor_screen_pos().y);
-  ImGui::Text("cursor screen space x %lf", context->io().normalized_cursor_screen_pos().x);
-  ImGui::Text("cursor screen space y %lf", context->io().normalized_cursor_screen_pos().y);
+  ImGui::Text("cursor pos x %lf", context->io().GetCursorWindowPos().x);
+  ImGui::Text("cursor pos y %lf", context->io().GetCursorWindowPos().y);
+  ImGui::Text("cursor screen space x %lf", context->io().GetCursorPosSS().x);
+  ImGui::Text("cursor screen space y %lf", context->io().GetCursorPosSS().y);
 }
 
 void OnUpdateCommon::ReloadShaders(Context* context) {
@@ -112,7 +119,7 @@ void OnRenderCommon::DrawViewCoord(Context* context) {
   context->camera().GetPickRay(glm::vec2(0.5, 0.1), &near_pos_ws, &far_pos_ws);
   glm::vec3 direction = glm::normalize(far_pos_ws - near_pos_ws);
   glm::vec3 world_coord_pos = near_pos_ws + direction * glm::vec3(0.5, 0.5, 0.5);
-  Coord coord;
+  CoordObject coord;
   coord.mutable_transform()->SetTranslation(world_coord_pos);
   coord.mutable_transform()->SetScale(glm::vec3(0.05, 0.05, 0.05));
   LinesShader({0.3}, context, &coord);
@@ -133,18 +140,18 @@ RaytracingDebugCommon::RaytracingDebugCommon(const engine::Texture& in, Context*
 
   glDisable_(GL_DEPTH_TEST);
 
-  std::vector<glm::vec4> colors{{1, 0, 0, 1}, {1, 156 / 255.0, 0, 1}, {1, 1, 0, 1}, {0, 1, 0, 1},
-                                {0, 1, 1, 1}, {0, 0, 1, 1}, {1, 0, 1, 1}, {1, 1, 1, 1},
-                                {1, 1, 1, 1}, {1, 1, 1, 1}, {1, 1, 1, 1}, {1, 1, 1, 1},
-                                {1, 1, 1, 1}, {1, 1, 1, 1}, {1, 1, 1, 1}, {1, 1, 1, 1},
-                                {1, 1, 1, 1}, {1, 1, 1, 1}, {1, 1, 1, 1}, {1, 1, 1, 1}};
+  std::vector<glm::vec4> colors{engine::kRed, engine::kOrange, engine::kYellow, engine::kGreen,
+                                engine::kCyan, engine::kBlue, engine::kPurple, engine::kWhite,
+                                engine::kWhite, engine::kWhite, engine::kWhite, engine::kWhite,
+                                engine::kWhite, engine::kWhite, engine::kWhite, engine::kWhite,
+                                engine::kWhite, engine::kWhite, engine::kWhite, engine::kWhite};
   LinesObject::Mesh mesh{util::AsVector(light_path.light_path), colors, GL_LINE_STRIP};
   LinesObject lines_object;
   lines_object.SetMesh(mesh);
   LinesShader({}, context, &lines_object);
   lines_object.OnRender(context);
 
-  Coord coord;
+  CoordObject coord;
   LinesShader({}, context, &coord);
   coord.OnRender(context);
   glEnable_(GL_DEPTH_TEST);

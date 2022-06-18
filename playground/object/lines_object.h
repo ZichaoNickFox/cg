@@ -13,7 +13,8 @@ class LinesObject : public Object {
  public:
   struct Mesh {
     Mesh(const std::vector<glm::vec4>& points, const std::vector<glm::vec4>& colors, GLuint primitive_mode);
-    Mesh(const std::vector<engine::AABB>& aabbs, const glm::vec4& color);
+    Mesh(const std::vector<engine::AABB>& aabbs, const glm::vec4& default_color);
+    Mesh(const engine::Triangle& triangle, const glm::vec4& color);
     std::vector<glm::vec4> points;
     std::vector<glm::vec4> colors;
     GLuint primitive_mode;    // line_style : GL_LINES, GL_LINE_STRIP, GL_LINE_LOOP
@@ -41,7 +42,7 @@ class LinesObject : public Object {
   GLuint vbo_;
 };
 
-class Coord : public LinesObject {
+class CoordObject : public LinesObject {
  public:
-  Coord();
+  CoordObject();
 };

@@ -65,10 +65,10 @@ void Camera::RotateVerticle(float delta) {
 }
 
 // https://feepingcreature.github.io/math.html
-void Camera::GetPickRay(const glm::vec2& normalized_position_ss, glm::vec3* near_position_ws,
+void Camera::GetPickRay(const glm::vec2& cursor_pos_ss, glm::vec3* near_position_ws,
                         glm::vec3* far_position_ws) const {
-  glm::vec3 near_screen_space = glm::vec3(normalized_position_ss.x, normalized_position_ss.y, 0);
-  glm::vec3 far_screen_space = glm::vec3(normalized_position_ss.x, normalized_position_ss.y, 1);
+  glm::vec3 near_screen_space = glm::vec3(cursor_pos_ss.x, cursor_pos_ss.y, 0);
+  glm::vec3 far_screen_space = glm::vec3(cursor_pos_ss.x, cursor_pos_ss.y, 1);
   std::vector<glm::vec3> screen_spaces{near_screen_space, far_screen_space};
   std::vector<glm::vec4> world_spaces(2);
   for (int i = 0; i < screen_spaces.size(); ++i) {
@@ -80,6 +80,13 @@ void Camera::GetPickRay(const glm::vec2& normalized_position_ss, glm::vec3* near
   }
   *near_position_ws = world_spaces[0];
   *far_position_ws = world_spaces[1];
+}
+
+engine::Ray Camera::GetPickRay(const glm::vec2& cursor_pos_ss) const {
+  glm::vec3 near_position_ws;
+  glm::vec3 far_position_ws;
+  GetPickRay(cursor_pos_ss, &near_position_ws, &far_position_ws);
+  return engine::Ray{near_position_ws, glm::normalize(far_position_ws - near_position_ws)};
 }
 
 }

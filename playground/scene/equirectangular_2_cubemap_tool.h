@@ -24,7 +24,7 @@ class Equirectangular2CubemapTool : public Scene {
  private:
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
   CubeObject cube_;
-  Coord coord_;
+  CoordObject coord_;
 
   engine::Camera cubemap_cameras_[6];
   std::vector<engine::Transform> transforms_ = {

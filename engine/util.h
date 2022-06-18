@@ -98,13 +98,13 @@ void Remove(const VectorElemType& elem, std::vector<VectorElemType>* elems) {
   }
 }
 template<typename ElemType>
-void VectorOverride(const std::vector<ElemType>& copy_from, int copy_begin, int copy_end,
-                    std::vector<ElemType>* overriden, int overriden_begin) {
-  int len = copy_end - copy_begin; 
-  if (overriden->size() - overriden_begin < len) {
-    overriden->resize(overriden_begin + len);
+void VectorOverride(std::vector<ElemType>* dist, int dist_begin,
+                    const std::vector<ElemType>& src, int src_begin, int src_end) {
+  int len = src_end - src_begin; 
+  if (dist->size() - dist_begin < len) {
+    dist->resize(dist_begin + len);
   }
-  memcpy(overriden->data() + overriden_begin, copy_from.data() + copy_begin, len * sizeof(ElemType));
+  memcpy(dist->data() + dist_begin, src.data() + src_begin, len * sizeof(ElemType));
 }
 
 // time

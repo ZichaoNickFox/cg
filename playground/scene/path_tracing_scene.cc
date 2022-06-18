@@ -2,39 +2,41 @@
 
 #include "glm/gtx/string_cast.hpp"
 
-#include "engine/transform.h"
+#include "engine/color.h"
 #include "engine/math.h"
+#include "engine/transform.h"
 #include "playground/scene/common.h"
 #include "playground/shaders.h"
 
 void PathTracingScene::OnEnter(Context* context) {
   camera_->SetPerspectiveFov(60);
-  camera_->SetTransform({{0, 1, 5}, glm::quat(1, -0.02, 0, 0), {1, 1, 1}});
+  camera_->SetTransform({{glm::vec3(0.286482, 0.708117, -1.065640)},
+                          glm::quat(0.070520, {-0.005535, -0.994436, -0.078057}), {1, 1, 1}});
   context->SetCamera(camera_.get());
 
   // path tracing
   glm::ivec2 viewport_size = context->io().screen_size();
   std::vector<glm::vec4> canvas(viewport_size.x * viewport_size.y);
   for (glm::vec4& elem : canvas) {
-    elem = glm::vec4(0, 0, 0, 1);
+    elem = engine::kBlack;
   }
   canvas_ = context->CreateTexture({viewport_size.x, viewport_size.y, canvas, GL_NEAREST, GL_NEAREST});
 
   RaytracingDebugCommon::LightPath light_path;
   light_path_ssbo_.Init(0, sizeof(light_path), &light_path);
 
-  std::vector<engine::BVH::Primitive> primitives;
   for (auto& p : conell_box_) {
     p.second.object.Init(context, p.first, p.first);
-    std::vector<engine::AABB> model_aabbs = p.second.object.GetAABBs(context);
-    for (const engine::AABB& model_aabb : model_aabbs) {
-      primitives.push_back({model_aabb, p.second.primitive_index});
+    p.second.object.SetTransform(p.second.transform);
+    std::vector<engine::Primitive> model_primitives = p.second.object.GetPrimitives(context, p.second.primitive_index);
+    for (const engine::Primitive& model_primitive : model_primitives) {
+      primitives_.push_back(model_primitive);
     }
   }
-  bvh_.Build(&primitives, {3, 12});
+  bvh_.Build(primitives_, {3, 12});
 
   //std::vector<engine::AABB> aabbs = sphere_.GetAABBs(context);
-  //std::vector<engine::BVH::Primitive> primitives(aabbs.size());
+  //std::vector<engine::Primitive> primitives(aabbs.size());
   //const int kSpherePrimitiveIndex = 0;
   //for (int i = 0; i < primitives.size(); ++i) {
   //  primitives[i] = {aabbs[i], kSpherePrimitiveIndex};
@@ -66,11 +68,30 @@ void PathTracingScene::Rasterization(Context* context) {
   }
 
   std::vector<engine::AABB> aabbs = bvh_.GetAABBs();
-  LinesObject lines_object;
-  LinesObject::Mesh lines_mesh(aabbs, glm::vec4(0, 0, 1, 1));
-  lines_object.SetMesh(lines_mesh);
-  LinesShader lines_shader({}, context, &lines_object);
-  lines_object.OnRender(context);
+  LinesObject bvh_lines;
+  bvh_lines.SetMesh(LinesObject::Mesh(aabbs, glm::vec4(0, 0, 1, 1)));
+  LinesShader lines_shader({}, context, &bvh_lines);
+  bvh_lines.OnRender(context);
+
+  engine::Ray pick_ray = camera_->GetPickRay(context->io().GetCursorPosSS());
+  engine::RayBVHResult result = engine::RayBVH(pick_ray, bvh_, primitives_);
+  if (result.hitted) {
+    LinesObject triangle_lines;
+    LinesObject::Mesh mesh(primitives_[result.primitive_index].triangle, engine::kBlack);
+    triangle_lines.SetMesh(mesh);
+    LinesShader lines_shader({}, context, &triangle_lines);
+    triangle_lines.OnRender(context);
+  }
+
+  LinesObject ray_lines;
+  ray_lines.SetMesh(LinesObject::Mesh({glm::vec4(pick_ray.origin, 1.0), glm::vec4(pick_ray.origin + pick_ray.dir, 1.0)},
+                                      {glm::vec4(0, 0, 1, 1), glm::vec4(0, 0, 1, 1)}, GL_LINES));
+  LinesShader ray_lines_shader({}, context, &ray_lines);
+  ray_lines.OnRender(context);
+
+  LOG(ERROR) << pick_ray.AsString();
+  LinesShader({}, context, &coord_object_);
+  coord_object_.OnRender(context);
 }
 
 void PathTracingScene::PathTracing(Context* context) {

@@ -17,8 +17,8 @@ class Io {
   void FeedButtonInput(bool left, bool right);
   void SetGuiCapturedMouse(bool captured) { gui_captured_cursor_ = captured; }
   glm::vec2 GetCursorDelta() const { return cursor_pos_ - last_cursor_pos_; }
-  glm::vec2 cursor_screen_pos() const { return {cursor_pos_.x, screen_size_.y - cursor_pos_.y}; };
-  glm::vec2 normalized_cursor_screen_pos() const { return cursor_screen_pos() / glm::vec2(screen_size_); }
+  glm::vec2 GetCursorWindowPos() const { return {cursor_pos_.x, screen_size_.y - cursor_pos_.y}; };
+  glm::vec2 GetCursorPosSS() const { return GetCursorWindowPos() / glm::vec2(screen_size_); }
   bool left_button_pressed() const { return left_button_pressed_; }
   bool right_button_pressed() const { return right_button_pressed_; }
   bool gui_captured_cursor() const { return gui_captured_cursor_; }

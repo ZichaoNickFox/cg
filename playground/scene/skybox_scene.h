@@ -17,7 +17,7 @@ class SkyboxScene : public Scene {
   void OnExit(Context* context);
 
  private:
-  Coord coord_;
+  CoordObject coord_;
   SkyboxObject skybox_;
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
 };
