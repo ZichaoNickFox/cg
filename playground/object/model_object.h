@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "engine/geometry.h"
+#include "engine/primitive.h"
 #include "engine/mesh.h"
 #include "engine/repo/model_repo.h"
 #include "engine/shader.h"
@@ -60,7 +61,7 @@ class ModelObject : public Object {
       mutable_model_part(i)->mutable_mesh()->AddVertexAttribute(meta_data, data);
     }
   }
-  std::vector<engine::Primitive> GetPrimitives(Context* context, int primitive_index);
+  void GetPrimitives(Context* context, engine::Primitives* primitives);
 
  private:
   std::vector<ModelPartObject> model_parts_;

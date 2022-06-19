@@ -79,13 +79,11 @@ void ModelObject::SetTransform(const engine::Transform& transform) {
   Object::SetTransform(transform);
 }
 
-std::vector<engine::Primitive> ModelObject::GetPrimitives(Context* context, int primitive_index) {
+void ModelObject::GetPrimitives(Context* context, engine::Primitives* primitives) {
   std::vector<engine::Primitive> res;
   for (int i = 0; i < model_part_num(); ++i) {
-    std::vector<engine::Primitive> primitives = model_parts_[i].GetPrimitives(context, primitive_index);
-    res.insert(res.end(), primitives.begin(), primitives.end());
+    model_parts_[i].GetPrimitives(context, primitives);
   }
-  return res;
 }
 
 void ModelObject::OnDestory(Context *context) {

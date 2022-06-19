@@ -30,19 +30,18 @@ void PathTracingScene::OnEnter(Context* context) {
     for (auto& p : cornell_box_) {
       p.second.object.Init(context, p.first, p.first);
       p.second.object.SetTransform(p.second.transform);
-      std::vector<engine::Primitive> model_primitives = p.second.object.GetPrimitives(context, primitives_.size());
-      for (const engine::Primitive& model_primitive : model_primitives) {
-        primitives_.push_back(model_primitive);
-      }
+      p.second.object.GetPrimitives(context, &primitives_);
     }
     bvh_.Build(primitives_, {3, engine::BVH::Partition::kPos, 12});
   }
 
   // Sphere
   if (0) {
-    primitives_ = sphere_.GetPrimitives(context, 0);
+    sphere_.GetPrimitives(context, &primitives_);
     bvh_.Build(primitives_, {10, engine::BVH::Partition::kPos, 64});
   }
+
+  bvh_ssbo_ = bvh_.AsSSBO(1);
 
   glEnable_(GL_DEPTH_TEST);
 }
@@ -86,7 +85,7 @@ void PathTracingScene::Rasterization(Context* context) {
   engine::RayBVHResult result = engine::RayBVH(pick_ray, bvh_, primitives_);
   if (result.hitted) {
     LinesObject triangle_lines;
-    LinesObject::Mesh mesh(primitives_[result.primitive_index].triangle, engine::kRed);
+    LinesObject::Mesh mesh(primitives_.GetTriangle(result.primitive_index), engine::kRed);
     triangle_lines.SetMesh(mesh);
     LinesShader({}, context, &triangle_lines);
     triangle_lines.OnRender(context);

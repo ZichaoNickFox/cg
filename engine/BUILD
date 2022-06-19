@@ -68,6 +68,7 @@ cc_library(
     "pass.h",
     "pass.cc",
     "primitive.h",
+    "primitive.cc",
     "shader.h",
     "shader.cc",
     "shader_loader.h",

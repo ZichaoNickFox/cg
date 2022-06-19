@@ -7,14 +7,14 @@
 
 namespace engine {
 
-void BVH::Build(const std::vector<Primitive>& primitives, const Option& option) {
+void BVH::Build(const Primitives& primitives, const Option& option) {
   option_ = option;
   sequence_.resize(primitives.size());
   for (int i = 0; i < primitives.size(); ++i) {
     sequence_[i] = i;
   }
-  int root_id = NewNode(0, sequence_.size(), UnionAABB(primitives, sequence_));
-  PartitionNode(Primitives{&primitives}, 0, sequence_.size(), root_id);
+  int root_id = NewNode(0, sequence_.size(), UnionAABB(primitives.data(), sequence_));
+  PartitionNode(primitives, 0, sequence_.size(), root_id);
 }
 
 void BVH::PartitionNode(const Primitives& primitives, int begin, int end, int node_id) {
@@ -263,7 +263,7 @@ void BVH::GetAABBs(int node_id, int cur_level, int filter_level, std::vector<AAB
   GetAABBs(nodes_[node_id].right_node, cur_level + 1, filter_level, aabbs);
 }
 
-RayBVHResult RayBVH(const Ray& ray, const BVH& bvh, const std::vector<Primitive>& primitives) {
+RayBVHResult RayBVH(const Ray& ray, const BVH& bvh, const Primitives& primitives) {
   RayBVHResult res;
   if (bvh.nodes_.size() == 0) {
     return res;
@@ -285,10 +285,10 @@ RayBVHResult RayBVH(const Ray& ray, const BVH& bvh, const std::vector<Primitive>
         CGCHECK(i < bvh.sequence_.size()) << i << " " << bvh.sequence_.size();
         int primitive_index = bvh.sequence_[i];
         CGCHECK(primitive_index < primitives.size()) << primitive_index << " " << primitives.size();
-        RayTriangleResult ray_triangle_result = RayTriangle(ray, primitives[primitive_index].triangle);
+        RayTriangleResult ray_triangle_result = RayTriangle(ray, primitives.GetTriangle(primitive_index));
         if (ray_triangle_result.hitted && ray_triangle_result.dist < res.dist) {
           res.hitted = true;
-          res.primitive_index = primitives[primitive_index].primitive_index;
+          res.primitive_index = primitive_index;
           res.dist = ray_triangle_result.dist;
           res.aabb = node.aabb;
         }
@@ -299,11 +299,6 @@ RayBVHResult RayBVH(const Ray& ray, const BVH& bvh, const std::vector<Primitive>
     }
   }
   return res;
-}
-
-const AABB& BVH::Primitives::GetAABB(int index) const {
-  CGCHECK(index >= 0 && index < primitives->size());
-  return primitives->at(index).aabb; 
 }
 
 } // namespace engine

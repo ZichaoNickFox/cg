@@ -24,7 +24,7 @@ class Object {
   const engine::Transform& transform() const { return transform_; }
   glm::mat4 GetModelMatrix() const { return transform_.GetModelMatrix(); }
 
-  std::vector<engine::Primitive> GetPrimitives(Context* context, int primitive_index);
+  void GetPrimitives(Context* context, engine::Primitives* pimitives);
 
   struct IntersectResult {
     glm::vec3 position_ws;

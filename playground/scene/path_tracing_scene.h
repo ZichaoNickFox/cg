@@ -6,6 +6,7 @@
 #include "engine/BVH.h"
 #include "engine/camera.h"
 #include "engine/geometry.h"
+#include "engine/primitive.h"
 #include "engine/SSBO.h"
 #include "playground/object/lines_object.h"
 #include "playground/object/model_object.h"
@@ -26,7 +27,7 @@ class PathTracingScene : public Scene {
   std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
 
   engine::BVH bvh_;
-  std::vector<engine::Primitive> primitives_;
+  engine::Primitives primitives_;
 
   struct ObjectData {
     ModelObject object;
@@ -58,5 +59,7 @@ class PathTracingScene : public Scene {
 
   engine::Texture canvas_;
   engine::SSBO light_path_ssbo_;
+  engine::SSBO bvh_ssbo_;
+
   CoordObject coord_object_;
 };

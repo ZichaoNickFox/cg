@@ -28,15 +28,11 @@ class BVH {
     Partition partition_type = Partition::kPos;
     int sah_bucket_num = 64;
   };
-  void Build(const std::vector<Primitive>& primitives, const Option& option);
+  void Build(const Primitives& primitives, const Option& option);
   SSBO AsSSBO(int binding_point) const;
   std::vector<AABB> GetAABBs(int filter_level = -1) const;
 
  private:
-  struct Primitives {
-    const AABB& GetAABB(int index) const;
-    const std::vector<Primitive>* primitives = nullptr;
-  };
   int NewNode(int begin, int end, const AABB& union_aabb);
   void PartitionNode(const Primitives& primitives, int begin, int end, int node_id);
   void GetAABBs(int node_id, int cur_level, int filter_level, std::vector<AABB>* aabbs) const;
@@ -69,7 +65,7 @@ class BVH {
   std::vector<int> sequence_;
   Option option_;
 
-  friend struct RayBVHResult RayBVH(const Ray& ray, const BVH& bvh, const std::vector<Primitive>& primitives);
+  friend struct RayBVHResult RayBVH(const Ray& ray, const BVH& bvh, const Primitives& primitives);
 };
 
 struct RayBVHResult {
@@ -78,6 +74,6 @@ struct RayBVHResult {
   int primitive_index;
   float dist = std::numeric_limits<float>::max();
 };
-RayBVHResult RayBVH(const Ray& ray, const BVH& bvh, const std::vector<Primitive>& primitives);
+RayBVHResult RayBVH(const Ray& ray, const BVH& bvh, const Primitives& primitives);
   
 }
