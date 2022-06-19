@@ -30,9 +30,9 @@ float RandFromTo(float from, float to);
 
 namespace {
 template<typename ElemType, typename LECompareFunc>
-void QuickSelectInternal(std::vector<ElemType>* elems, int n, int l, int r, const LECompareFunc& le_compare_func) {
-  int p = l;
-  int s = l, t = r;
+void QuickSelectInternal(std::vector<ElemType>* elems, int begin, int end, int n, const LECompareFunc& le_compare_func) {
+  int p = begin;
+  int s = begin, t = end - 1;
   while (s <= t) {
     while (s <= t && le_compare_func(elems->at(p), elems->at(t))) {
       t--;
@@ -52,20 +52,21 @@ void QuickSelectInternal(std::vector<ElemType>* elems, int n, int l, int r, cons
   if (p == n) {
     return;
   } else if (p < n) {
-    QuickSelectInternal(elems, n, p + 1, r, le_compare_func);
+    QuickSelectInternal(elems, p + 1, end, n, le_compare_func);
   } else {
-    QuickSelectInternal(elems, n, l, p - 1, le_compare_func);
+    QuickSelectInternal(elems, begin, p, n, le_compare_func);
   }
 }
 }
 template<typename ElemType, typename LECompareFunc>
-int QuickSelect(std::vector<ElemType>* elems, int index, const LECompareFunc& le_compare_func) {
-  CGCHECK(index >= 0 && index < elems->size()) << "index~" << index <<" size~" << elems->size();
-  if (elems->size() == 1) {
-    return elems->at(0);
+int QuickSelect(std::vector<ElemType>* elems, int begin, int end, int index, const LECompareFunc& le_compare_func) {
+  CGCHECK(begin >= 0 && end <= elems->size()) << " begin~" << begin << " end~" << end << " size" << elems->size();
+  CGCHECK(index >= begin && index < end) << " begin~" << begin << " end~" << end << " index~" << index;
+  if (end - begin == 1) {
+    return begin;
   }
-  QuickSelectInternal(elems, index, 0, elems->size() - 1, le_compare_func);
-  return elems->at(index);
+  QuickSelectInternal(elems, begin, end, index, le_compare_func);
+  return index;
 }
 
 } // namespace util

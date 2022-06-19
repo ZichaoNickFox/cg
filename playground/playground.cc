@@ -28,7 +28,7 @@
 #include "playground/scene/instance_scene.h"
 
 namespace {
-const std::string kDefaultScene = "GeometryScene";
+const std::string kDefaultScene = "PathTracingScene";
 }
 
 void Playground::Init(const Context::Option& option) {

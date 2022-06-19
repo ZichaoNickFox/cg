@@ -8,7 +8,7 @@ docs
 .DS_Store
 settings.json
 imgui.ini
-/imgui.ini
 bazel.exe
 .cache
 log
+/imgui.ini

@@ -25,21 +25,24 @@ void PathTracingScene::OnEnter(Context* context) {
   RaytracingDebugCommon::LightPath light_path;
   light_path_ssbo_.Init(0, sizeof(light_path), &light_path);
 
-/*
-  for (auto& p : conell_box_) {
-    p.second.object.Init(context, p.first, p.first);
-    p.second.object.SetTransform(p.second.transform);
-    std::vector<engine::Primitive> model_primitives = p.second.object.GetPrimitives(context, p.second.primitive_index);
-    for (const engine::Primitive& model_primitive : model_primitives) {
-      primitives_.push_back(model_primitive);
+  // Cornell box
+  if (1) {
+    for (auto& p : cornell_box_) {
+      p.second.object.Init(context, p.first, p.first);
+      p.second.object.SetTransform(p.second.transform);
+      std::vector<engine::Primitive> model_primitives = p.second.object.GetPrimitives(context, primitives_.size());
+      for (const engine::Primitive& model_primitive : model_primitives) {
+        primitives_.push_back(model_primitive);
+      }
     }
+    bvh_.Build(primitives_, {3, engine::BVH::Partition::kPos, 12});
   }
-  bvh_.Build(primitives_, {3, 12});
-  */
 
-  const int kSpherePrimitiveIndex = 0;
-  std::vector<engine::Primitive> primitives = sphere_.GetPrimitives(context, kSpherePrimitiveIndex);
-  bvh_.Build(primitives, {5, 64});
+  // Sphere
+  if (0) {
+    primitives_ = sphere_.GetPrimitives(context, 0);
+    bvh_.Build(primitives_, {10, engine::BVH::Partition::kPos, 64});
+  }
 
   glEnable_(GL_DEPTH_TEST);
 }
@@ -57,37 +60,43 @@ void PathTracingScene::OnExit(Context* context) {
 }
 
 void PathTracingScene::Rasterization(Context* context) {
-  ColorShader({glm::vec4(1, 1, 1, 1)}, context, &sphere_);
-  sphere_.OnRender(context);
+  // Sphere
+  if (0) {
+    ColorShader({glm::vec4(1, 1, 1, 1)}, context, &sphere_);
+    sphere_.OnRender(context);
+  }
+
+  // Cornell box
+  if (1) {
+    for (auto& p : cornell_box_) {
+      ColorShader _({p.second.color}, context, &p.second.object);
+      p.second.object.OnRender(context);
+    }
+  }
 
 /*
-  for (auto& p : conell_box_) {
-    ColorShader _({p.second.color}, context, &p.second.object);
-    p.second.object.OnRender(context);
-  }
-  */
-
   std::vector<engine::AABB> aabbs = bvh_.GetAABBs();
   LinesObject bvh_lines;
-  bvh_lines.SetMesh(LinesObject::Mesh(aabbs, glm::vec4(0, 0, 1, 1)));
+  bvh_lines.SetMesh(LinesObject::Mesh(aabbs));
   LinesShader lines_shader({}, context, &bvh_lines);
   bvh_lines.OnRender(context);
+  */
 
   engine::Ray pick_ray = camera_->GetPickRay(context->io().GetCursorPosSS());
   engine::RayBVHResult result = engine::RayBVH(pick_ray, bvh_, primitives_);
   if (result.hitted) {
     LinesObject triangle_lines;
-    LinesObject::Mesh mesh(primitives_[result.primitive_index].triangle, engine::kBlack);
+    LinesObject::Mesh mesh(primitives_[result.primitive_index].triangle, engine::kRed);
     triangle_lines.SetMesh(mesh);
-    LinesShader lines_shader({}, context, &triangle_lines);
+    LinesShader({}, context, &triangle_lines);
     triangle_lines.OnRender(context);
-  }
 
-  LinesObject ray_lines;
-  ray_lines.SetMesh(LinesObject::Mesh({glm::vec4(pick_ray.origin, 1.0), glm::vec4(pick_ray.origin + pick_ray.dir, 1.0)},
-                                      {glm::vec4(0, 0, 1, 1), glm::vec4(0, 0, 1, 1)}, GL_LINES));
-  LinesShader ray_lines_shader({}, context, &ray_lines);
-  ray_lines.OnRender(context);
+    LinesObject aabb_lines;
+    LinesObject::Mesh aabb_mesh({result.aabb}, engine::kGreen);
+    aabb_lines.SetMesh(aabb_mesh);
+    LinesShader({}, context, &aabb_lines);
+    aabb_lines.OnRender(context);
+  }
 
   LinesShader({}, context, &coord_object_);
   coord_object_.OnRender(context);

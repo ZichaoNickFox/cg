@@ -32,28 +32,26 @@ class PathTracingScene : public Scene {
     ModelObject object;
     engine::Transform transform;
     glm::vec4 color;
-    int primitive_index;
+    int mesh_index;
   };
 
-  const int kCornellBoxFloorPrimitiveIndex = 0;
-  const int kCornellBoxLeftPrimitiveIndex = 1;
-  const int kCornellBoxLightPrimitiveIndex = 2;
-  const int kCornellBoxRightPrimitiveIndex = 3;
-  const int kCornellBoxShortBoxPrimitiveIndex = 4;
-  const int kCornellBoxTallBoxPrimitiveIndex = 5;
-  std::unordered_map<std::string, ObjectData> conell_box_ = {
-    {"cornell_box_floor", {ModelObject(), {glm::vec3(0, 0, 0), glm::quat(), glm::vec3(0.002, 0.002, 0.002)},
-        glm::vec4(0.725f, 0.71f, 0.68f, 1.0f), kCornellBoxFloorPrimitiveIndex}},
-    {"cornell_box_left", {ModelObject(), {glm::vec3(0, 0, 0), glm::quat(), glm::vec3(0.002, 0.002, 0.002)},
-        glm::vec4(0.63f, 0.065f, 0.05f, 1.0f), kCornellBoxLeftPrimitiveIndex}},
-    {"cornell_box_light", {ModelObject(), {glm::vec3(0, 0, 0), glm::quat(), glm::vec3(0.002, 0.002, 0.002)},
-        glm::vec4(0.725f, 0.71f, 0.68f, 1.0f), kCornellBoxLightPrimitiveIndex}},
-    {"cornell_box_right", {ModelObject(), {glm::vec3(0, 0, 0), glm::quat(), glm::vec3(0.002, 0.002, 0.002)},
-        glm::vec4(0.14f, 0.45f, 0.091f, 1.0f), kCornellBoxRightPrimitiveIndex}},
-    {"cornell_box_short_box", {ModelObject(), {glm::vec3(0, 0, 0), glm::quat(), glm::vec3(0.002, 0.002, 0.002)},
-        glm::vec4(0.725f, 0.71f, 0.68f, 1.0f), kCornellBoxShortBoxPrimitiveIndex}},
-    {"cornell_box_tall_box", {ModelObject(), {glm::vec3(0, 0, 0), glm::quat(), glm::vec3(0.002, 0.002, 0.002)},
-        glm::vec4(0.725f, 0.71f, 0.68f, 1.0f), kCornellBoxTallBoxPrimitiveIndex}},
+  const int kCornellBoxFloorMeshIndex = 0;
+  const int kCornellBoxLeftMeshIndex = 1;
+  const int kCornellBoxLightMeshIndex = 2;
+  const int kCornellBoxRightMeshIndex = 3;
+  const int kCornellBoxShortBoxMeshIndex = 4;
+  const int kCornellBoxTallBoxMeshIndex = 5;
+  const glm::vec4 kCornellWhite = glm::vec4(0.725f, 0.71f, 0.68f, 1.0f);
+  const glm::vec4 kCornellRed = glm::vec4(0.63f, 0.065f, 0.05f, 1.0f);
+  const glm::vec4 kCornellGreen = glm::vec4(0.14f, 0.45f, 0.091f, 1.0f);
+  const engine::Transform kCornellTransform = {glm::vec3(0, 0, 0), glm::quat(), glm::vec3(0.002, 0.002, 0.002)};
+  std::unordered_map<std::string, ObjectData> cornell_box_ = {
+    {"cornell_box_floor", {ModelObject(), kCornellTransform, kCornellWhite, kCornellBoxFloorMeshIndex}},
+    {"cornell_box_left", {ModelObject(), kCornellTransform, kCornellRed, kCornellBoxLeftMeshIndex}},
+    {"cornell_box_light", {ModelObject(), kCornellTransform, kCornellWhite, kCornellBoxLightMeshIndex}},
+    {"cornell_box_right", {ModelObject(), kCornellTransform, kCornellGreen, kCornellBoxRightMeshIndex}},
+    {"cornell_box_short_box", {ModelObject(), kCornellTransform, kCornellWhite, kCornellBoxShortBoxMeshIndex}},
+    {"cornell_box_tall_box", {ModelObject(), kCornellTransform, kCornellWhite, kCornellBoxTallBoxMeshIndex}},
   };
 
   SphereObject sphere_;

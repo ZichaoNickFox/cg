@@ -115,6 +115,17 @@ AABB Triangle::AsAABB() const {
   float minimum_x = std::min(std::min(a.x, b.x), c.x);
   float minimum_y = std::min(std::min(a.y, b.y), c.y);
   float minimum_z = std::min(std::min(a.z, b.z), c.z);
+  float epsilon = std::numeric_limits<float>::epsilon();
+  float epsilon10 = epsilon * 10;
+  if (maximum_z - minimum_z < epsilon) {
+    maximum_z += epsilon10;
+  }
+  if (maximum_y - minimum_y < epsilon) {
+    maximum_y += epsilon10;
+  }
+  if (maximum_x - minimum_x < epsilon) {
+    maximum_x += epsilon10;
+  }
   return {{maximum_x, maximum_y, maximum_z}, {minimum_x, minimum_y, minimum_z}};
 }
 

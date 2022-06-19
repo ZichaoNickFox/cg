@@ -23,7 +23,7 @@ bool Object::Intersect(Context* context, const glm::vec3& origin_ws, const glm::
   return true;
 }
 
-std::vector<engine::Primitive> Object::GetPrimitives(Context* context, int primitive_index) {
+std::vector<engine::Primitive> Object::GetPrimitives(Context* context, int primitive_index_from) {
   std::shared_ptr<const engine::Mesh> mesh = GetMesh(context);
   const std::vector<glm::vec3>& positions = mesh->positions();
   std::vector<glm::vec3> world_positions(positions.size());
@@ -34,18 +34,20 @@ std::vector<engine::Primitive> Object::GetPrimitives(Context* context, int primi
   std::vector<engine::Primitive> res;
   if (mesh->indices().size() > 0) {
     CGCHECK(mesh->indices().size() % 3 == 0);
-    for (int i = 0, j = 1, k = 2; k < mesh->indices().size(); ++i, ++j, ++k) {
+    int index = 0;
+    for (int i = 0, j = 1, k = 2; k < mesh->indices().size(); i += 3, j += 3, k += 3) {
       int mesh_index_i = mesh->indices()[i];
       int mesh_index_j = mesh->indices()[j];
       int mesh_index_k = mesh->indices()[k];
       engine::Triangle triangle{world_positions[mesh_index_i], world_positions[mesh_index_j],
                                 world_positions[mesh_index_k]};
-      res.push_back({triangle.AsAABB(), triangle, primitive_index});
+      res.push_back({triangle.AsAABB(), triangle, primitive_index_from + index++});
     }
   } else {
-    for (int i = 0, j = 1, k = 2; k < mesh->positions().size(); ++i, ++j, ++k) {
+    int index = 0;
+    for (int i = 0, j = 1, k = 2; k < mesh->positions().size(); i += 3, j += 3, k += 3) {
       engine::Triangle triangle{world_positions[i], world_positions[j], world_positions[k]};
-      res.push_back({triangle.AsAABB(), triangle, primitive_index});
+      res.push_back({triangle.AsAABB(), triangle, primitive_index_from + index++});
     }
   }
   return res;
