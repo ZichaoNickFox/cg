@@ -1,5 +1,6 @@
 #include "engine/geometry.h"
 
+#include <glm/gtx/quaternion.hpp>
 #include "glm/gtx/string_cast.hpp"
 
 #include "engine/color.h"
@@ -162,8 +163,12 @@ void AABB::SetColor(int level) {
 RayAABBResult RayAABB(const Ray& ray, const AABB& aabb) {
   RayAABBResult res;
 
-  const float inf = 99999;
-  float t_enter_x = inf, t_exit_x = inf, t_enter_y = -inf, t_exit_y = inf, t_enter_z = -inf, t_exit_z = inf;
+  float t_enter_x = std::numeric_limits<float>::lowest();
+  float t_enter_y = std::numeric_limits<float>::lowest();
+  float t_enter_z = std::numeric_limits<float>::lowest();
+  float t_exit_x = std::numeric_limits<float>::max();
+  float t_exit_y = std::numeric_limits<float>::max();
+  float t_exit_z = std::numeric_limits<float>::max();
   if (ray.dir.x > 0) {
     t_enter_x = (aabb.minimum.x - ray.origin.x) / ray.dir.x;
     t_exit_x = (aabb.maximum.x - ray.origin.x) / ray.dir.x;
@@ -191,7 +196,7 @@ RayAABBResult RayAABB(const Ray& ray, const AABB& aabb) {
   float t_enter = std::max(std::max(t_enter_x, t_enter_y), t_enter_z);
   float t_exit = std::min(std::min(t_exit_x, t_exit_y), t_exit_z);
 
-  res.hitted = t_enter < t_exit && t_exit >= 0;
+  res.hitted = (t_enter < t_exit && t_exit >= 0);
 
   return res;
 }

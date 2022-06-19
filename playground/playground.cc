@@ -18,7 +18,7 @@
 #include "playground/scene/path_tracing_scene.h"
 #include "playground/scene/pbr_scene.h"
 #include "playground/scene/random_test_scene.h"
-#include "playground/scene/ray_triangle_scene.h"
+#include "playground/scene/geometry_scene.h"
 #include "playground/scene/sample_test_scene.h"
 #include "playground/scene/shadow_scene.h"
 //#include "playground/scene/share_scene.h"
@@ -28,7 +28,7 @@
 #include "playground/scene/instance_scene.h"
 
 namespace {
-const std::string kDefaultScene = "RayTriangleScene";
+const std::string kDefaultScene = "GeometryScene";
 }
 
 void Playground::Init(const Context::Option& option) {
@@ -60,7 +60,7 @@ void Playground::InitScene() {
   scene_map_.insert(std::make_pair("InstanceScene", std::make_unique<InstanceScene>()));
   scene_map_.insert(std::make_pair("RandomTestScene", std::make_unique<RandomTestScene>()));
   scene_map_.insert(std::make_pair("PathTracingScene", std::make_unique<PathTracingScene>()));
-  scene_map_.insert(std::make_pair("RayTriangleScene", std::make_unique<RayTriangleScene>()));
+  scene_map_.insert(std::make_pair("GeometryScene", std::make_unique<GeometryScene>()));
 }
 
 void Playground::BeginFrame() {

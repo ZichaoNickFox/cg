@@ -13,7 +13,7 @@ class LinesObject : public Object {
  public:
   struct Mesh {
     Mesh(const std::vector<glm::vec4>& points, const std::vector<glm::vec4>& colors, GLuint primitive_mode);
-    Mesh(const std::vector<engine::AABB>& aabbs, const glm::vec4& default_color);
+    Mesh(const std::vector<engine::AABB>& aabbs, const glm::vec4& force_color = glm::vec4(-1, -1, -1, -1));
     Mesh(const engine::Triangle& triangle, const glm::vec4& color);
     std::vector<glm::vec4> points;
     std::vector<glm::vec4> colors;

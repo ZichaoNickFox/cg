@@ -43,7 +43,8 @@ struct AABB {
   bool DebugCheckValid() const;
   bool DebugCheckNotNull() const;
   void SetColor(int level);
-  glm::vec4 debug_color;
+  void SetColor(const glm::vec4& color) { debug_color = color; }
+  glm::vec4 debug_color = glm::vec4(0 ,0 ,0, 1);
 #endif
 };
 

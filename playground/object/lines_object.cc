@@ -11,16 +11,20 @@ LinesObject::Mesh::Mesh(const std::vector<glm::vec4>& in_points, const std::vect
                         GLuint in_primitive_mode)
     : points(in_points), colors(in_colors), primitive_mode(in_primitive_mode) {}
 
-LinesObject::Mesh::Mesh(const std::vector<engine::AABB>& aabbs, const glm::vec4& default_color) {
+LinesObject::Mesh::Mesh(const std::vector<engine::AABB>& aabbs, const glm::vec4& force_color) {
   points.resize(aabbs.size() * 24);
-#if CGDEBUG
   colors.resize(points.size());
-  for (int i = 0; i < points.size(); ++i) {
-    colors[i] = aabbs[i / 24].debug_color;
-  }
+  if (force_color == glm::vec4(-1, -1, -1, -1)) {
+#if CGDEBUG
+    for (int i = 0; i < colors.size(); ++i) {
+      colors[i] = aabbs[i / 24].debug_color;
+    }
 #else
-  colors = std::vector<glm::vec4>(points.size(), default_color);
+    colors = std::vector<glm::vec4>(colors.size(), glm::vec4(0, 0, 0, 1));
 #endif
+  } else {
+    colors = std::vector<glm::vec4>(colors.size(), force_color);
+  }
   primitive_mode = GL_LINES;
   int i = 0;
   for (const engine::AABB& aabb : aabbs) {
@@ -114,7 +118,7 @@ CoordObject::CoordObject() {
                                    glm::vec4(0, 0, 0, 1), glm::vec4(0, 1, 0, 1),
                                    glm::vec4(0, 0, 0, 1), glm::vec4(0, 0, 1, 1)};
   std::vector<glm::vec4> colors{engine::kRed, engine::kRed,
-                                engine::kBlue, engine::kBlue,
-                                engine::kGreen, engine::kGreen};
+                                engine::kBlue, engine::kGreen,
+                                engine::kGreen, engine::kBlue};
   SetMesh({positions, colors, GL_LINES});
 }

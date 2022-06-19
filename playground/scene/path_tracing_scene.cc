@@ -25,6 +25,7 @@ void PathTracingScene::OnEnter(Context* context) {
   RaytracingDebugCommon::LightPath light_path;
   light_path_ssbo_.Init(0, sizeof(light_path), &light_path);
 
+/*
   for (auto& p : conell_box_) {
     p.second.object.Init(context, p.first, p.first);
     p.second.object.SetTransform(p.second.transform);
@@ -34,14 +35,11 @@ void PathTracingScene::OnEnter(Context* context) {
     }
   }
   bvh_.Build(primitives_, {3, 12});
+  */
 
-  //std::vector<engine::AABB> aabbs = sphere_.GetAABBs(context);
-  //std::vector<engine::Primitive> primitives(aabbs.size());
-  //const int kSpherePrimitiveIndex = 0;
-  //for (int i = 0; i < primitives.size(); ++i) {
-  //  primitives[i] = {aabbs[i], kSpherePrimitiveIndex};
-  //}
-  //bvh_.Build(&primitives, {5, 64});
+  const int kSpherePrimitiveIndex = 0;
+  std::vector<engine::Primitive> primitives = sphere_.GetPrimitives(context, kSpherePrimitiveIndex);
+  bvh_.Build(primitives, {5, 64});
 
   glEnable_(GL_DEPTH_TEST);
 }
@@ -59,13 +57,15 @@ void PathTracingScene::OnExit(Context* context) {
 }
 
 void PathTracingScene::Rasterization(Context* context) {
-  //ColorShader({glm::vec4(1, 1, 1, 1)}, context, &sphere_);
-  //sphere_.OnRender(context);
+  ColorShader({glm::vec4(1, 1, 1, 1)}, context, &sphere_);
+  sphere_.OnRender(context);
 
+/*
   for (auto& p : conell_box_) {
     ColorShader _({p.second.color}, context, &p.second.object);
     p.second.object.OnRender(context);
   }
+  */
 
   std::vector<engine::AABB> aabbs = bvh_.GetAABBs();
   LinesObject bvh_lines;
@@ -89,7 +89,6 @@ void PathTracingScene::Rasterization(Context* context) {
   LinesShader ray_lines_shader({}, context, &ray_lines);
   ray_lines.OnRender(context);
 
-  LOG(ERROR) << pick_ray.AsString();
   LinesShader({}, context, &coord_object_);
   coord_object_.OnRender(context);
 }
