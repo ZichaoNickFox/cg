@@ -8,17 +8,14 @@
 #include "imgui.h"
 #include <memory>
 
-#include "engine/constants.h"
-#include "engine/framebuffer_attachment.h"
-#include "engine/math.h"
-#include "engine/pass.h"
-#include "engine/transform.h"
-#include "engine/util.h"
-#include "playground/object/empty_object.h"
-#include "playground/object/sphere_object.h"
-#include "playground/scene/common.h"
+#include "renderer/framebuffer_attachment.h"
+#include "renderer/math.h"
+#include "renderer/pass.h"
+#include "renderer/scene_common.h"
+#include "renderer/transform.h"
+#include "renderer/util.h"
 
-void SSAOScene::OnEnter(Context *context)
+void SSAOScene::OnEnter(Scene *context)
 {
   for (int i = 0; i < point_lights_num_; ++i) {
     point_lights_.push_back(PointLightObject());
@@ -54,7 +51,7 @@ void SSAOScene::OnEnter(Context *context)
   samples_ts_ = util::AsArray<64>(util::SampleSemishphere(64));
 }
 
-void SSAOScene::OnUpdate(Context *context)
+void SSAOScene::OnUpdate(Scene *context)
 {
   OnUpdateCommon _(context, "SSAOScene");
 
@@ -63,13 +60,13 @@ void SSAOScene::OnUpdate(Context *context)
   plane_.OnUpdate(context);
 }
 
-void SSAOScene::SetupBufferAndPass(Context* context) {
+void SSAOScene::SetupBufferAndPass(Scene* context) {
   glm::ivec2 screen_size = context->io().screen_size();
-  g_buffer_.Init({screen_size, {engine::kAttachmentPositionVS, engine::kAttachmentNormalVS,
-                                engine::kAttachmentColor, engine::kAttachmentDepth}});
-  SSAO_buffer_.Init({screen_size, {engine::kAttachmentColor, engine::kAttachmentDepth}});
-  blur_buffer_.Init({screen_size, {engine::kAttachmentColor, engine::kAttachmentDepth}});
-  lighting_buffer_.Init({screen_size, {engine::kAttachmentColor, engine::kAttachmentDepth}});
+  g_buffer_.Init({screen_size, {renderer::kAttachmentPositionVS, renderer::kAttachmentNormalVS,
+                                renderer::kAttachmentColor, renderer::kAttachmentDepth}});
+  SSAO_buffer_.Init({screen_size, {renderer::kAttachmentColor, renderer::kAttachmentDepth}});
+  blur_buffer_.Init({screen_size, {renderer::kAttachmentColor, renderer::kAttachmentDepth}});
+  lighting_buffer_.Init({screen_size, {renderer::kAttachmentColor, renderer::kAttachmentDepth}});
 
   g_buffer_pass_.Init(&g_buffer_);
   SSAO_pass_.Init(&SSAO_buffer_);
@@ -77,18 +74,18 @@ void SSAOScene::SetupBufferAndPass(Context* context) {
   lighting_pass_.Init(&blur_buffer_, &lighting_buffer_);
 }
 
-void SSAOScene::OnRender(Context *context)
+void SSAOScene::OnRender(Scene *context)
 {
   RunGBufferPass(context, &g_buffer_pass_);
 
-  engine::Texture t = g_buffer_pass_.g_buffer()->GetTexture(engine::kAttachmentPositionVS.name);
-  SSAO_pass_.texture_position_vs = g_buffer_pass_.g_buffer()->GetTexture(engine::kAttachmentPositionVS.name);
-  SSAO_pass_.texture_normal_vs = g_buffer_pass_.g_buffer()->GetTexture(engine::kAttachmentNormalVS.name);
+  renderer::Texture t = g_buffer_pass_.g_buffer()->GetTexture(renderer::kAttachmentPositionVS.name);
+  SSAO_pass_.texture_position_vs = g_buffer_pass_.g_buffer()->GetTexture(renderer::kAttachmentPositionVS.name);
+  SSAO_pass_.texture_normal_vs = g_buffer_pass_.g_buffer()->GetTexture(renderer::kAttachmentNormalVS.name);
   SSAO_pass_.texture_noise = texture_noise_;
   SSAO_pass_.samples_ts = samples_ts_;
   RunSSAOPass(context, &SSAO_pass_);
 
-  blur_pass_.texture_SSAO = SSAO_pass_.SSAO_buffer_->GetTexture(engine::kAttachmentColor.name);
+  blur_pass_.texture_SSAO = SSAO_pass_.SSAO_buffer_->GetTexture(renderer::kAttachmentColor.name);
   RunBlurPass(context, &blur_pass_);
 
   EmptyObject object;
@@ -98,7 +95,7 @@ void SSAOScene::OnRender(Context *context)
   OnRenderCommon _(context);
 }
 
-void SSAOScene::RunGBufferPass(Context* context, engine::GBufferPass* g_buffer_pass) {
+void SSAOScene::RunGBufferPass(Scene* context, renderer::GBufferPass* g_buffer_pass) {
   g_buffer_pass->Begin();
 
   SSAOShader(SSAOShader::ParamGBuffer(), context, &plane_);
@@ -113,7 +110,7 @@ void SSAOScene::RunGBufferPass(Context* context, engine::GBufferPass* g_buffer_p
   g_buffer_pass->End();
 }
 
-void SSAOScene::RunSSAOPass(Context* context, engine::SSAOPass* SSAO_pass) {
+void SSAOScene::RunSSAOPass(Scene* context, renderer::SSAOPass* SSAO_pass) {
   SSAO_pass->Begin();
 
   EmptyObject object;
@@ -125,7 +122,7 @@ void SSAOScene::RunSSAOPass(Context* context, engine::SSAOPass* SSAO_pass) {
   SSAO_pass->End();
 }
 
-void SSAOScene::RunBlurPass(Context* context, engine::BlurPass* blue_pass) {
+void SSAOScene::RunBlurPass(Scene* context, renderer::BlurPass* blue_pass) {
   blur_pass_.Begin();
 
   EmptyObject object;
@@ -135,7 +132,7 @@ void SSAOScene::RunBlurPass(Context* context, engine::BlurPass* blue_pass) {
   blur_pass_.End();
 }
 
-void SSAOScene::OnExit(Context *context)
+void SSAOScene::OnExit(Scene *context)
 {
   for (int i = 0; i < point_lights_num_; ++i) {
     point_lights_[i].OnDestory(context);

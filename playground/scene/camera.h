@@ -5,10 +5,10 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "engine/debug.h"
-#include "engine/transform.h"
+#include "renderer/debug.h"
+#include "renderer/transform.h"
 
-namespace engine {
+namespace renderer {
 
 class Camera {
  public:
@@ -34,7 +34,7 @@ class Camera {
   Type type() const { return type_; }
 
   void SetTransform(const Transform& transform) { transform_ = transform; }
-  engine::Transform* mutable_transform() { return &transform_; }
+  renderer::Transform* mutable_transform() { return &transform_; }
   const Transform& transform() const { return transform_; }
 
   glm::vec3 front() const { return transform_.rotation() * glm::vec3(0, 0, -1); }

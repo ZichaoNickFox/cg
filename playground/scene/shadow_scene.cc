@@ -8,16 +8,16 @@
 #include "imgui.h"
 #include <memory>
 
-#include "engine/constants.h"
-#include "engine/framebuffer_attachment.h"
-#include "engine/math.h"
-#include "engine/pass.h"
-#include "engine/transform.h"
-#include "engine/util.h"
+#include "renderer/constants.h"
+#include "renderer/framebuffer_attachment.h"
+#include "renderer/math.h"
+#include "renderer/pass.h"
+#include "renderer/transform.h"
+#include "renderer/util.h"
 #include "playground/object/empty_object.h"
 #include "playground/scene/common.h"
 
-void ShadowScene::OnEnter(Context *context)
+void ShadowScene::OnEnter(Scene *context)
 {
   for (int i = 0; i < point_lights_num_; ++i) {
     point_lights_.push_back(PointLightObject());
@@ -49,14 +49,14 @@ void ShadowScene::OnEnter(Context *context)
   
   glEnable_(GL_DEPTH_TEST);
 
-  depth_framebuffer_.Init({context->framebuffer_size(), {engine::kAttachmentDepth}});
+  depth_framebuffer_.Init({context->framebuffer_size(), {renderer::kAttachmentDepth}});
   depth_buffer_pass_.Init(&depth_framebuffer_, camera_);
 
-  forward_framebuffer_.Init({context->framebuffer_size(), {engine::kAttachmentColor, engine::kAttachmentDepth}});
+  forward_framebuffer_.Init({context->framebuffer_size(), {renderer::kAttachmentColor, renderer::kAttachmentDepth}});
   forward_pass_.Init(&forward_framebuffer_);
 }
 
-void ShadowScene::OnUpdate(Context *context)
+void ShadowScene::OnUpdate(Scene *context)
 {
   OnUpdateCommon _(context, "SSAOScene");
 
@@ -74,7 +74,7 @@ void ShadowScene::OnUpdate(Context *context)
   directional_light_.OnUpdate(context);
 }
 
-void ShadowScene::OnRender(Context *context)
+void ShadowScene::OnRender(Scene *context)
 {
   RunDepthBufferPass(context, &depth_buffer_pass_);
 
@@ -82,11 +82,11 @@ void ShadowScene::OnRender(Context *context)
   RunForwardPass_Deprecated(context, &forward_pass_);
 
   EmptyObject quad;
-  FullscreenQuadShader({forward_framebuffer_.GetTexture(engine::kAttachmentColor.name)}, context, &quad);
+  FullscreenQuadShader({forward_framebuffer_.GetTexture(renderer::kAttachmentColor.name)}, context, &quad);
   quad.OnRender(context);
 }
 
-void ShadowScene::RunDepthBufferPass(Context* context, engine::DepthBufferPass* depth_buffer_pass) {
+void ShadowScene::RunDepthBufferPass(Scene* context, renderer::DepthBufferPass* depth_buffer_pass) {
   depth_buffer_pass->Begin();
 
   DepthBufferShader::Param param{depth_buffer_pass->camera(), context->GetShader("depth_buffer")};
@@ -102,10 +102,10 @@ void ShadowScene::RunDepthBufferPass(Context* context, engine::DepthBufferPass* 
   depth_buffer_pass->End();
 }
 
-void ShadowScene::RunForwardPass_Deprecated(Context* context, engine::ForwardPass* forward_pass) {
+void ShadowScene::RunForwardPass_Deprecated(Scene* context, renderer::ForwardPass* forward_pass) {
   forward_pass->Begin();
 
-  const engine::MaterialProperty& material_property = engine::kMaterialProperties.at("gold");
+  const renderer::MaterialProperty& material_property = renderer::kMaterialProperties.at("gold");
   PhongShader::Param phong{material_property.ambient, material_property.diffuse,
                            material_property.specular, material_property.shininess};
   phong.scene_shadow_info = forward_pass->prepass_shadow_info();
@@ -134,7 +134,7 @@ void ShadowScene::RunForwardPass_Deprecated(Context* context, engine::ForwardPas
   forward_pass->End();
 }
 
-void ShadowScene::OnExit(Context *context)
+void ShadowScene::OnExit(Scene *context)
 {
   for (int i = 0; i < point_lights_num_; ++i) {
     point_lights_[i].OnDestory(context);

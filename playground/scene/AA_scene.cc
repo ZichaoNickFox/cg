@@ -8,17 +8,17 @@
 #include <memory>
 #include <vector>
 
-#include "engine/repo/texture_repo.h"
-#include "engine/transform.h"
-#include "engine/util.h"
+#include "renderer/repo/texture_repo.h"
+#include "renderer/transform.h"
+#include "renderer/util.h"
 #include "playground/scene/common.h"
 
-void AAScene::OnEnter(Context *context)
+void AAScene::OnEnter(Scene *context)
 {
-  engine::MSFramebuffer::Option ms_fbo_option{context->framebuffer_size(), 1, {context->clear_color()}, 4};
+  renderer::MSFramebuffer::Option ms_fbo_option{context->framebuffer_size(), 1, {context->clear_color()}, 4};
   ms_framebuffer_.Init(ms_fbo_option);
 
-  engine::ColorFramebuffer::Option color_fbo_option{context->framebuffer_size(), 1, {context->clear_color()}};
+  renderer::ColorFramebuffer::Option color_fbo_option{context->framebuffer_size(), 1, {context->clear_color()}};
   color_framebuffer_.Init(color_fbo_option);
   
   for (int i = 0; i < point_lights_num_; ++i) {
@@ -26,30 +26,22 @@ void AAScene::OnEnter(Context *context)
     glm::vec3 point_light_pos(util::RandFromTo(-5, 5), util::RandFromTo(0, 5), util::RandFromTo(-5, 5));
     point_lights_[i].mutable_transform()->SetTranslation(point_light_pos);
     point_lights_[i].mutable_transform()->SetScale(glm::vec3(0.2, 0.2, 0.2));
-    point_lights_[i].mutable_material()->SetShader(context->mutable_shader_repo()->GetOrLoadShader("point_light"));
     point_lights_[i].SetColor(glm::vec4(util::RandFromTo(0, 1), util::RandFromTo(0, 1), util::RandFromTo(0, 1), 1.0));
   }
 
-  cube_transforms_.push_back(engine::Transform(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
-  cube_transforms_.push_back(engine::Transform(glm::vec3(1, 1, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
-  cube_transforms_.push_back(engine::Transform(glm::vec3(2, 2, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
-  cube_transforms_.push_back(engine::Transform(glm::vec3(1, 2, 2), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
+  cube_transforms_.push_back(renderer::Transform(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
+  cube_transforms_.push_back(renderer::Transform(glm::vec3(1, 1, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
+  cube_transforms_.push_back(renderer::Transform(glm::vec3(2, 2, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
+  cube_transforms_.push_back(renderer::Transform(glm::vec3(1, 2, 2), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
   for (int i = 0; i < cube_transforms_.size(); ++i) {
     cubes_.push_back(CubeObject());
     CubeObject* cube = &cubes_[i];
     cube->SetTransform(cube_transforms_[i]);
-    cube->mutable_material()->SetShader(context->mutable_shader_repo()->GetOrLoadShader("forward_shading"));
   }
 
   camera_->mutable_transform()->SetTranslation(glm::vec3(5.3, 4.3, -3.5));
   camera_->mutable_transform()->SetRotation(glm::quat(glm::vec3(2.7, 0.75, -3.1)));
   context->SetCamera(camera_.get());
-
-  plane_.mutable_material()->SetShader(context->mutable_shader_repo()->GetOrLoadShader("forward_shading"));
-  plane_.mutable_material()->SetVec3("material.ambient", material_property_.ambient);
-  plane_.mutable_material()->SetVec3("material.diffuse", material_property_.diffuse);
-  plane_.mutable_material()->SetVec3("material.specular", material_property_.specular);
-  plane_.mutable_material()->SetFloat("material.shininess", material_property_.shininess);
 
   plane_.mutable_transform()->SetTranslation(glm::vec3(0, -1, 0));
   plane_.mutable_transform()->SetScale(glm::vec3(10, 0, 10));
@@ -61,7 +53,7 @@ void AAScene::OnEnter(Context *context)
   glEnable_(GL_DEPTH_TEST);
 }
 
-void AAScene::OnUpdate(Context *context)
+void AAScene::OnUpdate(Scene *context)
 {
   OnUpdateCommon _(context, "AAScene");
 
@@ -74,34 +66,30 @@ void AAScene::OnUpdate(Context *context)
   directional_light_.OnUpdate(context);
 }
 
-void AAScene::OnRender(Context *context)
+void AAScene::OnRender(Scene *context)
 {
   RenderShadowMap(context);
 
   // glm::mat4 shadow_map_vp = directional_light_.GetShadowMapVP();
-  // engine::Texture shadow_map_texture = directional_light_.GetShadowMapTexture();
+  // renderer::Texture shadow_map_texture = directional_light_.GetShadowMapTexture();
   // RenderScene(context, shadow_map_vp, shadow_map_texture);
 }
 
-void AAScene::RenderShadowMap(Context* context) {
+void AAScene::RenderShadowMap(Scene* context) {
   // directional_light_.ShadowMappingPassBegin(context);
   for (int i = 0; i < cubes_.size(); ++i) {
     CubeObject* cube = &cubes_[i];
-    cube->mutable_material()->SetShader(context->mutable_shader_repo()->GetOrLoadShader("shadow_map"));
     cube->OnRender(context);
   }
-  plane_.mutable_material()->SetShader(context->mutable_shader_repo()->GetOrLoadShader("shadow_map"));
   plane_.OnRender(context);
   // directional_light_.ShadowMappingPassEnd(context);
 }
 
-void AAScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
-                           const engine::Texture& shadow_map_texture) {
+void AAScene::RenderScene(Scene* context, const glm::mat4& shadow_map_vp,
+                           const renderer::Texture& shadow_map_texture) {
   ms_framebuffer_.Bind();
   for (int i = 0; i < cubes_.size(); ++i) {
     CubeObject* cube = &cubes_[i];
-    cube->mutable_material()->SetTexture("shadow_map_texture", shadow_map_texture);
-    cube->mutable_material()->SetMat4("shadow_map_vp", shadow_map_vp);
     cube->OnRender(context);
   }
   for (int i = 0; i < point_lights_num_; ++i) {
@@ -109,8 +97,6 @@ void AAScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
   }
 
   coord_.OnRender(context);
-  plane_.mutable_material()->SetTexture("shadow_map_texture", shadow_map_texture);
-  plane_.mutable_material()->SetMat4("shadow_map_vp", shadow_map_vp);
   plane_.OnRender(context);
 
   directional_light_.OnRender(context);
@@ -119,14 +105,10 @@ void AAScene::RenderScene(Context* context, const glm::mat4& shadow_map_vp,
   // ms_framebuffer_.Blit(&color_framebuffer_);
 
   EmptyObject fullscreen_quad;
-  fullscreen_quad.mutable_material()->SetTexture("scene", ms_framebuffer_.GetColorTexture(0));
-  fullscreen_quad.mutable_material()->SetTexture("bright", ms_framebuffer_.GetColorTexture(1));
-  // fullscreen_quad.mutable_material()->SetTexture("scene", color_framebuffer_.GetTexture(0));
-  // fullscreen_quad.mutable_material()->SetTexture("bright", color_framebuffer_.GetTexture(1));
   fullscreen_quad.OnRender(context);
 }
 
-void AAScene::OnExit(Context *context)
+void AAScene::OnExit(Scene *context)
 {
   for (int i = 0; i < cubes_.size(); ++i) {
     CubeObject* cube = &cubes_[i];

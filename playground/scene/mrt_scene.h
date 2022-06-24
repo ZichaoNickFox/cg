@@ -1,9 +1,10 @@
 #pragma once
 
-#include "engine/camera.h"
-#include "engine/framebuffer/color_framebuffer.h"
-#include "engine/shader.h"
-#include "engine/texture.h"
+#include "renderer/camera.h"
+#include "renderer/framebuffer/color_framebuffer.h"
+#include "renderer/scene.h"
+#include "renderer/shader.h"
+#include "renderer/texture.h"
 #include "playground/context.h"
 #include "playground/object/cube_object.h"
 #include "playground/object/directional_light_object.h"
@@ -11,19 +12,18 @@
 #include "playground/object/lines_object.h"
 #include "playground/object/plane_object.h"
 #include "playground/object/point_light_object.h"
-#include "playground/scene.h"
 
 class MrtScene : public Scene {
  public:
-  void OnEnter(Context* context);
-  void OnUpdate(Context* context);
-  void OnRender(Context* contexnt);
-  void OnExit(Context* context);
+  void OnEnter() override;
+  void OnUpdate() override;
+  void OnRender() override;
+  void OnExit() override;
 
  private:
-  void RenderShadowMap(Context* context);
-  void RenderScene(Context* context, const glm::mat4& shadow_map_vp,
-                   const engine::Texture& shadow_map_texture);
+  void RenderShadowMap(Scene* context);
+  void RenderScene(Scene* context, const glm::mat4& shadow_map_vp,
+                   const renderer::Texture& shadow_map_texture);
 
   struct MaterialProperty {
     glm::vec3 ambient;
@@ -39,7 +39,7 @@ class MrtScene : public Scene {
   MaterialProperty material_property_ = gold_;
 
   std::vector<CubeObject> cubes_;
-  std::vector<engine::Transform> cube_transforms_;
+  std::vector<renderer::Transform> cube_transforms_;
 
   int point_lights_num_ = 100;
   std::vector<PointLightObject> point_lights_;
@@ -47,7 +47,7 @@ class MrtScene : public Scene {
   PlaneObject plane_;
   DirectionalLightObject directional_light_;
 
-  std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
+  std::shared_ptr<renderer::Camera> camera_ = std::make_shared<renderer::Camera>();
 
-  engine::ColorFramebuffer mrt_framebuffer_;
+  renderer::ColorFramebuffer mrt_framebuffer_;
 };

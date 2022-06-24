@@ -1,24 +1,31 @@
 #pragma once
 
-#include "engine/camera.h"
-#include "engine/shader.h"
-#include "engine/texture.h"
-#include "engine/transform.h"
-#include "playground/context.h"
-#include "playground/object/cube_object.h"
-#include "playground/object/lines_object.h"
-#include "playground/object/model_object.h"
-#include "playground/object/point_light_object.h"
-#include "playground/scene.h"
+#include <glm/glm.hpp>
+#include <string>
+#include <unordered_map>
 
-class ModelScene : public Scene {
+#include "renderer/camera.h"
+#include "renderer/light.h"
+#include "renderer/scene.h"
+#include "renderer/shader.h"
+#include "renderer/texture.h"
+#include "renderer/transform.h"
+
+class ModelScene : public renderer::Scene {
  public:
-  void OnEnter(Context* context);
-  void OnUpdate(Context* context);
-  void OnRender(Context* contexnt);
-  void OnExit(Context* context);
+  void OnEnter() override;
+  void OnUpdate() override;
+  void OnRender() override;
+  void OnExit() override;
 
  private:
+  std::vector<renderer::ObjectMeta> object_metas_ = {
+    {"teapot", {glm::vec3(), glm::quat(), glm::vec3(0.2, 0.2, 0.2)}, "teapot", "gold"}
+  };
+  std::vector<renderer::Light> lights = {
+    {renderer::Light::kPointLight, glm::vec3(0, 3, -5), glm::vec4(1, 0, 0, 1), 1.0, 0.007, 0.0002},
+  };
+
   float shininess_ = 1;
   bool use_texture_ambient_ = true;
   bool use_texture_normal_ = true;
@@ -33,13 +40,7 @@ class ModelScene : public Scene {
 
   float rotate_speed_ = 0.01;
 
-  std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
-  ModelObject nanosuit_;
-  std::vector<PointLightObject> point_lights_;
-
   bool enable_cull_face_ = false;
   int call_face_ = GL_BACK;
   int cw_ = GL_CW;
-
-  CoordObject coord_;
 };

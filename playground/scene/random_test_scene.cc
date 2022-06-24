@@ -1,13 +1,13 @@
 #include "playground/scene/random_test_scene.h"
 
-#include "engine/geometry.h"
-#include "engine/math.h"
-#include "engine/transform.h"
+#include "renderer/geometry.h"
+#include "renderer/math.h"
+#include "renderer/transform.h"
 #include "playground/object/empty_object.h"
 #include "playground/scene/common.h"
 #include "playground/shaders.h"
 
-void RandomTestScene::OnEnter(Context* context) {
+void RandomTestScene::OnEnter(Scene* context) {
   glm::ivec2 screen_size = context->io().screen_size();
 
   std::vector<glm::vec4> input_data(screen_size.x * screen_size.y);
@@ -19,20 +19,20 @@ void RandomTestScene::OnEnter(Context* context) {
   context->SetCamera(camera_.get());
 }
 
-void RandomTestScene::OnUpdate(Context* context) {
-  OnUpdateCommon _(context, "RandomScene");
+void RandomTestScene::OnUpdate() {
+  OnUpdateCommon _(scene, "RandomScene");
 }
 
-void RandomTestScene::OnRender(Context* context) {
-  glm::ivec2 screen_size = context->io().screen_size();
-  RandomShader({screen_size, input_, output_, context->frame_stat().frame_num()}, context);
+void RandomTestScene::OnRender() {
+  glm::ivec2 screen_size = scene->io().screen_size();
+  RandomShader({screen_size, input_, output_, scene->frame_stat().frame_num()}, scene);
 
   EmptyObject e;
-  FullscreenQuadShader({output_}, context, &e);
-  e.OnRender(context);
+  FullscreenQuadShader({output_}, scene, &e);
+  e.OnRender(scene);
 
-  OnRenderCommon _(context);
+  OnRenderCommon _(scene);
 }
 
-void RandomTestScene::OnExit(Context* context) {
+void RandomTestScene::OnExit(Scene* context) {
 }

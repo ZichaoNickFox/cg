@@ -1,31 +1,35 @@
 #include "playground/scene/ray_tracing_scene.h"
 
-#include "engine/transform.h"
-#include "engine/math.h"
-#include "playground/scene/common.h"
-#include "playground/shaders.h"
+#include "renderer/filter.h"
+#include "renderer/math.h"
+#include "renderer/object.h"
+#include "renderer/scene_common.h"
+#include "renderer/shaders.h"
+#include "renderer/transform.h"
 
-void RayTracingScene::OnEnter(Context* context) {
+using namespace renderer;
+
+void RayTracingScene::OnEnter() {
   for (auto& pair : sphere_map_) {
     const std::string& name = pair.first;
-    const engine::Sphere& sphere = pair.second;
+    const Sphere& sphere = pair.second;
     const glm::vec3& translation = sphere.translation;
     const float& r = sphere.radius;
-    sphere_object_map_[name].mutable_transform()->SetTranslation(translation);
-    sphere_object_map_[name].mutable_transform()->SetScale(glm::vec3(r, r, r));
+
+    ObjectMeta object_meta{name, {glm::vec3(), glm::quat(), glm::vec3(r, r, r)}, name, name};
+    object_repo_.AddOrReplace(config_, object_meta, &mesh_repo_, &material_repo_, &texture_repo_);
   }
 
   camera_->SetPerspectiveFov(60);
   camera_->SetTransform({{0, 1, 5}, glm::quat(1, -0.02, 0, 0), {1, 1, 1}});
-  context->SetCamera(camera_.get());
 
   // path tracing
-  glm::ivec2 viewport_size = context->io().screen_size();
+  glm::ivec2 viewport_size = io_.screen_size();
   std::vector<glm::vec4> canvas(viewport_size.x * viewport_size.y);
   for (glm::vec4& elem : canvas) {
     elem = glm::vec4(0, 0, 0, 1);
   }
-  canvas_ = context->CreateTexture({viewport_size.x, viewport_size.y, canvas, GL_NEAREST, GL_NEAREST});
+  canvas_ = texture_repo_.CreateTexture({viewport_size.x, viewport_size.y, canvas, GL_NEAREST, GL_NEAREST});
 
   RaytracingDebugCommon::LightPath light_path;
   light_path_ssbo_.Init(0, sizeof(light_path), &light_path);
@@ -33,39 +37,37 @@ void RayTracingScene::OnEnter(Context* context) {
   glEnable_(GL_DEPTH_TEST);
 }
 
-void RayTracingScene::OnUpdate(Context* context) {
-  OnUpdateCommon _(context, "PathTracing");
+void RayTracingScene::OnUpdate() {
+  OnUpdateCommon(this, "PathTracing");
 }
 
-void RayTracingScene::OnRender(Context* context) {
-  //Resterization(context);
-  //RayTracing(context);
-  PathTracing(context);
+void RayTracingScene::OnRender() {
+  //Resterization();
+  //RayTracing();
+  PathTracing();
 }
 
-void RayTracingScene::OnExit(Context* context) {
+void RayTracingScene::OnExit() {
 }
 
-void RayTracingScene::Resterization(Context* context) {
+void RayTracingScene::Resterization() {
   for (auto& pair : sphere_map_) {
     const std::string& name = pair.first;
-    const engine::Sphere& sphere = pair.second;
-    const glm::vec4& color = sphere.color;
-    ColorShader({color}, context, &sphere_object_map_[name]);
-    sphere_object_map_[name].OnRender(context);
+    const glm::vec4& color = pair.second.color;
+    ColorShader({color}, *this, object_repo_.GetObject(name));
   }
 
-  OnRenderCommon _(context);
+  OnRenderCommon(this);
 }
 
-void RayTracingScene::RayTracing(Context* context) {
-  RayTracingShader({context->io().screen_size(), camera_.get(),
-                   util::AsValueVector(sphere_map_), canvas_}, context);
-  RaytracingDebugCommon(canvas_, context, light_path_ssbo_.GetData<RaytracingDebugCommon::LightPath>());
+void RayTracingScene::RayTracing() {
+  RayTracingShader({io_.screen_size(), camera_.get(),
+                   util::AsValueVector(sphere_map_), canvas_}, *this);
+  RaytracingDebugCommon(canvas_, *this, light_path_ssbo_.GetData<RaytracingDebugCommon::LightPath>());
 }
 
-void RayTracingScene::PathTracing(Context* context) {
-  PathTracingDemoShader({context->io().screen_size(), camera_.get(),
-                    util::AsValueVector(sphere_map_), context->frame_stat().frame_num(), canvas_}, context);
-  RaytracingDebugCommon(canvas_, context, light_path_ssbo_.GetData<RaytracingDebugCommon::LightPath>());
+void RayTracingScene::PathTracing() {
+  PathTracingDemoShader({io_.screen_size(), camera_.get(), util::AsValueVector(sphere_map_),
+                                 frame_stat_.frame_num(), canvas_}, *this);
+  RaytracingDebugCommon(canvas_, *this, light_path_ssbo_.GetData<RaytracingDebugCommon::LightPath>());
 }

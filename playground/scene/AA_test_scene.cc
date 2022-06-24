@@ -6,15 +6,15 @@
 #include "imgui.h"
 #include <memory>
 
-#include "engine/util.h"
+#include "renderer/util.h"
 #include "playground/scene/common.h"
 
-void AATestScene::OnEnter(Context *context)
+void AATestScene::OnEnter(Scene *context)
 {
-  engine::ColorFramebuffer::Option option{context->framebuffer_size(), 1, {glm::vec4(1,0,0,1)}};
+  renderer::ColorFramebuffer::Option option{context->framebuffer_size(), 1, {glm::vec4(1,0,0,1)}};
   color_framebuffer_.Init(option);
 
-  engine::MSFramebuffer::Option ms_option{context->framebuffer_size(), 1, {glm::vec4(1,0,0,1)}, 4};
+  renderer::MSFramebuffer::Option ms_option{context->framebuffer_size(), 1, {glm::vec4(1,0,0,1)}, 4};
   ms_framebuffer_.Init(ms_option);
 
   cube_positions_[0] = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -22,7 +22,6 @@ void AATestScene::OnEnter(Context *context)
   for (int i = 0; i < kCubeNum; ++i) {
     std::unique_ptr<CubeObject> cube = std::make_unique<CubeObject>();
     cube->mutable_transform()->SetTranslation(cube_positions_[i]);
-    cube->mutable_material()->SetShader(context->GetShader("aa_test_scene"));
     cubes_.push_back(std::move(cube));
   }
 
@@ -32,12 +31,12 @@ void AATestScene::OnEnter(Context *context)
   context->SetCamera(camera_.get());
 }
 
-void AATestScene::OnUpdate(Context *context)
+void AATestScene::OnUpdate(Scene *context)
 {
   OnUpdateCommon _(context, "AATestScene");
 }
 
-void AATestScene::OnRender(Context *context)
+void AATestScene::OnRender(Scene *context)
 {
   ms_framebuffer_.Bind();
   for (const std::unique_ptr<CubeObject>& cube : cubes_) {
@@ -46,15 +45,13 @@ void AATestScene::OnRender(Context *context)
   ms_framebuffer_.Unbind();
   // ms_framebuffer_.Blit(&color_framebuffer_);
 
-  engine::Texture texture = ms_framebuffer_.GetColorTexture();
+  renderer::Texture texture = ms_framebuffer_.GetColorTexture();
 
   EmptyObject full_screen_quad;
-  full_screen_quad.mutable_material()->SetShader(context->GetShader("fullscreen_quad"));
-  full_screen_quad.mutable_material()->SetTexture("texture0", texture);
   full_screen_quad.OnRender(context);
 }
 
-void AATestScene::OnExit(Context *context)
+void AATestScene::OnExit(Scene *context)
 {
   context->SetCamera(nullptr);
 }

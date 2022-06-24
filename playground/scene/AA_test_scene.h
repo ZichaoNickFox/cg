@@ -1,30 +1,30 @@
 #pragma once
 
-#include "engine/camera.h"
-#include "engine/framebuffer/color_framebuffer.h"
-#include "engine/framebuffer/ms_framebuffer.h"
-#include "engine/shader.h"
-#include "engine/texture.h"
-#include "engine/transform.h"
+#include "renderer/camera.h"
+#include "renderer/framebuffer/color_framebuffer.h"
+#include "renderer/framebuffer/ms_framebuffer.h"
+#include "renderer/scene.h"
+#include "renderer/shader.h"
+#include "renderer/texture.h"
+#include "renderer/transform.h"
 #include "playground/context.h"
 #include "playground/object/cube_object.h"
 #include "playground/object/empty_object.h"
-#include "playground/scene.h"
 
 // TODO : I don't know why cannot use
 class AATestScene : public Scene {
  public:
-  void OnEnter(Context* context);
-  void OnUpdate(Context* context);
-  void OnRender(Context* contexnt);
-  void OnExit(Context* context);
+  void OnEnter() override;
+  void OnUpdate() override;
+  void OnRender() override;
+  void OnExit() override;
 
  private:
   static constexpr int kCubeNum = 1; 
   glm::vec3 cube_positions_[kCubeNum];
 
-  std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
+  std::shared_ptr<renderer::Camera> camera_ = std::make_shared<renderer::Camera>();
   std::vector<std::unique_ptr<CubeObject>> cubes_;
-  engine::ColorFramebuffer color_framebuffer_;
-  engine::MSFramebuffer ms_framebuffer_;
+  renderer::ColorFramebuffer color_framebuffer_;
+  renderer::MSFramebuffer ms_framebuffer_;
 };

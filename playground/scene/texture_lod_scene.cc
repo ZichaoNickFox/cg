@@ -6,20 +6,20 @@
 #include "imgui.h"
 #include <memory>
 
-#include "engine/repo/texture_repo.h"
-#include "engine/transform.h"
+#include "renderer/repo/texture_repo.h"
+#include "renderer/scene_common.h"
+#include "renderer/transform.h"
 #include "playground/object/sphere_object.h"
-#include "playground/scene/common.h"
 
 constexpr int kLevel0Size = 512;
 
-void TextureLodScene::OnEnter(Context *context) {
+void TextureLodScene::OnEnter(Scene *context) {
   context->SetCamera(camera_.get());
   camera_->mutable_transform()->SetTranslation(glm::vec3(0, 0, 5));
 
   glEnable_(GL_DEPTH_TEST);
 
-  engine::ColorFramebuffer::Option option;
+  renderer::ColorFramebuffer::Option option;
   option.clear_color = context->clear_color();
   option.mrt = 1;
   option.size = glm::ivec2{kLevel0Size, kLevel0Size};
@@ -29,9 +29,9 @@ void TextureLodScene::OnEnter(Context *context) {
   InitCubemapLod(context);
 }
 
-void TextureLodScene::InitTexture2DLod(Context *context) {
+void TextureLodScene::InitTexture2DLod(Scene *context) {
   // TODO : why a 512 * 512 rgba8 texture must use 512 * 512 * 4 * 4 size?
-  engine::Texture2DData data(3, kLevel0Size * kLevel0Size * 4 * 4);
+  renderer::Texture2DData data(3, kLevel0Size * kLevel0Size * 4 * 4);
   // Red
   for (int i = 0; i < kLevel0Size * kLevel0Size * 4; i += 4) {
     data.mutable_data(0)[i] = 255;
@@ -52,9 +52,9 @@ void TextureLodScene::InitTexture2DLod(Context *context) {
   lod_texture2d_ = context->GetTexture("texture2d_lod_rgb");
 }
 
-void TextureLodScene::InitCubemapLod(Context *context) {
+void TextureLodScene::InitCubemapLod(Scene *context) {
   // TODO : why a 512 * 512 rgba8 texture must use 512 * 512 * 4 * 4 size?
-  engine::CubemapData data(3, kLevel0Size * kLevel0Size * 4 * 4);
+  renderer::CubemapData data(3, kLevel0Size * kLevel0Size * 4 * 4);
   for (int texture_unit_offset = 0; texture_unit_offset < 6; ++texture_unit_offset) {
     // Red
     for (int i = 0; i < kLevel0Size * kLevel0Size * 4; i += 4) {
@@ -77,11 +77,11 @@ void TextureLodScene::InitCubemapLod(Context *context) {
   lod_cubemap_ = context->GetTexture("cubemap_lod_rgb");
 }
 
-void TextureLodScene::OnUpdate(Context *context) {
+void TextureLodScene::OnUpdate(Scene *context) {
   OnUpdateCommon _(context, "TextureLodScene");
 }
 
-void TextureLodScene::OnRender(Context *context) {
+void TextureLodScene::OnRender(Scene *context) {
   CubeObject cube1;
   cube1.mutable_transform()->SetTranslation(glm::vec3(-1.5, 0, 0));
   Texture2DLodShader({lod_texture2d_, context->camera().transform().translation()}, context, &cube1);
@@ -93,5 +93,5 @@ void TextureLodScene::OnRender(Context *context) {
   cube2.OnRender(context);
 }
 
-void TextureLodScene::OnExit(Context *context) {
+void TextureLodScene::OnExit(Scene *context) {
 }

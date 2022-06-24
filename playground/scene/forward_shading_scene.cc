@@ -7,16 +7,16 @@
 #include "imgui.h"
 #include <memory>
 
-#include "engine/constants.h"
-#include "engine/framebuffer_attachment.h"
-#include "engine/math.h"
-#include "engine/pass.h"
-#include "engine/transform.h"
-#include "engine/util.h"
+#include "renderer/constants.h"
+#include "renderer/framebuffer_attachment.h"
+#include "renderer/math.h"
+#include "renderer/pass.h"
+#include "renderer/transform.h"
+#include "renderer/util.h"
 #include "playground/object/empty_object.h"
 #include "playground/scene/common.h"
 
-void ForwardShadingScene::OnEnter(Context *context)
+void ForwardShadingScene::OnEnter(Scene *context)
 {
   for (int i = 0; i < point_lights_num_; ++i) {
     point_lights_.push_back(PointLightObject());
@@ -27,10 +27,10 @@ void ForwardShadingScene::OnEnter(Context *context)
     point_lights_[i].SetColor(color);
   }
 
-  cube_transforms_.push_back(engine::Transform(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
-  cube_transforms_.push_back(engine::Transform(glm::vec3(1, 1, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
-  cube_transforms_.push_back(engine::Transform(glm::vec3(2, 2, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
-  cube_transforms_.push_back(engine::Transform(glm::vec3(1, 2, 2), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
+  cube_transforms_.push_back(renderer::Transform(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
+  cube_transforms_.push_back(renderer::Transform(glm::vec3(1, 1, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
+  cube_transforms_.push_back(renderer::Transform(glm::vec3(2, 2, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
+  cube_transforms_.push_back(renderer::Transform(glm::vec3(1, 2, 2), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
   for (int i = 0; i < cube_transforms_.size(); ++i) {
     cubes_.push_back(CubeObject());
     CubeObject* cube = &cubes_[i];
@@ -51,14 +51,14 @@ void ForwardShadingScene::OnEnter(Context *context)
   glEnable_(GL_DEPTH_TEST);
 
   light_camera_->SetTransform(directional_light_.transform());
-  depth_framebuffer_.Init({context->framebuffer_size(), {engine::kAttachmentColor, engine::kAttachmentDepth}});
+  depth_framebuffer_.Init({context->framebuffer_size(), {renderer::kAttachmentColor, renderer::kAttachmentDepth}});
   depth_buffer_pass_.Init(&depth_framebuffer_, light_camera_);
 
-  forward_framebuffer_.Init({context->framebuffer_size(), {engine::kAttachmentColor, engine::kAttachmentDepth}});
+  forward_framebuffer_.Init({context->framebuffer_size(), {renderer::kAttachmentColor, renderer::kAttachmentDepth}});
   forward_pass_.Init(&forward_framebuffer_);
 }
 
-void ForwardShadingScene::OnUpdate(Context *context)
+void ForwardShadingScene::OnUpdate(Scene *context)
 {
   OnUpdateCommon _(context, "ForwardShadingScene");
 
@@ -86,18 +86,18 @@ void ForwardShadingScene::OnUpdate(Context *context)
   directional_light_.OnUpdate(context);
 }
 
-void ForwardShadingScene::OnRender(Context *context) {
+void ForwardShadingScene::OnRender(Scene *context) {
   RunDepthBufferPass(context, &depth_buffer_pass_);
 
   forward_pass_.Update(depth_buffer_pass_.scene_shadow_info());
   RunForwardPass_Deprecated(context, &forward_pass_);
 
   EmptyObject quad;
-  FullscreenQuadShader({forward_framebuffer_.GetTexture(engine::kAttachmentColor.name)}, context, &quad);
+  FullscreenQuadShader({forward_framebuffer_.GetTexture(renderer::kAttachmentColor.name)}, context, &quad);
   quad.OnRender(context);
 }
 
-void ForwardShadingScene::RunDepthBufferPass(Context* context, engine::DepthBufferPass* depth_buffer_pass) {
+void ForwardShadingScene::RunDepthBufferPass(Scene* context, renderer::DepthBufferPass* depth_buffer_pass) {
   depth_buffer_pass->Begin();
 
   DepthBufferShader::Param param{depth_buffer_pass->camera(), context->GetShader("depth_buffer")};
@@ -112,10 +112,10 @@ void ForwardShadingScene::RunDepthBufferPass(Context* context, engine::DepthBuff
   depth_buffer_pass->End();
 }
 
-void ForwardShadingScene::RunForwardPass_Deprecated(Context* context, engine::ForwardPass* forward_pass) {
+void ForwardShadingScene::RunForwardPass_Deprecated(Scene* context, renderer::ForwardPass* forward_pass) {
   forward_pass->Begin();
 
-  const engine::MaterialProperty& material_property = engine::kMaterialProperties.at("gold");
+  const renderer::MaterialProperty& material_property = renderer::kMaterialProperties.at("gold");
   PhongShader::Param phong{material_property.ambient, material_property.diffuse,
                            material_property.specular, material_property.shininess};
   phong.scene_shadow_info = forward_pass->prepass_shadow_info();
@@ -143,7 +143,7 @@ void ForwardShadingScene::RunForwardPass_Deprecated(Context* context, engine::Fo
   forward_pass->End();
 }
 
-void ForwardShadingScene::OnExit(Context *context)
+void ForwardShadingScene::OnExit(Scene *context)
 {
   for (int i = 0; i < cubes_.size(); ++i) {
     CubeObject* cube = &cubes_[i];

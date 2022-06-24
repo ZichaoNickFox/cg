@@ -2,10 +2,12 @@
 
 #include <memory>
 
-#include "engine/camera.h"
-#include "engine/pass.h"
-#include "engine/shader.h"
-#include "engine/texture.h"
+#include "renderer/camera.h"
+#include "renderer/pass.h"
+#include "renderer/scene.h"
+#include "renderer/shader.h"
+#include "renderer/shaders.h"
+#include "renderer/texture.h"
 #include "playground/context.h"
 #include "playground/object/cube_object.h"
 #include "playground/object/directional_light_object.h"
@@ -13,21 +15,19 @@
 #include "playground/object/plane_object.h"
 #include "playground/object/point_light_object.h"
 #include "playground/object/sphere_object.h"
-#include "playground/scene.h"
-#include "playground/shaders.h"
 
 class ShareScene : public Scene {
  public:
-  void OnEnter(Context* context);
-  void OnUpdate(Context* context);
-  void OnRender(Context* contexnt);
-  void OnExit(Context* context);
+  void OnEnter() override;
+  void OnUpdate() override;
+  void OnRender() override;
+  void OnExit() override;
 
-  void RunDepthBufferPass(Context* context, DepthBufferPass* depth_buffer_pass);
-  void RunForwardPass_Deprecated(Context* context, ForwardPass* forward_pass);
+  void RunDepthBufferPass(Scene* context, DepthBufferPass* depth_buffer_pass);
+  void RunForwardPass_Deprecated(Scene* context, ForwardPass* forward_pass);
   
-  void RunDepthBufferPass2(Context* context, DepthBufferPass* depth_buffer_pass);
-  void RunForwardPass2(Context* context, ForwardPass* forward_pass);
+  void RunDepthBufferPass2(Scene* context, DepthBufferPass* depth_buffer_pass);
+  void RunForwardPass2(Scene* context, ForwardPass* forward_pass);
 
  private:
   int step_ = 1016;
@@ -47,7 +47,7 @@ class ShareScene : public Scene {
   PointLightObject point_light_;
   PlaneObject plane_;
   SphereObject sphere_;
-  std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
+  std::shared_ptr<renderer::Camera> camera_ = std::make_shared<renderer::Camera>();
   DirectionalLightObject directional_light_;
 
   DepthBufferPass depth_buffer_pass_;

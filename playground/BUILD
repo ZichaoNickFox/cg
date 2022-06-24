@@ -8,8 +8,8 @@ cc_binary(
     "window.cc",
   ],
   deps = [
-    "//engine:debug",
-    "//engine:gl",
+    "//renderer:debug",
+    "//renderer:gl",
     "//playground:playground",
     "@fmt",
     "@glew",
@@ -36,54 +36,11 @@ cc_library(
     "playground.cc",
   ],
   deps = [
-    "//engine:engine",
-    "//engine/proto:cc_config_proto",
-    "//playground:scene",
+    "//renderer:renderer",
+    "//renderer/proto:cc_config_proto",
     "//playground/scene:scenes",
     "@fmt",
   ],
-)
-
-cc_library(
-  name = "scene",
-  srcs = [
-    "scene.h"
-  ],
-  deps = [
-    "//playground:context",
-  ],
-)
-
-cc_library(
-  name = "context",
-  srcs = [
-    "context.h",
-    "context.cc",
-  ],
-  deps = [
-    "//engine:engine",
-    "//engine/primitive:primitive",
-    "//engine/proto:cc_config_proto",
-    "//engine/repo:repo",
-    "//engine:util",
-    "@fmt",
-    "@glfw",
-  ],
-)
-
-cc_library(
-  name = "shaders",
-  srcs = [
-    "shaders.h",
-    "shaders.cc",
-  ],
-  deps = [
-    "//engine:engine",
-    "//engine:util",
-    "//playground:context",
-    "//playground/object:object",
-    "@glm//:glm",
-  ]
 )
 
 cc_test (
@@ -92,8 +49,8 @@ cc_test (
       "test.cc",
   ],
   deps = [
-    "//engine:engine",
-    "//engine:util",
+    "//renderer:renderer",
+    "//renderer:util",
     "@gtest//:gtest",
     "@gtest//:gtest_main",
     "@glew",

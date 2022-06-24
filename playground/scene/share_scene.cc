@@ -7,12 +7,12 @@
 #include <math.h>
 #include <memory>
 
-#include "engine/transform.h"
-#include "engine/util.h"
+#include "renderer/transform.h"
+#include "renderer/util.h"
 #include "playground/object/empty_object.h"
 #include "playground/scene/common.h"
 
-void ShareScene::OnEnter(Context *context)
+void ShareScene::OnEnter(Scene *context)
 {
   const glm::vec3 kLightPos = glm::vec3(5, 3, 0);
   const glm::vec3 kLightScale = glm::vec3(0.4, 0.4, 0.4);
@@ -49,7 +49,7 @@ void ShareScene::OnEnter(Context *context)
   forward_pass_.Init({context->framebuffer_size(), 1, context->clear_color()});
 }
 
-void ShareScene::OnUpdate(Context *context)
+void ShareScene::OnUpdate(Scene *context)
 {
   OnUpdateCommon _(context, "ShareScene");
   if (ImGui::Button("101.1 color")) {
@@ -104,7 +104,7 @@ void ShareScene::OnUpdate(Context *context)
   kLineTo = cursor_world_pos_far;
 
   intersect_line_.reset();
-  Object::IntersectResult intersect_result;
+  ObjectDeprecated::IntersectResult intersect_result;
   if (sphere_.Intersect(context, kLineFrom, kLineTo - kLineFrom, &intersect_result)) {
     intersect_line_ = std::make_unique<LinesObject>();
     intersect_line_->SetMesh({{intersect_result.position_ws, intersect_result.position_ws + intersect_result.normal_ws * 10.0f},
@@ -114,7 +114,7 @@ void ShareScene::OnUpdate(Context *context)
   coord_.OnUpdate(context);
 }
 
-void ShareScene::OnRender(Context *context)
+void ShareScene::OnRender(Scene *context)
 {
   if (step_ < 1015) {
     if (step_ == 1011) {
@@ -174,7 +174,7 @@ void ShareScene::OnRender(Context *context)
   }
 }
 
-void ShareScene::RunDepthBufferPass(Context* context, DepthBufferPass* depth_buffer_pass) {
+void ShareScene::RunDepthBufferPass(Scene* context, DepthBufferPass* depth_buffer_pass) {
   depth_buffer_pass->Begin();
 
   DepthBufferShader{context->GetShader("depth_buffer"), depth_buffer_pass->camera(), &sphere_};
@@ -185,7 +185,7 @@ void ShareScene::RunDepthBufferPass(Context* context, DepthBufferPass* depth_buf
   depth_buffer_pass->End();
 }
 
-void ShareScene::RunForwardPass_Deprecated(Context* context, ForwardPass* forward_pass) {
+void ShareScene::RunForwardPass_Deprecated(Scene* context, ForwardPass* forward_pass) {
   forward_pass->Begin();
 
   PhongShader::Param phong;
@@ -208,7 +208,7 @@ void ShareScene::RunForwardPass_Deprecated(Context* context, ForwardPass* forwar
   forward_pass->End();
 }
 
-void ShareScene::RunDepthBufferPass2(Context* context, DepthBufferPass* depth_buffer_pass) {
+void ShareScene::RunDepthBufferPass2(Scene* context, DepthBufferPass* depth_buffer_pass) {
   depth_buffer_pass->Begin();
 
   DepthBufferShader{context->GetShader("depth_buffer"), depth_buffer_pass->camera(), &sphere_};
@@ -219,7 +219,7 @@ void ShareScene::RunDepthBufferPass2(Context* context, DepthBufferPass* depth_bu
   depth_buffer_pass->End();
 }
 
-void ShareScene::RunForwardPass2(Context* context, ForwardPass* forward_pass) {
+void ShareScene::RunForwardPass2(Scene* context, ForwardPass* forward_pass) {
   forward_pass->Begin();
 
   PbrShader::Param pbr{albedo_, metallic_, roughness_};
@@ -242,7 +242,7 @@ void ShareScene::RunForwardPass2(Context* context, ForwardPass* forward_pass) {
   forward_pass->End();
 }
 
-void ShareScene::OnExit(Context *context)
+void ShareScene::OnExit(Scene *context)
 {
   point_light_.OnDestory(context);
   plane_.OnDestory(context);

@@ -1,23 +1,23 @@
 #pragma once
 
-#include "engine/camera.h"
-#include "engine/geometry.h"
-#include "playground/scene.h"
+#include "renderer/camera.h"
+#include "renderer/geometry.h"
+#include "renderer/scene.h"
 
 class GeometryScene : public Scene {
  public:
-  void OnEnter(Context* context) override;
-  void OnUpdate(Context* context) override;
-  void OnRender(Context* context) override;
-  void OnExit(Context* context) override;
+  void OnEnter() override;
+  void OnUpdate() override;
+  void OnRender() override;
+  void OnExit() override;
 
  private:
   static constexpr int kTriangleNum = 100;
-  std::array<engine::Triangle, kTriangleNum> triangles_;
+  std::array<renderer::Triangle, kTriangleNum> triangles_;
 
   static constexpr int kAABBNum = 100;
-  std::array<engine::AABB, kAABBNum> aabbs_;
+  std::array<renderer::AABB, kAABBNum> aabbs_;
 
-  std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
+  std::shared_ptr<renderer::Camera> camera_ = std::make_shared<renderer::Camera>();
 };
 

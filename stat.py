@@ -1,7 +1,7 @@
 import os
 import pathlib
 
-dirs = ["playground", "engine"]
+dirs = ["playground", "renderer"]
 exts = [".cc", ".h", ".cpp", ".hpp", ".glsl"]
 
 all_file = []

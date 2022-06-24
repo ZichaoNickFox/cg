@@ -6,11 +6,11 @@
 #include "imgui.h"
 #include <memory>
 
-#include "engine/math.h"
-#include "engine/transform.h"
+#include "renderer/math.h"
+#include "renderer/transform.h"
 #include "playground/scene/common.h"
 
-void NormalScene::OnEnter(Context *context)
+void NormalScene::OnEnter(Scene *context)
 {
   const glm::vec4 kLightColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
   const glm::vec3 kLightPos = glm::vec3(5, 5, 0);
@@ -43,7 +43,7 @@ void NormalScene::OnEnter(Context *context)
   glEnable_(GL_DEPTH_TEST);
 }
 
-void NormalScene::OnUpdate(Context *context)
+void NormalScene::OnUpdate(Scene *context)
 {
   OnUpdateCommon _(context, "NormalScene");
 
@@ -68,7 +68,7 @@ void NormalScene::OnUpdate(Context *context)
   kLineTo = cursor_world_pos_far;
 
   intersect_line_.reset();
-  Object::IntersectResult intersect_result;
+  ObjectDeprecated::IntersectResult intersect_result;
   if (sphere_.Intersect(context, kLineFrom, kLineTo - kLineFrom, &intersect_result)) {
     intersect_line_ = std::make_unique<LinesObject>();
     intersect_line_->SetMesh({{intersect_result.position_ws, intersect_result.position_ws + intersect_result.normal_ws * 10.0f},
@@ -78,7 +78,7 @@ void NormalScene::OnUpdate(Context *context)
   coord_.OnUpdate(context);
 }
 
-void NormalScene::OnRender(Context *context)
+void NormalScene::OnRender(Scene *context)
 {
   static PhongShader::Param phong_param;
   phong_param.scene_light_info = SceneLightInfo(point_light_);
@@ -109,7 +109,7 @@ void NormalScene::OnRender(Context *context)
   point_light_.OnRender(context);
 }
 
-void NormalScene::OnExit(Context *context)
+void NormalScene::OnExit(Scene *context)
 {
   point_light_.OnDestory(context);
   plane_.OnDestory(context);

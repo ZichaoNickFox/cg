@@ -1,46 +1,39 @@
 #pragma once
 
-#include "engine/camera.h"
-#include "engine/framebuffer.h"
-#include "engine/framebuffer_attachment.h"
-#include "engine/pass.h"
-#include "engine/shader.h"
-#include "engine/texture.h"
-#include "playground/context.h"
-#include "playground/object/cube_object.h"
-#include "playground/object/directional_light_object.h"
-#include "playground/object/lines_object.h"
-#include "playground/object/model_object.h"
-#include "playground/object/plane_object.h"
-#include "playground/object/point_light_object.h"
-#include "playground/scene.h"
-#include "playground/shaders.h"
+#include "renderer/camera.h"
+#include "renderer/framebuffer.h"
+#include "renderer/framebuffer_attachment.h"
+#include "renderer/pass.h"
+#include "renderer/scene.h"
+#include "renderer/shader.h"
+#include "renderer/shaders.h"
+#include "renderer/texture.h"
 
 class SSAOScene : public Scene {
  public:
-  void OnEnter(Context* context);
-  void OnUpdate(Context* context);
-  void OnRender(Context* contexnt);
-  void OnExit(Context* context);
+  void OnEnter() override;
+  void OnUpdate() override;
+  void OnRender() override;
+  void OnExit() override;
 
  private:
-  void SetupBufferAndPass(Context* context);
+  void SetupBufferAndPass(Scene* context);
 
-  void RunGBufferPass(Context* context, engine::GBufferPass* g_buffer_pass);;
-  void RunSSAOPass(Context* context, engine::SSAOPass* SSAO_pass);
-  void RunBlurPass(Context* context, engine::BlurPass* blue_pass);
+  void RunGBufferPass(Scene* context, renderer::GBufferPass* g_buffer_pass);;
+  void RunSSAOPass(Scene* context, renderer::SSAOPass* SSAO_pass);
+  void RunBlurPass(Scene* context, renderer::BlurPass* blue_pass);
 
-  engine::Framebuffer g_buffer_;
-  engine::Framebuffer SSAO_buffer_;
-  engine::Framebuffer blur_buffer_;
-  engine::Framebuffer lighting_buffer_;
+  renderer::Framebuffer g_buffer_;
+  renderer::Framebuffer SSAO_buffer_;
+  renderer::Framebuffer blur_buffer_;
+  renderer::Framebuffer lighting_buffer_;
 
-  engine::GBufferPass g_buffer_pass_;
-  engine::SSAOPass SSAO_pass_;
-  engine::BlurPass blur_pass_;
-  engine::LightingPass lighting_pass_;
+  renderer::GBufferPass g_buffer_pass_;
+  renderer::SSAOPass SSAO_pass_;
+  renderer::BlurPass blur_pass_;
+  renderer::LightingPass lighting_pass_;
 
-  engine::Texture texture_noise_;
+  renderer::Texture texture_noise_;
 
   int point_lights_num_ = 10;
   std::vector<PointLightObject> point_lights_;
@@ -51,5 +44,5 @@ class SSAOScene : public Scene {
 
   std::array<glm::vec3, 64> samples_ts_;
 
-  std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
+  std::shared_ptr<renderer::Camera> camera_ = std::make_shared<renderer::Camera>();
 };

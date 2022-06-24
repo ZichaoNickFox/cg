@@ -2,24 +2,24 @@
 
 #include <memory>
 
-#include "engine/camera.h"
-#include "engine/shader.h"
-#include "engine/texture.h"
+#include "renderer/camera.h"
+#include "renderer/scene.h"
+#include "renderer/shader.h"
+#include "renderer/texture.h"
 #include "playground/context.h"
 #include "playground/object/cube_object.h"
 #include "playground/object/lines_object.h"
 #include "playground/object/plane_object.h"
 #include "playground/object/point_light_object.h"
 #include "playground/object/sphere_object.h"
-#include "playground/scene.h"
 #include "playground/shaders.h"
 
 class NormalScene : public Scene {
  public:
-  void OnEnter(Context* context);
-  void OnUpdate(Context* context);
-  void OnRender(Context* contexnt);
-  void OnExit(Context* context);
+  void OnEnter() override;
+  void OnUpdate() override;
+  void OnRender() override;
+  void OnExit() override;
 
  private:
   glm::vec4 light_color_ = glm::vec4(1, 1, 1, 1);
@@ -34,7 +34,7 @@ class NormalScene : public Scene {
   PointLightObject point_light_;
   PlaneObject plane_;
   SphereObject sphere_;
-  std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
+  std::shared_ptr<renderer::Camera> camera_ = std::make_shared<renderer::Camera>();
 
   std::string material_property_name_ = "gold";
 

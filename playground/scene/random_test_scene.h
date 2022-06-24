@@ -1,19 +1,19 @@
 #pragma once
 
-#include "engine/camera.h"
+#include "renderer/camera.h"
+#include "renderer/scene.h"
 #include "playground/object/sphere_object.h"
-#include "playground/scene.h"
 
 class RandomTestScene : public Scene {
  public:
-  void OnEnter(Context* context) override;
-  void OnUpdate(Context* context) override;
-  void OnRender(Context* context) override;
-  void OnExit(Context* context) override;
+  void OnEnter() override;
+  void OnUpdate() override;
+  void OnRender() override;
+  void OnExit() override;
 
  private:
-  std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
+  std::shared_ptr<renderer::Camera> camera_ = std::make_shared<renderer::Camera>();
   
-  engine::Texture input_;
-  engine::Texture output_;
+  renderer::Texture input_;
+  renderer::Texture output_;
 };

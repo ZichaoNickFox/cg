@@ -1,31 +1,30 @@
 #pragma once
 
-#include "engine/camera.h"
-#include "engine/framebuffer.h"
-#include "engine/framebuffer_attachment.h"
-#include "engine/pass.h"
-#include "engine/shader.h"
-#include "engine/texture.h"
+#include "renderer/camera.h"
+#include "renderer/framebuffer.h"
+#include "renderer/framebuffer_attachment.h"
+#include "renderer/pass.h"
+#include "renderer/scene.h"
+#include "renderer/shader.h"
+#include "renderer/shaders.h"
+#include "renderer/texture.h"
 #include "playground/context.h"
 #include "playground/object/cube_object.h"
 #include "playground/object/directional_light_object.h"
 #include "playground/object/lines_object.h"
-#include "playground/object/model_object.h"
 #include "playground/object/plane_object.h"
 #include "playground/object/point_light_object.h"
-#include "playground/scene.h"
-#include "playground/shaders.h"
 
 class ShadowScene : public Scene {
  public:
-  void OnEnter(Context* context);
-  void OnUpdate(Context* context);
-  void OnRender(Context* contexnt);
-  void OnExit(Context* context);
+  void OnEnter() override;
+  void OnUpdate() override;
+  void OnRender() override;
+  void OnExit() override;
 
  private:
-  void RunDepthBufferPass(Context* context, engine::DepthBufferPass* depth_buffer_pass);
-  void RunForwardPass_Deprecated(Context* context, engine::ForwardPass* forward_pass);
+  void RunDepthBufferPass(Scene* context, renderer::DepthBufferPass* depth_buffer_pass);
+  void RunForwardPass_Deprecated(Scene* context, renderer::ForwardPass* forward_pass);
 
   int point_lights_num_ = 10;
   std::vector<PointLightObject> point_lights_;
@@ -36,11 +35,11 @@ class ShadowScene : public Scene {
 
   ModelObject nanosuit_;
 
-  std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
+  std::shared_ptr<renderer::Camera> camera_ = std::make_shared<renderer::Camera>();
 
-  engine::Framebuffer depth_framebuffer_;
-  engine::Framebuffer forward_framebuffer_;
+  renderer::Framebuffer depth_framebuffer_;
+  renderer::Framebuffer forward_framebuffer_;
 
-  engine::DepthBufferPass depth_buffer_pass_;
-  engine::ForwardPass forward_pass_;
+  renderer::DepthBufferPass depth_buffer_pass_;
+  renderer::ForwardPass forward_pass_;
 };

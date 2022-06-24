@@ -1,233 +1,233 @@
 shader_config {
   name : "triangle";
-  vs_path : "engine/shader/triangle.vs.glsl";
-  fs_path : "engine/shader/triangle.fs.glsl";
+  vs_path : "renderer/shader/triangle.vs.glsl";
+  fs_path : "renderer/shader/triangle.fs.glsl";
 }
 
 shader_config {
   name : "texture";
-  vs_path : "engine/shader/texture.vs.glsl";
-  fs_path : "engine/shader/texture.fs.glsl";
+  vs_path : "renderer/shader/texture.vs.glsl";
+  fs_path : "renderer/shader/texture.fs.glsl";
 }
 
 shader_config {
   name : "texture2d_lod";
-  vs_path : "engine/shader/texture2d_lod.vs.glsl";
-  fs_path : "engine/shader/texture2d_lod.fs.glsl";
+  vs_path : "renderer/shader/texture2d_lod.vs.glsl";
+  fs_path : "renderer/shader/texture2d_lod.fs.glsl";
 }
 
 shader_config {
   name : "cubemap_lod";
-  vs_path : "engine/shader/cubemap_lod.vs.glsl";
-  fs_path : "engine/shader/cubemap_lod.fs.glsl";
+  vs_path : "renderer/shader/cubemap_lod.vs.glsl";
+  fs_path : "renderer/shader/cubemap_lod.fs.glsl";
 }
 
 shader_config {
   name : "normal";
-  vs_path : "engine/shader/normal.vs.glsl";
-  gs_path : "engine/shader/normal.gs.glsl";
-  fs_path : "engine/shader/normal.fs.glsl";
+  vs_path : "renderer/shader/normal.vs.glsl";
+  gs_path : "renderer/shader/normal.gs.glsl";
+  fs_path : "renderer/shader/normal.fs.glsl";
 }
 
 shader_config {
   name : "phong";
-  vs_path : "engine/shader/phong/phong.vs.glsl";
-  fs_path : "engine/shader/phong/phong.fs.glsl";
+  vs_path : "renderer/shader/phong/phong.vs.glsl";
+  fs_path : "renderer/shader/phong/phong.fs.glsl";
 }
 
 shader_config {
   name : "phong_shadow";
-  vs_path : "engine/shader/phong/phong_shadow.vs.glsl";
-  fs_path : "engine/shader/phong/phong_shadow.fs.glsl";
+  vs_path : "renderer/shader/phong/phong_shadow.vs.glsl";
+  fs_path : "renderer/shader/phong/phong_shadow.fs.glsl";
 }
 
 shader_config {
   name : "point_light";
-  vs_path : "engine/shader/point_light.vs.glsl";
-  fs_path : "engine/shader/point_light.fs.glsl";
+  vs_path : "renderer/shader/point_light.vs.glsl";
+  fs_path : "renderer/shader/point_light.fs.glsl";
 }
 
 shader_config {
   name : "lines";
-  vs_path : "engine/shader/lines.vs.glsl";
-  gs_path : "engine/shader/lines.gs.glsl";
-  fs_path : "engine/shader/lines.fs.glsl";
+  vs_path : "renderer/shader/lines.vs.glsl";
+  gs_path : "renderer/shader/lines.gs.glsl";
+  fs_path : "renderer/shader/lines.fs.glsl";
 }
 
 shader_config {
   name : "skybox";
-  vs_path : "engine/shader/skybox.vs.glsl";
-  fs_path : "engine/shader/skybox.fs.glsl";
+  vs_path : "renderer/shader/skybox.vs.glsl";
+  fs_path : "renderer/shader/skybox.fs.glsl";
 }
 
 shader_config {
   name : "depth_buffer";
-  vs_path : "engine/shader/depth_buffer.vs.glsl";
-  fs_path : "engine/shader/depth_buffer.fs.glsl";
+  vs_path : "renderer/shader/depth_buffer.vs.glsl";
+  fs_path : "renderer/shader/depth_buffer.fs.glsl";
 }
 
 shader_config {
   name : "mrt_fusion";
-  vs_path : "engine/shader/mrt_fusion.vs.glsl";
-  fs_path : "engine/shader/mrt_fusion.fs.glsl";
+  vs_path : "renderer/shader/mrt_fusion.vs.glsl";
+  fs_path : "renderer/shader/mrt_fusion.fs.glsl";
 }
 
 shader_config {
   name : "aa_test_scene";
-  vs_path : "engine/shader/aa_test_scene.vs.glsl";
-  fs_path : "engine/shader/aa_test_scene.fs.glsl";
+  vs_path : "renderer/shader/aa_test_scene.vs.glsl";
+  fs_path : "renderer/shader/aa_test_scene.fs.glsl";
 }
 
 shader_config {
   name : "fullscreen_quad";
-  vs_path : "engine/shader/fullscreen_quad.vs.glsl";
-  fs_path : "engine/shader/fullscreen_quad.fs.glsl";
+  vs_path : "renderer/shader/fullscreen_quad.vs.glsl";
+  fs_path : "renderer/shader/fullscreen_quad.fs.glsl";
 }
 
 shader_config {
   name : "nanosuit";
-  vs_path : "engine/shader/nanosuit.vs.glsl";
-  fs_path : "engine/shader/nanosuit.fs.glsl";
+  vs_path : "renderer/shader/nanosuit.vs.glsl";
+  fs_path : "renderer/shader/nanosuit.fs.glsl";
 }
 
 shader_config {
   name : "model_test";
-  vs_path : "engine/shader/model_test.vs.glsl";
-  fs_path : "engine/shader/model_test.fs.glsl";
+  vs_path : "renderer/shader/model_test.vs.glsl";
+  fs_path : "renderer/shader/model_test.fs.glsl";
 }
 
 shader_config {
   name : "deferred_shading_geometry";
-  vs_path : "engine/shader/deferred_shading_geometry.vs.glsl";
-  fs_path : "engine/shader/deferred_shading_geometry.fs.glsl";
+  vs_path : "renderer/shader/deferred_shading_geometry.vs.glsl";
+  fs_path : "renderer/shader/deferred_shading_geometry.fs.glsl";
 }
 
 shader_config {
   name : "deferred_shading_lighting";
-  vs_path : "engine/shader/deferred_shading_lighting.vs.glsl";
-  fs_path : "engine/shader/deferred_shading_lighting.fs.glsl";
+  vs_path : "renderer/shader/deferred_shading_lighting.vs.glsl";
+  fs_path : "renderer/shader/deferred_shading_lighting.fs.glsl";
 }
 
 shader_config {
   name : "pbr";
-  vs_path : "engine/shader/pbr.vs.glsl";
-  fs_path : "engine/shader/pbr/pbr.fs.glsl";
+  vs_path : "renderer/shader/pbr.vs.glsl";
+  fs_path : "renderer/shader/pbr/pbr.fs.glsl";
 }
 
 shader_config {
   name : "TBN";
-  vs_path : "engine/shader/TBN.vs.glsl";
-  gs_path : "engine/shader/TBN.gs.glsl";
-  fs_path : "engine/shader/TBN.fs.glsl";
+  vs_path : "renderer/shader/TBN.vs.glsl";
+  gs_path : "renderer/shader/TBN.gs.glsl";
+  fs_path : "renderer/shader/TBN.fs.glsl";
 }
 
 shader_config {
   name : "color";
-  vs_path : "engine/shader/color.vs.glsl";
-  fs_path : "engine/shader/color.fs.glsl";
+  vs_path : "renderer/shader/color.vs.glsl";
+  fs_path : "renderer/shader/color.fs.glsl";
 }
 
 shader_config {
   name : "equirectangular_2_cubemap_tool";
-  vs_path : "engine/shader/equirectangular_2_cubemap_tool.vs.glsl";
-  fs_path : "engine/shader/equirectangular_2_cubemap_tool.fs.glsl";
+  vs_path : "renderer/shader/equirectangular_2_cubemap_tool.vs.glsl";
+  fs_path : "renderer/shader/equirectangular_2_cubemap_tool.fs.glsl";
 }
 
 shader_config {
   name : "texcoord";
-  vs_path : "engine/shader/texcoord.vs.glsl";
-  fs_path : "engine/shader/texcoord.fs.glsl";
+  vs_path : "renderer/shader/texcoord.vs.glsl";
+  fs_path : "renderer/shader/texcoord.fs.glsl";
 }
 
 shader_config {
   name : "pbr_irradiance_cubemap_generator";
-  vs_path : "engine/shader/pbr/pbr_irradiance_cubemap_generator.vs.glsl";
-  fs_path : "engine/shader/pbr/pbr_irradiance_cubemap_generator.fs.glsl";
+  vs_path : "renderer/shader/pbr/pbr_irradiance_cubemap_generator.vs.glsl";
+  fs_path : "renderer/shader/pbr/pbr_irradiance_cubemap_generator.fs.glsl";
 }
 
 shader_config {
   name : "sample_test";
-  vs_path : "engine/shader/sample_test.vs.glsl";
-  fs_path : "engine/shader/sample_test.fs.glsl";
+  vs_path : "renderer/shader/sample_test.vs.glsl";
+  fs_path : "renderer/shader/sample_test.fs.glsl";
 }
 
 shader_config {
   name : "pbr_prefiltered_color_cubemap_generator";
-  vs_path : "engine/shader/pbr/pbr_prefiltered_color_cubemap_generator.vs.glsl";
-  fs_path : "engine/shader/pbr/pbr_prefiltered_color_cubemap_generator.fs.glsl";
+  vs_path : "renderer/shader/pbr/pbr_prefiltered_color_cubemap_generator.vs.glsl";
+  fs_path : "renderer/shader/pbr/pbr_prefiltered_color_cubemap_generator.fs.glsl";
 }
 
 shader_config {
   name : "pbr_BRDF_integration_map_generator";
-  vs_path : "engine/shader/pbr/pbr_BRDF_integration_map_generator.vs.glsl";
-  fs_path : "engine/shader/pbr/pbr_BRDF_integration_map_generator.fs.glsl";
+  vs_path : "renderer/shader/pbr/pbr_BRDF_integration_map_generator.vs.glsl";
+  fs_path : "renderer/shader/pbr/pbr_BRDF_integration_map_generator.fs.glsl";
 }
 
 shader_config {
   name : "SSAO_g_buffer";
-  vs_path : "engine/shader/SSAO/SSAO_g_buffer.vs.glsl";
-  fs_path : "engine/shader/SSAO/SSAO_g_buffer.fs.glsl";
+  vs_path : "renderer/shader/SSAO/SSAO_g_buffer.vs.glsl";
+  fs_path : "renderer/shader/SSAO/SSAO_g_buffer.fs.glsl";
 }
 
 shader_config {
   name : "SSAO_SSAO";
-  vs_path : "engine/shader/fullscreen_quad.vs.glsl";
-  fs_path : "engine/shader/SSAO/SSAO_SSAO.fs.glsl";
+  vs_path : "renderer/shader/fullscreen_quad.vs.glsl";
+  fs_path : "renderer/shader/SSAO/SSAO_SSAO.fs.glsl";
 }
 
 shader_config {
   name : "blur";
-  vs_path : "engine/shader/fullscreen_quad.vs.glsl";
-  fs_path : "engine/shader/blur.fs.glsl";
+  vs_path : "renderer/shader/fullscreen_quad.vs.glsl";
+  fs_path : "renderer/shader/blur.fs.glsl";
 }
 
 shader_config {
   name : "SSAO_lighting";
-  vs_path : "engine/shader/fullscreen_quad.vs.glsl";
-  fs_path : "engine/shader/phong/phong.fs.glsl";
+  vs_path : "renderer/shader/fullscreen_quad.vs.glsl";
+  fs_path : "renderer/shader/phong/phong.fs.glsl";
 }
 
 shader_config {
   name : "random_test";
-  cs_path : "engine/shader/random_test.cs.glsl";
+  cs_path : "renderer/shader/random_test.cs.glsl";
 }
 
 shader_config {
   name : "simple_model";
-  vs_path : "engine/shader/simple_model.vs.glsl";
-  fs_path : "engine/shader/simple_model.fs.glsl";
+  vs_path : "renderer/shader/simple_model.vs.glsl";
+  fs_path : "renderer/shader/simple_model.fs.glsl";
 }
 
 shader_config {
   name : "instance_scene";
-  vs_path : "engine/shader/instance_scene.vs.glsl";
-  fs_path : "engine/shader/simple_model.fs.glsl";
+  vs_path : "renderer/shader/instance_scene.vs.glsl";
+  fs_path : "renderer/shader/simple_model.fs.glsl";
 }
 
 shader_config {
   name : "ray_tracing";
-  cs_path : "engine/shader/ray_tracing/ray_tracing.cs.glsl";
+  cs_path : "renderer/shader/ray_tracing/ray_tracing.cs.glsl";
 }
 
 shader_config {
   name : "path_tracing_demo";
-  cs_path : "engine/shader/ray_tracing/path_tracing_demo.cs.glsl";
+  cs_path : "renderer/shader/ray_tracing/path_tracing_demo.cs.glsl";
 }
 
 shader_config {
   name : "path_tracing";
-  cs_path : "engine/shader/ray_tracing/path_tracing.cs.glsl";
+  cs_path : "renderer/shader/ray_tracing/path_tracing.cs.glsl";
 }
 
 shader_config {
   name : "pbr_BRDF";
-  cs_path : "engine/shader/pbr/pbr_BRDF.glsl";
+  cs_path : "renderer/shader/pbr/pbr_BRDF.glsl";
 }
 
 shader_config {
   name : "ray_tracing_canvas";
-  vs_path : "engine/shader/fullscreen_quad.vs.glsl";
-  fs_path : "engine/shader/ray_tracing_canvas.fs.glsl";
+  vs_path : "renderer/shader/fullscreen_quad.vs.glsl";
+  fs_path : "renderer/shader/ray_tracing_canvas.fs.glsl";
 }
 
 texture_config {
@@ -436,59 +436,66 @@ texture_config {
 
 model_config {
   name : "nanosuit";
-  mesh_path : "playground/resource/model/nanosuit/nanosuit.obj";
-  texture_dir : "playground/resource/model/nanosuit";
+  model_dir : "playground/resource/model/nanosuit";
+  model_file : "nanosuit.obj";
 }
 
 model_config {
   name : "cerberus";
-  mesh_path : "playground/resource/model/cerberus/Cerberus_LP.FBX";
-  texture_dir : "playground/resource/model/cerberus";
+  model_dir : "playground/resource/model/cerberus";
+  model_file : "Cerberus_LP.FBX";
 }
 
 model_config {
   name : "teapot";
-  mesh_path : "playground/resource/model/teapot.obj";
+  model_dir : "playground/resource/model";
+  model_file : "teapot.obj";
 }
 
 model_config {
   name : "rock";
-  mesh_path : "playground/resource/model/rock/rock.obj";
-  texture_dir : "playground/resource/model/rock";
+  model_dir : "playground/resource/model/rock";
+  model_file : "rock.obj";
 }
 
 model_config {
   name : "planet";
-  mesh_path : "playground/resource/model/planet/planet.obj";
-  texture_dir : "playground/resource/model/planet";
+  model_dir : "playground/resource/model/planet";
+  model_file : "planet.obj";
 }
 
 model_config {
   name : "cornell_box_floor";
-  mesh_path : "playground/resource/model/cornell_box/floor.obj";
+  model_dir : "playground/resource/model/cornell_box";
+  model_file : "floor.obj";
 }
 
 model_config {
   name : "cornell_box_left";
-  mesh_path : "playground/resource/model/cornell_box/left.obj";
+  model_dir : "playground/resource/model/rock";
+  model_file : "left.obj";
 }
 
 model_config {
   name : "cornell_box_light";
-  mesh_path : "playground/resource/model/cornell_box/light.obj";
+  model_dir : "playground/resource/model/cornell_box";
+  model_file : "light.obj";
 }
 
 model_config {
   name : "cornell_box_right";
-  mesh_path : "playground/resource/model/cornell_box/right.obj";
+  model_dir : "playground/resource/model/cornell_box";
+  model_file : "right.obj";
 }
 
 model_config {
   name : "cornell_box_short_box";
-  mesh_path : "playground/resource/model/cornell_box/short_box.obj";
+  model_dir : "playground/resource/model/cornell_box";
+  model_file : "short_box.obj";
 }
 
 model_config {
   name : "cornell_box_tall_box";
-  mesh_path : "playground/resource/model/cornell_box/tall_box.obj";
+  model_dir : "playground/resource/model/cornell_box";
+  model_file : "tall_box.obj";
 }

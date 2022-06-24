@@ -6,16 +6,16 @@
 #include "imgui.h"
 #include <memory>
 
-#include "engine/repo/texture_repo.h"
-#include "engine/transform.h"
-#include "engine/util.h"
+#include "renderer/repo/texture_repo.h"
+#include "renderer/transform.h"
+#include "renderer/util.h"
 #include "playground/object/sphere_object.h"
 #include "playground/scene/common.h"
 
 std::string input = "pbr_environment_tropical";
 std::string output = "pbr_prefiltered_color_tropical";
 
-void PbrPrefilteredColorCubemapGenerator::OnEnter(Context *context)
+void PbrPrefilteredColorCubemapGenerator::OnEnter(Scene *context)
 {
   camera_->mutable_transform()->SetTranslation(glm::vec3(2.97, 3.95, 6.76));
   context->SetCamera(camera_.get());
@@ -29,7 +29,7 @@ void PbrPrefilteredColorCubemapGenerator::OnEnter(Context *context)
   }
 
   for (int level = 0; level < kMipmapMaxLevel; ++level) {
-    engine::ColorFramebuffer::Option option;
+    renderer::ColorFramebuffer::Option option;
     option.clear_color = context->clear_color();
     option.mrt = 1;
     int size = kLevel0Size * static_cast<float>(std::pow(0.5, level));
@@ -38,17 +38,17 @@ void PbrPrefilteredColorCubemapGenerator::OnEnter(Context *context)
   }
 }
 
-void PbrPrefilteredColorCubemapGenerator::OnUpdate(Context *context)
+void PbrPrefilteredColorCubemapGenerator::OnUpdate(Scene *context)
 {
   OnUpdateCommon _(context, "PbrPrefilteredColorCubemapGenerator");
 
   cube_.OnUpdate(context);
 }
 
-void PbrPrefilteredColorCubemapGenerator::OnRender(Context *context, int instance_num)
+void PbrPrefilteredColorCubemapGenerator::OnRender(Scene *context, int instance_num)
 {
   // TODO why * 4 * 4?
-  engine::CubemapData data(kMipmapMaxLevel, kLevel0Size * kLevel0Size * 4 * 4);
+  renderer::CubemapData data(kMipmapMaxLevel, kLevel0Size * kLevel0Size * 4 * 4);
   
   for (int level = 0; level < kMipmapMaxLevel; ++level) {
     for (int face = 0; face < 6; ++face) {
@@ -62,13 +62,13 @@ void PbrPrefilteredColorCubemapGenerator::OnRender(Context *context, int instanc
       data.UpdateData(face, level, color_framebuffers_[level].GetColorTextureData(0));
     }
   }
-  engine::CubemapParam param{kMipmapMaxLevel, kLevel0Size, kLevel0Size, &data};
+  renderer::CubemapParam param{kMipmapMaxLevel, kLevel0Size, kLevel0Size, &data};
   context->ResetCubemap(output, param);
   context->SaveCubemap(output);
   exit(0);
 }
 
-void PbrPrefilteredColorCubemapGenerator::OnExit(Context *context)
+void PbrPrefilteredColorCubemapGenerator::OnExit(Scene *context)
 {
   cube_.OnDestory(context);
 }

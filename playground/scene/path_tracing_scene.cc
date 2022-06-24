@@ -1,113 +1,82 @@
 #include "playground/scene/path_tracing_scene.h"
 
 #include "glm/gtx/string_cast.hpp"
+#include <memory>
 
-#include "engine/color.h"
-#include "engine/math.h"
-#include "engine/transform.h"
-#include "playground/scene/common.h"
-#include "playground/shaders.h"
+#include "renderer/color.h"
+#include "renderer/math.h"
+#include "renderer/meshes/lines_mesh.h"
+#include "renderer/scene_common.h"
+#include "renderer/shaders.h"
+#include "renderer/transform.h"
 
-void PathTracingScene::OnEnter(Context* context) {
+using namespace renderer;
+
+void PathTracingScene::OnEnter() {
   camera_->SetPerspectiveFov(60);
   camera_->SetTransform({{glm::vec3(0.286482, 0.708117, -1.065640)},
                           glm::quat(0.070520, {-0.005535, -0.994436, -0.078057}), {1, 1, 1}});
-  context->SetCamera(camera_.get());
 
   // path tracing
-  glm::ivec2 viewport_size = context->io().screen_size();
+  glm::ivec2 viewport_size = io_.screen_size();
   std::vector<glm::vec4> canvas(viewport_size.x * viewport_size.y);
   for (glm::vec4& elem : canvas) {
-    elem = engine::kBlack;
+    elem = kBlack;
   }
-  canvas_ = context->CreateTexture({viewport_size.x, viewport_size.y, canvas, GL_NEAREST, GL_NEAREST});
+  canvas_ = texture_repo_.CreateTexture({viewport_size.x, viewport_size.y, canvas, GL_NEAREST, GL_NEAREST});
 
   RaytracingDebugCommon::LightPath light_path;
   light_path_ssbo_.Init(0, sizeof(light_path), &light_path);
 
-  // Cornell box
-  if (1) {
-    for (auto& p : cornell_box_) {
-      p.second.object.Init(context, p.first, p.first);
-      p.second.object.SetTransform(p.second.transform);
-      p.second.object.GetPrimitives(context, &primitives_);
-    }
-    bvh_.Build(primitives_, {3, engine::BVH::Partition::kPos, 12});
+  for (const ObjectMeta& object_meta : object_metas_) {
+    object_repo_.AddOrReplace(config_, object_meta, &mesh_repo_, &material_repo_, &texture_repo_);
   }
+  object_repo_.GetPrimitives(mesh_repo_, material_repo_, {Filter::kExcludes, {"sphere"}}, &primitive_repo_);
+  bvh_.Build(primitive_repo_, {5, BVH::Partition::kPos, 64});
 
-  // Sphere
-  if (0) {
-    sphere_.GetPrimitives(context, &primitives_);
-    bvh_.Build(primitives_, {10, engine::BVH::Partition::kPos, 64});
-  }
-
-  bvh_ssbo_ = bvh_.AsSSBO(1);
+  bvh_ssbo_ = bvh_.BindSSBO(1);
+  primitives_ssbo_ = primitive_repo_.BindSSBO(2);
 
   glEnable_(GL_DEPTH_TEST);
 }
 
-void PathTracingScene::OnUpdate(Context* context) {
-  OnUpdateCommon _(context, "PathTracing");
+void PathTracingScene::OnUpdate() {
+  OnUpdateCommon(this, "PathTracing");
 }
 
-void PathTracingScene::OnRender(Context* context) {
-  Rasterization(context);
-  //PathTracing(context);
+void PathTracingScene::OnRender() {
+  Rasterization();
+  //PathTracing();
 }
 
-void PathTracingScene::OnExit(Context* context) {
+void PathTracingScene::OnExit() {
 }
 
-void PathTracingScene::Rasterization(Context* context) {
-  // Sphere
-  if (0) {
-    ColorShader({glm::vec4(1, 1, 1, 1)}, context, &sphere_);
-    sphere_.OnRender(context);
-  }
-
-  // Cornell box
-  if (1) {
-    for (auto& p : cornell_box_) {
-      ColorShader _({p.second.color}, context, &p.second.object);
-      p.second.object.OnRender(context);
-    }
+void PathTracingScene::Rasterization() {
+  for (const Object& object : object_repo_.GetObjects({Filter::kExcludes, {"sphere"}})) {
+    ColorShader({material_repo_.GetMaterial(object.material_index).diffuse}, *this, object);
   }
 
 /*
-  std::vector<engine::AABB> aabbs = bvh_.GetAABBs();
-  LinesObject bvh_lines;
-  bvh_lines.SetMesh(LinesObject::Mesh(aabbs));
-  LinesShader lines_shader({}, context, &bvh_lines);
-  bvh_lines.OnRender(context);
-  */
+  LinesShader({}, *this, LinesMesh(bvh_.GetAABBs()));
+*/
 
-  engine::Ray pick_ray = camera_->GetPickRay(context->io().GetCursorPosSS());
-  engine::RayBVHResult result = engine::RayBVH(pick_ray, bvh_, primitives_);
+  Ray pick_ray = camera_->GetPickRay(io_.GetCursorPosSS());
+  RayBVHResult result = RayBVH(pick_ray, bvh_, primitive_repo_);
   if (result.hitted) {
-    LinesObject triangle_lines;
-    LinesObject::Mesh mesh(primitives_.GetTriangle(result.primitive_index), engine::kRed);
-    triangle_lines.SetMesh(mesh);
-    LinesShader({}, context, &triangle_lines);
-    triangle_lines.OnRender(context);
-
-    LinesObject aabb_lines;
-    LinesObject::Mesh aabb_mesh({result.aabb}, engine::kGreen);
-    aabb_lines.SetMesh(aabb_mesh);
-    LinesShader({}, context, &aabb_lines);
-    aabb_lines.OnRender(context);
+    LinesShader({}, *this, LinesMesh({primitive_repo_.GetTriangle(result.primitive_index)}, kRed));
+    LinesShader({}, *this, LinesMesh({result.aabb}, kGreen));
   }
-
-  LinesShader({}, context, &coord_object_);
-  coord_object_.OnRender(context);
+  LinesShader({}, *this, CoordinatorMesh());
 }
 
-void PathTracingScene::PathTracing(Context* context) {
+void PathTracingScene::PathTracing() {
   PathTracingShader::Param param;
-  param.screen_size = context->io().screen_size();
+  param.screen_size = io_.screen_size();
   param.camera = camera_.get();
-  param.frame_num = context->frame_stat().frame_num();
+  param.frame_num = frame_stat_.frame_num();
   param.output = canvas_;
 
-  PathTracingShader(param, context);
-  RaytracingDebugCommon(canvas_, context, light_path_ssbo_.GetData<RaytracingDebugCommon::LightPath>());
+  PathTracingShader(param, *this);
+  RaytracingDebugCommon(canvas_, *this, light_path_ssbo_.GetData<RaytracingDebugCommon::LightPath>());
 }

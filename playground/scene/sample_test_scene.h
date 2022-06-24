@@ -1,23 +1,23 @@
 #pragma once
 
-#include "engine/camera.h"
-#include "engine/shader.h"
-#include "engine/SSBO.h"
-#include "engine/texture.h"
+#include "renderer/camera.h"
+#include "renderer/scene.h"
+#include "renderer/shader.h"
+#include "renderer/shaders.h"
+#include "renderer/ssbo.h"
+#include "renderer/texture.h"
 #include "playground/context.h"
 #include "playground/object/sphere_object.h"
-#include "playground/scene.h"
-#include "playground/shaders.h"
 
 class SampleTestScene : public Scene {
  public:
-  void OnEnter(Context* context);
-  void OnUpdate(Context* context);
-  void OnRender(Context* contexnt);
-  void OnExit(Context* context);
+  void OnEnter() override;
+  void OnUpdate() override;
+  void OnRender() override;
+  void OnExit() override;
 
  private:
   SphereObject sphere_object_;
-  std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
-  engine::SSBO samples_ssbo_;
+  std::shared_ptr<renderer::Camera> camera_ = std::make_shared<renderer::Camera>();
+  renderer::SSBO samples_ssbo_;
 };

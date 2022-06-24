@@ -8,16 +8,16 @@
 #include "imgui.h"
 #include <memory>
 
-#include "engine/constants.h"
-#include "engine/framebuffer_attachment.h"
-#include "engine/math.h"
-#include "engine/pass.h"
-#include "engine/transform.h"
-#include "engine/util.h"
+#include "renderer/constants.h"
+#include "renderer/framebuffer_attachment.h"
+#include "renderer/math.h"
+#include "renderer/pass.h"
+#include "renderer/transform.h"
+#include "renderer/util.h"
 #include "playground/object/empty_object.h"
 #include "playground/scene/common.h"
 
-void DepthScene::OnEnter(Context *context)
+void DepthScene::OnEnter(Scene *context)
 {
   for (int i = 0; i < point_lights_num_; ++i) {
     point_lights_.push_back(PointLightObject());
@@ -45,11 +45,11 @@ void DepthScene::OnEnter(Context *context)
   
   glEnable_(GL_DEPTH_TEST);
 
-  depth_framebuffer_.Init({context->framebuffer_size(), {engine::kAttachmentColor, engine::kAttachmentDepth}});
+  depth_framebuffer_.Init({context->framebuffer_size(), {renderer::kAttachmentColor, renderer::kAttachmentDepth}});
   depth_buffer_pass_.Init(&depth_framebuffer_, camera_);
 }
 
-void DepthScene::OnUpdate(Context *context)
+void DepthScene::OnUpdate(Scene *context)
 {
   OnUpdateCommon _(context, "DepthScene");
 
@@ -66,16 +66,16 @@ void DepthScene::OnUpdate(Context *context)
   plane_.OnUpdate(context);
 }
 
-void DepthScene::OnRender(Context *context)
+void DepthScene::OnRender(Scene *context)
 {
   RunDepthBufferPass(context, &depth_buffer_pass_);
 
   EmptyObject quad;
-  FullscreenQuadShader({depth_buffer_pass_.GetTexture(engine::kAttachmentColor.name)}, context, &quad);
+  FullscreenQuadShader({depth_buffer_pass_.GetTexture(renderer::kAttachmentColor.name)}, context, &quad);
   quad.OnRender(context);
 }
 
-void DepthScene::RunDepthBufferPass(Context* context, engine::DepthBufferPass* depth_buffer_pass) {
+void DepthScene::RunDepthBufferPass(Scene* context, renderer::DepthBufferPass* depth_buffer_pass) {
   depth_buffer_pass->Begin();
 
   DepthBufferShader::Param param{camera_, context->GetShader("depth_buffer")};
@@ -90,7 +90,7 @@ void DepthScene::RunDepthBufferPass(Context* context, engine::DepthBufferPass* d
   depth_buffer_pass->End();
 }
 
-void DepthScene::OnExit(Context *context)
+void DepthScene::OnExit(Scene *context)
 {
   for (int i = 0; i < point_lights_num_; ++i) {
     point_lights_[i].OnDestory(context);

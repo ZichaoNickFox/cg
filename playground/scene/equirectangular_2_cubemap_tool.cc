@@ -6,8 +6,8 @@
 #include "imgui.h"
 #include <memory>
 
-#include "engine/repo/texture_repo.h"
-#include "engine/transform.h"
+#include "renderer/repo/texture_repo.h"
+#include "renderer/transform.h"
 #include "playground/object/sphere_object.h"
 #include "playground/scene/common.h"
 
@@ -15,7 +15,7 @@ constexpr int kEnvironmentCubemapSize = 2048;
 constexpr char input[] = "tropical_equirectangular";
 constexpr char output[] = "pbr_environment_tropical";
 
-void Equirectangular2CubemapTool::OnEnter(Context *context)
+void Equirectangular2CubemapTool::OnEnter(Scene *context)
 {
   context->SetCamera(camera_.get());
 
@@ -27,23 +27,23 @@ void Equirectangular2CubemapTool::OnEnter(Context *context)
     cubemap_cameras_[i].SetAspect(1);
   }
 
-  engine::ColorFramebuffer::Option option;
+  renderer::ColorFramebuffer::Option option;
   option.clear_color = context->clear_color();
   option.mrt = 1;
   option.size = glm::ivec2{kEnvironmentCubemapSize, kEnvironmentCubemapSize};
   color_framebuffer_.Init(option);
 }
 
-void Equirectangular2CubemapTool::OnUpdate(Context *context)
+void Equirectangular2CubemapTool::OnUpdate(Scene *context)
 {
   OnUpdateCommon _(context, "PbrEnvironmentCubemapGenerator");
 
   cube_.OnUpdate(context);
 }
 
-void Equirectangular2CubemapTool::OnRender(Context *context, int instance_num) {
+void Equirectangular2CubemapTool::OnRender(Scene *context, int instance_num) {
   // TODO : why * 4 * 4 not * 4
-  engine::CubemapData data(1, kEnvironmentCubemapSize * kEnvironmentCubemapSize * 4 * 4);
+  renderer::CubemapData data(1, kEnvironmentCubemapSize * kEnvironmentCubemapSize * 4 * 4);
   for (int face = 0; face < 6; ++face) {
     color_framebuffer_.Bind();
     PbrEnvironmentCubemapGerneratorShader({context->GetTexture(input, true), &cubemap_cameras_[face]},
@@ -53,13 +53,13 @@ void Equirectangular2CubemapTool::OnRender(Context *context, int instance_num) {
 
     data.UpdateData(face, 0, color_framebuffer_.GetColorTextureData(0));
   }
-  engine::CubemapParam param{1, kEnvironmentCubemapSize, kEnvironmentCubemapSize, &data};
+  renderer::CubemapParam param{1, kEnvironmentCubemapSize, kEnvironmentCubemapSize, &data};
   context->ResetCubemap(output, param);
   context->SaveCubemap(output);
   exit(0);
 }
 
-void Equirectangular2CubemapTool::OnExit(Context *context)
+void Equirectangular2CubemapTool::OnExit(Scene *context)
 {
   cube_.OnDestory(context);
 }

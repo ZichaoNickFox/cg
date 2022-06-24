@@ -3,31 +3,31 @@
 #include <glm/ext/quaternion_trigonometric.hpp>
 #include <glm/glm.hpp>
 
-#include "engine/camera.h"
-#include "engine/framebuffer/color_framebuffer.h"
-#include "engine/math.h"
-#include "engine/shader.h"
-#include "engine/texture.h"
+#include "renderer/camera.h"
+#include "renderer/framebuffer/color_framebuffer.h"
+#include "renderer/math.h"
+#include "renderer/scene.h"
+#include "renderer/shader.h"
+#include "renderer/shaders.h"
+#include "renderer/texture.h"
 #include "playground/context.h"
 #include "playground/object/cube_object.h"
 #include "playground/object/empty_object.h"
-#include "playground/scene.h"
-#include "playground/shaders.h"
 
 class Equirectangular2CubemapTool : public Scene {
  public:
-  void OnEnter(Context* context);
-  void OnUpdate(Context* context);
-  void OnRender(Context* contexnt);
-  void OnExit(Context* context);
+  void OnEnter() override;
+  void OnUpdate() override;
+  void OnRender() override;
+  void OnExit() override;
 
  private:
-  std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
+  std::shared_ptr<renderer::Camera> camera_ = std::make_shared<renderer::Camera>();
   CubeObject cube_;
   CoordObject coord_;
 
-  engine::Camera cubemap_cameras_[6];
-  std::vector<engine::Transform> transforms_ = {
+  renderer::Camera cubemap_cameras_[6];
+  std::vector<renderer::Transform> transforms_ = {
     // px image : camera looks nx, stand in (1, 0, 0)
     {glm::vec3(1, 0, 0), glm::angleAxis(float(M_PI) / 2.0f, glm::vec3(0.0f, 1.0f, 0.0f)), glm::vec3(1, 1, 1)},
     // nx image : camera looks px, stand in (-1, 0, 0)
@@ -42,5 +42,5 @@ class Equirectangular2CubemapTool : public Scene {
     {glm::vec3(0, 0, -1), glm::angleAxis(float(M_PI), glm::vec3(0, 1, 0)), glm::vec3(1, 1, 1)},
   };
 
-  engine::ColorFramebuffer color_framebuffer_;
+  renderer::ColorFramebuffer color_framebuffer_;
 };

@@ -1,39 +1,39 @@
 #include "playground/scene/instance_scene.h"
 
-#include "engine/transform.h"
-#include "engine/math.h"
+#include "renderer/transform.h"
+#include "renderer/math.h"
 #include "playground/scene/common.h"
 #include "playground/shaders.h"
 
 constexpr int instance_num = 10000;
 
-void InstanceScene::OnEnter(Context* context) {
+void InstanceScene::OnEnter(Scene* context) {
   rock_.Init(context, "rock", "rock");
   planet_.Init(context, "planet", "planet");
 
   InitModelMatrices();
 
-  rock_.AddVertexAttribute({"model", engine::kVertexLayoutIndex5, engine::kVertexLayoutIndex8, 4, 1}, models_);
+  rock_.AddVertexAttribute({"model", renderer::kVertexLayoutIndex5, renderer::kVertexLayoutIndex8, 4, 1}, models_);
     
   context->SetCamera(camera_.get());
   camera_->mutable_transform()->SetTranslation(glm::vec3(0, 0, 15));
 }
 
-void InstanceScene::OnUpdate(Context* context) {
-  OnUpdateCommon _(context, "InstanceScene");
+void InstanceScene::OnUpdate() {
+  OnUpdateCommon _(scene, "InstanceScene");
 }
 
-void InstanceScene::OnRender(Context* context) {
-  InstanceSceneShader(context, &rock_);
-  rock_.OnRender(context, models_.size());
+void InstanceScene::OnRender() {
+  InstanceSceneShader(scene, &rock_);
+  rock_.OnRender(scene, models_.size());
 
-  SimpleModelShader(context, &planet_);
-  planet_.OnRender(context);
+  SimpleModelShader(scene, &planet_);
+  planet_.OnRender(scene);
 
-  OnRenderCommon _(context);
+  OnRenderCommon _(scene);
 }
 
-void InstanceScene::OnExit(Context* context) {
+void InstanceScene::OnExit(Scene* context) {
 }
 
 void InstanceScene::InitModelMatrices() {
@@ -42,21 +42,21 @@ void InstanceScene::InitModelMatrices() {
   float offset = 2.5f;
   for(uint64_t i = 0; i < instance_num; i++) {
     glm::mat4 model(1);
-    // 1. Î»ÒÆ£º·Ö²¼ÔÚ°ë¾¶Îª 'radius' µÄÔ²ÐÎÉÏ£¬Æ«ÒÆµÄ·¶Î§ÊÇ [-offset, offset]
+    // 1. Î»ï¿½Æ£ï¿½ï¿½Ö²ï¿½ï¿½Ú°ë¾¶Îª 'radius' ï¿½ï¿½Ô²ï¿½ï¿½ï¿½Ï£ï¿½Æ«ï¿½ÆµÄ·ï¿½Î§ï¿½ï¿½ [-offset, offset]
     float angle = (float)i / (float)instance_num * 360.0f;
     float displacement = util::RandFromTo(0, (int)(2 * offset * 100)) / 100.0f;
     float x = sin(angle) * radius + displacement;
     displacement = util::RandFromTo(0, (int)(2 * offset * 100)) / 100.0f;
-    float y = displacement * 0.4f; // ÈÃÐÐÐÇ´øµÄ¸ß¶È±ÈxºÍzµÄ¿í¶ÈÒªÐ¡
+    float y = displacement * 0.4f; // ï¿½ï¿½ï¿½ï¿½ï¿½Ç´ï¿½ï¿½Ä¸ß¶È±ï¿½xï¿½ï¿½zï¿½Ä¿ï¿½ï¿½ï¿½ÒªÐ¡
     displacement = util::RandFromTo(0, (int)(2 * offset * 100)) / 100.0f;
     float z = cos(angle) * radius + displacement;
     model = glm::translate(model, glm::vec3(x, y, z));
 
-    // 2. Ëõ·Å£ºÔÚ 0.05 ºÍ 0.25f Ö®¼äËõ·Å
+    // 2. ï¿½ï¿½ï¿½Å£ï¿½ï¿½ï¿½ 0.05 ï¿½ï¿½ 0.25f Ö®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     float scale = util::RandFromTo(0, 20) / 1000.0f + 0.05;
     model = glm::scale(model, glm::vec3(scale, scale, scale));
 
-    // 3. Ðý×ª£ºÈÆ×ÅÒ»¸ö£¨°ë£©Ëæ»úÑ¡ÔñµÄÐý×ªÖáÏòÁ¿½øÐÐËæ»úµÄÐý×ª
+    // 3. ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ë£©ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×ª
     float rotAngle = util::RandFromTo(0, 360);
     model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
 

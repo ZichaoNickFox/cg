@@ -3,24 +3,24 @@
 #include <glm/ext/quaternion_trigonometric.hpp>
 #include <glm/glm.hpp>
 
-#include "engine/camera.h"
-#include "engine/framebuffer/color_framebuffer.h"
-#include "engine/shader.h"
-#include "engine/texture.h"
+#include "renderer/camera.h"
+#include "renderer/framebuffer/color_framebuffer.h"
+#include "renderer/scene.h"
+#include "renderer/shader.h"
+#include "renderer/shaders.h"
+#include "renderer/texture.h"
 #include "playground/context.h"
 #include "playground/object/cube_object.h"
 #include "playground/object/empty_object.h"
-#include "playground/scene.h"
-#include "playground/shaders.h"
 
 class PbrBRDFIntegrationMapGenerator : public Scene {
  public:
-  void OnEnter(Context* context);
-  void OnUpdate(Context* context);
-  void OnRender(Context* contexnt);
-  void OnExit(Context* context);
+  void OnEnter() override;
+  void OnUpdate() override;
+  void OnRender() override;
+  void OnExit() override;
 
  private:
-  std::shared_ptr<engine::Camera> camera_ = std::make_shared<engine::Camera>();
-  engine::ColorFramebuffer color_framebuffer_;
+  std::shared_ptr<renderer::Camera> camera_ = std::make_shared<renderer::Camera>();
+  renderer::ColorFramebuffer color_framebuffer_;
 };

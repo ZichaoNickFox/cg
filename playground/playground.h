@@ -5,32 +5,26 @@
 #include <memory>
 #include <unordered_map>
 
-#include "engine/io.h"
-#include "engine/util.h"
-#include "playground/context.h"
-#include "playground/scene.h"
+#include "renderer/io.h"
+#include "renderer/scene.h"
+#include "renderer/util.h"
 
 // CG roadmap? https://github.com/miloyip/game-programmer
 class Playground {
  public:
-  void Init(const Context::Option& option);
+  void Init(const renderer::Scene::Option& option);
   void BeginFrame();
   void Update();
   void Render();
   void EndFrame();
   void Destoy();
 
-  void SwitchScene(const std::string& scene);
-  Io* mutable_io() { return context_.mutable_io(); }
-  const Io& io() { return context_.io(); }
+  Io* mutable_io() { return current_scene_->mutable_io(); }
+  const Io& io() { return current_scene_->io(); }
  
  private:
-  void InitScene();
-
-  std::unordered_map<std::string, std::unique_ptr<Scene>> scene_map_;
-  std::string current_scene_;
-
-  Context context_;
+  std::string current_scene_name_;
+  renderer::Scene* current_scene_ = nullptr;
 
   util::Time frame_start_time_;
 };

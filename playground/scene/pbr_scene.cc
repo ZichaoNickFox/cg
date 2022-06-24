@@ -6,10 +6,10 @@
 #include "imgui.h"
 #include <memory>
 
-#include "engine/transform.h"
+#include "renderer/transform.h"
 #include "playground/scene/common.h"
 
-void PbrScene::OnEnter(Context *context)
+void PbrScene::OnEnter(Scene *context)
 {
   const glm::vec4 kLightColor = glm::vec4(0.0, 1.0, 0.0, 1.0);
   const glm::vec3 kLightScale = glm::vec3(0.4, 0.4, 0.4);
@@ -40,7 +40,7 @@ void PbrScene::OnEnter(Context *context)
   glEnable_(GL_DEPTH_TEST);
 }
 
-void PbrScene::OnUpdate(Context *context)
+void PbrScene::OnUpdate(Scene *context)
 {
   OnUpdateCommon _(context, "PbrScene");
 
@@ -65,7 +65,7 @@ void PbrScene::OnUpdate(Context *context)
   sphere_.mutable_transform()->SetTranslation(glm::vec3(0, 3, 0));
 }
 
-void PbrScene::OnRender(Context *context)
+void PbrScene::OnRender(Scene *context)
 {
   for (int i = 0; i < light_num; ++i) {
     ColorShader({}, context, &point_lights_[i]);
@@ -96,7 +96,7 @@ void PbrScene::OnRender(Context *context)
   skybox_.OnRender(context);
 }
 
-void PbrScene::OnExit(Context *context)
+void PbrScene::OnExit(Scene *context)
 {
   for (int i = 0; i < light_num; ++i) {
     point_lights_[i].OnDestory(context);
