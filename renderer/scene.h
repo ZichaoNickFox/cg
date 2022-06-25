@@ -47,6 +47,7 @@ class Scene {
   const MaterialRepo& material_repo() const { return material_repo_; }
   MaterialRepo* mutable_material_repo() { return &material_repo_; }
   const LightRepo& light_repo() const { return light_repo_; }
+  LightRepo* mutable_light_repo() { return &light_repo_; }
   const ShadowRepo& shadwow_repo() const { return shadow_repo_; }
 
   const Io& io() { return io_; }

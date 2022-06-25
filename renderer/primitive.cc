@@ -4,10 +4,8 @@
 
 namespace renderer {
 
-SSBO PrimitiveRepo::BindSSBO(int binding_point) {
-  SSBO res;
-  res.Init(binding_point, util::VectorSizeInByte(primitives_), primitives_.data());
-  return res;
+void PrimitiveRepo::UpdateSSBO() {
+  ssbo_.SetData(util::VectorSizeInByte(primitives_), primitives_.data());
 }
 
 const AABB& PrimitiveRepo::GetAABB(int index) const {

@@ -5,7 +5,16 @@
 
 namespace renderer {
 
-void LightRepo::BindSSBO(int binding_point) {
+void LightRepo::UpdateSSBO() {
+  bool dirty = !(dirty_lights_ == lights_);
+  if (dirty) {
+    std::vector<LightGPU> light_gpus = GetSSBOData();
+    ssbo_.SetData(util::VectorSizeInByte(light_gpus), light_gpus.data());
+    dirty_lights_ = lights_;
+  }
+}
+
+std::vector<LightRepo::LightGPU> LightRepo::GetSSBOData() {
   std::vector<LightGPU> light_gpus(lights_.size());
   for (int i = 0; i < lights_.size(); ++i) {
     light_gpus[i].type_pos.x = lights_[i].type;
@@ -13,12 +22,8 @@ void LightRepo::BindSSBO(int binding_point) {
     light_gpus[i].type_pos.z = lights_[i].pos.y;
     light_gpus[i].type_pos.w = lights_[i].pos.z;
     light_gpus[i].color = lights_[i].color;
-    light_gpus[i].attenuation_2_1_0.x = lights_[i].attenuation_quadratic;
-    light_gpus[i].attenuation_2_1_0.y = lights_[i].attenuation_linear;
-    light_gpus[i].attenuation_2_1_0.z = lights_[i].attenuation_constant;
-    light_gpus[i].attenuation_2_1_0.w = 0;
+    light_gpus[i].attenuation_2_1_0 = glm::vec4(lights_[i].attenuation_2_1_0, 0);
   }
-  ssbo_.Init(binding_point, util::VectorSizeInByte(light_gpus), light_gpus.data());
+  return light_gpus;
 }
-
 } // namespace renderer

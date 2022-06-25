@@ -17,14 +17,16 @@ void Scene::Enter() {
   glEnable_(GL_DEPTH_TEST);
 
   OnEnter();
-
-  material_repo_.BindSSBO(SSBO_MATERIAL_REPO);
-  light_repo_.BindSSBO(SSBO_LIGHT_REPO);
 }
 
 void Scene::Update() {
   OnUpdateCommon(this, name_);
-  
+
+  material_repo_.UpdateSSBO();
+  light_repo_.UpdateSSBO();
+  bvh_.UpdateSSBO();
+  primitive_repo_.UpdateSSBO();
+
   OnUpdate();
 }
 

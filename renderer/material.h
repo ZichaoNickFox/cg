@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 
 #include "renderer/debug.h"
+#include "renderer/definition.h"
 #include "renderer/shader.h"
 #include "renderer/ssbo.h"
 #include "renderer/texture.h"
@@ -49,13 +50,13 @@ struct Material {
   Material(const Properties& properties);
   Material() = default;
 
-  glm::vec4 albedo;
-  glm::vec4 ambient;
-  glm::vec4 diffuse;
-  glm::vec4 specular;
-  float roughness;
-  float metalness;
-  float shininess;
+  glm::vec4 albedo = glm::vec4(0, 0, 0, 0);
+  glm::vec4 ambient = glm::vec4(0, 0, 0, 0);
+  glm::vec4 diffuse = glm::vec4(0, 0, 0, 0);
+  glm::vec4 specular = glm::vec4(0, 0, 0, 0);
+  float roughness = 0;
+  float metalness = 0;
+  float shininess = 0;
 
   int texture_normal = -1;
   int texture_specular = -1;
@@ -67,6 +68,10 @@ struct Material {
   int texture_ambient_occlusion = -1;
   int texture_height = -1;
   int texture_shininess = -1;
+
+  bool operator==(const Material& other) const {
+    return std::memcmp(const_cast<Material*>(this), &other, sizeof(Material)) == 0;
+  }
 };
   
 class MaterialRepo {
@@ -74,7 +79,6 @@ class MaterialRepo {
   MaterialRepo();
   void Add(const std::string& name, const Material& material);
   bool Has(const std::string& name);
-  void BindSSBO(int binding_point);
   const Material& GetMaterial(int material_index) const;
   Material* mutable_material(int material_index);
   int GetMaterialIndex(const std::string& material_name) const;
@@ -82,10 +86,9 @@ class MaterialRepo {
   std::string GetName(int material_index) const;
   int length() const { return index_2_material_.size(); }
 
- private:
-  std::unordered_map<int, Material> index_2_material_;
-  std::unordered_map<std::string, int> name_2_index_;
+  void UpdateSSBO();
 
+ private:
   struct MaterialGPU {
     glm::vec4 albedo;
     glm::vec4 ambient;
@@ -97,7 +100,13 @@ class MaterialRepo {
     glm::vec4 texture_index_basecolor_roughness_metalness_ambientocclusion;
     glm::vec4 texture_index_height_shininess; // free y w
   };
+  std::vector<MaterialGPU> GetSSBOData();
   SSBO ssbo_;
+
+  std::unordered_map<int, Material> index_2_material_;
+  std::unordered_map<std::string, int> name_2_index_;
+
+  std::unordered_map<int, Material> dirty_index_2_material_;
 };
 
 }

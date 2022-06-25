@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "renderer/definition.h"
 #include "renderer/ssbo.h"
 
 namespace renderer {
@@ -38,25 +39,35 @@ struct Light {
   Type type;
   glm::vec3 pos;
   glm::vec4 color;
-  float attenuation_quadratic;
-  float attenuation_linear;
-  float attenuation_constant;
+  glm::vec3 attenuation_2_1_0;
+
+  bool operator==(const Light& other) const {
+    return memcmp(this, &other, sizeof(Light)) == 0;
+  }
 };
 
 struct LightRepo {
+  LightRepo() : ssbo_(SSBO_LIGHT_REPO) {}
   void Add(const Light& light) { lights_.push_back(light); }
   void Add(const std::vector<Light>& lights) { lights_.insert(lights_.end(), lights.begin(), lights.end()); }
-  void BindSSBO(int binding_point);
+  void UpdateSSBO();
   int length() const { return lights_.size(); }
+  std::vector<Light> GetLights() const { return lights_; };
+  int light_num() const { return lights_.size(); }
+  Light* mutable_light(int index) { return &lights_[index]; }
+  const Light& light(int index) const { return lights_[index]; }
 
-  std::vector<Light> lights_;
  private:
   struct LightGPU {
     glm::vec4 type_pos;
     glm::vec4 color;
     glm::vec4 attenuation_2_1_0;
   };
+  std::vector<LightGPU> GetSSBOData();
+
   SSBO ssbo_;
+  std::vector<Light> lights_;
+  std::vector<Light> dirty_lights_;
 };
 
 } // namespace renderer

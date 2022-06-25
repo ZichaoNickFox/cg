@@ -5,6 +5,7 @@
 #include "renderer/automic_counter.h"
 #include "renderer/BVH.h"
 #include "renderer/camera.h"
+#include "renderer/definition.h"
 #include "renderer/geometry.h"
 #include "renderer/object.h"
 #include "renderer/primitive.h"
@@ -13,6 +14,7 @@
 
 class PathTracingScene : public renderer::Scene {
  public:
+  PathTracingScene() : light_path_ssbo_(SSBO_LIGHT_PATH) {}
   void OnEnter() override;
   void OnUpdate() override;
   void OnRender() override;
@@ -41,6 +43,4 @@ class PathTracingScene : public renderer::Scene {
 
   renderer::Texture canvas_;
   renderer::SSBO light_path_ssbo_;
-  renderer::SSBO bvh_ssbo_;
-  renderer::SSBO primitives_ssbo_;
 };

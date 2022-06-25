@@ -237,10 +237,26 @@ int BVH::PartitionByNum(const PrimitiveRepo& primitives, int begin, int end, int
   return 0;
 }
 
-SSBO BVH::BindSSBO(int binding_point) const {
-  SSBO res;
-  res.Init(binding_point, util::VectorSizeInByte(nodes_), nodes_.data());
+std::vector<BVH::NodeGPU> BVH::GetSSBOData() {
+  std::vector<NodeGPU> res(nodes_.size());
+  for (int i = 0; i < nodes_.size(); ++i) {
+    res[i].aabb_maximum = glm::vec4(nodes_[i].aabb.maximum, 0);
+    res[i].aabb_minimum = glm::vec4(nodes_[i].aabb.minimum, 0);
+    res[i].seqbegin_seqnum_leftnode_rightnode.x = nodes_[i].sequence_begin;
+    res[i].seqbegin_seqnum_leftnode_rightnode.y = nodes_[i].sequence_num;
+    res[i].seqbegin_seqnum_leftnode_rightnode.z = nodes_[i].left_node;
+    res[i].seqbegin_seqnum_leftnode_rightnode.w = nodes_[i].right_node;
+  }
   return res;
+}
+
+void BVH::UpdateSSBO() {
+  bool dirty = !(nodes_ == dirty_nodes_);
+  if (dirty) {
+    std::vector<NodeGPU> ssbo_data = GetSSBOData();
+    ssbo_.SetData(util::VectorSizeInByte(ssbo_data), ssbo_data.data());
+    dirty_nodes_ = nodes_;
+  }
 }
 
 std::vector<AABB> BVH::GetAABBs(int filter_level) const {

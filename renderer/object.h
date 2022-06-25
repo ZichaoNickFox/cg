@@ -19,6 +19,7 @@ struct ObjectMeta {
 };
 
 struct Object {
+  int object_index;
   Transform transform;
   int mesh_index;      // Only used in CPU
   int material_index;
@@ -39,6 +40,7 @@ struct ObjectRepo {
   std::vector<Object*> MutableObjects(const Filter& filter = Filter());
   void GetPrimitives(const MeshRepo& mesh_repo, const MaterialRepo& material_repo, const Filter& filter = Filter(),
                      PrimitiveRepo* primitive_repo = nullptr);
+  std::string GetName(int object_index) const;
 
  private:
   std::unordered_map<int, Object> index_2_object_;

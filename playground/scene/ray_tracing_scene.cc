@@ -32,7 +32,6 @@ void RayTracingScene::OnEnter() {
   canvas_ = texture_repo_.CreateTexture({viewport_size.x, viewport_size.y, canvas, GL_NEAREST, GL_NEAREST});
 
   RaytracingDebugCommon::LightPath light_path;
-  light_path_ssbo_.Init(0, sizeof(light_path), &light_path);
 
   glEnable_(GL_DEPTH_TEST);
 }

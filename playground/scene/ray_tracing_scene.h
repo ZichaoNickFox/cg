@@ -4,12 +4,14 @@
 
 #include "renderer/automic_counter.h"
 #include "renderer/camera.h"
+#include "renderer/definition.h"
 #include "renderer/geometry.h"
 #include "renderer/scene.h"
 #include "renderer/ssbo.h"
 
 class RayTracingScene : public renderer::Scene {
  public:
+  RayTracingScene() : light_path_ssbo_(SSBO_LIGHT_PATH) {}
   void OnEnter() override;
   void OnUpdate() override;
   void OnRender() override;

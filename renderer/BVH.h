@@ -1,5 +1,6 @@
 #pragma once
 
+#include "renderer/definition.h"
 #include "renderer/geometry.h"
 #include "renderer/primitive.h"
 #include "renderer/ssbo.h"
@@ -15,6 +16,10 @@ class BVH {
     int sequence_num = 0;
     int left_node = -1;
     int right_node = -1;
+
+    bool operator==(const Node& other) const {
+      return memcmp(const_cast<Node*>(this), &other, sizeof(Node)) == 0;
+    }
   };
  public:
   enum Partition {
@@ -27,8 +32,9 @@ class BVH {
     Partition partition_type = Partition::kPos;
     int sah_bucket_num = 64;
   };
+  BVH() : ssbo_(SSBO_BVH) {}
   void Build(const PrimitiveRepo& primitives, const Option& option);
-  SSBO BindSSBO(int binding_point) const;
+  void UpdateSSBO();
   std::vector<AABB> GetAABBs(int filter_level = -1) const;
 
  private:
@@ -60,9 +66,18 @@ class BVH {
   int PartitionByNum(const PrimitiveRepo& primitives, int begin, int end, int node_id, int* left_node, int* right_node);
   // Partition by Pos end
 
+  struct NodeGPU {
+    glm::vec4 aabb_maximum;
+    glm::vec4 aabb_minimum;
+    glm::vec4 seqbegin_seqnum_leftnode_rightnode;
+  };
+  std::vector<NodeGPU> GetSSBOData();
+
   std::vector<Node> nodes_;
+  std::vector<Node> dirty_nodes_;
   std::vector<int> sequence_;
   Option option_;
+  SSBO ssbo_;
 
   friend struct RayBVHResult RayBVH(const Ray& ray, const BVH& bvh, const PrimitiveRepo& primitives);
 };

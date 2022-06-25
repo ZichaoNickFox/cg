@@ -1,5 +1,7 @@
 #include "renderer/material.h"
 
+#include <glm/gtx/string_cast.hpp>
+
 #include "renderer/debug.h"
 #include "renderer/util.h"
 
@@ -78,7 +80,7 @@ Material::Material(const Properties& properties) {
   }
 }
 
-MaterialRepo::MaterialRepo() {
+MaterialRepo::MaterialRepo() : ssbo_(SSBO_MATERIAL_REPO) {
   for (const auto& p : kDefaultMaterialProperties) {
     const std::string& material_name = p.first;
     const Material::Properties& material_properties = p.second;
@@ -86,12 +88,12 @@ MaterialRepo::MaterialRepo() {
   }
 }
 
-void MaterialRepo::BindSSBO(int binding_point) {
-  std::vector<MaterialGPU> material_gpus(index_2_material_.size());
+std::vector<MaterialRepo::MaterialGPU> MaterialRepo::GetSSBOData() {
+  std::vector<MaterialRepo::MaterialGPU> res(index_2_material_.size());
   for (int i = 0; i < index_2_material_.size(); ++i) {
     CGCHECK(index_2_material_.find(i) != index_2_material_.end());
     const Material& material = index_2_material_.at(i);
-    MaterialGPU* material_gpu = &material_gpus[i];
+    MaterialGPU* material_gpu = &res[i];
     material_gpu->albedo = material.albedo;
     material_gpu->ambient = material.ambient;
     material_gpu->diffuse = material.diffuse;
@@ -110,7 +112,16 @@ void MaterialRepo::BindSSBO(int binding_point) {
     material_gpu->texture_index_height_shininess.x = material.texture_height;
     material_gpu->texture_index_height_shininess.y = material.texture_shininess;
   }
-  ssbo_.Init(binding_point, util::VectorSizeInByte(material_gpus), material_gpus.data());
+  return res;
+}
+
+void MaterialRepo::UpdateSSBO() {
+  bool dirty = !(index_2_material_ == dirty_index_2_material_);
+  if (dirty) {
+    std::vector<MaterialGPU> material_gpus = GetSSBOData();
+    ssbo_.SetData(util::VectorSizeInByte(material_gpus), material_gpus.data());
+    dirty_index_2_material_ = index_2_material_;
+  }
 }
 
 void MaterialRepo::Add(const std::string& name, const Material& material) {
@@ -150,7 +161,7 @@ std::string MaterialRepo::GetName(int material_index) const {
       return p.first;
     }
   }
-  CGCHECK(false) << "Cannot find mesh name of index : " << material_index;
+  CGCHECK(false) << "Cannot find material name of index : " << material_index;
   for (const auto& p : name_2_index_) {
     CGLOG(ERROR) << p.first << " " << p.second;
   }

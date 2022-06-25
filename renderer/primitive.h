@@ -1,5 +1,6 @@
 #pragma once
 
+#include "renderer/definition.h"
 #include "renderer/geometry.h"
 #include "renderer/ssbo.h"
 
@@ -15,6 +16,7 @@ struct Primitive {
 
 class PrimitiveRepo {
  public:
+  PrimitiveRepo() : ssbo_(SSBO_PRIMITIVE_REPO) {}
   void PushTriangle(const Triangle& triangle);
 
   int size() const { return primitives_.size(); }
@@ -23,10 +25,11 @@ class PrimitiveRepo {
   const AABB& GetAABB(int index) const;
   const Triangle& GetTriangle(int index) const;
 
-  SSBO BindSSBO(int binding_point);
+  void UpdateSSBO();
 
  private:
   std::vector<Primitive> primitives_;
+  SSBO ssbo_;
 };
 
 } // namespace renderer

@@ -26,16 +26,12 @@ void PathTracingScene::OnEnter() {
   canvas_ = texture_repo_.CreateTexture({viewport_size.x, viewport_size.y, canvas, GL_NEAREST, GL_NEAREST});
 
   RaytracingDebugCommon::LightPath light_path;
-  light_path_ssbo_.Init(0, sizeof(light_path), &light_path);
 
   for (const ObjectMeta& object_meta : object_metas_) {
     object_repo_.AddOrReplace(config_, object_meta, &mesh_repo_, &material_repo_, &texture_repo_);
   }
   object_repo_.GetPrimitives(mesh_repo_, material_repo_, {Filter::kExcludes, {"sphere"}}, &primitive_repo_);
   bvh_.Build(primitive_repo_, {5, BVH::Partition::kPos, 64});
-
-  bvh_ssbo_ = bvh_.BindSSBO(1);
-  primitives_ssbo_ = primitive_repo_.BindSSBO(2);
 
   glEnable_(GL_DEPTH_TEST);
 }

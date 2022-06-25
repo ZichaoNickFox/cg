@@ -1,8 +1,8 @@
 #include "shader.h"
 
-#include "glm/gtc/type_ptr.hpp"
-#include "glm/gtx/string_cast.hpp"
 #include <map>
+#include "glm/gtx/string_cast.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 #include "renderer/debug.h"
 #include "renderer/shader_loader.h"

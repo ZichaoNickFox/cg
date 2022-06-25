@@ -41,7 +41,7 @@ vec4 PhongModel(PhongModelInput param) {
 
     float dist = length(LightPos(light) - param.frag_pos_ws);
     float attenuation = 1.0 / (dist * dist * LightQuadratic(light) + dist * LightLinear(light) + LightConstant(light));
-    result += (ambient_component + diffuse_component + specular_component) * attenuation;
+    result += (ambient_component + diffuse_component + specular_component); //* attenuation;
   }
   return result;
 }

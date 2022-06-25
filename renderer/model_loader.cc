@@ -75,8 +75,8 @@ Material ProcessMaterial(const std::string& model_dir, const aiScene& ai_scene, 
   material_properties[kDiffuse] = glm::vec4(color.r, color.g, color.b, 1.0);
   aiVector3D ambient; ai_material.Get(AI_MATKEY_COLOR_AMBIENT, ambient);
   material_properties[kAmbient] = glm::vec4(ambient.x, ambient.y, ambient.z, 1.0);
-  aiVector3D diffuse; ai_material.Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
-  material_properties[kAlbedo] = glm::vec4(diffuse.x, diffuse.y, diffuse.z, 1.0);
+  aiVector3D albedo; ai_material.Get(AI_MATKEY_BASE_COLOR, albedo);
+  material_properties[kAlbedo] = glm::vec4(albedo.x, albedo.y, albedo.z, 1.0);
   aiVector3D specular; ai_material.Get(AI_MATKEY_COLOR_SPECULAR, specular);
   material_properties[kSpecular] = glm::vec4(specular.x, specular.y, specular.z, 1.0);
   double roughness; ai_material.Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness);

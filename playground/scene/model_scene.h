@@ -23,7 +23,7 @@ class ModelScene : public renderer::Scene {
     {"teapot", {glm::vec3(), glm::quat(), glm::vec3(0.2, 0.2, 0.2)}, "teapot", "gold"}
   };
   std::vector<renderer::Light> lights = {
-    {renderer::Light::kPointLight, glm::vec3(0, 3, -5), glm::vec4(1, 0, 0, 1), 1.0, 0.007, 0.0002},
+    {renderer::Light::kPointLight, glm::vec3(0, 3, -5), glm::vec4(1, 0, 0, 1), {1.0, 0.0014, 0.000007}},
   };
 
   float shininess_ = 1;

@@ -17,6 +17,10 @@ class OnUpdateCommon {
   void InSpectCursor(Scene* scene);
   void ReloadShaders(Scene* scene);
   void InSpectObjects(Scene* scene);
+  void InspectLights(Scene* scene);
+
+  void InspectMesh(Scene* scene, const Object& object);
+  void InspcetMaterial(Scene* scene, const Object& object);
 };
 
 // Put in OnRender after everything

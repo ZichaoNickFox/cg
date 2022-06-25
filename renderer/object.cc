@@ -26,7 +26,7 @@ void ObjectRepo::AddOrReplace(const Config& config, const ObjectMeta& object_met
     index = name_2_index_[object_meta.object_name];
   }
   name_2_index_[object_meta.object_name] = index;
-  index_2_object_[index] = Object{object_meta.transform, mesh_repo->GetIndex(object_meta.mesh_or_model_name),
+  index_2_object_[index] = Object{index, object_meta.transform, mesh_repo->GetIndex(object_meta.mesh_or_model_name),
                                   material_repo->GetIndex(object_meta.material_name)};
 }
 
@@ -85,5 +85,18 @@ void ObjectRepo::GetPrimitives(const MeshRepo& mesh_repo, const MaterialRepo& ma
     int mesh_index = object.mesh_index;
     mesh_repo.GetPrimitives(mesh_index, transform, primitive_repo);
   }
+}
+
+std::string ObjectRepo::GetName(int object_index) const {
+  for (const auto& p : name_2_index_) {
+    if (p.second == object_index) {
+      return p.first;
+    }
+  }
+  CGCHECK(false) << "Cannot find object name of index : " << object_index;
+  for (const auto& p : name_2_index_) {
+    CGLOG(ERROR) << p.first << " " << p.second;
+  }
+  return "";
 }
 }

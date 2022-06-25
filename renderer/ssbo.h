@@ -7,14 +7,15 @@ namespace renderer {
 
 class SSBO {
  public:
-  SSBO();
-  ~SSBO();
+  SSBO(int binding_point) : binding_point_(binding_point) { glGenBuffers_(1, &ssbo_); }
+  ~SSBO() { glDeleteBuffers_(1, &ssbo_); }
 
   template<typename DataStruct>
-  void Init(int binding_point, int size_in_byte, const DataStruct* data);
+  void SetData(int size_in_byte, const DataStruct* data);
 
   template<typename DataType>
   DataType GetData();
+
   int binding_point() { return binding_point_; }
 
  private:
@@ -24,11 +25,13 @@ class SSBO {
 };
 
 template<typename DataStruct>
-void SSBO::Init(int binding_point, int size_in_byte, const DataStruct* data) {
-  binding_point_ = binding_point;
+void SSBO::SetData(int size_in_byte, const DataStruct* data) {
   glBindBuffer_(GL_SHADER_STORAGE_BUFFER, ssbo_);
   glBufferData_(GL_SHADER_STORAGE_BUFFER, size_in_byte, data, GL_STREAM_COPY);
-  glBindBufferBase_(GL_SHADER_STORAGE_BUFFER, binding_point, ssbo_);
+  if (!inited_) {
+    glBindBufferBase_(GL_SHADER_STORAGE_BUFFER, binding_point_, ssbo_);
+    inited_ = true;
+  }
   glBindBuffer_(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
