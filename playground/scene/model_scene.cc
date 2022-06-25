@@ -72,7 +72,7 @@ void ModelScene::OnRender() {
   glFrontFace_(cw_);
 
   PhongShader({true}, *this, object_repo_.GetObject("teapot"));
-  // LinesShader({}, *this, CoordinatorMesh());
+  LinesShader({}, *this, CoordinatorMesh());
 }
 
 void ModelScene::OnExit() {

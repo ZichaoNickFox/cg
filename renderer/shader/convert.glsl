@@ -25,7 +25,7 @@ vec3 PositionWS2VS(mat4 view, vec3 position_ws) {
 }
 
 // pos_ss must in [0, 1]
-vec3 PositionSS2WS(vec3 pos_ss, mat4 view, mat4 project) {
+vec3 PositionSS2WS(mat4 view, mat4 project, vec3 pos_ss) {
   vec3 pos_ns = pos_ss * vec3(2.0) - vec3(1.0);
   mat4 inverse_vp = inverse(project * view);
   vec4 pos_ws = inverse_vp * vec4(pos_ns, 1.0);
@@ -33,11 +33,19 @@ vec3 PositionSS2WS(vec3 pos_ss, mat4 view, mat4 project) {
   return pos_ws.xyz;
 }
 
-vec3 PositionWS2SS(vec3 position_ws, mat4 view, mat4 project) {
+vec3 PositionWS2SS(mat4 view, mat4 project, vec3 position_ws) {
   vec4 pos_cs = project * view * vec4(position_ws, 1.0);
   return (pos_cs / pos_cs.w * 0.5 + 0.5).xyz;
 }
 
-vec3 PositionLS2SS(vec3 position_ls, mat4 model, mat4 view, mat4 project) {
-  return PositionWS2SS(vec3(model * vec4(position_ls, 1.0)), view, project);
+vec4 PositionLS2CS(mat4 model, mat4 view, mat4 project, vec3 position_ls) {
+  return project * view * model * vec4(position_ls, 1.0);
+}
+
+vec4 PositionWS2CS(mat4 view, mat4 project, vec3 position_ws) {
+  return project * view * vec4(position_ws, 1.0);
+}
+
+vec4 PositionWS2CS(mat4 view_project, vec3 position_ws) {
+  return view_project * vec4(position_ws, 1.0);
 }

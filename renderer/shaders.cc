@@ -1,5 +1,6 @@
 #include "renderer/shaders.h"
 
+#include <glm/glm.hpp>
 #include "glm/gtc/type_ptr.hpp"
 #include "imgui.h"
 #include <set>
@@ -46,15 +47,10 @@ LinesShader::LinesShader(const Param& param, const Scene& scene, const LinesMesh
                          const Transform& transform)
     : RenderShader(scene, "lines") {
   const Camera& camera = scene.camera();
-      CGLOGB();
   SetModel(transform.GetModelMatrix());
-      CGLOGC();
   SetCamera(camera);
-      CGLOGD();
   shader_.SetFloat("line_width", param.line_width);
-      CGLOGE() << lines_mesh.positions().size();
   lines_mesh.Submit();
-      CGLOGF();
 }
 
 ColorShader::ColorShader(const Param& param, const Scene& scene, const Object& object)

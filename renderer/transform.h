@@ -30,7 +30,7 @@ class Transform {
 
  private:
   glm::vec3 translation_ = glm::vec3(0, 0, 0);
-  glm::quat rotation_ = glm::quat(glm::vec3(0, 0, 0));
+  glm::quat rotation_ = glm::quat();
   glm::vec3 scale_ = glm::vec3(1, 1, 1);
 };
 
