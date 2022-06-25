@@ -17,14 +17,14 @@ void RayTracingScene::OnEnter() {
     const float& r = sphere.radius;
 
     ObjectMeta object_meta{name, {glm::vec3(), glm::quat(), glm::vec3(r, r, r)}, name, name};
-    object_repo_.AddOrReplace(config_, object_meta, &mesh_repo_, &material_repo_, &texture_repo_);
+    object_repo_.AddOrReplace(*config_, object_meta, &mesh_repo_, &material_repo_, &texture_repo_);
   }
 
   camera_->SetPerspectiveFov(60);
   camera_->SetTransform({{0, 1, 5}, glm::quat(1, -0.02, 0, 0), {1, 1, 1}});
 
   // path tracing
-  glm::ivec2 viewport_size = io_.screen_size();
+  glm::ivec2 viewport_size = io_->screen_size();
   std::vector<glm::vec4> canvas(viewport_size.x * viewport_size.y);
   for (glm::vec4& elem : canvas) {
     elem = glm::vec4(0, 0, 0, 1);
@@ -37,7 +37,6 @@ void RayTracingScene::OnEnter() {
 }
 
 void RayTracingScene::OnUpdate() {
-  OnUpdateCommon(this, "PathTracing");
 }
 
 void RayTracingScene::OnRender() {
@@ -55,18 +54,16 @@ void RayTracingScene::Resterization() {
     const glm::vec4& color = pair.second.color;
     ColorShader({color}, *this, object_repo_.GetObject(name));
   }
-
-  OnRenderCommon(this);
 }
 
 void RayTracingScene::RayTracing() {
-  RayTracingShader({io_.screen_size(), camera_.get(),
+  RayTracingShader({io_->screen_size(), camera_.get(),
                    util::AsValueVector(sphere_map_), canvas_}, *this);
   RaytracingDebugCommon(canvas_, *this, light_path_ssbo_.GetData<RaytracingDebugCommon::LightPath>());
 }
 
 void RayTracingScene::PathTracing() {
-  PathTracingDemoShader({io_.screen_size(), camera_.get(), util::AsValueVector(sphere_map_),
-                                 frame_stat_.frame_num(), canvas_}, *this);
+  PathTracingDemoShader({io_->screen_size(), camera_.get(), util::AsValueVector(sphere_map_),
+                         frame_stat_->frame_num(), canvas_}, *this);
   RaytracingDebugCommon(canvas_, *this, light_path_ssbo_.GetData<RaytracingDebugCommon::LightPath>());
 }

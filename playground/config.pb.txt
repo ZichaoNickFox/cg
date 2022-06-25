@@ -472,7 +472,7 @@ model_config {
 
 model_config {
   name : "cornell_box_left";
-  model_dir : "playground/resource/model/rock";
+  model_dir : "playground/resource/model/cornell_box";
   model_file : "left.obj";
 }
 

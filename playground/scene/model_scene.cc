@@ -19,7 +19,7 @@ void ModelScene::OnEnter() {
   camera_->mutable_transform()->SetTranslation(glm::vec3(0.329854, 2.252055, 1.987056));
   camera_->mutable_transform()->SetRotation(glm::quat(0.908184, {-0.401313, 0.110919, 0.042983}));
 
-  object_repo_.AddOrReplace(config_, object_metas_, &mesh_repo_, &material_repo_, &texture_repo_);
+  object_repo_.AddOrReplace(*config_, object_metas_, &mesh_repo_, &material_repo_, &texture_repo_);
   light_repo_.Add(lights);
 }
 

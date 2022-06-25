@@ -70,7 +70,7 @@ struct Material {
   int texture_shininess = -1;
 
   bool operator==(const Material& other) const {
-    return std::memcmp(const_cast<Material*>(this), &other, sizeof(Material)) == 0;
+    return std::memcmp(this, &other, sizeof(Material)) == 0;
   }
 };
   

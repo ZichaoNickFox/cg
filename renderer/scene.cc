@@ -6,14 +6,15 @@
 #include "renderer/util.h"
 
 namespace renderer {
-void Scene::Init(const Option& option, const std::string& scene_name) {
-  config_.Init(option.config_path);
-  shader_repo_.Init(config_);
-  option_ = option;
-  name_ = scene_name;
-}
+void Scene::Enter(const std::string& name, Config* config, Io* io, FrameStat* frame_stat) {
+  name_ = name;
 
-void Scene::Enter() {
+  config_ = config;
+  io_ = io;
+  frame_stat_ = frame_stat;
+
+  shader_repo_.Init(*config);
+
   glEnable_(GL_DEPTH_TEST);
 
   OnEnter();
@@ -47,13 +48,5 @@ const Camera& Scene::camera() const {
 
 Camera* Scene::mutable_camera() {
   return camera_.get();
-}
-
-void Scene::StatFrame(int last_frame_interval) {
-  frame_stat_.OnFrame(last_frame_interval);
-}
-
-std::function<void(const std::string& content)> Scene::set_clipboard_string_func() {
-  return option_.set_clipboard_string_func;
 }
 } // namespace scene

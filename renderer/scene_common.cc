@@ -46,21 +46,21 @@ void OnUpdateCommon::InspectCamera(Scene* scene) {
   ImGui::Text("camera_pos_ws %s", camera_pos_ws.c_str());
   ImGui::SameLine();
   if (ImGui::Button("Copy##camera_pos_ws")) {
-    scene->set_clipboard_string_func()(camera_pos_ws.c_str());
+    scene->io().write_clipboard_func()(camera_pos_ws.c_str());
   }
 
   std::string camera_dir_ws = glm::to_string(scene->camera().front_ws());
   ImGui::Text("camera_dir_ws %s", camera_dir_ws.c_str());
   ImGui::SameLine();
   if (ImGui::Button("Copy##camera_dir_ws")) {
-    scene->set_clipboard_string_func()(camera_dir_ws.c_str());
+    scene->io().write_clipboard_func()(camera_dir_ws.c_str());
   }
 
   std::string camera_rotation_quat = glm::to_string(scene->camera().transform().rotation());
   ImGui::Text("camera_rotation %s", camera_rotation_quat.c_str());
   ImGui::SameLine();
   if (ImGui::Button("Copy##camera_roatation_quat")) {
-    scene->set_clipboard_string_func()(camera_rotation_quat.c_str());
+    scene->io().write_clipboard_func()(camera_rotation_quat.c_str());
   }
 
   glm::vec3 near_pos_ws, far_pos_ws;

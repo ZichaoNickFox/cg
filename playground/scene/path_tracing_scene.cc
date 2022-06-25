@@ -18,18 +18,17 @@ void PathTracingScene::OnEnter() {
                           glm::quat(0.070520, {-0.005535, -0.994436, -0.078057}), {1, 1, 1}});
 
   // path tracing
-  glm::ivec2 viewport_size = io_.screen_size();
+  glm::ivec2 viewport_size = io_->screen_size();
   std::vector<glm::vec4> canvas(viewport_size.x * viewport_size.y);
   for (glm::vec4& elem : canvas) {
     elem = kBlack;
   }
+
   canvas_ = texture_repo_.CreateTexture({viewport_size.x, viewport_size.y, canvas, GL_NEAREST, GL_NEAREST});
 
   RaytracingDebugCommon::LightPath light_path;
 
-  for (const ObjectMeta& object_meta : object_metas_) {
-    object_repo_.AddOrReplace(config_, object_meta, &mesh_repo_, &material_repo_, &texture_repo_);
-  }
+  object_repo_.AddOrReplace(*config_, object_metas_, &mesh_repo_, &material_repo_, &texture_repo_);
   object_repo_.GetPrimitives(mesh_repo_, material_repo_, {Filter::kExcludes, {"sphere"}}, &primitive_repo_);
   bvh_.Build(primitive_repo_, {5, BVH::Partition::kPos, 64});
 
@@ -37,7 +36,6 @@ void PathTracingScene::OnEnter() {
 }
 
 void PathTracingScene::OnUpdate() {
-  OnUpdateCommon(this, "PathTracing");
 }
 
 void PathTracingScene::OnRender() {
@@ -57,7 +55,7 @@ void PathTracingScene::Rasterization() {
   LinesShader({}, *this, LinesMesh(bvh_.GetAABBs()));
 */
 
-  Ray pick_ray = camera_->GetPickRay(io_.GetCursorPosSS());
+  Ray pick_ray = camera_->GetPickRay(io_->GetCursorPosSS());
   RayBVHResult result = RayBVH(pick_ray, bvh_, primitive_repo_);
   if (result.hitted) {
     LinesShader({}, *this, LinesMesh({primitive_repo_.GetTriangle(result.primitive_index)}, kRed));
@@ -68,9 +66,9 @@ void PathTracingScene::Rasterization() {
 
 void PathTracingScene::PathTracing() {
   PathTracingShader::Param param;
-  param.screen_size = io_.screen_size();
+  param.screen_size = io_->screen_size();
   param.camera = camera_.get();
-  param.frame_num = frame_stat_.frame_num();
+  param.frame_num = frame_stat_->frame_num();
   param.output = canvas_;
 
   PathTracingShader(param, *this);

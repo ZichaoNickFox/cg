@@ -18,7 +18,7 @@ class BVH {
     int right_node = -1;
 
     bool operator==(const Node& other) const {
-      return memcmp(const_cast<Node*>(this), &other, sizeof(Node)) == 0;
+      return memcmp(this, &other, sizeof(Node)) == 0;
     }
   };
  public:

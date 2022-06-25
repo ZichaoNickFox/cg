@@ -146,6 +146,7 @@ MeshRepo::MeshRepo() {
 }
 
 void MeshRepo::Add(const std::string& mesh_name, std::unique_ptr<Mesh> mesh) {
+  CGCHECK(!Has(mesh_name)) << mesh_name;
   int mesh_index = name_2_index_.size();
   name_2_index_[mesh_name] = mesh_index;
   index_2_mesh_[mesh_index] = std::move(mesh);

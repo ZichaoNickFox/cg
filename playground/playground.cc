@@ -1,5 +1,6 @@
 #include "playground/playground.h"
 
+#include <glm/glm.hpp>
 #include "imgui.h"
 
 //#include "playground/scene/AA_scene.h"
@@ -27,7 +28,8 @@
 //#include "playground/scene/texture_lod_scene.h"
 //#include "playground/scene/instance_scene.h"
 
-const std::string kDefaultSceneName = "ModelScene";
+const std::string kConfigPath = "playground/config.pb.txt";
+const std::string kDefaultSceneName = "PathTracingScene";
 const std::unordered_map<std::string, std::function<renderer::Scene*()>> kFactory = {
   // {"ForwardShadingScene", [] () { return new ForwardShadingScene; }},
   // {"DeferredShadingScene", [] () { return new DeferredShadingScene; }},
@@ -50,18 +52,21 @@ const std::unordered_map<std::string, std::function<renderer::Scene*()>> kFactor
   // {"InstanceScene", [] () { return new InstanceScene; }},
   // {"RandomTestScene", [] () { return new RandomTestScene; }},
   // {"GeometryScene", [] () { return new GeometryScene; }},
-  {"ModelScene", [] () { return new ModelScene; }},
-  {"RayTracingScene", [] () { return new RayTracingScene; }},
-  {"PathTracingScene", [] () { return new PathTracingScene; }},
+  {"ModelScene", [] () { return new ModelScene(); }},
+  {"RayTracingScene", [] () { return new RayTracingScene(); }},
+  {"PathTracingScene", [] () { return new PathTracingScene(); }},
 };
 
-void Playground::Init(const renderer::Scene::Option& option) {
-  current_scene_ = kFactory.at(kDefaultSceneName)();
-  current_scene_->Init(option, kDefaultSceneName);
-  current_scene_->Enter();
+Playground::Playground() {
+  config_.Init(kConfigPath);
 }
 
 void Playground::BeginFrame() {
+  if (current_scene_name_ == "") {
+    current_scene_name_ = kDefaultSceneName;
+    current_scene_ = kFactory.at(current_scene_name_)();
+    current_scene_->Enter(current_scene_name_, &config_, &io_, &frame_stat_);
+  }
   frame_start_time_ = std::chrono::high_resolution_clock::now();
 }
 
@@ -74,10 +79,10 @@ void Playground::Render() {
 }
 
 void Playground::EndFrame() {
-  current_scene_->mutable_io()->ClearKeyInput();
+  io_.ClearKeyInput();
   util::Time frame_end_time = std::chrono::high_resolution_clock::now();
   int64_t frame_interval_millisecond = util::DurationMillisecond(frame_start_time_, frame_end_time);
-  current_scene_->StatFrame(frame_interval_millisecond);
+  frame_stat_.OnFrame(frame_interval_millisecond);
 }
 
 void Playground::Destoy() {

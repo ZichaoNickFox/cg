@@ -252,7 +252,12 @@ void glGetTexLevelParameteriv_(GLenum target, GLint level, GLenum pname, GLint *
 
 void glTexStorage2D_(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height) {
   glTexStorage2D(target, levels, internalformat, width, height);
-  CGCHECKGL();
+  CGCHECKGL() << "glTextureStorage2D" << std::hex
+              << " target~" << target
+              << " levels~" << levels
+              << " internalformat~" << internalformat
+              << " width~" << width
+              << " height~" << height << std::dec;
 }
 
 void glDeleteTextures_(GLsizei n, const GLuint *textures) {

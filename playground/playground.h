@@ -5,6 +5,7 @@
 #include <memory>
 #include <unordered_map>
 
+#include "renderer/config.h"
 #include "renderer/io.h"
 #include "renderer/scene.h"
 #include "renderer/util.h"
@@ -12,17 +13,21 @@
 // CG roadmap? https://github.com/miloyip/game-programmer
 class Playground {
  public:
-  void Init(const renderer::Scene::Option& option);
+  Playground();
   void BeginFrame();
   void Update();
   void Render();
   void EndFrame();
   void Destoy();
 
-  Io* mutable_io() { return current_scene_->mutable_io(); }
-  const Io& io() { return current_scene_->io(); }
+  renderer::Io* mutable_io() { return &io_; }
+  const renderer::Io& io() { return io_; }
  
  private:
+  renderer::Config config_;
+  renderer::Io io_;
+  renderer::FrameStat frame_stat_;
+
   std::string current_scene_name_;
   renderer::Scene* current_scene_ = nullptr;
 

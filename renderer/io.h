@@ -1,13 +1,18 @@
 #pragma once
 
+#include <functional>
 #include <set>
 #include <string>
 #include "glm/glm.hpp"
 
+namespace renderer {
 class Io {
  public:
   void SetScreenSize(const glm::ivec2& screen_size) { screen_size_ = screen_size; }
   glm::ivec2 screen_size() const { return screen_size_; }
+
+  void SetFramebufferSize(const glm::ivec2& framebuffer_size) { framebuffer_size_ = framebuffer_size; }
+  glm::ivec2 framebuffer_size() const { return framebuffer_size_; }
 
   void FeedKeyInput(const std::string& key);
   bool HadKeyInput(const std::string& key) const { return key_input_.find(key) != key_input_.end(); }
@@ -23,6 +28,9 @@ class Io {
   bool right_button_pressed() const { return right_button_pressed_; }
   bool gui_captured_cursor() const { return gui_captured_cursor_; }
 
+  void SetWriteClipboardFunc(const std::function<void(const std::string&)>& func);
+  const std::function<void(const std::string&)>& write_clipboard_func() const;
+
  private:
   std::set<std::string> key_input_;
   glm::vec2 cursor_pos_;
@@ -31,4 +39,7 @@ class Io {
   bool right_button_pressed_ = false;
   bool gui_captured_cursor_ = false;
   glm::ivec2 screen_size_;
+  glm::ivec2 framebuffer_size_;
+  std::function<void(const std::string&)> write_clipboard_func_;
 };
+} // namespace renderer

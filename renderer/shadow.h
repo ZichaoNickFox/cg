@@ -13,7 +13,7 @@ struct Shadow {
   int texture_depth;
 
   bool operator==(const Shadow& other) const {
-    return memcmp(const_cast<Shadow*>(this), &other, sizeof(Shadow)) == 0;
+    return memcmp(this, &other, sizeof(Shadow)) == 0;
   }
 };
 

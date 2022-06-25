@@ -1,4 +1,4 @@
-#version 430 core
+#include "renderer/shader/version.glsl"
 
 uniform vec4 color;
 out vec4 FragColor;

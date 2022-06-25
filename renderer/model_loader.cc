@@ -68,6 +68,7 @@ std::vector<int> LoadTextures(const std::string& model_dir, const aiMaterial& ai
 
 Material ProcessMaterial(const std::string& model_dir, const aiScene& ai_scene, const aiMesh& ai_mesh,
                          TextureRepo* texture_repo) {
+  CGCHECK(ai_scene.mNumMaterials > 0) << "scene material == 0";
   std::unordered_map<std::string, boost::any> material_properties;
   const aiMaterial& ai_material = *CGCHECK_NOTNULL(ai_scene.mMaterials[ai_mesh.mMaterialIndex]);
 
@@ -126,11 +127,9 @@ void ProcessNode(const std::string& model_dir, const std::string& model_name, co
                  const aiNode& ai_node, MeshRepo* mesh_repo, MaterialRepo* material_repo, TextureRepo* texture_repo) {
   for(uint32_t i = 0; i < ai_node.mNumMeshes; i++) {
     aiMesh* ai_mesh = ai_scene.mMeshes[ai_node.mMeshes[i]];
-    std::string mesh_name = ai_mesh->mName.C_Str();
-    CGCHECK(model_name == mesh_name) << " Model name must same as mesh name. Only one mesh per model !~";
-    mesh_repo->Add(mesh_name, ProcessMesh(*ai_mesh));
+    mesh_repo->Add(model_name, ProcessMesh(*ai_mesh));
     Material material = ProcessMaterial(model_dir, ai_scene, *ai_mesh, texture_repo);
-    material_repo->Add(mesh_name, material);
+    material_repo->Add(model_name, material);
   }
   for(uint32_t i = 0; i < ai_node.mNumChildren; i++) {
     ProcessNode(model_dir, model_name, ai_scene, *ai_node.mChildren[i], mesh_repo, material_repo, texture_repo);

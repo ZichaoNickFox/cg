@@ -1,34 +1,28 @@
+#if defined CG_PLATFORM_MACOS
+#include <execinfo.h>
+#include <unistd.h>
+#endif
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
+#include "glog/logging.h"
+#include "imgui.h"
 #include <stdio.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#if defined CG_PLATFORM_MACOS
-#include <execinfo.h>
-#include <unistd.h>
-#endif
-
-#include "glog/logging.h"
-#include "imgui.h"
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
-
-#include "renderer/debug.h"
 #include "playground/playground.h"
+#include "renderer/color.h"
+#include "renderer/debug.h"
+#include "renderer/io.h"
 
-#include <GLFW/glfw3.h> // Will drag system OpenGL headers
+#include <GLFW/glfw3.h> // Have to included after gl
 
 static void glfw_error_callback(int error, const char *description) {
   fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
-//void handler(int sig) {
-//  fprintf(stderr, "Error: signal %d:\n", sig);
-//  BT();
-//  exit(1);
-//}
-//
-void FillIoInput(GLFWwindow* window, ImGuiIO* imgui_io, Io* io) {
+void FillIoInput(GLFWwindow* window, ImGuiIO* imgui_io, renderer::Io* io) {
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     io->FeedKeyInput("w");
   if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -53,8 +47,6 @@ void FillIoInput(GLFWwindow* window, ImGuiIO* imgui_io, Io* io) {
 
 int main(int argc, char **argv)
 {
-  //signal(SIGSEGV, handler); // install our handler
-  //signal(SIGABRT, handler); // install our handler
   FLAGS_log_dir = "log";
   FLAGS_timestamp_in_logfile_name = false;
   google::InitGoogleLogging(argv[0]);
@@ -70,8 +62,6 @@ int main(int argc, char **argv)
   // Create window with graphics context
   constexpr int kScreenWidth = 3240;
   constexpr int kScreenHeight = 2160;
-  //constexpr int kScreenWidth = 1920;
-  //constexpr int kScreenHeight = 1080;
   GLFWwindow* window = glfwCreateWindow(kScreenWidth, kScreenHeight, "CG",
                                         NULL, NULL);
   CGCHECK(window) << "GLFW create window failed";
@@ -88,9 +78,6 @@ int main(int argc, char **argv)
   ImGui_ImplOpenGL3_Init(glsl_version);
 
   glewInit_();
-
-  glm::vec4 clear_color = glm::vec4(0.45f, 0.55f, 0.60f, 1.00f);
-  const std::string kConfigPath = "playground/config.pb.txt";
     
   glm::ivec2 framebuffer_size;
   glfwGetFramebufferSize(window, &framebuffer_size.x, &framebuffer_size.y);
@@ -99,17 +86,19 @@ int main(int argc, char **argv)
   glm::ivec2 screen_size;
   glfwGetWindowSize(window, &screen_size.x, &screen_size.y);
 
-  auto SetClipboardStringFunc = [window] (const std::string& content) {
+  auto writeClipboardFunc = [window] (const std::string& content) {
     glfwSetClipboardString(window, content.c_str());
   };
 
   Playground playground;
-  playground.Init({kConfigPath, clear_color, framebuffer_size, SetClipboardStringFunc});
+  playground.mutable_io()->SetWriteClipboardFunc(writeClipboardFunc);
   playground.mutable_io()->SetScreenSize(screen_size);
+  playground.mutable_io()->SetFramebufferSize(framebuffer_size);
 
   while (!glfwWindowShouldClose(window)) {
     playground.BeginFrame();
-    glClearColor_(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+    glClearColor_(renderer::kClearColor.x * renderer::kClearColor.w, renderer::kClearColor.y * renderer::kClearColor.w,
+                  renderer::kClearColor.z * renderer::kClearColor.w, renderer::kClearColor.w);
     glClear_(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     glfwPollEvents();
@@ -121,7 +110,7 @@ int main(int argc, char **argv)
 
     FillIoInput(window, &imgui_io, playground.mutable_io());
 
-    Io io = playground.io();
+    renderer::Io io = playground.io();
     if (playground.io().gui_captured_cursor()) {
       glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     } else {

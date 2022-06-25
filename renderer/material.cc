@@ -125,6 +125,7 @@ void MaterialRepo::UpdateSSBO() {
 }
 
 void MaterialRepo::Add(const std::string& name, const Material& material) {
+  CGCHECK(!Has(name));
   CGCHECK(index_2_material_.size() == name_2_index_.size());
   int index = name_2_index_.size();
   name_2_index_[name] = index;

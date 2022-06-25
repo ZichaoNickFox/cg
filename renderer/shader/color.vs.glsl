@@ -1,12 +1,14 @@
-#version 430 core
+#include "renderer/shader/version.glsl"
+
+#include "renderer/shader/camera.glsl"
+#include "renderer/shader/convert.glsl"
 
 layout (location = 0) in vec3 pos;
 
 uniform mat4 model;
-uniform mat4 view;
-uniform mat4 project;
+uniform Camera camera;
 
 void main()
 {
-  gl_Position = project * view * model * vec4(pos, 1.0);
+  gl_Position = PositionLS2CS(model, camera.view, camera.project, pos);
 }

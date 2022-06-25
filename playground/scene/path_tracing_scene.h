@@ -37,8 +37,7 @@ class PathTracingScene : public renderer::Scene {
         "cornell_box_short_box", "cornell_box_short_box"},
     {"cornell_box_tall_box", {glm::vec3(), glm::quat(), glm::vec3(0.002, 0.002, 0.002)},
         "cornell_box_tall_box", "cornell_box_tall_box"},
-    {"sphere", renderer::Transform(), "sphere", "sphere"},
-    {"coordinator", renderer::Transform(), "coordinator", "coordinator"}
+    {"sphere", renderer::Transform(), "sphere", "gold"}
   };
 
   renderer::Texture canvas_;

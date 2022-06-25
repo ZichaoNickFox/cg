@@ -11,7 +11,12 @@ struct Primitive {
   Triangle triangle;
   glm::vec3 normal;
   int object_index;
+
   const AABB& GetAABB() const { return aabb; }
+
+  bool operator==(const Primitive& other) const {
+    return memcmp(this, &other, sizeof(Primitive));
+  }
 };
 
 class PrimitiveRepo {
@@ -29,6 +34,7 @@ class PrimitiveRepo {
 
  private:
   std::vector<Primitive> primitives_;
+  std::vector<Primitive> dirty_primitives_;
   SSBO ssbo_;
 };
 
