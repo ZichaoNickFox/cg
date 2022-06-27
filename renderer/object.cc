@@ -30,27 +30,36 @@ void ObjectRepo::AddOrReplace(const Config& config, const ObjectMeta& object_met
                                   material_repo->GetIndex(object_meta.material_name)};
 }
 
+bool ObjectRepo::Has(const std::string& object_name) const {
+  return name_2_index_.find(object_name) != name_2_index_.end();
+}
+
+bool ObjectRepo::Has(int object_index) const {
+  return index_2_object_.find(object_index) != index_2_object_.end();
+}
+
 const Object& ObjectRepo::GetObject(int object_index) const {
-  CGCHECK(index_2_object_.find(object_index) != index_2_object_.end()) << object_index;
+  CGCHECK(Has(object_index)) << object_index;
   return index_2_object_.at(object_index);
 }
 
 const Object& ObjectRepo::GetObject(const std::string& name) const {
+  CGCHECK(Has(name));
   return GetObject(GetIndex(name));
 }
 
 Object* ObjectRepo::MutableObject(int object_index) {
-  CGCHECK(index_2_object_.find(object_index) != index_2_object_.end()) << object_index;
+  CGCHECK(Has(object_index)) << object_index;
   return &index_2_object_[object_index];
 }
 
 Object* ObjectRepo::MutableObject(const std::string& name) {
-  CGCHECK(name_2_index_.find(name) != name_2_index_.end()) << name;
+  CGCHECK(Has(name)) << name;
   return &index_2_object_[name_2_index_[name]];
 }
 
 int ObjectRepo::GetIndex(const std::string& name) const {
-  CGCHECK(name_2_index_.find(name) != name_2_index_.end()) << name;
+  CGCHECK(Has(name)) << name;
   return name_2_index_.at(name);
 }
 
@@ -88,6 +97,7 @@ void ObjectRepo::GetPrimitives(const MeshRepo& mesh_repo, const MaterialRepo& ma
 }
 
 std::string ObjectRepo::GetName(int object_index) const {
+  CGCHECK(Has(object_index)) << object_index;
   for (const auto& p : name_2_index_) {
     if (p.second == object_index) {
       return p.first;

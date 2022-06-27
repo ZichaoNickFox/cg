@@ -86,7 +86,7 @@ void OnUpdateCommon::ReloadShaders(Scene* scene) {
 void OnUpdateCommon::InspectMesh(Scene* scene, const Object& object) {
   const std::string& mesh_name = scene->mesh_repo().GetName(object.mesh_index);
   const Mesh* mesh = scene->mesh_repo().GetMesh(object.mesh_index);
-  if (ImGui::TreeNode(util::Format("mesh : index ~ {} name ~ {}", object.mesh_index, mesh_name).c_str())) {
+  if (ImGui::TreeNode(fmt::format("mesh : index ~ {} name ~ {}", object.mesh_index, mesh_name).c_str())) {
     ImGui::PushID(mesh_name.c_str());
     ImGui::Text("Position Num : %lu", mesh->positions().size());
     ImGui::Text("Normal Num : %lu  Maybe all (0,0,0)", mesh->normals().size());
@@ -101,7 +101,7 @@ void OnUpdateCommon::InspectMesh(Scene* scene, const Object& object) {
 void OnUpdateCommon::InspcetMaterial(Scene* scene, const Object& object) {
   const std::string& material_name = scene->material_repo().GetName(object.material_index);
   Material* material = scene->mutable_material_repo()->mutable_material(object.material_index);
-  if (ImGui::TreeNode(util::Format("material index ~ {} name ~ {}", object.material_index, material_name).c_str())) {
+  if (ImGui::TreeNode(fmt::format("material index ~ {} name ~ {}", object.material_index, material_name).c_str())) {
     ImGui::PushID(material_name.c_str());
     ImGui::ColorEdit4("albedo", glm::value_ptr(material->albedo));
     ImGui::ColorEdit4("ambient", glm::value_ptr(material->ambient));
@@ -131,7 +131,7 @@ void OnUpdateCommon::InSpectObjects(Scene* scene) {
     ImGui::PushID("Objects");
     for (const Object& object : scene->object_repo().GetObjects()) {
       std::string object_name = scene->object_repo().GetName(object.object_index);
-      if (ImGui::TreeNode(util::Format("Object : index ~ {} name ~ {}",
+      if (ImGui::TreeNode(fmt::format("Object : index ~ {} name ~ {}",
                           object.object_index, object_name).c_str())) {
         InspectMesh(scene, object);
         InspcetMaterial(scene, object);
@@ -148,8 +148,8 @@ void OnUpdateCommon::InspectLights(Scene* scene) {
     ImGui::PushID("Lights");
     for (int i = 0; i < scene->light_repo().light_num(); ++i) {
       Light* light = scene->mutable_light_repo()->mutable_light(i);
-      if (ImGui::TreeNode(util::Format("Light {}", i).c_str())) {
-        ImGui::PushID(util::Format("{}", i).c_str());
+      if (ImGui::TreeNode(fmt::format("Light {}", i).c_str())) {
+        ImGui::PushID(fmt::format("{}", i).c_str());
         if (ImGui::RadioButton("DirectionalLight", light->type)) { light->type = Light::kDirectionalLight; }
         ImGui::SameLine();
         if (ImGui::RadioButton("PointLight", light->type)) { light->type = Light::kPointLight; }

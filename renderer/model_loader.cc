@@ -53,15 +53,16 @@ std::unique_ptr<Mesh> ProcessMesh(const aiMesh& ai_mesh) {
   return res;
 }
 
-std::vector<int> LoadTextures(const std::string& model_dir, const aiMaterial& ai_material, aiTextureType type, TextureRepo* texture_repo) {
+std::vector<int> LoadTextures(const std::string& model_dir, const aiMaterial& ai_material, aiTextureType type,
+                              TextureRepo* texture_repo) {
   std::vector<int> res;
   for(uint32_t i = 0; i < ai_material.GetTextureCount(type); i++) {
     aiString path;
     ai_material.GetTexture(type, i, &path);
     std::string full_path = util::FileJoin(model_dir, path.C_Str());
+    CGLOG(ERROR) << "Texture " << aiTextureTypeToString(type) << " : " << full_path;
     int index = texture_repo->AddUnique(full_path);
     res.push_back(index);
-    CGLOG(ERROR) << "Loading " << aiTextureTypeToString(type) << " texture from " << full_path;
   }
   return res;
 }
@@ -80,6 +81,8 @@ Material ProcessMaterial(const std::string& model_dir, const aiScene& ai_scene, 
   material_properties[kAlbedo] = glm::vec4(albedo.x, albedo.y, albedo.z, 1.0);
   aiVector3D specular; ai_material.Get(AI_MATKEY_COLOR_SPECULAR, specular);
   material_properties[kSpecular] = glm::vec4(specular.x, specular.y, specular.z, 1.0);
+  aiVector3D emission; ai_material.Get(AI_MATKEY_COLOR_EMISSIVE, emission);
+  material_properties[kEmission] = glm::vec4(emission.x, emission.y, emission.z, 1.0);
   double roughness; ai_material.Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness);
   material_properties[kRoughness] = roughness;
   double metallic; ai_material.Get(AI_MATKEY_METALLIC_FACTOR, metallic);

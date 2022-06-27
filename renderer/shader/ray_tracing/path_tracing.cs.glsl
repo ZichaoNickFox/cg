@@ -1,12 +1,12 @@
 #include "renderer/shader/version.glsl"
 
+#include "renderer/shader/bvh.glsl"
 #include "renderer/shader/camera.glsl"
 #include "renderer/shader/convert.glsl"
 #include "renderer/shader/geometry.glsl"
 #include "renderer/shader/pbr/pbr_BRDF.glsl"
 #include "renderer/shader/random.glsl"
 #include "renderer/shader/sample.glsl"
-#include "renderer/shader/uniform.glsl"
 
 uniform vec2 screen_size;
 uniform Camera camera;
@@ -25,45 +25,32 @@ vec4 path_tracing(Ray ray, vec4 color) {
   Ray ray_iter = ray;
   vec4 radiance = vec4(1, 1, 1, 1);
 
-//  bool is_debug_frag = length(gl_GlobalInvocationID.xy / screen_size - vec2(0.5, 0.5)) < 0.00001;
-  bool is_debug_frag = false;
-  if (is_debug_frag) {
-    ray_iter.origin = vec3(0.000000, 1.000000, 5.000000);
-    ray_iter.dir = vec3(0.251670, -0.375554, -0.891976);
-  }
-
-  int count = 0;
-  while(true) {
-    if (is_debug_frag) {
-      light_path[count] = vec4(ray_iter.origin, 1.0);
-    }
-    if (count >= 10) {
-      break;
-    }
-    count += 1;
-
+  int count = 10;
+  while(count--) {
     const float P_RR = 0.95;
     if (Random() > P_RR) {
       break;
     }
 
-    BVHResult result = RayBVH(ray_iter);
+    RayBVHResult result = RayBVH(ray_iter);
     if (result.hitted == false) {
       break;
     }
+    Material material = RayBVHResultMaterial(result);
+    
+    // TODO Color only
+    vec4 material_color = materail.diffuse;
+    color = material_color;
+    break;
 
     const float pdf = 1 / (2 * pi);
-    if (sphere.id == 1) {
+    if (material.emission) {
       // light
-      color = radiance * sphere.color / P_RR;
-      if (is_debug_frag) {
-        light_path[count] = vec4(result.pos, 1.0);
-      }
+      color = radiance * material.color / P_RR;
     } else {
-      // right big metal ball
       vec3 dir_ws = SampleUnitHemisphereDir(result.normal);
       float f_r_specular = BRDF_specular(-ray_iter.dir, dir_ws, result.normal, 0.5);
-      vec4 f_r_deffuse = BRDF_diffuse(sphere.color);
+      vec4 f_r_deffuse = BRDF_diffuse(material.color);
       vec4 f_r = 0.0 * f_r_specular + 1.0 * f_r_deffuse;
       float cosine = max(dot(result.normal, dir_ws), 0.0);
       radiance = radiance * f_r * cosine / pdf / P_RR;
@@ -81,7 +68,7 @@ void main() {
   vec3 camera_dir_ws = normalize(near_pos_ws - camera.pos_ws);
   
   vec4 color = imageLoad(canvas, ivec2(gl_GlobalInvocationID.xy));
-  Ray ray = Ray(camera.pos_ws + bias * camera_dir_ws, camera_dir_ws);
+  Ray ray = Ray(camera.pos_ws, camera_dir_ws);
   vec4 acc_color = color;
   const int sample_num = 3;
   for (int i = 0; i < sample_num; ++i) {

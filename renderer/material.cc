@@ -98,6 +98,7 @@ std::vector<MaterialRepo::MaterialGPU> MaterialRepo::GetSSBOData() {
     material_gpu->ambient = material.ambient;
     material_gpu->diffuse = material.diffuse;
     material_gpu->specular = material.specular;
+    material_gpu->emission = material.emission;
     material_gpu->roughness_metalness_shininess.x = material.roughness;
     material_gpu->roughness_metalness_shininess.y = material.metalness;
     material_gpu->roughness_metalness_shininess.z = material.shininess;
@@ -115,11 +116,23 @@ std::vector<MaterialRepo::MaterialGPU> MaterialRepo::GetSSBOData() {
   return res;
 }
 
+std::vector<Material> MaterialRepo::GetSSBOData2() {
+  std::vector<Material> res(index_2_material_.size());
+  for (int i = 0; i < index_2_material_.size(); ++i) {
+    CGCHECK(index_2_material_.find(i) != index_2_material_.end());
+    const Material& material = index_2_material_.at(i);
+    res[i] = material;
+  }
+  return res;
+}
+
 void MaterialRepo::UpdateSSBO() {
   bool dirty = !(index_2_material_ == dirty_index_2_material_);
   if (dirty) {
-    std::vector<MaterialGPU> material_gpus = GetSSBOData();
-    ssbo_.SetData(util::VectorSizeInByte(material_gpus), material_gpus.data());
+    // std::vector<MaterialGPU> material_gpus = GetSSBOData();
+    // ssbo_.SetData(util::VectorSizeInByte(material_gpus), material_gpus.data());
+    std::vector<Material> materials = GetSSBOData2();
+    ssbo_.SetData(util::VectorSizeInByte(materials), materials.data());
     dirty_index_2_material_ = index_2_material_;
   }
 }
@@ -139,6 +152,11 @@ bool MaterialRepo::Has(const std::string& name) {
 const Material& MaterialRepo::GetMaterial(int material_index) const {
   CGCHECK(index_2_material_.find(material_index) != index_2_material_.end());
   return index_2_material_.at(material_index);
+}
+
+const Material& MaterialRepo::GetMaterial(const std::string& material_name) const {
+  CGCHECK(name_2_index_.find(material_name) != name_2_index_.end());
+  return index_2_material_.at(name_2_index_.at(material_name));
 }
 
 Material* MaterialRepo::mutable_material(int material_index) {

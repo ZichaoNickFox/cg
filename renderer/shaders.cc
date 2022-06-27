@@ -75,7 +75,7 @@ Texture2DLodShader::Texture2DLodShader(const Param& param, const Scene& scene, c
   const Camera& camera = scene.camera();
   SetModel(object);
   SetCamera(camera);
-  CGCHECK(param.texture2D0.type() == Texture::Texture2D);
+  CGCHECK(param.texture2D0.meta().type == Texture::kTexture2D);
   shader_.SetTexture("texture2D0", param.texture2D0);
 }
 
@@ -84,7 +84,7 @@ CubemapLodShader::CubemapLodShader(const Param& param, const Scene& scene, const
   const Camera& camera = scene.camera();
   SetModel(object);
   SetCamera(camera);
-  CGCHECK(param.cubemap.type() == Texture::Cubemap);
+  CGCHECK(param.cubemap.meta().type == Texture::kCubemap);
   shader_.SetTexture("texture_cubemap", param.cubemap);
 }
 
@@ -162,7 +162,7 @@ SSAOShader::SSAOShader(const ParamSSAO& param, const Scene& scene, const Object&
   shader_.SetTexture("ut_normal_vs", param.texture_normal_vs);
   shader_.SetTexture("ut_noise", param.texture_noise);
   for (int i = 0; i < 64; ++i) {
-    shader_.SetVec3(util::Format("u_samples_ts[{}]", i).c_str(), param.sampler_ts[i]);
+    shader_.SetVec3(fmt::format("u_samples_ts[{}]", i).c_str(), param.sampler_ts[i]);
   }
 }
 
@@ -193,7 +193,7 @@ SimpleModelShader::SimpleModelShader(const Scene& scene, ModelObject* model)
       const std::string uniform_name = pair.first;
       const std::vector<Texture>& textures = pair.second;
       if (textures.size() > 0) {
-        std::string use_uniform_name = util::Format("use_{}", uniform_name);
+        std::string use_uniform_name = fmt::format("use_{}", uniform_name);
       }
     }
   }
@@ -211,7 +211,7 @@ InstanceSceneShader::InstanceSceneShader(const Scene& scene, Object* object)
       const std::string uniform_name = pair.first;
       const std::vector<Texture>& textures = pair.second;
       if (textures.size() > 0) {
-        std::string use_uniform_name = util::Format("use_{}", uniform_name);
+        std::string use_uniform_name = fmt::format("use_{}", uniform_name);
       }
     }
   }

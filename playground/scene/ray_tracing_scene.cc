@@ -25,11 +25,8 @@ void RayTracingScene::OnEnter() {
 
   // path tracing
   glm::ivec2 viewport_size = io_->screen_size();
-  std::vector<glm::vec4> canvas(viewport_size.x * viewport_size.y);
-  for (glm::vec4& elem : canvas) {
-    elem = glm::vec4(0, 0, 0, 1);
-  }
-  canvas_ = texture_repo_.CreateTexture({viewport_size.x, viewport_size.y, canvas, GL_NEAREST, GL_NEAREST});
+  std::vector<glm::vec4> canvas(viewport_size.x * viewport_size.y, kBlack);
+  canvas_ = CreateTexture2D(viewport_size.x, viewport_size.y, canvas, GL_NEAREST, GL_NEAREST);
 
   RaytracingDebugCommon::LightPath light_path;
 

@@ -1,5 +1,5 @@
 bazel --output_user_root="./.cache" build ^
-  --cxxopt="/std:c++17" ^
+  --cxxopt="/std:c++20" ^
   --verbose_failures  ^
   //playground:window
 

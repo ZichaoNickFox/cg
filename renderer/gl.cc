@@ -209,13 +209,32 @@ void glTexImage2D_(GLenum target, GLint level, GLint internalformat, GLsizei wid
 void glTexSubImage2D_(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width,
                       GLsizei height, GLenum format, GLenum type, const void *pixels) {
   glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
-  CGCHECKGL();
+  CGCHECKGL() << "glTexSubImage2D"
+              << " target~" << std::hex << target << std::dec
+              << " level~" << level
+              << " xoffset~" << xoffset
+              << " yoffset~" << yoffset
+              << " width~" << width
+              << " height~" << height
+              << " format~" << std::hex << format << std::dec
+              << " type~" << std::hex << type << std::dec
+              << " pixels~" << std::hex << pixels << std::dec;
 }
 
 void glTexImage3D_(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height,
                    GLsizei depth, GLint border, GLenum format, GLenum type, const void * data) {
   glTexImage3D(target, level, internalformat, width, height, depth, border, format, type, data);
-  CGCHECKGL();
+  CGCHECKGL() << "glTexImage3D"
+              << " target~" << std::hex << target << std::dec
+              << " level~" << level
+              << " internalformat~" << std::hex << internalformat << std::dec
+              << " width~" << width
+              << " height~" << height
+              << " depth~" << depth
+              << " border~" << border
+              << " format~" << std::hex << format << std::dec
+              << " type~" << std::hex << type << std::dec 
+              << " data~" << std::hex << data << std::dec;
 }
 
 void glTexImage2DMultisample_(GLenum target, GLsizei samples, GLenum internalformat,
@@ -252,12 +271,12 @@ void glGetTexLevelParameteriv_(GLenum target, GLint level, GLenum pname, GLint *
 
 void glTexStorage2D_(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height) {
   glTexStorage2D(target, levels, internalformat, width, height);
-  CGCHECKGL() << "glTextureStorage2D" << std::hex
-              << " target~" << target
+  CGCHECKGL() << "glTextureStorage2D"
+              << " target~" << std::hex << target << std::dec
               << " levels~" << levels
-              << " internalformat~" << internalformat
+              << " internalformat~" << std::hex << internalformat << std::dec
               << " width~" << width
-              << " height~" << height << std::dec;
+              << " height~" << height;
 }
 
 void glDeleteTextures_(GLsizei n, const GLuint *textures) {

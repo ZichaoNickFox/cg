@@ -72,7 +72,7 @@ std::string Shader::GetOneLineCompilerError430(const std::vector<Shader::CodePar
         line_sum++;
         line_num_in_file ++;
         if (line_sum == source_line_num) {
-          return util::Format("\"{}\" {} {}", code_part.glsl_path, line_num_in_file, res);
+          return fmt::format("\"{}\" {} {}", code_part.glsl_path, line_num_in_file, res);
         }
       }
     }
@@ -169,6 +169,7 @@ void Shader::SetFloat(const std::string &location_name, float value) const {
 }
 
 void Shader::SetTexture(const std::string &location_name, const Texture& value) const {
+  CGCHECK(value.Varify());
   int unit = -1;
   if (texture_2_unit_.count(value.id()) > 0) {
     unit = texture_2_unit_.at(value.id());
@@ -179,11 +180,11 @@ void Shader::SetTexture(const std::string &location_name, const Texture& value) 
   }
   SetInt(location_name, unit);
   glActiveTexture_(GL_TEXTURE0 + unit);
-  if (value.type() == Texture::Texture2D) {
+  if (value.meta().type == Texture::kTexture2D) {
     glBindTexture_(GL_TEXTURE_2D, value.id());
-  } else if (value.type() == Texture::Cubemap) {
+  } else if (value.meta().type == Texture::kCubemap) {
     glBindTexture_(GL_TEXTURE_CUBE_MAP, value.id());
-  } else if (value.type() == Texture::Texture3D) {
+  } else if (value.meta().type == Texture::kTexture2DArray) {
     glBindTexture_(GL_TEXTURE_2D_ARRAY, value.id());
   }
 }

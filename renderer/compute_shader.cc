@@ -3,6 +3,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include <set>
 
+#include "renderer/bvh.h"
 #include "renderer/geometry.h"
 #include "renderer/util.h"
 
@@ -11,22 +12,26 @@ namespace renderer {
 ComputeShader::ComputeShader(const Scene& scene, const std::string& shader_name) {
   shader_ = scene.shader_repo().GetShader(shader_name);
   shader_.Use();
+  if (scene.texture_repo().size() > 0) {
+    shader_.SetTexture("texture_repo", scene.texture_repo().AsTextureRepo());
+  }
   shader_.SetInt("light_repo_length", scene.light_repo().length());
   shader_.SetInt("material_repo_length", scene.material_repo().length());
+  shader_.SetInt("bvh_length", scene.bvh().length());
 }
 
 void ComputeShader::Run() const {
   CGCHECK(textures_.size() == texture_metas_.size());
   for (int i = 0; i < textures_.size(); ++i) {
     const Texture& texture = textures_[i];
-    const TextureMeta& texture_meta = texture_metas_[i];
+    const TextureMeta& meta = texture_metas_[i];
 
     CheckInternalFormat(texture);
-    glActiveTexture_(GL_TEXTURE0 + texture_meta.texture_unit);
+    glActiveTexture_(GL_TEXTURE0 + meta.texture_unit);
     glBindTexture_(GL_TEXTURE_2D, texture.id());
 
-    glBindImageTexture_(texture_meta.texture_unit, texture.id(), 0, GL_FALSE, 0,
-                        texture_meta.read_write_type, texture_meta.internal_format);
+    glBindImageTexture_(meta.texture_unit, texture.id(), 0, GL_FALSE, 0,
+                        meta.read_write_type, meta.internal_format);
   }
   shader_.Use();
   glDispatchCompute_(work_group_num_.x, work_group_num_.y, work_group_num_.z);
@@ -46,7 +51,7 @@ void ComputeShader::SetWorkGroupNum(const glm::vec3& work_group_num) {
 }
 
 void ComputeShader::CheckInternalFormat(const renderer::Texture& texture) const {
-  GLuint internal_format = texture.internal_format();
+  GLuint internal_format = texture.meta().gl_internal_format;
   std::set<GLint> supported_format = { GL_RGBA, GL_RGBA32F };
   if (supported_format.count(internal_format) <= 0) {
     CGCHECK(false) << "Unsupported Internal Format : " << std::hex << internal_format << std::dec;
@@ -67,10 +72,10 @@ void ComputeShader::SetCamera(Camera* camera, bool with_view, bool with_project)
 void ComputeShader::SetSpheres(const std::vector<Sphere>& spheres) {
   for (int i = 0; i < spheres.size(); ++i) {
     const Sphere& sphere  = spheres[i];
-    shader_.SetInt(util::Format("spheres[{}].id", i), sphere.id);
-    shader_.SetVec3(util::Format("spheres[{}].center_pos", i), sphere.translation);
-    shader_.SetVec4(util::Format("spheres[{}].color", i), sphere.color);
-    shader_.SetFloat(util::Format("spheres[{}].radius", i), sphere.radius);
+    shader_.SetInt(fmt::format("spheres[{}].id", i), sphere.id);
+    shader_.SetVec3(fmt::format("spheres[{}].center_pos", i), sphere.translation);
+    shader_.SetVec4(fmt::format("spheres[{}].color", i), sphere.color);
+    shader_.SetFloat(fmt::format("spheres[{}].radius", i), sphere.radius);
   }
 }
 

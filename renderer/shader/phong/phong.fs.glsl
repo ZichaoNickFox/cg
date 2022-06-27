@@ -4,6 +4,7 @@
 #include "renderer/shader/material.glsl"
 #include "renderer/shader/light.glsl"
 #include "renderer/shader/phong/phong_model.glsl"
+#include "renderer/shader/texture.glsl"
 
 out vec4 FragColor;
 
@@ -31,4 +32,5 @@ void main()
   phong_model_input.use_blinn_phong = use_blinn_phong;
 
   FragColor = PhongModel(phong_model_input);
+  FragColor = phong_model_input.diffuse;
 }

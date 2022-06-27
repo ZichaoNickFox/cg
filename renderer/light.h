@@ -41,9 +41,7 @@ struct Light {
   glm::vec4 color;
   glm::vec3 attenuation_2_1_0;
 
-  bool operator==(const Light& other) const {
-    return memcmp(this, &other, sizeof(Light)) == 0;
-  }
+  bool operator==(const Light& other) const = default;
 };
 
 struct LightRepo {

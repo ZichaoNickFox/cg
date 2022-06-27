@@ -39,6 +39,8 @@ struct AABB {
   float GetCenterByAxis(Axis axis) const;
 
   std::string AsString() const;
+
+  bool operator==(const AABB& other) const = default;
 #if CGDEBUG
   bool DebugCheckValid() const;
   bool DebugCheckNotNull() const;
@@ -82,6 +84,8 @@ struct Triangle {
   AABB AsAABB() const;
   std::string AsString() const;
   glm::vec3 normal() const;
+
+  bool operator==(const Triangle& other) const = default;
 };
 
 struct RayTriangleResult {

@@ -12,13 +12,13 @@ namespace renderer {
 class BVH {
   struct Node {
     AABB aabb;
-    int sequence_begin;
-    int sequence_num = 0;
+    int primitives_begin;
+    int primitives_num = 0;
     int left_node = -1;
     int right_node = -1;
 
     bool operator==(const Node& other) const {
-      return memcmp(this, &other, sizeof(Node)) == 0;
+      return true;
     }
   };
  public:
@@ -36,6 +36,7 @@ class BVH {
   void Build(const PrimitiveRepo& primitives, const Option& option);
   void UpdateSSBO();
   std::vector<AABB> GetAABBs(int filter_level = -1) const;
+  int length() const { return nodes_.size(); }
 
  private:
   int NewNode(int begin, int end, const AABB& union_aabb);
@@ -75,7 +76,7 @@ class BVH {
 
   std::vector<Node> nodes_;
   std::vector<Node> dirty_nodes_;
-  std::vector<int> sequence_;
+  std::vector<int> primitives_;
   Option option_;
   SSBO ssbo_;
 

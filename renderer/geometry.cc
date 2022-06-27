@@ -130,7 +130,7 @@ AABB Triangle::AsAABB() const {
 }
 
 std::string AABB::AsString() const {
-  return util::Format("{},{},{}|{},{},{}",
+  return fmt::format("{},{},{}|{},{},{}",
                       maximum.x, maximum.y, maximum.z, minimum.x, minimum.y, minimum.z);
 }
 

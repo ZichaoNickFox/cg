@@ -22,6 +22,7 @@ constexpr char kSpecular[] = "specular";
 constexpr char kRoughness[] = "roughness";
 constexpr char kMetallic[] = "metallic";
 constexpr char kShininess[] = "shininess";
+constexpr char kEmission[] = "emission";
 constexpr char kTextureDiffuse[] = "texture_diffuse";
 constexpr char kTextureSpecular[] = "texture_specular";
 constexpr char kTextureAmbient[] = "texture_ambient";
@@ -54,6 +55,7 @@ struct Material {
   glm::vec4 ambient = glm::vec4(0, 0, 0, 0);
   glm::vec4 diffuse = glm::vec4(0, 0, 0, 0);
   glm::vec4 specular = glm::vec4(0, 0, 0, 0);
+  glm::vec4 emission = glm::vec4(0, 0, 0, 0);
   float roughness = 0;
   float metalness = 0;
   float shininess = 0;
@@ -69,9 +71,7 @@ struct Material {
   int texture_height = -1;
   int texture_shininess = -1;
 
-  bool operator==(const Material& other) const {
-    return std::memcmp(this, &other, sizeof(Material)) == 0;
-  }
+  bool operator==(const Material& other) const = default;
 };
   
 class MaterialRepo {
@@ -80,6 +80,7 @@ class MaterialRepo {
   void Add(const std::string& name, const Material& material);
   bool Has(const std::string& name);
   const Material& GetMaterial(int material_index) const;
+  const Material& GetMaterial(const std::string& name) const;
   Material* mutable_material(int material_index);
   int GetMaterialIndex(const std::string& material_name) const;
   int GetIndex(const std::string& material_name) const;
@@ -94,6 +95,7 @@ class MaterialRepo {
     glm::vec4 ambient;
     glm::vec4 diffuse;
     glm::vec4 specular;
+    glm::vec4 emission;
     glm::vec4 roughness_metalness_shininess; // free w
 
     glm::vec4 texture_index_normal_specular_ambient_diffuse;
@@ -101,6 +103,7 @@ class MaterialRepo {
     glm::vec4 texture_index_height_shininess; // free y w
   };
   std::vector<MaterialGPU> GetSSBOData();
+  std::vector<Material> GetSSBOData2();
   SSBO ssbo_;
 
   std::unordered_map<int, Material> index_2_material_;

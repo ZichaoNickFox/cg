@@ -42,6 +42,7 @@ class Scene {
   const LightRepo& light_repo() const { return light_repo_; }
   LightRepo* mutable_light_repo() { return &light_repo_; }
   const ShadowRepo& shadwow_repo() const { return shadow_repo_; }
+  const BVH& bvh() const { return bvh_; }
   
   const Camera& camera() const;
   Camera* mutable_camera();

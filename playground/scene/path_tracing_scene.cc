@@ -19,12 +19,8 @@ void PathTracingScene::OnEnter() {
 
   // path tracing
   glm::ivec2 viewport_size = io_->screen_size();
-  std::vector<glm::vec4> canvas(viewport_size.x * viewport_size.y);
-  for (glm::vec4& elem : canvas) {
-    elem = kBlack;
-  }
-
-  canvas_ = texture_repo_.CreateTexture({viewport_size.x, viewport_size.y, canvas, GL_NEAREST, GL_NEAREST});
+  std::vector<glm::vec4> canvas(viewport_size.x * viewport_size.y, kBlack);
+  canvas_ = CreateTexture2D(viewport_size.x, viewport_size.y, canvas);
 
   RaytracingDebugCommon::LightPath light_path;
 
@@ -40,7 +36,7 @@ void PathTracingScene::OnUpdate() {
 
 void PathTracingScene::OnRender() {
   Rasterization();
-  //PathTracing();
+  // PathTracing();
 }
 
 void PathTracingScene::OnExit() {
@@ -72,5 +68,4 @@ void PathTracingScene::PathTracing() {
   param.output = canvas_;
 
   PathTracingShader(param, *this);
-  RaytracingDebugCommon(canvas_, *this, light_path_ssbo_.GetData<RaytracingDebugCommon::LightPath>());
 }

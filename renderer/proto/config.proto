@@ -14,34 +14,23 @@ message ShaderConfig {
 }
 
 enum TextureType {
-  Texture2D = 0;
-  Cubemap = 1;
+  Unknown = 0;
+  Texture2D = 1;
+  Cubemap = 2;
+  Texture2DArray = 3;
 }
 
 message TextureConfig {
   string name = 1;
   int32 level_num = 2;
   TextureType texture_type = 3;
-  map<string, string> path = 4;
+  repeated string path = 4;
 }
 
 message ModelConfig {
   string name = 1;
   string model_dir = 2;
   string model_file = 3;
-}
-
-message LightAttenuationConfig {
-  float constant = 1;
-  float linear = 2;
-  float quadratic = 3;
-}
-
-message MaterialProperty {
-  repeated float ambient = 1;
-  repeated float diffuse = 2;
-  repeated float specular = 3;
-  float shininess = 4;
 }
 
 message ConfigData {

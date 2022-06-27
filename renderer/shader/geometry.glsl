@@ -1,3 +1,5 @@
+#include "renderer/shader/definition.glsl"
+
 // Ray
 // Sphere
 // Plane

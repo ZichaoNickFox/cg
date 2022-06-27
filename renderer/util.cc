@@ -54,14 +54,16 @@ std::string ReplaceBackslash(const std::string& path) {
 }
 
 std::string FileJoin(const std::string& dir, const std::string& file) {
+  std::string res;
   if (dir.size() == 0) {
-    return file;
+    res = file;
   }
-  if (dir[dir.size() - 1] == '/') {
-    return dir + file;
+  if (dir[dir.size() - 1] == '/' || dir[dir.size() - 1] == '\\') {
+    res = dir + file;
   } else {
-    return dir + "/" + file;
+    res = dir + "/" + file;
   }
+  return ReplaceBackslash(res);
 }
 
 // S_IRWXU	00700权限，代表该文件所有者拥有读，写和执行操作的权限

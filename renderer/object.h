@@ -41,6 +41,8 @@ struct ObjectRepo {
   void GetPrimitives(const MeshRepo& mesh_repo, const MaterialRepo& material_repo, const Filter& filter = Filter(),
                      PrimitiveRepo* primitive_repo = nullptr);
   std::string GetName(int object_index) const;
+  bool Has(const std::string& object_name) const;
+  bool Has(int object_index) const;
 
  private:
   std::unordered_map<int, Object> index_2_object_;

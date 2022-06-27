@@ -5,7 +5,7 @@
 namespace renderer {
 
 void PrimitiveRepo::UpdateSSBO() {
-  bool dirty = !(primitives_ == dirty_primitives_);
+  bool dirty = primitives_ != dirty_primitives_;
   if (dirty) {
     ssbo_.SetData(util::VectorSizeInByte(primitives_), primitives_.data());
     dirty_primitives_ = primitives_;

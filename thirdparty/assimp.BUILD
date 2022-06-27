@@ -5,6 +5,7 @@ cc_library(
   name = "assimp",
   srcs = glob([
     "code/AssetLib/Obj/*",
+    "code/AssetLib/FBX/*",
     "code/Common/*.h",
     "code/Common/*.hpp",
     "code/Common/*.cpp",
@@ -20,6 +21,8 @@ cc_library(
     "contrib/pugixml/src/*.c",
     "contrib/zip/src/*.h",
     "contrib/zip/src/*.c",
+    "contrib/zlib/*.h",
+    "contrib/zlib/*.c",
     "contrib/utf8cpp/source/**/*",
   ]),
   includes = [
@@ -76,7 +79,6 @@ cc_library(
     "ASSIMP_BUILD_NO_NDO_IMPORTER",
     "ASSIMP_BUILD_NO_IFC_IMPORTER",
     "ASSIMP_BUILD_NO_XGL_IMPORTER",
-    "ASSIMP_BUILD_NO_FBX_IMPORTER",
     "ASSIMP_BUILD_NO_ASSBIN_IMPORTER",
     "ASSIMP_BUILD_NO_GLTF_IMPORTER",
     "ASSIMP_BUILD_NO_GLTF1_IMPORTER",

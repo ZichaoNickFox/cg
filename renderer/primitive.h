@@ -14,9 +14,7 @@ struct Primitive {
 
   const AABB& GetAABB() const { return aabb; }
 
-  bool operator==(const Primitive& other) const {
-    return memcmp(this, &other, sizeof(Primitive));
-  }
+  bool operator==(const Primitive& other) const = default;
 };
 
 class PrimitiveRepo {

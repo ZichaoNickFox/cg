@@ -21,10 +21,6 @@ std::string FileJoin(const std::string& dir, const std::string& file);
 // string
 bool StartsWith(const std::string& str, const std::string& start_with);
 bool EndsWith(const std::string& str, const std::string& end_with);
-template<typename ...Args>
-std::string Format(const char* format, const Args&... args) {
-  return fmt::format(format, args...);
-}
 template<typename PtrType>
 std::string AsString(PtrType* ptr) {
   return Format("{}", uint64_t(ptr));
@@ -90,7 +86,7 @@ std::vector<VectorElemType> SubVector(const std::vector<VectorElemType>& source,
 }
 template<typename VectorElemType>
 void Remove(const VectorElemType& elem, std::vector<VectorElemType>* elems) {
-  for (std::vector<VectorElemType>::iterator iter = elems->begin(); iter < elems->end();) {
+  for (auto iter = elems->begin(); iter != elems->end();) {
     if (elem == *iter) {
       iter = elems->erase(iter);
     } else {

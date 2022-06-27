@@ -12,9 +12,7 @@ struct Shadow {
   glm::mat4 light_space_vp;
   int texture_depth;
 
-  bool operator==(const Shadow& other) const {
-    return memcmp(this, &other, sizeof(Shadow)) == 0;
-  }
+  bool operator==(const Shadow& other) const = default;
 };
 
 struct ShadowRepo {

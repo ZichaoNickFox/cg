@@ -71,7 +71,7 @@ void ModelScene::OnRender() {
   glCullFace_(call_face_);
   glFrontFace_(cw_);
 
-  PhongShader({true}, *this, object_repo_.GetObject("teapot"));
+  PhongShader({true}, *this, object_repo_.GetObject("cerberus"));
   LinesShader({}, *this, CoordinatorMesh());
 }
 
