@@ -1,4 +1,4 @@
-#include "renderer/meshes/empty_mesh.h"
+#include "renderer/mesh/empty_mesh.h"
 
 namespace renderer {
 EmptyMesh::EmptyMesh() {

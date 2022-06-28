@@ -1,4 +1,4 @@
-#include "renderer/meshes/lines_mesh.h"
+#include "renderer/mesh/lines_mesh.h"
 
 namespace renderer {
 

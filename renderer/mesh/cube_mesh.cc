@@ -1,6 +1,6 @@
-#include "renderer/meshes/cube_mesh.h"
+#include "renderer/mesh/cube_mesh.h"
 
-#include "renderer/meshes/mesh_util.h"
+#include "renderer/mesh/mesh_util.h"
 
 CubeMesh::CubeMesh() {
   std::vector<glm::vec3> positions{

@@ -1,4 +1,4 @@
-#include "renderer/meshes/mesh_util.h"
+#include "renderer/mesh/mesh_util.h"
 
 #include "glog/logging.h"
 

@@ -5,7 +5,7 @@
 
 #include "renderer/color.h"
 #include "renderer/math.h"
-#include "renderer/meshes/lines_mesh.h"
+#include "renderer/mesh/lines_mesh.h"
 #include "renderer/scene_common.h"
 #include "renderer/shader.h"
 #include "renderer/transform.h"

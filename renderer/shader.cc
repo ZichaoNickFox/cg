@@ -8,7 +8,7 @@
 
 #include "renderer/bvh.h"
 #include "renderer/debug.h"
-#include "renderer/meshes/empty_mesh.h"
+#include "renderer/mesh/empty_mesh.h"
 #include "renderer/geometry.h"
 #include "renderer/scene.h"
 #include "renderer/util.h"

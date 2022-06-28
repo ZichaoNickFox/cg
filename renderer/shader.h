@@ -5,7 +5,7 @@
 
 #include "renderer/camera.h"
 #include "renderer/geometry.h"
-#include "renderer/meshes/lines_mesh.h"
+#include "renderer/mesh/lines_mesh.h"
 #include "renderer/object.h"
 #include "renderer/pass.h"
 #include "renderer/shader.h"

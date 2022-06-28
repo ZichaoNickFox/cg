@@ -1,11 +1,11 @@
-#include "renderer/meshes/sphere_mesh.h"
+#include "renderer/mesh/sphere_mesh.h"
 
 #include "glm/gtx/string_cast.hpp"
 #include <map>
 #include <math.h>
 
 #include "renderer/debug.h"
-#include "renderer/meshes/mesh_util.h"
+#include "renderer/mesh/mesh_util.h"
 
 SphereMesh::SphereMesh(int refine) {
   // https://baike.baidu.com/item/%E6%AD%A3%E4%BA%8C%E5%8D%81%E9%9D%A2%E4%BD%93/1921640?fr=aladdin

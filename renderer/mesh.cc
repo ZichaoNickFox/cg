@@ -7,10 +7,10 @@
 
 #include "renderer/debug.h"
 #include "renderer/gl.h"
-#include "renderer/meshes/cube_mesh.h"
-#include "renderer/meshes/lines_mesh.h"
-#include "renderer/meshes/plane_mesh.h"
-#include "renderer/meshes/sphere_mesh.h"
+#include "renderer/mesh/cube_mesh.h"
+#include "renderer/mesh/lines_mesh.h"
+#include "renderer/mesh/plane_mesh.h"
+#include "renderer/mesh/sphere_mesh.h"
 
 namespace renderer {
 Mesh::Mesh() {

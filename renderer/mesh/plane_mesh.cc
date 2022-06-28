@@ -1,6 +1,6 @@
-#include "renderer/meshes/plane_mesh.h"
+#include "renderer/mesh/plane_mesh.h"
 
-#include "renderer/meshes/mesh_util.h"
+#include "renderer/mesh/mesh_util.h"
 
 PlaneMesh::PlaneMesh() {
   std::vector<glm::vec3> positions{

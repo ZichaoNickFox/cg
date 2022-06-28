@@ -8,7 +8,7 @@
 #include "renderer/color.h"
 #include "renderer/debug.h"
 #include "renderer/io.h"
-#include "renderer/meshes/lines_mesh.h"
+#include "renderer/mesh/lines_mesh.h"
 #include "renderer/shader.h"
 
 namespace renderer {
