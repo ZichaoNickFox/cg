@@ -9,7 +9,6 @@
 
 #include "renderer/debug.h"
 #include "renderer/definition.h"
-#include "renderer/shader.h"
 #include "renderer/ssbo.h"
 #include "renderer/texture.h"
 
@@ -91,6 +90,8 @@ class MaterialRepo {
 
  private:
   struct MaterialGPU {
+    MaterialGPU() = default;  
+    MaterialGPU(const Material& material);
     glm::vec4 albedo;
     glm::vec4 ambient;
     glm::vec4 diffuse;
@@ -102,8 +103,6 @@ class MaterialRepo {
     glm::vec4 texture_index_basecolor_roughness_metalness_ambientocclusion;
     glm::vec4 texture_index_height_shininess; // free y w
   };
-  std::vector<MaterialGPU> GetSSBOData();
-  std::vector<Material> GetSSBOData2();
   SSBO ssbo_;
 
   std::unordered_map<int, Material> index_2_material_;

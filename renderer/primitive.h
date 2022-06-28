@@ -31,6 +31,14 @@ class PrimitiveRepo {
   void UpdateSSBO();
 
  private:
+  struct PrimitiveGPU {
+    PrimitiveGPU() = default;
+    PrimitiveGPU(const Primitive& primitive);
+    AABBGPU aabb_gpu;
+    TriangleGPU triangle_gpu;
+    glm::vec4 normal_objectindex;
+  };
+
   std::vector<Primitive> primitives_;
   std::vector<Primitive> dirty_primitives_;
   SSBO ssbo_;

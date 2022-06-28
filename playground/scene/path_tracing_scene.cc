@@ -7,7 +7,7 @@
 #include "renderer/math.h"
 #include "renderer/meshes/lines_mesh.h"
 #include "renderer/scene_common.h"
-#include "renderer/shaders.h"
+#include "renderer/shader.h"
 #include "renderer/transform.h"
 
 using namespace renderer;
@@ -18,9 +18,9 @@ void PathTracingScene::OnEnter() {
                           glm::quat(0.070520, {-0.005535, -0.994436, -0.078057}), {1, 1, 1}});
 
   // path tracing
-  glm::ivec2 viewport_size = io_->screen_size();
-  std::vector<glm::vec4> canvas(viewport_size.x * viewport_size.y, kBlack);
-  canvas_ = CreateTexture2D(viewport_size.x, viewport_size.y, canvas);
+  glm::ivec2 framebuffer_size = io_->framebuffer_size();
+  std::vector<glm::vec4> canvas((framebuffer_size.x / 2) * (framebuffer_size.y / 2), kBlack);
+  canvas_ = CreateTexture2D(framebuffer_size.x / 2, framebuffer_size.y / 2, canvas);
 
   RaytracingDebugCommon::LightPath light_path;
 
@@ -65,7 +65,7 @@ void PathTracingScene::PathTracing() {
   param.screen_size = io_->screen_size();
   param.camera = camera_.get();
   param.frame_num = frame_stat_->frame_num();
-  param.output = canvas_;
+  param.canvas = canvas_;
 
   PathTracingShader(param, *this);
 }

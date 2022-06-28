@@ -57,12 +57,12 @@ struct LightRepo {
 
  private:
   struct LightGPU {
+    LightGPU() = default;
+    LightGPU(const Light& light);
     glm::vec4 type_pos;
     glm::vec4 color;
     glm::vec4 attenuation_2_1_0;
   };
-  std::vector<LightGPU> GetSSBOData();
-
   SSBO ssbo_;
   std::vector<Light> lights_;
   std::vector<Light> dirty_lights_;

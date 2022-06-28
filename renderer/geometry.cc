@@ -108,6 +108,11 @@ float AABB::GetMaximumByAxis(Axis axis) const {
   }
 }
 
+AABBGPU::AABBGPU(const AABB& aabb) {
+  maximum = glm::vec4(aabb.maximum, 0.0);
+  minimum = glm::vec4(aabb.minimum, 0.0);
+}
+
 AABB Triangle::AsAABB() const {
   float maximum_x = std::max(std::max(a.x, b.x), c.x);
   float maximum_y = std::max(std::max(a.y, b.y), c.y);
@@ -263,5 +268,11 @@ RayTriangleResult RayTriangle(const Ray& ray, const Triangle& triangle) {
   res.normal = glm::normalize(glm::cross(edge1, edge2));
   res.pos = ray.origin + ray.dir * t;
   return res;
+}
+
+TriangleGPU::TriangleGPU(const Triangle& triangle) {
+  a = glm::vec4(triangle.a, 0.0);
+  b = glm::vec4(triangle.b, 0.0);
+  c = glm::vec4(triangle.c, 0.0);
 }
 } // namespace renderer

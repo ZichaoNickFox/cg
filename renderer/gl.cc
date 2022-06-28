@@ -88,7 +88,10 @@ void glBindBuffer_(GLenum target, GLuint buffer) {
 
 void glBindBufferBase_(GLenum target, GLuint index, GLuint buffer) {
   glBindBufferBase(target, index, buffer);
-  CGCHECKGL();
+  CGCHECKGL() << "glBindBufferBase"
+              << " target~" << std::hex << target << std::dec
+              << " index~" << index
+              << " buffer~" << buffer;
 }
 
 void glBufferData_(GLenum target, GLsizeiptr size, const void* data, GLenum usage) {
@@ -445,7 +448,10 @@ GLint glGetUniformLocation_(GLuint program, const GLchar *name) {
 
 void glDispatchCompute_(GLuint num_groups_x, GLuint num_groups_y, GLuint num_groups_z) {
   glDispatchCompute(num_groups_x, num_groups_y, num_groups_z);
-  CGCHECKGL();
+  CGCHECKGL() << "glDispatchCompute"
+              << " num_groups_x~" << num_groups_x
+              << " num_groups_y~" << num_groups_y
+              << " num_groups_z~" << num_groups_z;
 }
 
 void glMemoryBarrier_(GLbitfield barriers) {

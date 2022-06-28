@@ -19,7 +19,7 @@ class ShaderParser {
 
  public:
   ShaderParser(const std::string& name);
-  std::vector<Shader::CodePart> Parse(const std::string& file_path);
+  std::vector<ShaderProgram::CodePart> Parse(const std::string& file_path);
 
  private:
   void ParseAFile(const std::string& file_path);
@@ -38,7 +38,7 @@ class ShaderLoader {
     kTS,
     kCS
   };
-  Shader Load(const std::string& name, const std::unordered_map<FileType, std::string>& file_paths);
+  ShaderProgram Load(const std::string& name, const std::unordered_map<FileType, std::string>& file_paths);
 };
 
 };

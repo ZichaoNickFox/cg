@@ -7,29 +7,29 @@
 //#include "playground/scene/AA_test_scene.h"
 //#include "playground/scene/deferred_shading_scene.h"
 //#include "playground/scene/depth_scene.h"
+//#include "playground/scene/equirectangular_2_cubemap_tool.h"
 //#include "playground/scene/forward_shading_scene.h"
+#include "playground/scene/geometry_scene.h"
+//#include "playground/scene/instance_scene.h"
 #include "playground/scene/model_scene.h"
 //#include "playground/scene/mrt_scene.h"
 //#include "playground/scene/normal_scene.h"
-//#include "playground/scene/equirectangular_2_cubemap_tool.h"
+#include "playground/scene/path_tracing_scene.h"
 //#include "playground/scene/pbr_BRDF_integration_map_generator.h"
 //#include "playground/scene/pbr_irradiance_cubemap_generator.h"
 //#include "playground/scene/pbr_prefiltered_color_cubemap_generator.h"
-#include "playground/scene/ray_tracing_scene.h"
-#include "playground/scene/path_tracing_scene.h"
 //#include "playground/scene/pbr_scene.h"
 //#include "playground/scene/random_test_scene.h"
-//#include "playground/scene/geometry_scene.h"
+#include "playground/scene/ray_tracing_scene.h"
 //#include "playground/scene/sample_test_scene.h"
 //#include "playground/scene/shadow_scene.h"
 //#include "playground/scene/share_scene.h"
 //#include "playground/scene/skybox_scene.h"
 //#include "playground/scene/SSAO_scene.h"
 //#include "playground/scene/texture_lod_scene.h"
-//#include "playground/scene/instance_scene.h"
 
 const std::string kConfigPath = "playground/config.pb.txt";
-const std::string kDefaultSceneName = "PathTracingScene";
+const std::string kDefaultSceneName = "GeometryScene";
 const std::unordered_map<std::string, std::function<renderer::Scene*()>> kFactory = {
   // {"ForwardShadingScene", [] () { return new ForwardShadingScene; }},
   // {"DeferredShadingScene", [] () { return new DeferredShadingScene; }},
@@ -51,7 +51,7 @@ const std::unordered_map<std::string, std::function<renderer::Scene*()>> kFactor
   // {"DepthScene", [] () { return new DepthScene; }},
   // {"InstanceScene", [] () { return new InstanceScene; }},
   // {"RandomTestScene", [] () { return new RandomTestScene; }},
-  // {"GeometryScene", [] () { return new GeometryScene; }},
+  {"GeometryScene", [] () { return new GeometryScene(); }},
   {"ModelScene", [] () { return new ModelScene(); }},
   {"RayTracingScene", [] () { return new RayTracingScene(); }},
   {"PathTracingScene", [] () { return new PathTracingScene(); }},

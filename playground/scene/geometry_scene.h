@@ -3,9 +3,11 @@
 #include "renderer/camera.h"
 #include "renderer/geometry.h"
 #include "renderer/scene.h"
+#include "renderer/ssbo.h"
 
-class GeometryScene : public Scene {
+class GeometryScene : public renderer::Scene {
  public:
+  GeometryScene() : ssbo_triangle_(SSBO_USER_0), ssbo_aabb_(SSBO_USER_1) {}
   void OnEnter() override;
   void OnUpdate() override;
   void OnRender() override;
@@ -18,6 +20,12 @@ class GeometryScene : public Scene {
   static constexpr int kAABBNum = 100;
   std::array<renderer::AABB, kAABBNum> aabbs_;
 
-  std::shared_ptr<renderer::Camera> camera_ = std::make_shared<renderer::Camera>();
+  void Rasterization();
+  void Raytracing();
+
+  renderer::SSBO ssbo_triangle_;
+  renderer::SSBO ssbo_aabb_;
+
+  renderer::Texture canvas_;
 };
 

@@ -137,13 +137,15 @@ Texture CreateTexture2D(int width, int height, const std::vector<glm::vec4>& dat
   meta.level_num = 1;
   meta.depth = 1;
 
-  meta.gl_internal_format = GL_RGBA16F;
-  meta.gl_format = GL_FLOAT;
-  meta.gl_type = GL_RGBA;
+  meta.gl_internal_format = GL_RGBA32F;
+  meta.gl_format = GL_RGBA;
+  meta.gl_type = GL_FLOAT;
   meta.gl_min_filter = min_filter;
   meta.gl_mag_filter = mag_filter;
   meta.gl_wrap_s = wrap_s;
   meta.gl_wrap_t = wrap_t;
+  CGCHECK(meta.data_size_in_byte() == util::VectorSizeInByte(data))
+      << meta.data_size_in_byte() << " " << util::VectorSizeInByte(data);
   Texture res = CreateTexture2D(meta, std::vector<void*>{(void*)data.data()});
   res.Varify();
   return res;

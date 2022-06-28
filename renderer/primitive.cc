@@ -7,9 +7,18 @@ namespace renderer {
 void PrimitiveRepo::UpdateSSBO() {
   bool dirty = primitives_ != dirty_primitives_;
   if (dirty) {
-    ssbo_.SetData(util::VectorSizeInByte(primitives_), primitives_.data());
+    std::vector<PrimitiveGPU> primitive_gpus;
+    std::transform(primitives_.begin(), primitives_.end(), std::back_inserter(primitive_gpus),
+                   [] (const Primitive& primitive) { return PrimitiveGPU(primitive); });
+    ssbo_.SetData(util::VectorSizeInByte(primitive_gpus), primitive_gpus.data());
     dirty_primitives_ = primitives_;
   }
+}
+
+PrimitiveRepo::PrimitiveGPU::PrimitiveGPU(const Primitive& primitive) {
+  aabb_gpu = AABBGPU(primitive.aabb);
+  triangle_gpu = TriangleGPU(primitive.triangle);
+  normal_objectindex = glm::vec4(primitive.normal, primitive.object_index);
 }
 
 const AABB& PrimitiveRepo::GetAABB(int index) const {

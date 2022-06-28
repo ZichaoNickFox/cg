@@ -50,6 +50,13 @@ struct AABB {
 #endif
 };
 
+struct AABBGPU {
+  AABBGPU() = default;
+  AABBGPU(const AABB& aabb);
+  glm::vec4 maximum;
+  glm::vec4 minimum;
+};
+
 template<typename ContainerType>
 AABB UnionAABB(const std::vector<ContainerType>& containers, int begin, int end) {
   CGCHECK(end - begin > 0) << " Union AABB size < 1";
@@ -86,6 +93,14 @@ struct Triangle {
   glm::vec3 normal() const;
 
   bool operator==(const Triangle& other) const = default;
+};
+
+struct TriangleGPU {
+  TriangleGPU() = default;
+  TriangleGPU(const Triangle& triangle);
+  glm::vec4 a;
+  glm::vec4 b;
+  glm::vec4 c;
 };
 
 struct RayTriangleResult {

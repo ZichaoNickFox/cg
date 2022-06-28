@@ -32,8 +32,8 @@ class Scene {
   void Render();
   void Exit();
 
-  const ShaderRepo& shader_repo() const { return shader_repo_; }
-  ShaderRepo* mutable_shader_repo() { return &shader_repo_; }
+  const ShaderProgramRepo& shader_program_repo() const { return shader_program_repo_; }
+  ShaderProgramRepo* mutable_shader_program_repo() { return &shader_program_repo_; }
   const TextureRepo& texture_repo() const { return texture_repo_; }
   const MeshRepo& mesh_repo() const { return mesh_repo_; }
   const ObjectRepo& object_repo() const { return object_repo_; }
@@ -59,7 +59,7 @@ class Scene {
 
   std::unique_ptr<Camera> camera_ = std::make_unique<Camera>();
   
-  ShaderRepo shader_repo_;
+  ShaderProgramRepo shader_program_repo_;
   TextureRepo texture_repo_;
   ObjectRepo object_repo_;
   MeshRepo mesh_repo_;

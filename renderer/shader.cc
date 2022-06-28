@@ -1,253 +1,357 @@
-#include "shader.h"
+#include "renderer/shader.h"
 
-#include <map>
-#include "glm/gtx/string_cast.hpp"
-#include "glm/gtc/type_ptr.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
+#include "imgui.h"
+#include <set>
 
+#include "renderer/bvh.h"
 #include "renderer/debug.h"
-#include "renderer/shader_loader.h"
+#include "renderer/meshes/empty_mesh.h"
+#include "renderer/geometry.h"
+#include "renderer/scene.h"
 #include "renderer/util.h"
 
 namespace renderer {
-
-Shader::Shader(const std::string& name, const std::vector<CodePart>& vs, const std::vector<CodePart>& fs,
-               const std::vector<CodePart>& gs, const std::vector<CodePart>& ts) {
-  name_ = name;
-
-  bool has_gs = gs.size() > 0;
-  bool has_ts = ts.size() > 0;
-  GLuint vertex_shader_object, fragment_shader_object, geometry_shader_object, tessellation_shader_object;
-  vertex_shader_object = CompileShader(vs, GL_VERTEX_SHADER);
-  fragment_shader_object = CompileShader(fs, GL_FRAGMENT_SHADER);
-  if (has_gs) {
-    geometry_shader_object = CompileShader(gs, GL_GEOMETRY_SHADER);
-  }
-  if (has_ts) {
-    tessellation_shader_object = CompileShader(ts, GL_TESS_CONTROL_SHADER);
-  }
-
-  id_ = glCreateProgram_();
-  std::vector<GLuint> objects{vertex_shader_object, fragment_shader_object};
-  if (has_gs) objects.push_back(geometry_shader_object);
-  if (has_ts) objects.push_back(tessellation_shader_object);
-  LinkShader(id_, objects);
-}
-
-Shader::Shader(const std::string& name, const std::vector<CodePart>& cs) {
-  name_ = name;
-
-  id_ = glCreateProgram_();
-  GLuint compute_shader_object = 0;
-  compute_shader_object = CompileShader(cs, GL_COMPUTE_SHADER);
-  std::vector<GLuint> objects{compute_shader_object};
-  LinkShader(id_, objects);
-}
-
 namespace {
-// TODO : use util's
-bool StartsWith(const std::string& str, const std::string& start_with) {
-  return str.rfind(start_with, 0) == 0;
+void SetCamera(const Camera& camera, ShaderProgram* program) {
+  program->SetVec3("camera.pos_ws", camera.transform().translation());
+  program->SetMat4("camera.view", camera.GetViewMatrix());
+  program->SetMat4("camera.project", camera.GetProjectMatrix());
+  program->SetFloat("camera.u_near", camera.near_clip());
+  program->SetFloat("camera.u_far", camera.far_clip());
 }
-} 
+}
 
-std::string Shader::GetOneLineCompilerError430(const std::vector<Shader::CodePart>& code_parts,
-                                               const std::string& gl_log) {
-  std::string res = gl_log;
-  int source_line_num = 0;
-  const std::string starting = "0(";
-  res.erase(0, starting.size());
+RenderShader::RenderShader(const Scene& scene, const std::string& shader_name) {
+  program_ = scene.shader_program_repo().GetShader(shader_name);
+  program_.Use();
+  if (scene.texture_repo().size() > 0) {
+    program_.SetTexture("texture_repo", scene.texture_repo().AsTextureRepo());
+  }
+  program_.SetInt("light_repo_length", scene.light_repo().length());
+  program_.SetInt("material_repo_length", scene.material_repo().length());
+  program_.SetInt("bvh_length", scene.bvh().length());
+}
 
-  int line_num_end = res.find_first_of(")");
-  source_line_num = std::atoi(res.substr(0, line_num_end).c_str());
-  res.erase(0, line_num_end);
+void RenderShader::SetModel(const glm::mat4& model) {
+  program_.SetMat4("model", model);
+}
 
-  const std::string next = ") ";
-  res.erase(0, next.size());
+void RenderShader::SetModel(const Object& object) {
+  program_.SetMat4("model", object.transform.GetModelMatrix());
+}
 
-  int line_sum = 1;
-  for (const Shader::CodePart& code_part : code_parts) {
-    int line_num_in_file = 1;
-    for (char c : code_part.code) {
-      if (c == '\n') {
-        line_sum++;
-        line_num_in_file ++;
-        if (line_sum == source_line_num) {
-          return fmt::format("\"{}\" {} {}", code_part.glsl_path, line_num_in_file, res);
-        }
+void RenderShader::SetCamera(const Camera& camera) {
+  renderer::SetCamera(camera, &program_);
+}
+
+void RenderShader::SetMaterialIndex(int material_index) {
+  program_.SetInt("material_index", material_index);
+}
+
+void RenderShader::Run(const Scene& scene, const Object& object) const {
+  scene.mesh_repo().GetMesh(object.mesh_index)->Submit();
+}
+
+void RenderShader::Run(const Mesh& mesh) const {
+  mesh.Submit();
+}
+
+ComputeShader::ComputeShader(const Scene& scene, const std::string& shader_name) {
+  program_ = scene.shader_program_repo().GetShader(shader_name);
+  program_.Use();
+  if (scene.texture_repo().size() > 0) {
+    program_.SetTexture("texture_repo", scene.texture_repo().AsTextureRepo());
+  }
+  program_.SetInt("light_repo_length", scene.light_repo().length());
+  program_.SetInt("material_repo_length", scene.material_repo().length());
+  program_.SetInt("bvh_length", scene.bvh().length());
+
+  work_group_num_ = {scene.io().screen_size().x / 32 + 1, scene.io().screen_size().x / 32 + 1, 1};
+}
+
+void ComputeShader::Run() const {
+  program_.Use();
+  glDispatchCompute_(work_group_num_.x, work_group_num_.y, work_group_num_.z);
+  glMemoryBarrier_(GL_ALL_BARRIER_BITS);
+}
+
+void ComputeShader::SetTextureBinding(const TextureBinding& binding) {
+  CheckInternalFormat(binding.texture);
+  int unit = program_.SetTexture(binding.uniform, binding.texture);
+  glBindImageTexture_(unit, binding.texture.id(), 0, GL_FALSE, 0,
+                      binding.read_write_type, binding.internal_format);
+}
+
+void ComputeShader::CheckInternalFormat(const renderer::Texture& texture) const {
+  GLuint internal_format = texture.meta().gl_internal_format;
+  std::set<GLint> supported_format = { GL_RGBA, GL_RGBA32F };
+  if (supported_format.count(internal_format) <= 0) {
+    CGCHECK(false) << "Unsupported Internal Format : " << std::hex << internal_format << std::dec;
+  }
+}
+
+void ComputeShader::SetCamera(const Camera& camera) {
+  renderer::SetCamera(camera, &program_);
+}
+
+void ComputeShader::SetSpheres(const std::vector<Sphere>& spheres) {
+  for (int i = 0; i < spheres.size(); ++i) {
+    const Sphere& sphere  = spheres[i];
+    program_.SetInt(fmt::format("spheres[{}].id", i), sphere.id);
+    program_.SetVec3(fmt::format("spheres[{}].center_pos", i), sphere.translation);
+    program_.SetVec4(fmt::format("spheres[{}].color", i), sphere.color);
+    program_.SetFloat(fmt::format("spheres[{}].radius", i), sphere.radius);
+  }
+}
+
+void ComputeShader::SetScreenSize(const glm::vec2& screen_size) {
+  program_.SetVec2("screen_size", screen_size);
+}
+
+void ComputeShader::SetTimeSeed(int frame_num) {
+  program_.SetInt("frame_num", frame_num);
+}
+
+PhongShader::PhongShader(const Param& param, const Scene& scene, const Object& object)
+    : RenderShader(scene, "phong") {
+  const Camera& camera = scene.camera();
+  SetModel(object);
+  SetCamera(camera);
+  SetMaterialIndex(object.material_index);
+  program_.SetInt("use_blinn_phong", param.use_blinn_phong);
+  Run(scene, object);
+}
+
+PbrShader::PbrShader(const Param& pbr, const Scene& scene, const Object& object) 
+    : RenderShader(scene, "pbr") {
+  const Camera& camera = scene.camera();
+  SetModel(object);
+  SetCamera(camera);
+
+  program_.SetTexture("texture_irradiance_cubemap", pbr.texture_irradiance_cubemap);
+  program_.SetTexture("texture_prefiltered_color_cubemap", pbr.texture_prefiltered_color_cubemap);
+  program_.SetTexture("texture_BRDF_integration_map", pbr.texture_BRDF_integration_map);
+}
+
+NormalShader::NormalShader(const Param& param, const Scene& scene, const Object& object) 
+    : RenderShader(scene, "normal") {
+  const Camera& camera = scene.camera();
+  SetModel(object);
+  SetCamera(camera);
+
+  program_.SetFloat("line_length", param.length_);
+  program_.SetFloat("line_width", param.width_);
+  program_.SetBool("show_vertex_normal", param.show_vertex_normal_);
+  program_.SetBool("show_TBN", param.show_TBN_);
+  program_.SetBool("show_triangle", param.show_triangle_);
+}
+
+LinesShader::LinesShader(const Param& param, const Scene& scene, const LinesMesh& lines_mesh,
+                         const Transform& transform)
+    : RenderShader(scene, "lines") {
+  const Camera& camera = scene.camera();
+  SetModel(transform.GetModelMatrix());
+  SetCamera(camera);
+  program_.SetFloat("line_width", param.line_width);
+  lines_mesh.Submit();
+}
+
+ColorShader::ColorShader(const Param& param, const Scene& scene, const Object& object)
+    : RenderShader(scene, "color") {
+  const Camera& camera = scene.camera();
+  SetModel(object);
+  SetCamera(camera);
+  program_.SetVec4("color", param.color);
+  Run(scene, object);
+}
+
+TextureShader::TextureShader(const Param& param, const Scene& scene, const Object& object) 
+    : RenderShader(scene, "texture") {
+  const Camera& camera = scene.camera();
+  SetModel(object);
+  SetCamera(camera);
+  program_.SetTexture("texture0", param.texture0);
+}
+
+Texture2DLodShader::Texture2DLodShader(const Param& param, const Scene& scene, const Object& object)
+    : RenderShader(scene, "texture2d_lod") {
+  const Camera& camera = scene.camera();
+  SetModel(object);
+  SetCamera(camera);
+  CGCHECK(param.texture2D0.meta().type == Texture::kTexture2D);
+  program_.SetTexture("texture2D0", param.texture2D0);
+}
+
+CubemapLodShader::CubemapLodShader(const Param& param, const Scene& scene, const Object& object)
+    : RenderShader(scene, "cubemap_lod") {
+  const Camera& camera = scene.camera();
+  SetModel(object);
+  SetCamera(camera);
+  CGCHECK(param.cubemap.meta().type == Texture::kCubemap);
+  program_.SetTexture("texture_cubemap", param.cubemap);
+}
+
+/*
+DepthBufferShader::DepthBufferShader(const DepthBufferShader::Param& param, const Object& object)
+    : RenderShader(param.depth_buffer_shader) {
+  SetModel(object);
+  SetCamera(camera);
+}
+*/
+
+CubemapShader::CubemapShader(const Param& param, const Scene& scene, const Object& object)
+    : RenderShader(scene, "skybox") {
+  SetModel(object);
+  SetCamera(scene.camera());
+  program_.SetTexture("texture0", param.cubemap);
+}
+
+FullscreenQuadShader::FullscreenQuadShader(const Param& param, const Scene& scene)
+    : RenderShader(scene, "fullscreen_quad") {
+  program_.SetTexture("texture0", param.texture0); 
+  Run(EmptyMesh());
+}
+
+PbrEnvironmentCubemapGerneratorShader::PbrEnvironmentCubemapGerneratorShader(const Param& param, const Scene& scene,
+                                                                             const Object& object)
+    : RenderShader(scene, "equirectangular_2_cubemap_tool") {
+  SetModel(object);
+  SetCamera(scene.camera());
+  program_.SetTexture("texture2D0", param.texture2D0); 
+}
+
+TexcoordShader::TexcoordShader(const Param& param, const Scene& scene, const Object& object)
+    : RenderShader(scene, "texcoord") {
+  SetModel(object);
+  SetCamera(scene.camera());
+}
+
+PbrIrradianceCubemapGeneratorShader::PbrIrradianceCubemapGeneratorShader(const Param& param, const Scene& scene, const Object& object)
+    : RenderShader(scene, "pbr_irradiance_cubemap_generator") {
+  SetModel(object);
+  SetCamera(scene.camera());
+  program_.SetTexture("cubemap", param.environment_map);
+}
+
+SampleShader::SampleShader(const Param& param, const Scene& scene, const Object& object)
+    : RenderShader(scene, "sample_test") {
+  SetModel(object);
+  SetCamera(scene.camera());
+}
+
+PbrPrefilteredColorCubemapGeneratorShader::PbrPrefilteredColorCubemapGeneratorShader(
+    const Param& param, const Scene& scene, const Object& object)
+    : RenderShader(scene, "pbr_prefiltered_color_cubemap_generator") {
+  const Camera& camera = scene.camera();
+  SetModel(object);
+  SetCamera(camera);
+  program_.SetTexture("environment_map", param.environment_map); 
+}
+
+PbrBRDFIntegrationMapGeneratorShader::PbrBRDFIntegrationMapGeneratorShader(const Param& param, const Scene& scene)
+    : RenderShader(scene, "pbr_BRDF_integration_map_generator") {}
+
+SSAOShader::SSAOShader(const ParamGBuffer& param_g_buffer, const Scene& scene, const Object& object)
+    : RenderShader(scene, "SSAO_g_buffer") {
+  const Camera& camera = scene.camera();
+  SetModel(object);
+  SetCamera(camera);
+}
+
+SSAOShader::SSAOShader(const ParamSSAO& param, const Scene& scene, const Object& object)
+    : RenderShader(scene, "SSAO_SSAO") {
+  const Camera& camera = scene.camera();
+  program_.SetMat4("u_projection", camera.GetProjectMatrix());
+  program_.SetTexture("ut_position_vs", param.texture_position_vs);
+  program_.SetTexture("ut_normal_vs", param.texture_normal_vs);
+  program_.SetTexture("ut_noise", param.texture_noise);
+  for (int i = 0; i < 64; ++i) {
+    program_.SetVec3(fmt::format("u_samples_ts[{}]", i).c_str(), param.sampler_ts[i]);
+  }
+}
+
+BlurShader::BlurShader(const Param& param, const Scene& scene, const Object& object)
+    : RenderShader(scene, "blur") {
+  program_.SetTexture("u_texture_input", param.texture);
+  program_.SetVec2("u_viewport_size", param.viewport_size);
+}
+
+RandomShader::RandomShader(const Param& param, const Scene& scene)
+    : ComputeShader(scene, "random_test") {
+  SetTextureBinding({param.input, "texture_input", GL_WRITE_ONLY, GL_RGBA32F});
+  SetTextureBinding({param.output, "texture_output", GL_READ_ONLY, GL_RGBA32F});
+  SetTimeSeed(param.frame_num);
+  Run();
+}
+
+/*
+SimpleModelShader::SimpleModelShader(const Scene& scene, ModelObject* model)
+    : RenderShader(scene, "simple_model") {
+  for (int i = 0; i < model->model_part_num(); ++i) {
+    ModelPartObject* model_part = model->mutable_model_part(i);
+    SetModel(object);
+    SetCamera(camera);
+    for (auto& pair : model_part->model_part_data().uniform_2_texture) {
+      const std::string uniform_name = pair.first;
+      const std::vector<Texture>& textures = pair.second;
+      if (textures.size() > 0) {
+        std::string use_uniform_name = fmt::format("use_{}", uniform_name);
       }
     }
   }
-  CGKILL("Cannot find a file? source_line_num ~ ") << gl_log;
-  return "";
 }
+*/
 
-std::string Shader::GetMultipleLineCompileError(const std::vector<Shader::CodePart>& code_parts,
-                                                const std::string& gl_log) {
-  std::vector<std::string> error_logs;
-  std::string one_error;
-  for (const char c : gl_log) {
-    if (c == '\n') {
-      error_logs.push_back(one_error);
-      one_error = "";
-    } else {
-      one_error += c;
+/*
+InstanceSceneShader::InstanceSceneShader(const Scene& scene, Object* object)
+    : RenderShader(scene, "instance_scene") {
+  for (int i = 0; i < object->model_part_num(); ++i) {
+    ModelPartObject* model_part = object->mutable_model_part(i);
+    SetModel(object);
+    SetCamera(camera);
+    for (auto& pair : model_part->model_part_data().uniform_2_texture) {
+      const std::string uniform_name = pair.first;
+      const std::vector<Texture>& textures = pair.second;
+      if (textures.size() > 0) {
+        std::string use_uniform_name = fmt::format("use_{}", uniform_name);
+      }
     }
   }
-  std::string res = "\n";
-  for (const std::string& one_error : error_logs) {
-    res += GetOneLineCompilerError430(code_parts, one_error);
-    res += "\n";
-  }
-  return res;
+}
+*/
+
+RayTracingShader::RayTracingShader(const Param& param, const Scene& scene) 
+    : ComputeShader(scene, "ray_tracing") {
+  SetCamera(*param.camera);
+  SetSpheres(param.spheres);
+  SetTextureBinding({param.canvas, "canvas", GL_READ_ONLY, GL_RGBA32F});
+  Run();
 }
 
-GLuint Shader::CompileShader(const std::vector<CodePart>& code_parts, GLuint shader_type) {
-  GLuint object = glCreateShader_(shader_type);
-   
-  std::vector<const char*> code_data(code_parts.size());
-  for (int i = 0; i < code_parts.size(); ++i) {
-    const CodePart& code_part = code_parts[i];
-    code_data[i] = code_part.code.data();
-  }
-
-  glShaderSource_(object, code_parts.size(), code_data.data(), NULL);
-  glCompileShader_(object);
-
-  int success;
-  char info_log[1024];
-  glGetShaderiv_(object, GL_COMPILE_STATUS, &success);
-  if (!success)
-  {
-    glGetShaderInfoLog_(object, 1024, NULL, info_log);
-    std::string compile_error_info(info_log);
-    CGKILL("Shader Compile Error : name~") << name_ << GetMultipleLineCompileError(code_parts, compile_error_info);
-  }
-  
-  return object;
+PathTracingDemoShader::PathTracingDemoShader(const Param& param, const Scene& scene) 
+    : ComputeShader(scene, "path_tracing_demo") {
+  SetCamera(*param.camera);
+  SetSpheres(param.spheres);
+  SetTextureBinding({param.canvas, "canvas", GL_READ_ONLY, GL_RGBA32F});
+  SetScreenSize(param.screen_size);
+  SetTimeSeed(param.frame_num);
+  Run();
 }
 
-void Shader::LinkShader(GLuint program, const std::vector<GLuint>& objects) {
-  for (GLuint object : objects) {
-    glAttachShader_(program, object);
-  }
-  glLinkProgram_(program);
-
-  int success;
-  char info_log[1024];
-  glGetProgramiv_(program, GL_LINK_STATUS, &success);
-  if (!success)
-  {
-    glGetProgramInfoLog_(program, 1024, NULL, info_log);
-    CGCHECK(false) << name_ << " : Program link error :" << info_log;
-  }
-
-  for (GLuint object : objects) {
-    glDeleteShader_(object);
-  }
+RayTracingCanvasShader::RayTracingCanvasShader(const Param& param, const Scene& scene)
+    : RenderShader(scene, "ray_tracing_canvas") {
+  program_.SetTexture("texture0", param.texture0); 
+  program_.SetInt("sample_frame_num", param.sample_frame_num); 
 }
 
-void Shader::Use() const {
-  CGCHECK(glIsProgram_(id_)) << "glIsProgram failed, glCreateProgram? not glDeleteProgram? id ~ " << id_;
-  glUseProgram_(id_);
-
-  texture_2_unit_.clear();
+PathTracingShader::PathTracingShader(const Param& param, const Scene& scene) 
+    : ComputeShader(scene, "path_tracing") {
+  SetCamera(*param.camera);
+  SetTextureBinding({param.canvas, "canvas", GL_READ_ONLY, GL_RGBA32F});
+  SetTimeSeed(param.frame_num);
+  Run();
 }
-
-void Shader::SetBool(const std::string &location_name, bool value) const {
-  GLint location = GetUniformLocation(location_name);
-  glUniform1i_(location, (int)value);
-}
-
-void Shader::SetInt(const std::string &location_name, int value) const {
-  GLint location = GetUniformLocation(location_name);
-  glUniform1i_(location, value);
-}
-
-void Shader::SetFloat(const std::string &location_name, float value) const {
-  GLint location = GetUniformLocation(location_name);
-  glUniform1f_(location, value);
-}
-
-void Shader::SetTexture(const std::string &location_name, const Texture& value) const {
-  CGCHECK(value.Varify());
-  int unit = -1;
-  if (texture_2_unit_.count(value.id()) > 0) {
-    unit = texture_2_unit_.at(value.id());
-  } else {
-    unit = texture_2_unit_.size();
-    CGCHECK(unit <= 31) << "Only TEXTURE0 - TEXTURE31 supported : " << unit;
-    texture_2_unit_[value.id()] = unit;
-  }
-  SetInt(location_name, unit);
-  glActiveTexture_(GL_TEXTURE0 + unit);
-  if (value.meta().type == Texture::kTexture2D) {
-    glBindTexture_(GL_TEXTURE_2D, value.id());
-  } else if (value.meta().type == Texture::kCubemap) {
-    glBindTexture_(GL_TEXTURE_CUBE_MAP, value.id());
-  } else if (value.meta().type == Texture::kTexture2DArray) {
-    glBindTexture_(GL_TEXTURE_2D_ARRAY, value.id());
-  }
-}
-
-void Shader::SetMat4(const std::string &location_name, const glm::mat4& value) const {
-  GLint location = GetUniformLocation(location_name);
-  glUniformMatrix4fv_(location, 1, GL_FALSE, glm::value_ptr(value));
-}
-
-void Shader::SetVec4(const std::string &location_name, const glm::vec4& value) const {
-  GLint location = GetUniformLocation(location_name);
-  glUniform4fv_(location, 1, glm::value_ptr(value));
-}
-
-void Shader::SetVec3(const std::string &location_name, const glm::vec3& value) const {
-  GLint location = GetUniformLocation(location_name);
-  glUniform3fv_(location, 1, glm::value_ptr(value));
-}
-
-void Shader::SetVec2(const std::string &location_name, const glm::vec2& value) const {
-  GLint location = GetUniformLocation(location_name);
-  glUniform2fv_(location, 1, glm::value_ptr(value));
-}
-
-GLint Shader::GetUniformLocation(const std::string& location_name) const {
-  GLint res = glGetUniformLocation_(id_, location_name.c_str());
-  if (res == GL_INVALID_VALUE || res == GL_INVALID_OPERATION) {
-    CGKILL("GetUniformLocation Failed") << res;
-  } else if (res == -1) {
-    // It's OK, like passing camera to glsl, but near / far not be used.
-  }
-  return res;
-}
-
-void ShaderRepo::Init(const Config& config) {
-  std::string content;
-  for (const auto& p : config.shader_configs()) {
-    const ShaderConfig& shader_config = p.second;
-    std::string name = shader_config.name();
-    shaders_.insert(std::make_pair(name, ShaderLoadState(shader_config)));
-    CGLOG(ERROR) << "Init shader : " << name;
-  }
-}
-
-Shader ShaderRepo::GetShader(const std::string& name) const {
-  CGCHECK(shaders_.count(name) > 0) << "No shader name : " << name;
-  ShaderLoadState* shader_load_state = &shaders_.at(name);
-  if (shader_load_state->loaded == false) {
-    ShaderLoader shader_loader;
-    shader_load_state->shader = shader_loader.Load(name, {
-        {ShaderLoader::kVS, shader_load_state->config.has_vs_path() ? shader_load_state->config.vs_path() : ""},
-        {ShaderLoader::kFS, shader_load_state->config.has_fs_path() ? shader_load_state->config.fs_path() : ""},
-        {ShaderLoader::kGS, shader_load_state->config.has_gs_path() ? shader_load_state->config.gs_path() : ""},
-        {ShaderLoader::kTS, shader_load_state->config.has_ts_path() ? shader_load_state->config.ts_path() : ""},
-        {ShaderLoader::kCS, shader_load_state->config.has_cs_path() ? shader_load_state->config.cs_path() : ""}});
-    shader_load_state->loaded = true;
-  }
-  return shader_load_state->shader;
-}
-
-void ShaderRepo::ReloadShaders() {
-  for (auto& p : shaders_) {
-    p.second.loaded = false;
-  }
-}
-}
+} // namespace renderer

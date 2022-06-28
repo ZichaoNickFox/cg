@@ -3,17 +3,14 @@
 #include "renderer/shader/material.glsl"
 #include "renderer/shader/primitive.glsl"
 
-struct BVHNode {
+struct BVH {
   AABB aabb;
-  int sequence_begin;
-  int sequence_num;
-  int left_node;
-  int right_node;
+  vec4 primitvebegin_primitivenum_leftnode_rightnode;
 };
 
 uniform int bvh_length;
 layout (std430, binding = SSBO_BVH) buffer BVH {
-  BVHNode bvh[];
+  BVH bvh[];
 };
 
 struct RayBVHResult {
@@ -40,14 +37,14 @@ RayBVHResult RayBVH(Ray ray) {
   while(bool(top >= 0)) {
     int visit = travel[top--];
 
-    BVHNode visit_node = bvh[visit];
+    BVH visit_node = bvh[visit];
     RayAABBResult ray_aabb_result = RayAABB(ray, visit_node.aabb);
     if (!ray_aabb_result.hitted) {
       continue;
     }
     if (visit_node.left_node == -1 && visit_node.right_node == -1) {
       for (int i = visit_node.sequence_begin; i < visit_node.sequence_begin + visit_node.sequence_num; ++i) {
-        BVHNode child_node = ;
+        BVH child_node = ;
         RayTriangleResult ray_triangle_result = RayTriangle(ray, child_node.triangle);
         if (ray_triangle_result.hitted && ray_triangle_result.dist < res.dist) {
           res.hitted = true;

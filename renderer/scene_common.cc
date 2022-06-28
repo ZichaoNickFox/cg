@@ -9,7 +9,7 @@
 #include "renderer/debug.h"
 #include "renderer/io.h"
 #include "renderer/meshes/lines_mesh.h"
-#include "renderer/shaders.h"
+#include "renderer/shader.h"
 
 namespace renderer {
 OnUpdateCommon::OnUpdateCommon(Scene* scene, const std::string& title) {
@@ -27,7 +27,7 @@ OnUpdateCommon::OnUpdateCommon(Scene* scene, const std::string& title) {
   InSpectCursor(scene);
   ImGui::Separator();
 
-  ReloadShaders(scene);
+  ReloadShaderPrograms(scene);
   ImGui::Separator();
 
   InSpectObjects(scene);
@@ -77,9 +77,9 @@ void OnUpdateCommon::InSpectCursor(Scene* scene) {
   ImGui::Text("cursor screen space y %lf", scene->io().GetCursorPosSS().y);
 }
 
-void OnUpdateCommon::ReloadShaders(Scene* scene) {
+void OnUpdateCommon::ReloadShaderPrograms(Scene* scene) {
   if (ImGui::Button("Reload Shaders")) {
-    scene->mutable_shader_repo()->ReloadShaders();
+    scene->mutable_shader_program_repo()->ReloadShaderPrograms();
   }
 }
 

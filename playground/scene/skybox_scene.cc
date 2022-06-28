@@ -7,9 +7,9 @@
 #include <memory>
 
 #include "renderer/math.h"
+#include "renderer/shader.h"
 #include "renderer/transform.h"
 #include "playground/scene/common.h"
-#include "playground/shaders.h"
 
 void SkyboxScene::OnEnter(Scene *context)
 {

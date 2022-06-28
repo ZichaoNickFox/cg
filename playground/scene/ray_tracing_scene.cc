@@ -4,7 +4,7 @@
 #include "renderer/math.h"
 #include "renderer/object.h"
 #include "renderer/scene_common.h"
-#include "renderer/shaders.h"
+#include "renderer/shader.h"
 #include "renderer/transform.h"
 
 using namespace renderer;

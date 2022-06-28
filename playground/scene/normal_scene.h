@@ -12,7 +12,6 @@
 #include "playground/object/plane_object.h"
 #include "playground/object/point_light_object.h"
 #include "playground/object/sphere_object.h"
-#include "playground/shaders.h"
 
 class NormalScene : public Scene {
  public:

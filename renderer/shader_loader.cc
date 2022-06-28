@@ -8,11 +8,11 @@ ShaderParser::ShaderParser(const std::string& name) {
   name_ = name;
 }
 
-std::vector<Shader::CodePart> ShaderParser::Parse(const std::string& file_path) {
+std::vector<ShaderProgram::CodePart> ShaderParser::Parse(const std::string& file_path) {
   ParseAFile(file_path);
 
   std::vector<std::string> sorted = TopologicalSort();
-  std::vector<Shader::CodePart> res;
+  std::vector<ShaderProgram::CodePart> res;
   for (const std::string& path : sorted) {
     res.push_back({path, file_meta_map_[path].content});
   }
@@ -88,29 +88,29 @@ std::vector<std::string> ShaderParser::TopologicalSort() {
   return res;
 }
 
-Shader ShaderLoader::Load(const std::string& name, const std::unordered_map<FileType, std::string>& file_paths) {
+ShaderProgram ShaderLoader::Load(const std::string& name, const std::unordered_map<FileType, std::string>& file_paths) {
   bool is_render_shader = (file_paths.at(kVS) != "" && file_paths.at(kFS) != "");
   bool is_compute_shader = (file_paths.at(kCS) != "");
   CGCHECK(is_render_shader || is_compute_shader) << " Must render shader or compute shader : " << name;
   CGCHECK(!(is_render_shader && is_compute_shader)) << " Must not render shader && compute shader : " << name;
 
-  std::vector<Shader::CodePart> vs, fs, gs, ts, cs;
-  std::unordered_map<FileType, std::vector<Shader::CodePart>*> type_storage_map =
+  std::vector<ShaderProgram::CodePart> vs, fs, gs, ts, cs;
+  std::unordered_map<FileType, std::vector<ShaderProgram::CodePart>*> type_storage_map =
       {{kVS, &vs}, {kFS, &fs}, {kGS, &gs}, {kTS, &ts}, {kCS, &cs}};
   for (auto& p : type_storage_map) {
     if (file_paths.at(p.first) != "") {
       ShaderParser parser(name);
-      std::vector<Shader::CodePart> code_parts = parser.Parse(file_paths.at(p.first));
+      std::vector<ShaderProgram::CodePart> code_parts = parser.Parse(file_paths.at(p.first));
       *p.second = code_parts;
     }
   }
   if (is_render_shader) {
-    return Shader(name, vs, fs, gs, ts);
+    return ShaderProgram(name, vs, fs, gs, ts);
   } else if (is_compute_shader) {
-    return Shader(name, cs);
+    return ShaderProgram(name, cs);
   } else {
     CGCHECK(false) << "What shader ?";
-    return Shader();
+    return ShaderProgram();
   }
 }
 

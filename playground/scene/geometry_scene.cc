@@ -4,10 +4,30 @@
 
 #include "renderer/color.h"
 #include "renderer/math.h"
-#include "playground/scene/common.h"
-#include "playground/shaders.h"
+#include "renderer/scene_common.h"
+#include "renderer/shader.h"
 
-void GeometryScene::OnEnter(Scene* context) {
+using namespace renderer;
+
+class GeometrySceneShader : public ComputeShader {
+ public:
+  struct Param {
+    renderer::Texture canvas;
+    size_t triangle_num;
+    size_t aabb_num;
+  };
+  GeometrySceneShader(const Param& param, const Scene& scene)
+      : ComputeShader(scene, "geometry_scene") {
+    SetCamera(scene.camera());
+    SetTextureBinding({param.canvas, "canvas", GL_READ_WRITE, GL_RGBA32F});
+    SetScreenSize(scene.io().screen_size());
+    program_.SetInt("triangle_num", param.triangle_num);
+    program_.SetInt("aabb_num", param.aabb_num);
+    Run();
+  }
+};
+
+void GeometryScene::OnEnter() {
   for (int i = 0; i < kTriangleNum; ++i) {
     glm::vec3 center = glm::vec3(util::RandFromTo(-5, 5), util::RandFromTo(-5, 5), util::RandFromTo(-5, 5));
     glm::vec3 a_offset = glm::vec3(util::RandFromTo(-0.5, 0.5), util::RandFromTo(-0.5, 0.5),
@@ -25,26 +45,32 @@ void GeometryScene::OnEnter(Scene* context) {
     aabbs_[i] = renderer::AABB{center + offset, center - offset};
   }
 
-  context->SetCamera(camera_.get());
+  std::vector<renderer::TriangleGPU> triangle_gpus; 
+  std::vector<renderer::AABBGPU> aabb_gpus;
+  std::transform(triangles_.begin(), triangles_.end(), std::back_inserter(triangle_gpus),
+                 [] (const renderer::Triangle& triangle) { return renderer::TriangleGPU(triangle); });
+  std::transform(aabbs_.begin(), aabbs_.end(), std::back_inserter(aabb_gpus),
+                 [] (const renderer::AABB& aabb) { return renderer::AABBGPU(aabb); });
+  ssbo_triangle_.SetData(util::VectorSizeInByte(triangle_gpus), triangle_gpus.data());
+  ssbo_aabb_.SetData(util::VectorSizeInByte(aabb_gpus), aabb_gpus.data());
+
+  glm::ivec2 viewport_size = io_->screen_size();
+  std::vector<glm::vec4> canvas(viewport_size.x * viewport_size.y, kBlack);
+  canvas_ = CreateTexture2D(viewport_size.x, viewport_size.y, canvas, GL_NEAREST, GL_NEAREST);
 }
 
 void GeometryScene::OnUpdate() {
-  OnUpdateCommon _(scene, "RayTriangleScene");
 }
 
-void GeometryScene::OnRender() {
-  renderer::Ray ray = scene->camera().GetPickRay(scene->io().GetCursorPosSS());
+void GeometryScene::Rasterization() {
+  renderer::Ray ray = camera_->GetPickRay(io_->GetCursorPosSS());
   for (int i = 0; i < kTriangleNum; ++i) {
     glm::vec4 color = renderer::kBlack;
     if (RayTriangle(ray, triangles_[i]).hitted) {
       color = renderer::kRed;
     }
 
-    LinesObject lines_object;
-    LinesObject::Mesh mesh(triangles_[i], color);
-    lines_object.SetMesh(mesh);
-    LinesShader lines_shader({}, scene, &lines_object);
-    lines_object.OnRender(scene);
+    LinesShader({}, *this, {{triangles_[i]}, color});
   }
 
   for (int i = 0; i < kAABBNum; ++i) {
@@ -53,15 +79,19 @@ void GeometryScene::OnRender() {
       color = renderer::kRed;
     }
 
-    LinesObject lines_object;
-    LinesObject::Mesh mesh({aabbs_[i]}, color);
-    lines_object.SetMesh(mesh);
-    LinesShader lines_shader({}, scene, &lines_object);
-    lines_object.OnRender(scene);
+    LinesShader({}, *this, {{aabbs_[i]}, color});
   }
-
-  OnRenderCommon _(scene);
 }
 
-void GeometryScene::OnExit(Scene* context) {
+void GeometryScene::Raytracing() {
+  GeometrySceneShader({canvas_, triangles_.size(), aabbs_.size()}, *this);
+  FullscreenQuadShader({canvas_}, *this);
+}
+
+void GeometryScene::OnRender() {
+  // Rasterization();
+  Raytracing();
+}
+
+void GeometryScene::OnExit() {
 }

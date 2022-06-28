@@ -15,7 +15,7 @@ class OnUpdateCommon {
   void InspectCamera(Scene* scene);
   void MoveCamera(Scene* scene);
   void InSpectCursor(Scene* scene);
-  void ReloadShaders(Scene* scene);
+  void ReloadShaderPrograms(Scene* scene);
   void InSpectObjects(Scene* scene);
   void InspectLights(Scene* scene);
 

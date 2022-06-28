@@ -13,7 +13,7 @@ void Scene::Enter(const std::string& name, Config* config, Io* io, FrameStat* fr
   io_ = io;
   frame_stat_ = frame_stat;
 
-  shader_repo_.Init(*config);
+  shader_program_repo_.Init(*config);
 
   glEnable_(GL_DEPTH_TEST);
 

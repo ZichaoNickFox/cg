@@ -8,11 +8,11 @@
 #include <memory>
 #include <vector>
 
-#include "renderer/repo/texture_repo.h"
+#include "renderer/shader.h"
+#include "renderer/texture.h"
 #include "renderer/transform.h"
 #include "renderer/util.h"
 #include "playground/scene/common.h"
-#include "playground/shaders.h"
 
 void MrtScene::OnEnter(Scene *context)
 {

@@ -1,6 +1,3 @@
-// rgba32f binding
-#define IMAGE_CANVAS 0
-
 // ssbo binding
 #define SSBO_LIGHT_PATH 0
 #define SSBO_BVH 1
@@ -9,6 +6,11 @@
 #define SSBO_LIGHT_REPO 4
 #define SSBO_SHADOW_REPO 5
 #define SSBO_OBJECT_REPO 6
+
+#define SSBO_USER_0 7
+#define SSBO_USER_1 8
+#define SSBO_USER_2 9
+#define SSBO_USER_3 10
 
 #define FLT_EPSILON 0.00001
 #define FLT_LOWEST -3.40282e+38

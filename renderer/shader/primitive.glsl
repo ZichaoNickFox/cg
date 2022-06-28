@@ -4,8 +4,7 @@
 struct Primitive {
   AABB aabb;
   Triangle triangle;
-  vec3 normal;
-  int material_index;
+  vec4 normal_objectindex;
 };
 
 layout (std430, binding = SSBO_PRIMITIVE_REPO) buffer PrimitiveRepo {

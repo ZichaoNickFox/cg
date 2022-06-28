@@ -68,11 +68,11 @@ class BVH {
   // Partition by Pos end
 
   struct NodeGPU {
-    glm::vec4 aabb_maximum;
-    glm::vec4 aabb_minimum;
-    glm::vec4 seqbegin_seqnum_leftnode_rightnode;
+    NodeGPU() = default;
+    NodeGPU(const BVH::Node& node);
+    AABBGPU aabb_gpu;
+    glm::vec4 primitivebegin_primitivenum_leftnode_rightnode;
   };
-  std::vector<NodeGPU> GetSSBOData();
 
   std::vector<Node> nodes_;
   std::vector<Node> dirty_nodes_;

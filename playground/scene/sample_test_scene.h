@@ -3,7 +3,6 @@
 #include "renderer/camera.h"
 #include "renderer/scene.h"
 #include "renderer/shader.h"
-#include "renderer/shaders.h"
 #include "renderer/ssbo.h"
 #include "renderer/texture.h"
 #include "playground/context.h"

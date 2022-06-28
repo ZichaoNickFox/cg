@@ -6,7 +6,6 @@
 #include "renderer/pass.h"
 #include "renderer/scene.h"
 #include "renderer/shader.h"
-#include "renderer/shaders.h"
 #include "renderer/texture.h"
 
 class SSAOScene : public Scene {

@@ -88,51 +88,29 @@ MaterialRepo::MaterialRepo() : ssbo_(SSBO_MATERIAL_REPO) {
   }
 }
 
-std::vector<MaterialRepo::MaterialGPU> MaterialRepo::GetSSBOData() {
-  std::vector<MaterialRepo::MaterialGPU> res(index_2_material_.size());
-  for (int i = 0; i < index_2_material_.size(); ++i) {
-    CGCHECK(index_2_material_.find(i) != index_2_material_.end());
-    const Material& material = index_2_material_.at(i);
-    MaterialGPU* material_gpu = &res[i];
-    material_gpu->albedo = material.albedo;
-    material_gpu->ambient = material.ambient;
-    material_gpu->diffuse = material.diffuse;
-    material_gpu->specular = material.specular;
-    material_gpu->emission = material.emission;
-    material_gpu->roughness_metalness_shininess.x = material.roughness;
-    material_gpu->roughness_metalness_shininess.y = material.metalness;
-    material_gpu->roughness_metalness_shininess.z = material.shininess;
-    material_gpu->texture_index_normal_specular_ambient_diffuse.x = material.texture_normal;
-    material_gpu->texture_index_normal_specular_ambient_diffuse.y = material.texture_specular;
-    material_gpu->texture_index_normal_specular_ambient_diffuse.z = material.texture_ambient;
-    material_gpu->texture_index_normal_specular_ambient_diffuse.w = material.texture_diffuse;
-    material_gpu->texture_index_basecolor_roughness_metalness_ambientocclusion.x = material.texture_base_color;
-    material_gpu->texture_index_basecolor_roughness_metalness_ambientocclusion.y = material.texture_roughness;
-    material_gpu->texture_index_basecolor_roughness_metalness_ambientocclusion.z = material.texture_metalness;
-    material_gpu->texture_index_basecolor_roughness_metalness_ambientocclusion.w = material.texture_ambient_occlusion;
-    material_gpu->texture_index_height_shininess.x = material.texture_height;
-    material_gpu->texture_index_height_shininess.y = material.texture_shininess;
-  }
-  return res;
-}
-
-std::vector<Material> MaterialRepo::GetSSBOData2() {
-  std::vector<Material> res(index_2_material_.size());
-  for (int i = 0; i < index_2_material_.size(); ++i) {
-    CGCHECK(index_2_material_.find(i) != index_2_material_.end());
-    const Material& material = index_2_material_.at(i);
-    res[i] = material;
-  }
-  return res;
+MaterialRepo::MaterialGPU::MaterialGPU(const Material& material) {
+  albedo = material.albedo;
+  ambient = material.ambient;
+  diffuse = material.diffuse;
+  specular = material.specular;
+  emission = material.emission;
+  roughness_metalness_shininess = glm::vec4(material.roughness, material.metalness, material.shininess, 0.0);
+  texture_index_normal_specular_ambient_diffuse = glm::vec4(material.texture_normal, material.texture_specular,
+                                                            material.texture_ambient, material.texture_diffuse);
+  texture_index_basecolor_roughness_metalness_ambientocclusion = glm::vec4(
+    material.texture_base_color, material.texture_roughness, material.texture_metalness,
+    material.texture_ambient_occlusion);
+  texture_index_height_shininess = glm::vec4(material.texture_height, material.texture_shininess, 0.0, 0.0);
 }
 
 void MaterialRepo::UpdateSSBO() {
   bool dirty = !(index_2_material_ == dirty_index_2_material_);
   if (dirty) {
-    // std::vector<MaterialGPU> material_gpus = GetSSBOData();
-    // ssbo_.SetData(util::VectorSizeInByte(material_gpus), material_gpus.data());
-    std::vector<Material> materials = GetSSBOData2();
-    ssbo_.SetData(util::VectorSizeInByte(materials), materials.data());
+    std::vector<MaterialGPU> material_gpus(index_2_material_.size());
+    for (int i = 0; i < index_2_material_.size(); ++i) {
+      material_gpus[i] = MaterialGPU(index_2_material_[i]);
+    }
+    ssbo_.SetData(util::VectorSizeInByte(material_gpus), material_gpus.data());
     dirty_index_2_material_ = index_2_material_;
   }
 }

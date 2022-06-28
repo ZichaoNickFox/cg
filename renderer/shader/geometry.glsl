@@ -33,14 +33,14 @@ struct Plane {
 };
 
 struct AABB {
-  vec3 minimum;
-  vec3 maximum;
+  vec4 maximum;
+  vec4 minimum;
 };
 
 struct Triangle {
-  vec3 a;
-  vec3 b;
-  vec3 c;
+  vec4 a;
+  vec4 b;
+  vec4 c;
 };
 
 struct RaySphereResult {
@@ -111,15 +111,15 @@ RayTriangleResult RayTriangle(Ray ray, Triangle triangle) {
   vec3 edge1, edge2, h, s, q;
   float a,f,u,v;
 
-  edge1 = triangle.b - triangle.a;
-  edge2 = triangle.c - triangle.a;
+  edge1 = triangle.b.xyz - triangle.a.xyz;
+  edge2 = triangle.c.xyz - triangle.a.xyz;
   h = cross(ray.dir, edge2);
   a = dot(edge1, h);
   if (abs(a) < FLT_EPSILON) {
     return res; // The ray is parallel to the triangle
   }
   f = 1.0 / a;
-  s = ray.origin - triangle.a;
+  s = ray.origin - triangle.a.xyz;
   u = f * dot(s, h);
   if (u < 0.0 || u > 1.0)
     return res;

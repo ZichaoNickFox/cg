@@ -136,7 +136,7 @@ void DeferredShadingScene::ForwardShading(Scene* context, const glm::mat4& shado
 void DeferredShadingScene::DeferredShading(Scene* context, const glm::mat4& shadow_map_vp,
                                            const renderer::Texture& shadow_map_texture) {
   gbuffer_.Bind();
-  renderer::Shader deferred_shading_geometry = context->GetShader("deferred_shading_geometry");
+  renderer::ShaderProgram deferred_shading_geometry = context->GetShader("deferred_shading_geometry");
   for (int i = 0; i < cubes_.size(); ++i) {
     CubeObject* cube = &cubes_[i];
     cube->OnRender(context);

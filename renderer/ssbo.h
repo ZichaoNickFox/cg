@@ -1,5 +1,6 @@
 #pragma once
 
+#include "renderer/definition.h"
 #include "renderer/gl.h"
 #include <glm/glm.hpp>
 

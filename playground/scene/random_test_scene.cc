@@ -2,10 +2,10 @@
 
 #include "renderer/geometry.h"
 #include "renderer/math.h"
+#include "renderer/shader.h"
 #include "renderer/transform.h"
 #include "playground/object/empty_object.h"
 #include "playground/scene/common.h"
-#include "playground/shaders.h"
 
 void RandomTestScene::OnEnter(Scene* context) {
   glm::ivec2 screen_size = context->io().screen_size();
