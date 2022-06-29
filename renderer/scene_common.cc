@@ -108,6 +108,7 @@ void OnUpdateCommon::InspectMaterial(int material_index, const std::string& mate
     ImGui::ColorEdit4("ambient", glm::value_ptr(material->ambient));
     ImGui::ColorEdit4("diffuse", glm::value_ptr(material->diffuse));
     ImGui::ColorEdit4("specular", glm::value_ptr(material->specular));
+    ImGui::ColorEdit4("emission", glm::value_ptr(material->emission));
 
     ImGui::SliderFloat("roughness", &material->roughness, 0, 1);
     ImGui::SliderFloat("metalness", &material->metalness, 0, 1);

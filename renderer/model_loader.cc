@@ -73,16 +73,16 @@ Material ProcessMaterial(const std::string& model_dir, const aiScene& ai_scene, 
   std::unordered_map<std::string, boost::any> material_properties;
   const aiMaterial& ai_material = *CGCHECK_NOTNULL(ai_scene.mMaterials[ai_mesh.mMaterialIndex]);
 
-  aiColor3D color; ai_material.Get(AI_MATKEY_COLOR_DIFFUSE, color);
-  material_properties[kDiffuse] = glm::vec4(color.r, color.g, color.b, 1.0);
-  aiVector3D ambient; ai_material.Get(AI_MATKEY_COLOR_AMBIENT, ambient);
-  material_properties[kAmbient] = glm::vec4(ambient.x, ambient.y, ambient.z, 1.0);
-  aiVector3D albedo; ai_material.Get(AI_MATKEY_BASE_COLOR, albedo);
-  material_properties[kAlbedo] = glm::vec4(albedo.x, albedo.y, albedo.z, 1.0);
-  aiVector3D specular; ai_material.Get(AI_MATKEY_COLOR_SPECULAR, specular);
-  material_properties[kSpecular] = glm::vec4(specular.x, specular.y, specular.z, 1.0);
-  aiVector3D emission; ai_material.Get(AI_MATKEY_COLOR_EMISSIVE, emission);
-  material_properties[kEmission] = glm::vec4(emission.x, emission.y, emission.z, 1.0);
+  aiColor3D diffuse; ai_material.Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
+  material_properties[kDiffuse] = glm::vec4(diffuse.r, diffuse.g, diffuse.b, 1.0);
+  aiColor3D ambient; ai_material.Get(AI_MATKEY_COLOR_AMBIENT, ambient);
+  material_properties[kAmbient] = glm::vec4(ambient.r, ambient.g, ambient.b, 1.0);
+  aiColor3D albedo; ai_material.Get(AI_MATKEY_BASE_COLOR, albedo);
+  material_properties[kAlbedo] = glm::vec4(albedo.r, albedo.g, albedo.b, 1.0);
+  aiColor3D specular; ai_material.Get(AI_MATKEY_COLOR_SPECULAR, specular);
+  material_properties[kSpecular] = glm::vec4(specular.r, specular.g, specular.b, 1.0);
+  aiColor3D emission; ai_material.Get(AI_MATKEY_COLOR_EMISSIVE, emission);
+  material_properties[kEmission] = glm::vec4(emission.r, emission.g, emission.b, 1.0);
   double roughness; ai_material.Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness);
   material_properties[kRoughness] = roughness;
   double metallic; ai_material.Get(AI_MATKEY_METALLIC_FACTOR, metallic);

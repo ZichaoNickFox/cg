@@ -39,6 +39,9 @@ Material::Material(const Properties& properties) {
   if (properties.count(kSpecular) > 0) {
     specular = boost::any_cast<glm::vec4>(properties.at(kSpecular));
   }
+  if (properties.count(kEmission) > 0) {
+    emission = boost::any_cast<glm::vec4>(properties.at(kEmission));
+  }
   if (properties.count(kRoughness) > 0) {
     roughness = boost::any_cast<double>(properties.at(kRoughness));
   }
