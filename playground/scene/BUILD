@@ -25,6 +25,8 @@ cc_library(
 #    "mrt_scene.cc",
 #    "normal_scene.h",
 #    "normal_scene.cc",
+    "path_tracing_geometry_scene.h",
+    "path_tracing_geometry_scene.cc",
     "path_tracing_scene.h",
     "path_tracing_scene.cc",
 #    "pbr_scene.h",

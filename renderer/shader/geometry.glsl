@@ -43,6 +43,10 @@ struct Triangle {
   vec4 c;
 };
 
+vec3 TriangleNormal(Triangle triangle) {
+  return cross(triangle.b.xyz - triangle.a.xyz, triangle.c.xyz - triangle.a.xyz);
+}
+
 struct RaySphereResult {
   bool hitted;
   vec3 pos;
@@ -54,6 +58,7 @@ struct RaySphereResult {
 RaySphereResult RaySphere(Sphere sphere, Ray ray, float limit) {
   RaySphereResult res;
   res.hitted = false;
+
   vec3 normalized_dir = normalize(ray.dir);
   vec3 oc = sphere.center_pos - ray.origin;
   float a = dot(normalized_dir, normalized_dir);
@@ -147,6 +152,7 @@ struct RayAABBResult {
 // https://www.bilibili.com/video/BV1X7411F744?p=13 1:09:48
 RayAABBResult RayAABB(Ray ray, AABB aabb) {
   RayAABBResult res;
+  res.hitted = false;
 
   float t_enter_x = FLT_LOWEST;
   float t_enter_y = FLT_LOWEST;
@@ -181,7 +187,7 @@ RayAABBResult RayAABB(Ray ray, AABB aabb) {
   float t_enter = max(max(t_enter_x, t_enter_y), t_enter_z);
   float t_exit = min(min(t_exit_x, t_exit_y), t_exit_z);
 
-  res.hitted = (t_enter < t_exit && t_exit >= 0);
+  res.hitted = (t_enter <= t_exit && t_exit >= 0);
 
   return res;
 }

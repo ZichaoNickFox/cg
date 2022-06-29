@@ -11,6 +11,7 @@
 #include "renderer/mesh/lines_mesh.h"
 #include "renderer/mesh/plane_mesh.h"
 #include "renderer/mesh/sphere_mesh.h"
+#include "renderer/object.h"
 
 namespace renderer {
 Mesh::Mesh() {
@@ -101,7 +102,7 @@ bool Mesh::Intersect(const glm::vec3& origin_ls, const glm::vec3& dir_ls,
   return (found_index != -1);
 }
 
-void Mesh::GetPrimitives(const Transform& transform, PrimitiveRepo* primitive_repo) const {
+void Mesh::GetPrimitives(const Transform& transform, PrimitiveRepo* primitive_repo, int material_index) const {
   std::vector<glm::vec3> world_positions(positions_.size());
   glm::mat4 model = transform.GetModelMatrix();
   for (int i = 0; i < positions_.size(); ++i) {
@@ -114,15 +115,14 @@ void Mesh::GetPrimitives(const Transform& transform, PrimitiveRepo* primitive_re
       int mesh_index_i = indices_.at(i);
       int mesh_index_j = indices_.at(j);
       int mesh_index_k = indices_.at(k);
-      Triangle triangle{world_positions[mesh_index_i], world_positions[mesh_index_j],
-                                world_positions[mesh_index_k]};
-      primitive_repo->PushTriangle(triangle);
+      Triangle triangle{world_positions[mesh_index_i], world_positions[mesh_index_j], world_positions[mesh_index_k]};
+      primitive_repo->PushTriangle(triangle, material_index);
     }
   } else {
     int index = 0;
     for (int i = 0, j = 1, k = 2; k < positions_.size(); i += 3, j += 3, k += 3) {
       Triangle triangle{world_positions[i], world_positions[j], world_positions[k]};
-      primitive_repo->PushTriangle(triangle);
+      primitive_repo->PushTriangle(triangle, material_index);
     }
   }
 }
@@ -152,8 +152,8 @@ void MeshRepo::Add(const std::string& mesh_name, std::unique_ptr<Mesh> mesh) {
   index_2_mesh_[mesh_index] = std::move(mesh);
 }
 
-void MeshRepo::GetPrimitives(int mesh_index, const Transform& transform, PrimitiveRepo* primitives) const {
-  return GetMesh(mesh_index)->GetPrimitives(transform, primitives);
+void MeshRepo::GetPrimitives(int mesh_index, const Transform& transform, PrimitiveRepo* primitives, int material_index) const {
+  return GetMesh(mesh_index)->GetPrimitives(transform, primitives, material_index);
 }
 
 const Mesh* MeshRepo::GetMesh(int mesh_index) const {

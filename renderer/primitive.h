@@ -7,10 +7,9 @@
 namespace renderer {
 
 struct Primitive {
-  AABB aabb;
   Triangle triangle;
-  glm::vec3 normal;
-  int object_index;
+  AABB aabb;
+  int material_index;
 
   const AABB& GetAABB() const { return aabb; }
 
@@ -19,29 +18,31 @@ struct Primitive {
 
 class PrimitiveRepo {
  public:
-  PrimitiveRepo() : ssbo_(SSBO_PRIMITIVE_REPO) {}
-  void PushTriangle(const Triangle& triangle);
+  PrimitiveRepo() : ssbo_primitive_(SSBO_PRIMITIVE_REPO) {}
+  void PushTriangle(const Triangle& triangle, int material_index);
 
-  int size() const { return primitives_.size(); }
+  int num() const { return primitives_.size(); }
   const std::vector<Primitive>& data() const { return primitives_; }
 
-  const AABB& GetAABB(int index) const;
   const Triangle& GetTriangle(int index) const;
+  const AABB& GetAABB(int index) const;
 
-  void UpdateSSBO();
+  void UpdateSSBO(const std::vector<int>& primitive_sequence);
 
  private:
   struct PrimitiveGPU {
     PrimitiveGPU() = default;
     PrimitiveGPU(const Primitive& primitive);
-    AABBGPU aabb_gpu;
-    TriangleGPU triangle_gpu;
-    glm::vec4 normal_objectindex;
+    glm::vec4 a_materialIndex;
+    glm::vec4 b;
+    glm::vec4 c;
   };
-
   std::vector<Primitive> primitives_;
   std::vector<Primitive> dirty_primitives_;
-  SSBO ssbo_;
+  std::vector<int> dirty_primitive_sequence_;
+  SSBO ssbo_primitive_;
+
+  int acitive_material = -1;
 };
 
 } // namespace renderer

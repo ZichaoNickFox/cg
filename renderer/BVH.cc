@@ -7,14 +7,14 @@
 
 namespace renderer {
 
-void BVH::Build(const PrimitiveRepo& primitives, const Option& option) {
+void BVH::Build(const PrimitiveRepo& primitive_repo, const Option& option) {
   option_ = option;
-  primitives_.resize(primitives.size());
-  for (int i = 0; i < primitives.size(); ++i) {
-    primitives_[i] = i;
+  primitive_sequence_.resize(primitive_repo.num());
+  for (int i = 0; i < primitive_repo.num(); ++i) {
+    primitive_sequence_[i] = i;
   }
-  int root_id = NewNode(0, primitives_.size(), UnionAABB(primitives.data(), primitives_));
-  PartitionNode(primitives, 0, primitives_.size(), root_id);
+  int root_id = NewNode(0, primitive_sequence_.size(), UnionAABB(primitive_repo.data(), primitive_sequence_));
+  PartitionNode(primitive_repo, 0, primitive_sequence_.size(), root_id);
 }
 
 void BVH::PartitionNode(const PrimitiveRepo& primitives, int begin, int end, int node_id) {
@@ -80,7 +80,7 @@ std::vector<BVH::SAHBucket> BVH::DivideBuckets(const PrimitiveRepo& primitives, 
   float min_point = node->aabb.GetMinimumByAxis(max_length_axis);
   float max_point = node->aabb.GetMaximumByAxis(max_length_axis);
   for (int i = begin; i < end; ++i) {
-    const AABB& aabb = primitives.GetAABB(primitives_[i]);
+    const AABB& aabb = primitives.GetAABB(primitive_sequence_[i]);
     float point = aabb.GetCenterByAxis(max_length_axis);
     int bucket_index = util::Clamp(int((point - min_point) / (max_point - min_point) * option_.sah_bucket_num),
                                    0, option_.sah_bucket_num - 1);
@@ -155,8 +155,8 @@ int BVH::PartitionBuckets(const PrimitiveRepo& primitives, std::vector<SAHBucket
     SAHBucket* bucket = &buckets->at(min_cost_bucket);
     // Attention : min_cost_bucket may be empty.
     auto le_compare = [&primitives, max_length_axis, this] (int left_index, int right_index) {
-      float pos_left = primitives.GetAABB(primitives_[left_index]).GetCenterByAxis(max_length_axis);
-      float pos_right = primitives.GetAABB(primitives_[right_index]).GetCenterByAxis(max_length_axis);
+      float pos_left = primitives.GetAABB(primitive_sequence_[left_index]).GetCenterByAxis(max_length_axis);
+      float pos_right = primitives.GetAABB(primitive_sequence_[right_index]).GetCenterByAxis(max_length_axis);
       return pos_left <= pos_right;
     };
     CGCHECK(bucket->sequence.size() > 0);
@@ -168,8 +168,8 @@ int BVH::PartitionBuckets(const PrimitiveRepo& primitives, std::vector<SAHBucket
       if (bucket->sequence.size() > 0) {
         auto iter = std::min_element(bucket->sequence.begin(), bucket->sequence.end(),
             [&primitives, max_length_axis, this] (int left, int right) {
-              return primitives.GetAABB(primitives_[left]).GetCenterByAxis(max_length_axis)
-                  < primitives.GetAABB(primitives_[right]).GetCenterByAxis(max_length_axis);
+              return primitives.GetAABB(primitive_sequence_[left]).GetCenterByAxis(max_length_axis)
+                  < primitives.GetAABB(primitive_sequence_[right]).GetCenterByAxis(max_length_axis);
             });
         int index = std::distance(bucket->sequence.begin(), iter);
         std::swap(bucket->sequence[0], bucket->sequence[index]);
@@ -190,7 +190,7 @@ void BVH::SortSequenceByParitition(const PrimitiveRepo& primitives, const std::v
   int sorted_sequence_index = 0;
   for (int bucket = 0; bucket < option_.sah_bucket_num; ++bucket) {
     for (const int sequence_index : buckets.at(bucket).sequence) {
-      sorted_sequence[sorted_sequence_index] = primitives_[sequence_index];
+      sorted_sequence[sorted_sequence_index] = primitive_sequence_[sequence_index];
 #if CGDEBUG
       primitives.GetAABB(sorted_sequence[sorted_sequence_index]).DebugCheckNotNull();
 #endif
@@ -204,7 +204,7 @@ void BVH::SortSequenceByParitition(const PrimitiveRepo& primitives, const std::v
   }
   CGCHECK(end - begin == sorted_sequence_index) << end - begin << " " << sorted_sequence_index;
   CGCHECK(sorted_sequence.size() == end - begin) << sorted_sequence.size() << end - begin;
-  util::VectorOverride(&primitives_, begin, sorted_sequence, 0, sorted_sequence.size());
+  util::VectorOverride(&primitive_sequence_, begin, sorted_sequence, 0, sorted_sequence.size());
 }
 
 int BVH::PartitionByPos(const PrimitiveRepo& primitives, int begin, int end, int node_id,
@@ -217,14 +217,14 @@ int BVH::PartitionByPos(const PrimitiveRepo& primitives, int begin, int end, int
     float pos_right = primitives.GetAABB(right_value).GetCenterByAxis(max_length_axis);
     return pos_left <= pos_right;
   };
-  int mid = util::QuickSelect(&primitives_, begin, end, begin + (end - begin) / 2, le_compare);
+  int mid = util::QuickSelect(&primitive_sequence_, begin, end, begin + (end - begin) / 2, le_compare);
   AABB left_aabb;
   for (int i = begin; i < mid; ++i) {
-    left_aabb.Union(primitives.GetAABB(primitives_[i]));
+    left_aabb.Union(primitives.GetAABB(primitive_sequence_[i]));
   }
   AABB right_aabb;
   for (int i = mid; i < end; ++i) {
-    right_aabb.Union(primitives.GetAABB(primitives_[i]));
+    right_aabb.Union(primitives.GetAABB(primitive_sequence_[i]));
   }
   *left_node = NewNode(begin, mid, left_aabb);
   *right_node = NewNode(mid, end, right_aabb);
@@ -274,7 +274,7 @@ void BVH::GetAABBs(int node_id, int cur_level, int filter_level, std::vector<AAB
   GetAABBs(nodes_[node_id].right_node, cur_level + 1, filter_level, aabbs);
 }
 
-RayBVHResult RayBVH(const Ray& ray, const BVH& bvh, const PrimitiveRepo& primitives) {
+RayBVHResult RayBVH(const Ray& ray, const BVH& bvh, const PrimitiveRepo& primitive_repo) {
   RayBVHResult res;
   if (bvh.nodes_.size() == 0) {
     return res;
@@ -293,10 +293,10 @@ RayBVHResult RayBVH(const Ray& ray, const BVH& bvh, const PrimitiveRepo& primiti
     if (node.left_node == -1 && node.right_node == -1) {
       CGCHECK(node.primitives_num > 0) << node.primitives_num;
       for (int i = node.primitives_begin; i < node.primitives_begin + node.primitives_num; ++i) {
-        CGCHECK(i < bvh.primitives_.size()) << i << " " << bvh.primitives_.size();
-        int primitive_index = bvh.primitives_[i];
-        CGCHECK(primitive_index < primitives.size()) << primitive_index << " " << primitives.size();
-        RayTriangleResult ray_triangle_result = RayTriangle(ray, primitives.GetTriangle(primitive_index));
+        CGCHECK(i < bvh.primitive_sequence_.size()) << i << " " << bvh.primitive_sequence_.size();
+        int primitive_index = bvh.primitive_sequence_[i];
+        CGCHECK(primitive_index < primitive_repo.num()) << primitive_index << " " << primitive_repo.num();
+        RayTriangleResult ray_triangle_result = RayTriangle(ray, primitive_repo.GetTriangle(primitive_index));
         if (ray_triangle_result.hitted && ray_triangle_result.dist < res.dist) {
           res.hitted = true;
           res.primitive_index = primitive_index;

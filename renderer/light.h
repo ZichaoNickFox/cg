@@ -49,9 +49,8 @@ struct LightRepo {
   void Add(const Light& light) { lights_.push_back(light); }
   void Add(const std::vector<Light>& lights) { lights_.insert(lights_.end(), lights.begin(), lights.end()); }
   void UpdateSSBO();
-  int length() const { return lights_.size(); }
   std::vector<Light> GetLights() const { return lights_; };
-  int light_num() const { return lights_.size(); }
+  int num() const { return lights_.size(); }
   Light* mutable_light(int index) { return &lights_[index]; }
   const Light& light(int index) const { return lights_[index]; }
 

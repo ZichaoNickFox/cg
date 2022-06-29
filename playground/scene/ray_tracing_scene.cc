@@ -9,6 +9,27 @@
 
 using namespace renderer;
 
+class RayTracingShader : public renderer::ComputeShader {
+ public:
+  struct Param {
+    std::vector<renderer::Sphere> spheres;
+    renderer::Texture canvas;
+  };
+  RayTracingShader(const Param& param, const Scene& scene)
+      : ComputeShader(scene, "ray_tracing") {
+    SetCamera(scene.camera());
+    for (int i = 0; i < param.spheres.size(); ++i) {
+      const Sphere& sphere = param.spheres[i];
+      program_.SetInt(fmt::format("spheres[{}].id", i), sphere.id);
+      program_.SetVec3(fmt::format("spheres[{}].center_pos", i), sphere.translation);
+      program_.SetVec4(fmt::format("spheres[{}].color", i), sphere.color);
+      program_.SetFloat(fmt::format("spheres[{}].radius", i), sphere.radius);
+    }
+    SetTextureBinding({param.canvas, "canvas", GL_READ_ONLY, GL_RGBA32F});
+    Run();
+  }
+};
+
 void RayTracingScene::OnEnter() {
   for (auto& pair : sphere_map_) {
     const std::string& name = pair.first;
@@ -38,8 +59,7 @@ void RayTracingScene::OnUpdate() {
 
 void RayTracingScene::OnRender() {
   //Resterization();
-  //RayTracing();
-  PathTracing();
+  RayTracing();
 }
 
 void RayTracingScene::OnExit() {
@@ -54,13 +74,6 @@ void RayTracingScene::Resterization() {
 }
 
 void RayTracingScene::RayTracing() {
-  RayTracingShader({io_->screen_size(), camera_.get(),
-                   util::AsValueVector(sphere_map_), canvas_}, *this);
-  RaytracingDebugCommon(canvas_, *this, light_path_ssbo_.GetData<RaytracingDebugCommon::LightPath>());
-}
-
-void RayTracingScene::PathTracing() {
-  PathTracingDemoShader({io_->screen_size(), camera_.get(), util::AsValueVector(sphere_map_),
-                         frame_stat_->frame_num(), canvas_}, *this);
+  RayTracingShader({util::AsValueVector(sphere_map_), canvas_}, *this);
   RaytracingDebugCommon(canvas_, *this, light_path_ssbo_.GetData<RaytracingDebugCommon::LightPath>());
 }

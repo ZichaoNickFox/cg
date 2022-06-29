@@ -30,9 +30,10 @@ RenderShader::RenderShader(const Scene& scene, const std::string& shader_name) {
   if (scene.texture_repo().size() > 0) {
     program_.SetTexture("texture_repo", scene.texture_repo().AsTextureRepo());
   }
-  program_.SetInt("light_repo_length", scene.light_repo().length());
-  program_.SetInt("material_repo_length", scene.material_repo().length());
-  program_.SetInt("bvh_length", scene.bvh().length());
+  program_.SetInt("light_repo_num", scene.light_repo().num());
+  program_.SetInt("material_repo_num", scene.material_repo().num());
+  program_.SetInt("bvh_num", scene.bvh().num());
+  program_.SetInt("primitive_repo_num", scene.primitive_repo().num());
 }
 
 void RenderShader::SetModel(const glm::mat4& model) {
@@ -65,9 +66,10 @@ ComputeShader::ComputeShader(const Scene& scene, const std::string& shader_name)
   if (scene.texture_repo().size() > 0) {
     program_.SetTexture("texture_repo", scene.texture_repo().AsTextureRepo());
   }
-  program_.SetInt("light_repo_length", scene.light_repo().length());
-  program_.SetInt("material_repo_length", scene.material_repo().length());
-  program_.SetInt("bvh_length", scene.bvh().length());
+  program_.SetInt("light_repo_num", scene.light_repo().num());
+  program_.SetInt("material_repo_num", scene.material_repo().num());
+  program_.SetInt("bvh_num", scene.bvh().num());
+  program_.SetInt("primitive_repo_num", scene.primitive_repo().num());
 
   work_group_num_ = {scene.io().screen_size().x / 32 + 1, scene.io().screen_size().x / 32 + 1, 1};
 }
@@ -95,16 +97,6 @@ void ComputeShader::CheckInternalFormat(const renderer::Texture& texture) const 
 
 void ComputeShader::SetCamera(const Camera& camera) {
   renderer::SetCamera(camera, &program_);
-}
-
-void ComputeShader::SetSpheres(const std::vector<Sphere>& spheres) {
-  for (int i = 0; i < spheres.size(); ++i) {
-    const Sphere& sphere  = spheres[i];
-    program_.SetInt(fmt::format("spheres[{}].id", i), sphere.id);
-    program_.SetVec3(fmt::format("spheres[{}].center_pos", i), sphere.translation);
-    program_.SetVec4(fmt::format("spheres[{}].color", i), sphere.color);
-    program_.SetFloat(fmt::format("spheres[{}].radius", i), sphere.radius);
-  }
 }
 
 void ComputeShader::SetScreenSize(const glm::vec2& screen_size) {
@@ -323,35 +315,9 @@ InstanceSceneShader::InstanceSceneShader(const Scene& scene, Object* object)
 }
 */
 
-RayTracingShader::RayTracingShader(const Param& param, const Scene& scene) 
-    : ComputeShader(scene, "ray_tracing") {
-  SetCamera(*param.camera);
-  SetSpheres(param.spheres);
-  SetTextureBinding({param.canvas, "canvas", GL_READ_ONLY, GL_RGBA32F});
-  Run();
-}
-
-PathTracingDemoShader::PathTracingDemoShader(const Param& param, const Scene& scene) 
-    : ComputeShader(scene, "path_tracing_demo") {
-  SetCamera(*param.camera);
-  SetSpheres(param.spheres);
-  SetTextureBinding({param.canvas, "canvas", GL_READ_ONLY, GL_RGBA32F});
-  SetScreenSize(param.screen_size);
-  SetTimeSeed(param.frame_num);
-  Run();
-}
-
 RayTracingCanvasShader::RayTracingCanvasShader(const Param& param, const Scene& scene)
     : RenderShader(scene, "ray_tracing_canvas") {
   program_.SetTexture("texture0", param.texture0); 
   program_.SetInt("sample_frame_num", param.sample_frame_num); 
-}
-
-PathTracingShader::PathTracingShader(const Param& param, const Scene& scene) 
-    : ComputeShader(scene, "path_tracing") {
-  SetCamera(*param.camera);
-  SetTextureBinding({param.canvas, "canvas", GL_READ_ONLY, GL_RGBA32F});
-  SetTimeSeed(param.frame_num);
-  Run();
 }
 } // namespace renderer

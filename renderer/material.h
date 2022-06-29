@@ -84,7 +84,7 @@ class MaterialRepo {
   int GetMaterialIndex(const std::string& material_name) const;
   int GetIndex(const std::string& material_name) const;
   std::string GetName(int material_index) const;
-  int length() const { return index_2_material_.size(); }
+  int num() const { return index_2_material_.size(); }
 
   void UpdateSSBO();
 

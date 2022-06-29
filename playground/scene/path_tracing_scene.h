@@ -14,7 +14,6 @@
 
 class PathTracingScene : public renderer::Scene {
  public:
-  PathTracingScene() : light_path_ssbo_(SSBO_LIGHT_PATH) {}
   void OnEnter() override;
   void OnUpdate() override;
   void OnRender() override;
@@ -37,9 +36,7 @@ class PathTracingScene : public renderer::Scene {
         "cornell_box_short_box", "cornell_box_short_box"},
     {"cornell_box_tall_box", {glm::vec3(), glm::quat(), glm::vec3(0.002, 0.002, 0.002)},
         "cornell_box_tall_box", "cornell_box_tall_box"},
-    {"sphere", renderer::Transform(), "sphere", "gold"}
   };
 
   renderer::Texture canvas_;
-  renderer::SSBO light_path_ssbo_;
 };

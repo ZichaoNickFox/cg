@@ -91,8 +91,7 @@ void ObjectRepo::GetPrimitives(const MeshRepo& mesh_repo, const MaterialRepo& ma
                                PrimitiveRepo* primitive_repo) {
   for (const Object& object : GetObjects(filter)) {
     const Transform transform = object.transform;
-    int mesh_index = object.mesh_index;
-    mesh_repo.GetPrimitives(mesh_index, transform, primitive_repo);
+    mesh_repo.GetPrimitives(object.mesh_index, transform, primitive_repo, object.material_index);
   }
 }
 

@@ -30,10 +30,13 @@ OnUpdateCommon::OnUpdateCommon(Scene* scene, const std::string& title) {
   ReloadShaderPrograms(scene);
   ImGui::Separator();
 
-  InSpectObjects(scene);
+  InspectObjects(scene);
   ImGui::Separator();
 
   InspectLights(scene);
+  ImGui::Separator();
+
+  InspectMaterials(scene);
   ImGui::Separator();
 }
 
@@ -98,10 +101,8 @@ void OnUpdateCommon::InspectMesh(Scene* scene, const Object& object) {
   }
 }
 
-void OnUpdateCommon::InspcetMaterial(Scene* scene, const Object& object) {
-  const std::string& material_name = scene->material_repo().GetName(object.material_index);
-  Material* material = scene->mutable_material_repo()->mutable_material(object.material_index);
-  if (ImGui::TreeNode(fmt::format("material index ~ {} name ~ {}", object.material_index, material_name).c_str())) {
+void OnUpdateCommon::InspectMaterial(int material_index, const std::string& material_name, Material* material) {
+  if (ImGui::TreeNode(fmt::format("material index ~ {} name ~ {}", material_index, material_name).c_str())) {
     ImGui::PushID(material_name.c_str());
     ImGui::ColorEdit4("albedo", glm::value_ptr(material->albedo));
     ImGui::ColorEdit4("ambient", glm::value_ptr(material->ambient));
@@ -126,7 +127,7 @@ void OnUpdateCommon::InspcetMaterial(Scene* scene, const Object& object) {
   }
 }
 
-void OnUpdateCommon::InSpectObjects(Scene* scene) {
+void OnUpdateCommon::InspectObjects(Scene* scene) {
   if (ImGui::TreeNode("Objects")) {
     ImGui::PushID("Objects");
     for (const Object& object : scene->object_repo().GetObjects()) {
@@ -134,7 +135,11 @@ void OnUpdateCommon::InSpectObjects(Scene* scene) {
       if (ImGui::TreeNode(fmt::format("Object : index ~ {} name ~ {}",
                           object.object_index, object_name).c_str())) {
         InspectMesh(scene, object);
-        InspcetMaterial(scene, object);
+
+        const std::string& material_name = scene->material_repo().GetName(object.material_index);
+        Material* material = scene->mutable_material_repo()->mutable_material(object.material_index);
+        InspectMaterial(object.material_index, material_name, material);
+
         ImGui::TreePop();
       }
     }
@@ -146,7 +151,7 @@ void OnUpdateCommon::InSpectObjects(Scene* scene) {
 void OnUpdateCommon::InspectLights(Scene* scene) {
   if (ImGui::TreeNode("Lights")) {
     ImGui::PushID("Lights");
-    for (int i = 0; i < scene->light_repo().light_num(); ++i) {
+    for (int i = 0; i < scene->light_repo().num(); ++i) {
       Light* light = scene->mutable_light_repo()->mutable_light(i);
       if (ImGui::TreeNode(fmt::format("Light {}", i).c_str())) {
         ImGui::PushID(fmt::format("{}", i).c_str());
@@ -162,6 +167,18 @@ void OnUpdateCommon::InspectLights(Scene* scene) {
         ImGui::PopID();
         ImGui::TreePop();
       }
+    }
+    ImGui::PopID();
+    ImGui::TreePop();
+  }
+}
+
+void OnUpdateCommon::InspectMaterials(Scene* scene) {
+  if (ImGui::TreeNode("Materials")) {
+    ImGui::PushID("Materials");
+    for (int i = 0; i < scene->material_repo().num(); ++i) {
+      Material* material = scene->mutable_material_repo()->mutable_material(i);
+      InspectMaterial(i, scene->material_repo().GetName(i), material);
     }
     ImGui::PopID();
     ImGui::TreePop();

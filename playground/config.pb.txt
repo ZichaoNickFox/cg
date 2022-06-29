@@ -210,13 +210,13 @@ shader_config {
 }
 
 shader_config {
-  name : "path_tracing_demo";
-  cs_path : "renderer/shader/ray_tracing/path_tracing_demo.cs.glsl";
+  name : "path_tracing_geometry_scene";
+  cs_path : "playground/shader/path_tracing_geometry_scene.cs.glsl";
 }
 
 shader_config {
-  name : "path_tracing";
-  cs_path : "renderer/shader/ray_tracing/path_tracing.cs.glsl";
+  name : "path_tracing_scene";
+  cs_path : "playground/shader/path_tracing_scene.cs.glsl";
 }
 
 shader_config {

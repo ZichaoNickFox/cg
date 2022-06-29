@@ -6,7 +6,7 @@ struct Light {
   vec4 attenuation_2_1_0; // free w
 };
 
-uniform int light_repo_length;
+uniform int light_repo_num;
 layout (std430, binding = SSBO_LIGHT_REPO) buffer LightRepo {
   Light light_repo[];
 };

@@ -1,6 +1,7 @@
 #include "renderer/shader/version.glsl"
 
 #include "renderer/shader/camera.glsl"
+#include "renderer/shader/compute_shader.glsl"
 #include "renderer/shader/convert.glsl"
 #include "renderer/shader/geometry.glsl"
 #include "renderer/shader/pbr/pbr_BRDF.glsl"
@@ -11,23 +12,19 @@
 const float pi = 3.1415926;
 const float bias = 0.0001;
 
+uniform Sphere spheres[10];
+uniform vec2 screen_size;
+uniform Camera camera;
+
+layout (rgba32f, binding = 0) uniform image2D canvas;
+
 // https://www.bilibili.com/video/BV1X7411F744?p=16 0:58:08
 vec4 path_tracing(Ray ray, vec4 color) {
   Ray ray_iter = ray;
   vec4 radiance = vec4(1, 1, 1, 1);
 
-//  bool is_debug_frag = length(gl_GlobalInvocationID.xy / screen_size - vec2(0.5, 0.5)) < 0.00001;
-  bool is_debug_frag = false;
-  if (is_debug_frag) {
-    ray_iter.origin = vec3(0.000000, 1.000000, 5.000000);
-    ray_iter.dir = vec3(0.251670, -0.375554, -0.891976);
-  }
-
   int count = 0;
   while(true) {
-    if (is_debug_frag) {
-      light_path[count] = vec4(ray_iter.origin, 1.0);
-    }
     if (count >= 10) {
       break;
     }
@@ -54,9 +51,6 @@ vec4 path_tracing(Ray ray, vec4 color) {
     if (sphere.id == 1) {
       // light
       color = radiance * sphere.color / P_RR;
-      if (is_debug_frag) {
-        light_path[count] = vec4(result.pos, 1.0);
-      }
     } else {
       // right big metal ball
       vec3 dir_ws = SampleUnitHemisphereDir(result.normal);
@@ -75,7 +69,7 @@ void main() {
   InitRNG(gl_GlobalInvocationID.xy);
 
   vec3 near_pos_ss = vec3(gl_GlobalInvocationID.xy / screen_size, 0.0);
-  vec3 near_pos_ws = PositionSS2WS(near_pos_ss, view, project);
+  vec3 near_pos_ws = PositionSS2WS(camera.view, camera.project, near_pos_ss);
   vec3 camera_dir_ws = normalize(near_pos_ws - camera.pos_ws);
   
   vec4 color = imageLoad(canvas, ivec2(gl_GlobalInvocationID.xy));

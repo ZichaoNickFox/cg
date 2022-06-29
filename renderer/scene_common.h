@@ -16,11 +16,12 @@ class OnUpdateCommon {
   void MoveCamera(Scene* scene);
   void InSpectCursor(Scene* scene);
   void ReloadShaderPrograms(Scene* scene);
-  void InSpectObjects(Scene* scene);
+  void InspectObjects(Scene* scene);
   void InspectLights(Scene* scene);
+  void InspectMaterials(Scene* scene);
 
   void InspectMesh(Scene* scene, const Object& object);
-  void InspcetMaterial(Scene* scene, const Object& object);
+  void InspectMaterial(int material_index, const std::string& material_name, Material* material);
 };
 
 // Put in OnRender after everything

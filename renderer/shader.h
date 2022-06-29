@@ -31,7 +31,6 @@ class ComputeShader {
   void SetTextureBinding(const TextureBinding& texture_binding);
 
   void SetCamera(const Camera& camera);
-  void SetSpheres(const std::vector<Sphere>& spheres);
   void SetScreenSize(const glm::vec2& screen_size);
   void SetTimeSeed(int frame_num);
 
@@ -243,29 +242,6 @@ class RandomShader : public renderer::ComputeShader {
   Param param_;
 };
 
-class RayTracingShader : public renderer::ComputeShader {
- public:
-  struct Param {
-    glm::ivec2 screen_size;
-    renderer::Camera* camera = nullptr;
-    std::vector<renderer::Sphere> spheres;
-    renderer::Texture canvas;
-  };
-  RayTracingShader(const Param& param, const Scene& scene);
-};
-
-class PathTracingDemoShader : public renderer::ComputeShader {
- public:
-  struct Param {
-    glm::ivec2 screen_size;
-    renderer::Camera* camera = nullptr;
-    std::vector<renderer::Sphere> spheres;
-    int frame_num;
-    renderer::Texture canvas;
-  };
-  PathTracingDemoShader(const Param& param, const Scene& scene);
-};
-
 class RayTracingCanvasShader : public renderer::RenderShader {
  public:
   struct Param {
@@ -273,16 +249,5 @@ class RayTracingCanvasShader : public renderer::RenderShader {
     int sample_frame_num = 1;
   };
   RayTracingCanvasShader(const Param& param, const Scene& scene);
-};
-
-class PathTracingShader : public renderer::ComputeShader {
- public:
-  struct Param {
-    glm::ivec2 screen_size;
-    renderer::Camera* camera = nullptr;
-    int frame_num;
-    renderer::Texture canvas;
-  };
-  PathTracingShader(const Param& param, const Scene& scene);
 };
 } // namespace renderer

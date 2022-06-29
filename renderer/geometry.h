@@ -97,7 +97,7 @@ struct Triangle {
 
 struct TriangleGPU {
   TriangleGPU() = default;
-  TriangleGPU(const Triangle& triangle);
+  TriangleGPU(const Triangle& triangle, int material_index);
   glm::vec4 a;
   glm::vec4 b;
   glm::vec4 c;

@@ -270,7 +270,7 @@ RayTriangleResult RayTriangle(const Ray& ray, const Triangle& triangle) {
   return res;
 }
 
-TriangleGPU::TriangleGPU(const Triangle& triangle) {
+TriangleGPU::TriangleGPU(const Triangle& triangle, int material_index) {
   a = glm::vec4(triangle.a, 0.0);
   b = glm::vec4(triangle.b, 0.0);
   c = glm::vec4(triangle.c, 0.0);

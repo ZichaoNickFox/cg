@@ -48,7 +48,7 @@ void GeometryScene::OnEnter() {
   std::vector<renderer::TriangleGPU> triangle_gpus; 
   std::vector<renderer::AABBGPU> aabb_gpus;
   std::transform(triangles_.begin(), triangles_.end(), std::back_inserter(triangle_gpus),
-                 [] (const renderer::Triangle& triangle) { return renderer::TriangleGPU(triangle); });
+                 [] (const renderer::Triangle& triangle) { return renderer::TriangleGPU(triangle, 0); });
   std::transform(aabbs_.begin(), aabbs_.end(), std::back_inserter(aabb_gpus),
                  [] (const renderer::AABB& aabb) { return renderer::AABBGPU(aabb); });
   ssbo_triangle_.SetData(util::VectorSizeInByte(triangle_gpus), triangle_gpus.data());

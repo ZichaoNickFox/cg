@@ -36,7 +36,8 @@ class BVH {
   void Build(const PrimitiveRepo& primitives, const Option& option);
   void UpdateSSBO();
   std::vector<AABB> GetAABBs(int filter_level = -1) const;
-  int length() const { return nodes_.size(); }
+  int num() const { return nodes_.size(); }
+  std::vector<int> GetPrimitiveSequence() const { return primitive_sequence_; };
 
  private:
   int NewNode(int begin, int end, const AABB& union_aabb);
@@ -76,7 +77,7 @@ class BVH {
 
   std::vector<Node> nodes_;
   std::vector<Node> dirty_nodes_;
-  std::vector<int> primitives_;
+  std::vector<int> primitive_sequence_;
   Option option_;
   SSBO ssbo_;
 

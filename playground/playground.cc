@@ -15,6 +15,7 @@
 //#include "playground/scene/mrt_scene.h"
 //#include "playground/scene/normal_scene.h"
 #include "playground/scene/path_tracing_scene.h"
+#include "playground/scene/path_tracing_geometry_scene.h"
 //#include "playground/scene/pbr_BRDF_integration_map_generator.h"
 //#include "playground/scene/pbr_irradiance_cubemap_generator.h"
 //#include "playground/scene/pbr_prefiltered_color_cubemap_generator.h"
@@ -29,7 +30,7 @@
 //#include "playground/scene/texture_lod_scene.h"
 
 const std::string kConfigPath = "playground/config.pb.txt";
-const std::string kDefaultSceneName = "GeometryScene";
+const std::string kDefaultSceneName = "PathTracingScene";
 const std::unordered_map<std::string, std::function<renderer::Scene*()>> kFactory = {
   // {"ForwardShadingScene", [] () { return new ForwardShadingScene; }},
   // {"DeferredShadingScene", [] () { return new DeferredShadingScene; }},
@@ -54,6 +55,7 @@ const std::unordered_map<std::string, std::function<renderer::Scene*()>> kFactor
   {"GeometryScene", [] () { return new GeometryScene(); }},
   {"ModelScene", [] () { return new ModelScene(); }},
   {"RayTracingScene", [] () { return new RayTracingScene(); }},
+  {"PathTracingGeometryScene", [] () { return new PathTracingGeometryScene(); }},
   {"PathTracingScene", [] () { return new PathTracingScene(); }},
 };
 
@@ -64,6 +66,7 @@ Playground::Playground() {
 void Playground::BeginFrame() {
   if (current_scene_name_ == "") {
     current_scene_name_ = kDefaultSceneName;
+    CGCHECK(kFactory.count(kDefaultSceneName) > 0) << kDefaultSceneName;
     current_scene_ = kFactory.at(current_scene_name_)();
     current_scene_->Enter(current_scene_name_, &config_, &io_, &frame_stat_);
   }

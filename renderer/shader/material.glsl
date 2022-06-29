@@ -14,7 +14,7 @@ struct Material {
 ::vec4 texture_index_height_shininess; // free y w
 };
 
-uniform int material_repo_length;
+uniform int material_repo_num;
 layout (std430, binding = SSBO_MATERIAL_REPO) buffer MaterialRepo {
   Material material_repo[];
 };
@@ -45,6 +45,12 @@ vec3 MaterialNormal(Material material, mat3 world_TBN_, vec3 frag_world_normal, 
   return res;
 }
 
+vec4 MaterialDiffuse(Material material) {
+  vec4 res = vec4(0, 0, 0, 1);
+  res = material.diffuse;
+  return res;
+}
+
 vec4 MaterialDiffuse(Material material, vec2 uv) {
   vec4 res = vec4(0, 0, 0, 1);
   int texture_diffuse_index = int(material.texture_index_normal_specular_ambient_diffuse.w);
@@ -69,8 +75,8 @@ vec4 MaterialSpecular(Material material, vec2 uv) {
   return res;
 }
 
-vec4 MaterialEmission(int material_index) {
-  return material_repo[material_index].emission;
+vec4 MaterialEmission(Material material) {
+  return material.emission;
 }
 
 float MaterialShininess(Material material, vec2 uv) {

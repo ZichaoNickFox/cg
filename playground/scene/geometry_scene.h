@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "renderer/camera.h"
 #include "renderer/geometry.h"
 #include "renderer/scene.h"
@@ -15,10 +17,10 @@ class GeometryScene : public renderer::Scene {
 
  private:
   static constexpr int kTriangleNum = 100;
-  std::array<renderer::Triangle, kTriangleNum> triangles_;
+  std::array<renderer::Triangle, 100> triangles_;
 
   static constexpr int kAABBNum = 100;
-  std::array<renderer::AABB, kAABBNum> aabbs_;
+  std::array<renderer::AABB, 100> aabbs_;
 
   void Rasterization();
   void Raytracing();

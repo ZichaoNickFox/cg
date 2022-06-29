@@ -15,7 +15,7 @@ struct PhongModelInput {
 
 vec4 PhongModel(PhongModelInput param) {
   vec4 result = vec4(0.0, 0.0, 0.0, 1.0);
-  for (int i = 0; i < light_repo_length; ++i) {
+  for (int i = 0; i < light_repo_num; ++i) {
     Light light = light_repo[i];
 
     // ambient

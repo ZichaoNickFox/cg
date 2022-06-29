@@ -26,7 +26,7 @@ void Scene::Update() {
   material_repo_.UpdateSSBO();
   light_repo_.UpdateSSBO();
   bvh_.UpdateSSBO();
-  primitive_repo_.UpdateSSBO();
+  primitive_repo_.UpdateSSBO(bvh_.GetPrimitiveSequence());
 
   OnUpdate();
 }
