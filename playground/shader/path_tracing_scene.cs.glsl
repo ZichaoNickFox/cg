@@ -36,26 +36,20 @@ vec4 path_tracing(Ray ray, vec4 color) {
     if (result.hitted == false) {
       return color;
     }
-
     Material material = material_repo[result.material_index];
     vec3 N = result.normal;
-    vec3 L = ray.dir;
 
     const float pdf = 1 / (2 * pi);
     if (MaterialEmission(material) != vec4(0, 0, 0, 1)) {
       // light
-      float cosine = max(dot(N, -L), 0);
-      color = radiance * MaterialEmission(material) * MaterialDiffuse(material) * cosine / pdf / P_RR;
+      float cosine = max(dot(-ray_iter.dir, N), 0);
+      color = radiance * MaterialDiffuse(material) * cosine / pdf / P_RR;
       break;
     } else {
       vec3 dir_ws = SampleUnitHemisphereDir(N);
-      // return vec4(N, 1);
-      return vec4(dir_ws, 1);
-      // float f_r_specular = BRDF_specular(-ray_iter.dir, dir_ws, result.normal, 0.5);
-      // vec4 f_r_diffuse = BRDF_diffuse(MaterialDiffuse(material));
-      // vec4 f_r = 0.0 * f_r_specular + 1.0 * f_r_diffuse;
-      // vec4 f_r = f_r_diffuse;
-      vec4 f_r = MaterialDiffuse(material);
+      float f_r_specular = BRDF_specular(-ray_iter.dir, dir_ws, result.normal, 0.5);
+      vec4 f_r_diffuse = BRDF_diffuse(MaterialDiffuse(material));
+      vec4 f_r = 0.0 * f_r_specular + 1.0 * f_r_diffuse;
       float cosine = max(dot(dir_ws, N), 0.0);
       radiance = radiance * f_r * cosine / pdf / P_RR;
       ray_iter = Ray(result.pos + bias * dir_ws, dir_ws);
