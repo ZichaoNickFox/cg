@@ -60,9 +60,9 @@ vec3 ImportancleSampleGGX(vec2 Xi, vec3 N, float roughness) {
 
 // Hemisphere random direction sample
 vec3 SampleUnitHemisphereDir(vec3 normal) { 
-  if (normal == vec3(0, 1, 0)) {
+  if (abs(normal.y - 1) < FLT_EPSILON) {
     normal = vec3(0.005, 0.99, 0.005);
-  } else if (normal == vec3(0, -1, 0)) {
+  } else if (abs(normal.y + 1) < FLT_EPSILON) {
     normal = vec3(0.005, -0.99, -0.005);
   }
 
