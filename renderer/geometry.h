@@ -90,7 +90,7 @@ struct Triangle {
   glm::vec3 c;
   AABB AsAABB() const;
   std::string AsString() const;
-  glm::vec3 normal() const;
+  glm::vec3 Normal() const;
 
   bool operator==(const Triangle& other) const = default;
 };

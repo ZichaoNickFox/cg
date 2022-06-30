@@ -1,4 +1,4 @@
-#include "renderer/scene_common.h"
+#include "renderer/inspector.h"
 
 #include "imgui.h"
 #include <glm/glm.hpp>
@@ -9,12 +9,14 @@
 #include "renderer/debug.h"
 #include "renderer/io.h"
 #include "renderer/mesh/lines_mesh.h"
+#include "renderer/scene.h"
 #include "renderer/shader.h"
 
 namespace renderer {
-OnUpdateCommon::OnUpdateCommon(Scene* scene, const std::string& title) {
+void Inspector::Inspect(const std::string& scene_name, Scene* scene) {
   bool open = true;
-  ImGui::Begin(title.c_str(), &open, ImGuiWindowFlags_AlwaysAutoResize);
+  ImGui::Begin(scene_name.c_str(), &open, ImGuiWindowFlags_AlwaysAutoResize);
+
   GuiFps(scene);
   ImGui::Separator();
 
@@ -27,7 +29,13 @@ OnUpdateCommon::OnUpdateCommon(Scene* scene, const std::string& title) {
   InSpectCursor(scene);
   ImGui::Separator();
 
+  ShowCoordinators(scene);
+  ImGui::Separator();
+
   ReloadShaderPrograms(scene);
+  ImGui::Separator();
+
+  InspectNormal(scene);
   ImGui::Separator();
 
   InspectObjects(scene);
@@ -38,13 +46,11 @@ OnUpdateCommon::OnUpdateCommon(Scene* scene, const std::string& title) {
 
   InspectMaterials(scene);
   ImGui::Separator();
-}
 
-OnUpdateCommon::~OnUpdateCommon() {
   ImGui::End();
 }
 
-void OnUpdateCommon::InspectCamera(Scene* scene) {
+void Inspector::InspectCamera(Scene* scene) {
   std::string camera_pos_ws = glm::to_string(scene->camera().transform().translation());
   ImGui::Text("camera_pos_ws %s", camera_pos_ws.c_str());
   ImGui::SameLine();
@@ -73,20 +79,39 @@ void OnUpdateCommon::InspectCamera(Scene* scene) {
   ImGui::Text("pick dir %s", glm::to_string(glm::normalize(far_pos_ws - near_pos_ws)).c_str());
 }
 
-void OnUpdateCommon::InSpectCursor(Scene* scene) {
+void Inspector::InSpectCursor(Scene* scene) {
   ImGui::Text("cursor pos x %lf", scene->io().GetCursorWindowPos().x);
   ImGui::Text("cursor pos y %lf", scene->io().GetCursorWindowPos().y);
   ImGui::Text("cursor screen space x %lf", scene->io().GetCursorPosSS().x);
   ImGui::Text("cursor screen space y %lf", scene->io().GetCursorPosSS().y);
 }
 
-void OnUpdateCommon::ReloadShaderPrograms(Scene* scene) {
+void Inspector::ShowCoordinators(Scene* scene) {
+  ImGui::Checkbox("show view coordinator", &show_view_coordinator_);
+  ImGui::Checkbox("show world coordinator", &show_world_coordinator_);
+  if (show_view_coordinator_) {
+    glDisable_(GL_DEPTH_TEST);
+    glm::vec3 near_pos_ws, far_pos_ws;
+    scene->camera().GetPickRay(glm::vec2(0.5, 0.1), &near_pos_ws, &far_pos_ws);
+    glm::vec3 direction = glm::normalize(far_pos_ws - near_pos_ws);
+    glm::vec3 world_coord_pos = near_pos_ws + direction * glm::vec3(0.5, 0.5, 0.5);
+
+    LinesShader({0.3}, *scene, CoordinatorMesh(), {world_coord_pos, glm::quat(), glm::vec3(0.05, 0.05, 0.05)});
+
+    glEnable_(GL_DEPTH_TEST);
+  }
+  if (show_world_coordinator_) {
+    LinesShader({}, *scene, CoordinatorMesh());
+  }
+}
+
+void Inspector::ReloadShaderPrograms(Scene* scene) {
   if (ImGui::Button("Reload Shaders")) {
     scene->mutable_shader_program_repo()->ReloadShaderPrograms();
   }
 }
 
-void OnUpdateCommon::InspectMesh(Scene* scene, const Object& object) {
+void Inspector::InspectMesh(Scene* scene, const Object& object) {
   const std::string& mesh_name = scene->mesh_repo().GetName(object.mesh_index);
   const Mesh* mesh = scene->mesh_repo().GetMesh(object.mesh_index);
   if (ImGui::TreeNode(fmt::format("mesh : index ~ {} name ~ {}", object.mesh_index, mesh_name).c_str())) {
@@ -101,7 +126,7 @@ void OnUpdateCommon::InspectMesh(Scene* scene, const Object& object) {
   }
 }
 
-void OnUpdateCommon::InspectMaterial(int material_index, const std::string& material_name, Material* material) {
+void Inspector::InspectMaterial(int material_index, const std::string& material_name, Material* material) {
   if (ImGui::TreeNode(fmt::format("material index ~ {} name ~ {}", material_index, material_name).c_str())) {
     ImGui::PushID(material_name.c_str());
     ImGui::ColorEdit4("albedo", glm::value_ptr(material->albedo));
@@ -128,7 +153,20 @@ void OnUpdateCommon::InspectMaterial(int material_index, const std::string& mate
   }
 }
 
-void OnUpdateCommon::InspectObjects(Scene* scene) {
+void Inspector::InspectNormal(Scene* scene) {
+  ImGui::Checkbox("show triangle", &normal_shader_param_.show_triangle);
+  ImGui::Checkbox("show face normal", &normal_shader_param_.show_face_normal);
+  ImGui::Checkbox("show vetex normal", &normal_shader_param_.show_vertex_normal);
+  ImGui::Checkbox("show texture normal", &normal_shader_param_.show_vertex_texture_normal);
+  ImGui::Checkbox("show TBN", &normal_shader_param_.show_TBN);
+  ImGui::SliderFloat("length", &normal_shader_param_.length, 0, 1);
+  ImGui::SliderFloat("width", &normal_shader_param_.width, 0, 5);
+  for (const Object& object : scene->object_repo().GetObjects()) {
+    NormalShader(normal_shader_param_, *scene, object);
+  }
+}
+
+void Inspector::InspectObjects(Scene* scene) {
   if (ImGui::TreeNode("Objects")) {
     ImGui::PushID("Objects");
     for (const Object& object : scene->object_repo().GetObjects()) {
@@ -149,7 +187,7 @@ void OnUpdateCommon::InspectObjects(Scene* scene) {
   }
 }
 
-void OnUpdateCommon::InspectLights(Scene* scene) {
+void Inspector::InspectLights(Scene* scene) {
   if (ImGui::TreeNode("Lights")) {
     ImGui::PushID("Lights");
     for (int i = 0; i < scene->light_repo().num(); ++i) {
@@ -174,7 +212,7 @@ void OnUpdateCommon::InspectLights(Scene* scene) {
   }
 }
 
-void OnUpdateCommon::InspectMaterials(Scene* scene) {
+void Inspector::InspectMaterials(Scene* scene) {
   if (ImGui::TreeNode("Materials")) {
     ImGui::PushID("Materials");
     for (int i = 0; i < scene->material_repo().num(); ++i) {
@@ -186,11 +224,11 @@ void OnUpdateCommon::InspectMaterials(Scene* scene) {
   }
 }
 
-void OnUpdateCommon::GuiFps(Scene* scene) {
+void Inspector::GuiFps(Scene* scene) {
   scene->frame_stat().Gui();
 }
 
-void OnUpdateCommon::MoveCamera(Scene* scene) {
+void Inspector::MoveCamera(Scene* scene) {
   ImGui::SliderFloat("camera move speed", scene->mutable_camera()->mutable_move_speed(), 1, 10);
   ImGui::SliderFloat("rotate speed", scene->mutable_camera()->mutable_rotate_speed(), 1, 10);
   float camera_move_speed = scene->mutable_camera()->move_speed() / 200.0;
@@ -218,22 +256,6 @@ void OnUpdateCommon::MoveCamera(Scene* scene) {
     camera->RotateHorizontal(cursor_delta_x);
     camera->RotateVerticle(cursor_delta_y);
   }
-}
-
-OnRenderCommon::OnRenderCommon(Scene* scene) {
-  DrawViewCoord(scene);
-}
-
-void OnRenderCommon::DrawViewCoord(Scene* scene) {
-  glDisable_(GL_DEPTH_TEST);
-  glm::vec3 near_pos_ws, far_pos_ws;
-  scene->camera().GetPickRay(glm::vec2(0.5, 0.1), &near_pos_ws, &far_pos_ws);
-  glm::vec3 direction = glm::normalize(far_pos_ws - near_pos_ws);
-  glm::vec3 world_coord_pos = near_pos_ws + direction * glm::vec3(0.5, 0.5, 0.5);
-
-  LinesShader({0.3}, *scene, CoordinatorMesh(), {world_coord_pos, glm::quat(), glm::vec3(0.05, 0.05, 0.05)});
-
-  glEnable_(GL_DEPTH_TEST);
 }
 
 RaytracingDebugCommon::LightPath::LightPath() {

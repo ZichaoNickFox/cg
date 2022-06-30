@@ -6,8 +6,8 @@
 #include "imgui.h"
 #include <memory>
 
+#include "renderer/inspector.h"
 #include "renderer/repo/texture_repo.h"
-#include "renderer/scene_common.h"
 #include "renderer/transform.h"
 #include "playground/object/sphere_object.h"
 

@@ -1,14 +1,14 @@
 #pragma once
 
-#include "renderer/scene.h"
 #include "renderer/texture.h"
+#include "renderer/shader.h"
 
 namespace renderer {
+class Scene;
 // Put in OnUpdate before everything
-class OnUpdateCommon {
+class Inspector {
  public:
-  OnUpdateCommon(Scene* scene, const std::string& title);
-  ~OnUpdateCommon();
+  void Inspect(const std::string& scene_name, Scene* scene);
 
  private:
   void GuiFps(Scene* scene);
@@ -16,21 +16,21 @@ class OnUpdateCommon {
   void MoveCamera(Scene* scene);
   void InSpectCursor(Scene* scene);
   void ReloadShaderPrograms(Scene* scene);
+
+  void ShowCoordinators(Scene* scene);
+
   void InspectObjects(Scene* scene);
   void InspectLights(Scene* scene);
   void InspectMaterials(Scene* scene);
+  void InspectNormal(Scene* scene);
 
   void InspectMesh(Scene* scene, const Object& object);
   void InspectMaterial(int material_index, const std::string& material_name, Material* material);
-};
 
-// Put in OnRender after everything
-class OnRenderCommon {
- public:
-  OnRenderCommon(Scene* scene);
+  bool show_view_coordinator_ = false;
+  bool show_world_coordinator_ = false;
 
- private:
-  void DrawViewCoord(Scene* scene);
+  NormalShader::Param normal_shader_param_;
 };
 
 class RaytracingDebugCommon {

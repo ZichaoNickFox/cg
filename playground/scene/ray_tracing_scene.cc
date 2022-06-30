@@ -1,9 +1,9 @@
 #include "playground/scene/ray_tracing_scene.h"
 
 #include "renderer/filter.h"
+#include "renderer/inspector.h"
 #include "renderer/math.h"
 #include "renderer/object.h"
-#include "renderer/scene_common.h"
 #include "renderer/shader.h"
 #include "renderer/transform.h"
 

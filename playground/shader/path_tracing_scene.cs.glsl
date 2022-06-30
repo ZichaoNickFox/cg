@@ -29,7 +29,7 @@ vec4 path_tracing(Ray ray, vec4 color) {
   while(bool(count--)) {
     const float P_RR = 0.95;
     if (Random() > P_RR) {
-      // break;
+      break;
     }
 
     RayBVHResult result = RayBVH(ray_iter);
@@ -37,19 +37,20 @@ vec4 path_tracing(Ray ray, vec4 color) {
       return color;
     }
     Material material = material_repo[result.material_index];
-    return MaterialDiffuse(material);
+    return vec4(result.normal,1.0);
 
     const float pdf = 1 / (2 * pi);
     if (MaterialEmission(material) != vec4(0, 0, 0, 0)) {
       // light
-      color = radiance * MaterialDiffuse(material) / P_RR;
+      color = radiance * MaterialEmission(material) / P_RR;
     } else {
       vec3 dir_ws = SampleUnitHemisphereDir(result.normal);
-      float f_r_specular = BRDF_specular(-ray_iter.dir, dir_ws, result.normal, 0.5);
-      vec4 f_r_deffuse = BRDF_diffuse(MaterialDiffuse(material));
-      vec4 f_r = 0.0 * f_r_specular + 1.0 * f_r_deffuse;
-      float cosine = max(dot(result.normal, dir_ws), 0.0);
-      radiance = radiance * f_r * cosine / pdf / P_RR;
+      // float f_r_specular = BRDF_specular(-ray_iter.dir, dir_ws, result.normal, 0.5);
+      // vec4 f_r_deffuse = BRDF_diffuse(MaterialDiffuse(material));
+      // vec4 f_r = 0.0 * f_r_specular + 1.0 * f_r_deffuse;
+      // float cosine = max(dot(result.normal, dir_ws), 0.0);
+      // radiance = radiance * f_r * cosine / pdf / P_RR;
+      radiance += MaterialDiffuse(material);
       ray_iter = Ray(result.pos + bias * dir_ws, dir_ws);
     }
   }

@@ -225,7 +225,7 @@ std::string Triangle::AsString() const {
   return res;
 }
 
-glm::vec3 Triangle::normal() const {
+glm::vec3 Triangle::Normal() const {
   return glm::cross(b - a, c - a);
 }
 

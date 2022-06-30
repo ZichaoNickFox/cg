@@ -9,9 +9,9 @@
 #include <memory>
 
 #include "renderer/framebuffer_attachment.h"
+#include "renderer/inspector.h"
 #include "renderer/math.h"
 #include "renderer/pass.h"
-#include "renderer/scene_common.h"
 #include "renderer/transform.h"
 #include "renderer/util.h"
 

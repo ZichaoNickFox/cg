@@ -4,9 +4,9 @@
 #include <memory>
 
 #include "renderer/color.h"
+#include "renderer/inspector.h"
 #include "renderer/math.h"
 #include "renderer/mesh/lines_mesh.h"
-#include "renderer/scene_common.h"
 #include "renderer/shader.h"
 #include "renderer/transform.h"
 
@@ -56,8 +56,8 @@ void PathTracingScene::OnUpdate() {
 }
 
 void PathTracingScene::OnRender() {
-  // Rasterization();
-  PathTracing();
+  Rasterization();
+  // PathTracing();
 }
 
 void PathTracingScene::OnExit() {
@@ -74,7 +74,6 @@ void PathTracingScene::Rasterization() {
     LinesShader({}, *this, LinesMesh({primitive_repo_.GetTriangle(result.primitive_index)}, kRed));
     LinesShader({}, *this, LinesMesh({result.aabb}, kGreen));
   }
-  LinesShader({}, *this, CoordinatorMesh());
 }
 
 void PathTracingScene::PathTracing() {

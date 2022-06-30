@@ -51,7 +51,7 @@ void NormalScene::OnUpdate(Scene *context)
   ImGui::Checkbox("blinn_phong", &use_blinn_phong_);
 
   ImGui::Checkbox("show_vertex_normal", &show_vertex_normal_);
-  ImGui::Checkbox("show_texture_normal", &show_texture_normal_);
+  ImGui::Checkbox("show_vertex_texture_normal", &show_texture_normal_);
   ImGui::Checkbox("show_TBN", &show_TBN_);
   ImGui::Checkbox("show_triangle", &show_triangle_);
 

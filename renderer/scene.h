@@ -14,6 +14,7 @@
 #include "renderer/mesh.h"
 #include "renderer/object.h"
 #include "renderer/primitive.h"
+#include "renderer/inspector.h"
 #include "renderer/shader.h"
 #include "renderer/shadow.h"
 #include "renderer/texture.h"
@@ -70,5 +71,7 @@ class Scene {
   ShadowRepo shadow_repo_;
 
   BVH bvh_;
+
+  Inspector inspector_;
 };
 } // namespace renderer

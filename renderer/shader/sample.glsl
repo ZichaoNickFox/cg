@@ -1,7 +1,5 @@
 #include "renderer/shader/random.glsl"
 
-// Depend random.glsl
-
 // random x:[0,1] y[0,1] in uv
 //---------------------------------------------------------------------
 

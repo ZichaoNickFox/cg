@@ -2,7 +2,7 @@
 
 #include "renderer/debug.h"
 #include "renderer/definition.h"
-#include "renderer/scene_common.h"
+#include "renderer/inspector.h"
 #include "renderer/util.h"
 
 namespace renderer {
@@ -21,8 +21,6 @@ void Scene::Enter(const std::string& name, Config* config, Io* io, FrameStat* fr
 }
 
 void Scene::Update() {
-  OnUpdateCommon(this, name_);
-
   material_repo_.UpdateSSBO();
   light_repo_.UpdateSSBO();
   bvh_.UpdateSSBO();
@@ -34,7 +32,7 @@ void Scene::Update() {
 void Scene::Render() {
   OnRender();
 
-  // OnRenderCommon(this);
+  inspector_.Inspect(name_, this);
 }
 
 void Scene::Exit() {

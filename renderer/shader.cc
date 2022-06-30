@@ -134,11 +134,15 @@ NormalShader::NormalShader(const Param& param, const Scene& scene, const Object&
   SetModel(object);
   SetCamera(camera);
 
-  program_.SetFloat("line_length", param.length_);
-  program_.SetFloat("line_width", param.width_);
-  program_.SetBool("show_vertex_normal", param.show_vertex_normal_);
-  program_.SetBool("show_TBN", param.show_TBN_);
-  program_.SetBool("show_triangle", param.show_triangle_);
+  program_.SetFloat("line_length", param.length);
+  program_.SetFloat("line_width", param.width);
+  program_.SetBool("show_triangle", param.show_triangle);
+  program_.SetBool("show_face_normal", param.show_face_normal);
+  program_.SetBool("show_vertex_texture_normal", param.show_vertex_texture_normal);
+  program_.SetBool("show_vertex_normal", param.show_vertex_normal);
+  program_.SetBool("show_TBN", param.show_TBN);
+
+  Run(scene, object);
 }
 
 LinesShader::LinesShader(const Param& param, const Scene& scene, const LinesMesh& lines_mesh,

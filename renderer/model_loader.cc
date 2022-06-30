@@ -15,7 +15,8 @@ namespace {
 std::unique_ptr<Mesh> ProcessMesh(const aiMesh& ai_mesh) {
   std::unique_ptr<Mesh> res = std::make_unique<Mesh>();
   for(uint32_t i = 0; i < ai_mesh.mNumVertices; i++) {
-    res->mutable_positions()->push_back(glm::vec3(ai_mesh.mVertices[i].x, ai_mesh.mVertices[i].y, ai_mesh.mVertices[i].z));
+    res->mutable_positions()->push_back(glm::vec3(ai_mesh.mVertices[i].x, ai_mesh.mVertices[i].y,
+                                                  ai_mesh.mVertices[i].z));
     if (ai_mesh.HasNormals()) {
       res->mutable_normals()->push_back(glm::vec3(ai_mesh.mNormals[i].x, ai_mesh.mNormals[i].y, ai_mesh.mNormals[i].z));
     } else {
@@ -34,11 +35,11 @@ std::unique_ptr<Mesh> ProcessMesh(const aiMesh& ai_mesh) {
       res->mutable_bitangents()->push_back(glm::vec3(0, 0, 0));
     }
   }
-  std::vector<GLuint> indices;
   for(GLuint i = 0; i < ai_mesh.mNumFaces; i++) {
     aiFace face = ai_mesh.mFaces[i];
-    for(GLuint j = 0; j < face.mNumIndices; j++)
+    for(GLuint j = 0; j < face.mNumIndices; j++) {
       res->mutable_indices()->push_back(face.mIndices[j]);        
+    }
   }
   res->Setup();
   CGLOG(ERROR) << "Process Mesh : mesh=" << ai_mesh.mName.C_Str();

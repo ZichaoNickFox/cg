@@ -1,10 +1,10 @@
-#version 430 core
+#include "renderer/shader/version.glsl"
 
 out vec4 FragColor;
 
-in vec4 color_;
+in vec4 gs_output_color_;
 
 void main()
 {
-  FragColor = color_;
+  FragColor = gs_output_color_;
 }

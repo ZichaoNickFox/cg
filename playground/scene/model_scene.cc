@@ -30,7 +30,7 @@ void ModelScene::OnUpdate() {
   ImGui::Checkbox("texture_height", &use_texture_height_);
   ImGui::Checkbox("texture_specular", &use_texture_specular_);
   ImGui::Checkbox("show_vertex_normal", &show_vertex_normal_);
-  ImGui::Checkbox("show_texture_normal", &show_texture_normal_);
+  ImGui::Checkbox("show_vertex_texture_normal", &show_texture_normal_);
   ImGui::Checkbox("show_TBN", &show_TBN_);
   ImGui::Checkbox("show_triangle", &show_triangle_);
   ImGui::SliderFloat("shininess", &shininess_, 0, 1);

@@ -3,8 +3,8 @@
 #include <glm/glm.hpp>
 
 #include "renderer/color.h"
+#include "renderer/inspector.h"
 #include "renderer/math.h"
-#include "renderer/scene_common.h"
 #include "renderer/shader.h"
 
 using namespace renderer;

@@ -1,4 +1,6 @@
-#version 430 core
+#include "renderer/shader/version.glsl"
+
+#include "renderer/shader/camera.glsl"
 
 layout (location = 0) in vec3 pos;
 layout (location = 1) in vec3 normal;
@@ -7,8 +9,7 @@ layout (location = 3) in vec3 tangent;
 layout (location = 4) in vec3 bitangent;
 
 uniform mat4 model;
-uniform mat4 view;
-uniform mat4 project;
+uniform Camera camera;
 
 out vec3 normal_;
 out vec3 world_pos_;

@@ -81,12 +81,13 @@ class PbrShader : public renderer::RenderShader {
 class NormalShader : public renderer::RenderShader {
  public:
   struct Param {
-    bool show_vertex_normal_;
-    bool show_TBN_;
-    bool show_triangle_;
-    bool show_texture_normal_;
-    float length_;
-    float width_;
+    bool show_triangle = false;
+    bool show_face_normal = false;
+    bool show_vertex_normal = false;
+    bool show_vertex_texture_normal = false;
+    bool show_TBN = false;
+    float length = 0.1;
+    float width = 3;
   };
   NormalShader(const Param& param, const Scene& scene, const Object& object);
 };
