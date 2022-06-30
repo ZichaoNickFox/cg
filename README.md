@@ -1,11 +1,14 @@
 ### Target
 Learn to build faster && more realistic renderer
 
-## PBR
+## PBR-split_sum
 ![](md/PBR.png)
 
-## RayTracing
+## RayTracingDemo
 ![](md/ray_tracing_simple.png)
 
-## PathTracing
+## PathTracingDemo
 ![](md/path_tracing_simple.png)
+
+## PathTracing
+![](md/path_tracing.png)
