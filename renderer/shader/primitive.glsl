@@ -21,5 +21,5 @@ Triangle PrimitiveTriangle(Primitive primitive) {
 };
 
 vec3 PrimitiveNormal(Primitive primitive) {
-  return TriangleNormal(PrimitiveTriangle(primitive));
+  return normalize(TriangleNormal(PrimitiveTriangle(primitive)));
 }

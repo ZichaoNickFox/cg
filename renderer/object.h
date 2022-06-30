@@ -27,10 +27,9 @@ struct Object {
 
 struct ObjectRepo {
  public:
-  void AddOrReplace(const Config& config, const std::vector<ObjectMeta>& object_metas,
-                    MeshRepo* meshe_repo, MaterialRepo* material_repo, TextureRepo* texture_repo);
-  void AddOrReplace(const Config& config, const ObjectMeta& object_meta,
-                    MeshRepo* meshe_repo, MaterialRepo* material_repo, TextureRepo* texture_repo);
+  void Init(const Config* config, MeshRepo* mesh_repo, MaterialRepo* material_repo, TextureRepo* texture_repo);
+  void AddOrReplace(const std::vector<ObjectMeta>& object_metas);
+  void AddOrReplace(const ObjectMeta& object_meta);
   const Object& GetObject(int object_index) const;
   const Object& GetObject(const std::string& name) const;
   Object* MutableObject(int object_index);
@@ -47,6 +46,11 @@ struct ObjectRepo {
  private:
   std::unordered_map<int, Object> index_2_object_;
   std::unordered_map<std::string, int> name_2_index_;
+
+  const Config* config_;
+  MeshRepo* mesh_repo_;
+  MaterialRepo* material_repo_;
+  TextureRepo* texture_repo_;
 };
 
 } // namespace renderer

@@ -45,7 +45,7 @@ void PathTracingScene::OnEnter() {
   std::vector<glm::vec4> canvas(framebuffer_size.x * framebuffer_size.y, kBlack);
   canvas_ = CreateTexture2D(framebuffer_size.x, framebuffer_size.y, canvas);
 
-  object_repo_.AddOrReplace(*config_, object_metas_, &mesh_repo_, &material_repo_, &texture_repo_);
+  object_repo_.AddOrReplace(object_metas_);
   object_repo_.GetPrimitives(mesh_repo_, material_repo_, {}, &primitive_repo_);
   bvh_.Build(primitive_repo_, {5, BVH::Partition::kPos, 64});
 
@@ -56,8 +56,8 @@ void PathTracingScene::OnUpdate() {
 }
 
 void PathTracingScene::OnRender() {
-  Rasterization();
-  // PathTracing();
+  // Rasterization();
+  PathTracing();
 }
 
 void PathTracingScene::OnExit() {

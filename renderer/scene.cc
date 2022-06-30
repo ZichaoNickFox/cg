@@ -14,6 +14,7 @@ void Scene::Enter(const std::string& name, Config* config, Io* io, FrameStat* fr
   frame_stat_ = frame_stat;
 
   shader_program_repo_.Init(*config);
+  object_repo_.Init(config, &mesh_repo_, &material_repo_, &texture_repo_);
 
   glEnable_(GL_DEPTH_TEST);
 

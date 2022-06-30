@@ -232,12 +232,6 @@ PbrIrradianceCubemapGeneratorShader::PbrIrradianceCubemapGeneratorShader(const P
   program_.SetTexture("cubemap", param.environment_map);
 }
 
-SampleShader::SampleShader(const Param& param, const Scene& scene, const Object& object)
-    : RenderShader(scene, "sample_test") {
-  SetModel(object);
-  SetCamera(scene.camera());
-}
-
 PbrPrefilteredColorCubemapGeneratorShader::PbrPrefilteredColorCubemapGeneratorShader(
     const Param& param, const Scene& scene, const Object& object)
     : RenderShader(scene, "pbr_prefiltered_color_cubemap_generator") {

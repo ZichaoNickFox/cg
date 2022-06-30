@@ -146,9 +146,9 @@ shader_config {
 }
 
 shader_config {
-  name : "sample_test";
-  vs_path : "renderer/shader/sample_test.vs.glsl";
-  fs_path : "renderer/shader/sample_test.fs.glsl";
+  name : "sample_scene";
+  vs_path : "playground/shader/sample_scene.vs.glsl";
+  fs_path : "playground/shader/sample_scene.fs.glsl";
 }
 
 shader_config {

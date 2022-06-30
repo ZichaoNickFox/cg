@@ -44,7 +44,7 @@ struct Triangle {
 };
 
 vec3 TriangleNormal(Triangle triangle) {
-  return cross(triangle.c.xyz - triangle.a.xyz, triangle.b.xyz - triangle.a.xyz);
+  return cross(triangle.b.xyz - triangle.a.xyz, triangle.c.xyz - triangle.a.xyz);
 }
 
 struct RaySphereResult {

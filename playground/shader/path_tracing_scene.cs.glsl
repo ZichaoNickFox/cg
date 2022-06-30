@@ -36,21 +36,28 @@ vec4 path_tracing(Ray ray, vec4 color) {
     if (result.hitted == false) {
       return color;
     }
+
     Material material = material_repo[result.material_index];
-    return vec4(result.normal,1.0);
+    vec3 N = result.normal;
+    vec3 L = ray.dir;
 
     const float pdf = 1 / (2 * pi);
-    if (MaterialEmission(material) != vec4(0, 0, 0, 0)) {
+    if (MaterialEmission(material) != vec4(0, 0, 0, 1)) {
       // light
-      color = radiance * MaterialEmission(material) / P_RR;
+      float cosine = max(dot(N, -L), 0);
+      color = radiance * MaterialEmission(material) * MaterialDiffuse(material) * cosine / pdf / P_RR;
+      break;
     } else {
-      vec3 dir_ws = SampleUnitHemisphereDir(result.normal);
+      vec3 dir_ws = SampleUnitHemisphereDir(N);
+      // return vec4(N, 1);
+      return vec4(dir_ws, 1);
       // float f_r_specular = BRDF_specular(-ray_iter.dir, dir_ws, result.normal, 0.5);
-      // vec4 f_r_deffuse = BRDF_diffuse(MaterialDiffuse(material));
-      // vec4 f_r = 0.0 * f_r_specular + 1.0 * f_r_deffuse;
-      // float cosine = max(dot(result.normal, dir_ws), 0.0);
-      // radiance = radiance * f_r * cosine / pdf / P_RR;
-      radiance += MaterialDiffuse(material);
+      // vec4 f_r_diffuse = BRDF_diffuse(MaterialDiffuse(material));
+      // vec4 f_r = 0.0 * f_r_specular + 1.0 * f_r_diffuse;
+      // vec4 f_r = f_r_diffuse;
+      vec4 f_r = MaterialDiffuse(material);
+      float cosine = max(dot(dir_ws, N), 0.0);
+      radiance = radiance * f_r * cosine / pdf / P_RR;
       ray_iter = Ray(result.pos + bias * dir_ws, dir_ws);
     }
   }
@@ -64,16 +71,9 @@ void main() {
   vec3 near_pos_ws = PositionSS2WS(camera.view, camera.project, near_pos_ss);
   vec3 camera_dir_ws = normalize(near_pos_ws - camera.pos_ws);
   
-  // vec4 color = imageLoad(canvas, ivec2(gl_GlobalInvocationID.xy));
+  vec4 color = imageLoad(canvas, ivec2(gl_GlobalInvocationID.xy));
   Ray ray = Ray(camera.pos_ws, camera_dir_ws);
-  // vec4 acc_color = color;
-  // const int sample_num = 3;
-  // for (int i = 0; i < sample_num; ++i) {
-  //   acc_color += path_tracing(ray, color);
-  // }
-  // color = acc_color / (sample_num + 1);
-  vec4 color = kClearColor;
-  color = path_tracing(ray, color);
-
+  color += path_tracing(ray, color);
+  color /= 2;
   imageStore(canvas, ivec2(gl_GlobalInvocationID.xy), color);
 }

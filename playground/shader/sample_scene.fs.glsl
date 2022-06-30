@@ -1,16 +1,12 @@
 #include "renderer/shader/version.glsl"
 
 #include "renderer/shader/convert.glsl"
+#include "renderer/shader/definition.glsl"
 #include "renderer/shader/sample.glsl"
 
-layout (std430, binding = 0) buffer Samples { vec4 samples[500]; };
+layout (std430, binding = SSBO_USER_0) buffer Samples { vec4 samples[500]; };
 
 out vec4 FragColor;
-
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 project;
-
 in vec3 local_pos_;
 
 void TestHammersley() {
@@ -21,7 +17,7 @@ void TestHammersley() {
     vec2 s = Hammersley(i, N);
     vec2 uv = SpherePos2UV(local_pos_);
     if (distance(s, uv) < 0.005) {
-      FragColor  = vec4(1, 0, 0, 1);
+      FragColor = vec4(1, 0, 0, 1);
     }
   }
 }

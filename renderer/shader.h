@@ -185,13 +185,6 @@ class PbrIrradianceCubemapGeneratorShader : public renderer::RenderShader {
   PbrIrradianceCubemapGeneratorShader(const Param& param, const Scene& scene, const Object& object);
 };
 
-class SampleShader : public renderer::RenderShader {
- public:
-  struct Param {
-  };
-  SampleShader(const Param& param, const Scene& scene, const Object& object);
-};
-
 class PbrPrefilteredColorCubemapGeneratorShader : public renderer::RenderShader {
  public:
   struct Param {

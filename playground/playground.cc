@@ -22,7 +22,7 @@
 //#include "playground/scene/pbr_scene.h"
 //#include "playground/scene/random_test_scene.h"
 #include "playground/scene/ray_tracing_scene.h"
-//#include "playground/scene/sample_test_scene.h"
+#include "playground/scene/sample_scene.h"
 //#include "playground/scene/shadow_scene.h"
 //#include "playground/scene/share_scene.h"
 //#include "playground/scene/skybox_scene.h"
@@ -30,7 +30,7 @@
 //#include "playground/scene/texture_lod_scene.h"
 
 const std::string kConfigPath = "playground/config.pb.txt";
-const std::string kDefaultSceneName = "PathTracingScene";
+const std::string kDefaultSceneName = "SampleScene";
 const std::unordered_map<std::string, std::function<renderer::Scene*()>> kFactory = {
   // {"ForwardShadingScene", [] () { return new ForwardShadingScene; }},
   // {"DeferredShadingScene", [] () { return new DeferredShadingScene; }},
@@ -57,6 +57,7 @@ const std::unordered_map<std::string, std::function<renderer::Scene*()>> kFactor
   {"RayTracingScene", [] () { return new RayTracingScene(); }},
   {"PathTracingGeometryScene", [] () { return new PathTracingGeometryScene(); }},
   {"PathTracingScene", [] () { return new PathTracingScene(); }},
+  {"SampleScene", [] () { return new SampleScene(); }},
 };
 
 Playground::Playground() {

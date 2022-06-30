@@ -3,21 +3,27 @@
 #include "renderer/model_loader.h"
 
 namespace renderer {
-void ObjectRepo::AddOrReplace(const Config& config, const std::vector<ObjectMeta>& object_metas,
-                              MeshRepo* meshe_repo, MaterialRepo* material_repo, TextureRepo* texture_repo) {
+void ObjectRepo::Init(const Config* config, MeshRepo* mesh_repo, MaterialRepo* material_repo,
+                      TextureRepo* texture_repo) {
+  config_ = config;
+  mesh_repo_ = mesh_repo;
+  material_repo_ = material_repo;
+  texture_repo_ = texture_repo;
+}
+
+void ObjectRepo::AddOrReplace(const std::vector<ObjectMeta>& object_metas) {
   for (const ObjectMeta& object_meta : object_metas) {
-    AddOrReplace(config, object_meta, meshe_repo, material_repo, texture_repo);
+    AddOrReplace(object_meta);
   }
 }
 
-void ObjectRepo::AddOrReplace(const Config& config, const ObjectMeta& object_meta, MeshRepo* mesh_repo,
-                              MaterialRepo* material_repo, TextureRepo* texture_repo) {
-  if (!mesh_repo->Has(object_meta.mesh_or_model_name)) {
-    LoadModel(config, object_meta.mesh_or_model_name, mesh_repo, material_repo, texture_repo);
-    CGCHECK(material_repo->Has(object_meta.material_name)) << " After LoadModel, materials should be loaded name~"
+void ObjectRepo::AddOrReplace(const ObjectMeta& object_meta) {
+  if (!mesh_repo_->Has(object_meta.mesh_or_model_name)) {
+    LoadModel(*config_, object_meta.mesh_or_model_name, mesh_repo_, material_repo_, texture_repo_);
+    CGCHECK(material_repo_->Has(object_meta.material_name)) << " After LoadModel, materials should be loaded name~"
         << object_meta.material_name;
   }
-  CGCHECK(material_repo->Has(object_meta.material_name)) << " Cannot find material name~"
+  CGCHECK(material_repo_->Has(object_meta.material_name)) << " Cannot find material name~"
       << object_meta.material_name;
   int index;
   if (name_2_index_.find(object_meta.object_name) == name_2_index_.end()) {
@@ -26,8 +32,8 @@ void ObjectRepo::AddOrReplace(const Config& config, const ObjectMeta& object_met
     index = name_2_index_[object_meta.object_name];
   }
   name_2_index_[object_meta.object_name] = index;
-  index_2_object_[index] = Object{index, object_meta.transform, mesh_repo->GetIndex(object_meta.mesh_or_model_name),
-                                  material_repo->GetIndex(object_meta.material_name)};
+  index_2_object_[index] = Object{index, object_meta.transform, mesh_repo_->GetIndex(object_meta.mesh_or_model_name),
+                                  material_repo_->GetIndex(object_meta.material_name)};
 }
 
 bool ObjectRepo::Has(const std::string& object_name) const {

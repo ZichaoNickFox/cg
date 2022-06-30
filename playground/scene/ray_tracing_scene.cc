@@ -38,7 +38,7 @@ void RayTracingScene::OnEnter() {
     const float& r = sphere.radius;
 
     ObjectMeta object_meta{name, {glm::vec3(), glm::quat(), glm::vec3(r, r, r)}, name, name};
-    object_repo_.AddOrReplace(*config_, object_meta, &mesh_repo_, &material_repo_, &texture_repo_);
+    object_repo_.AddOrReplace(object_meta);
   }
 
   camera_->SetPerspectiveFov(60);
