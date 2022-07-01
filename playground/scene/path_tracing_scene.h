@@ -39,4 +39,5 @@ class PathTracingScene : public renderer::Scene {
   };
 
   renderer::Texture canvas_;
+  renderer::Transform dirty_camera_transform_;
 };

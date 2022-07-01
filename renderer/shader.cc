@@ -72,13 +72,6 @@ ComputeShader::ComputeShader(const Scene& scene, const std::string& shader_name)
   program_.SetInt("primitive_repo_num", scene.primitive_repo().num());
 }
 
-void ComputeShader::Run() const {
-  program_.Use();
-  CGCHECK(work_group_num_ != glm::vec3()) << " Setting work group num";
-  glDispatchCompute_(work_group_num_.x, work_group_num_.y, work_group_num_.z);
-  glMemoryBarrier_(GL_ALL_BARRIER_BITS);
-}
-
 void ComputeShader::SetWorkGroupNum(const glm::vec3& work_group_num) {
   work_group_num_ = work_group_num;
 }
@@ -108,6 +101,17 @@ void ComputeShader::SetResolution(const glm::vec2& resolution) {
 
 void ComputeShader::SetFrameNum(int frame_num) {
   program_.SetInt("frame_num", frame_num);
+}
+
+void ComputeShader::SetDirty(bool dirty) {
+  program_.SetBool("dirty", dirty);
+}
+
+void ComputeShader::Run() const {
+  program_.Use();
+  CGCHECK(work_group_num_ != glm::vec3()) << " Setting work group num";
+  glDispatchCompute_(work_group_num_.x, work_group_num_.y, work_group_num_.z);
+  glMemoryBarrier_(GL_ALL_BARRIER_BITS);
 }
 
 PhongShader::PhongShader(const Param& param, const Scene& scene, const Object& object)

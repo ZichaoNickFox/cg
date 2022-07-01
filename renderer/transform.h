@@ -28,11 +28,12 @@ class Transform {
   glm::vec3* mutable_translation() { return &translation_; }
   glm::vec3* mutable_scale() { return &scale_; }
 
+  bool operator==(const Transform& other) const = default;
+
  private:
   glm::vec3 translation_ = glm::vec3(0, 0, 0);
   glm::quat rotation_ = glm::quat();
   glm::vec3 scale_ = glm::vec3(1, 1, 1);
 };
 
-Transform operator*(const glm::mat4& transform, const Transform& source);
-}
+} // namespace renderer

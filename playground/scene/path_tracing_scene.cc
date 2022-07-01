@@ -16,6 +16,7 @@ class PathTracingShader : public renderer::ComputeShader {
  public:
   struct Param {
     renderer::Texture canvas;
+    bool dirty = false;
   };
   PathTracingShader(const Param& param, const Scene& scene) 
       : ComputeShader(scene, "path_tracing_scene") {
@@ -24,6 +25,7 @@ class PathTracingShader : public renderer::ComputeShader {
     SetFrameNum(scene.frame_stat().frame_num());
     SetWorkGroupNum({param.canvas.meta().width / 32, param.canvas.meta().height / 32, 1});
     SetResolution({param.canvas.meta().width, param.canvas.meta().height});
+    SetDirty(param.dirty);
     Run();
   }
 };
@@ -40,7 +42,7 @@ void PathTracingScene::OnEnter() {
 
   object_repo_.AddOrReplace(object_metas_);
   object_repo_.GetPrimitives(mesh_repo_, material_repo_, {}, &primitive_repo_);
-  bvh_.Build(primitive_repo_, {5, BVH::Partition::kPos, 64});
+  bvh_.Build(primitive_repo_, {100, BVH::Partition::kPos, 64});
 
   glEnable_(GL_DEPTH_TEST);
 }
@@ -70,6 +72,8 @@ void PathTracingScene::Rasterization() {
 }
 
 void PathTracingScene::PathTracing() {
-  PathTracingShader({canvas_}, *this);
+  bool dirty = !(dirty_camera_transform_ == camera_->transform());
+  dirty_camera_transform_ = camera_->transform();
+  PathTracingShader({canvas_, dirty}, *this);
   FullscreenQuadShader({canvas_}, *this);
 }

@@ -33,6 +33,7 @@ class ComputeShader {
   void SetCamera(const Camera& camera);
   void SetResolution(const glm::vec2& resolution);
   void SetFrameNum(int frame_num);
+  void SetDirty(bool dirty);
   void SetWorkGroupNum(const glm::vec3& work_group_num);
 
  protected:

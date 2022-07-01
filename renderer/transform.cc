@@ -31,4 +31,5 @@ Transform operator*(const glm::mat4& transform, const Transform& source) {
   glm::vec3 scale = transform * glm::vec4(source.scale(), 1.0);
   return Transform(translation, rotation, scale);
 }
+
 }

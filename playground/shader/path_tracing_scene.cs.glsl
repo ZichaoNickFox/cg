@@ -14,23 +14,62 @@ layout (rgba32f, binding = 0) uniform image2D canvas;
 
 uniform vec2 resolution;
 uniform Camera camera;
+uniform bool dirty;
 
 const float pi = 3.1415926;
 const float bias = 0.0001;
+
+struct RaySceneResult {
+  bool hitted;
+  AABB aabb;
+  int material_index;
+  float dist;
+  vec3 normal;
+  vec3 pos;
+};
+
+RaySceneResult RayScene(Ray ray, bool use_bvh) {
+  RaySceneResult res;
+  if (use_bvh) {
+    RayBVHResult result = RayBVH(ray);
+    res.hitted = result.hitted;
+    res.aabb = result.aabb;
+    res.material_index = result.material_index;
+    res.dist = result.dist;
+    res.normal = result.normal;
+    res.pos = result.pos;
+  } else {
+    res.hitted = false;
+    res.dist = FLT_MAX;
+    for (int i = 0; i < primitive_repo_num; ++i) {
+      Primitive primitive = primitive_repo[i];
+      Triangle triangle = PrimitiveTriangle(primitive);
+      RayTriangleResult result = RayTriangle(ray, triangle);
+      if (result.hitted && result.dist < res.dist) {
+        res.hitted = result.hitted;
+        res.material_index = PrimitiveMaterialIndex(primitive);
+        res.pos = result.pos;
+        res.normal = result.normal;
+        res.dist = result.dist;
+      }
+    }
+  }
+  return res;
+}
 
 // https://www.bilibili.com/video/BV1X7411F744?p=16 0:58:08
 vec4 path_tracing(Ray ray, vec4 color) {
   Ray ray_iter = ray;
   vec4 radiance = vec4(1, 1, 1, 1);
 
-  int count = 5;
+  int count = 10;
   while(bool(count--)) {
-    const float P_RR = 0.95;
+    const float P_RR = 0.8;
     if (Random() > P_RR) {
       break;
     }
 
-    RayBVHResult result = RayBVH(ray_iter);
+    RaySceneResult result = RayScene(ray_iter, false);
     if (result.hitted == false) {
       return color;
     }
@@ -64,8 +103,12 @@ void main() {
   vec3 camera_dir_ws = normalize(near_pos_ws - camera.pos_ws);
   
   vec4 color = imageLoad(canvas, ivec2(gl_GlobalInvocationID.xy));
-  Ray ray = Ray(camera.pos_ws, camera_dir_ws);
-  color += path_tracing(ray, color);
-  color /= 2;
+  if (dirty) {
+    color = kBlack;
+  } else {
+    Ray ray = Ray(camera.pos_ws, camera_dir_ws);
+    color += path_tracing(ray, color);
+    color /= 2;
+  }
   imageStore(canvas, ivec2(gl_GlobalInvocationID.xy), color);
 }
