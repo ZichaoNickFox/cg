@@ -64,6 +64,7 @@ class Texture {
     bool Varify() const;
     int data_size_in_byte(int level = 0) const;
     int resized_data_size_in_byte(int resized_width, int resized_height, int level = 0) const;
+    glm::vec2 Resolution() const { return glm::vec2{width, height}; }
 
     bool operator==(const Meta& other) const = default;
   };

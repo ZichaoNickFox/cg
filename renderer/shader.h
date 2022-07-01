@@ -19,7 +19,7 @@ class ComputeShader {
  public:
   struct TextureBinding {
     Texture texture;
-    std::string uniform;
+    std::string uniform_name;
     GLuint read_write_type = GL_READ_ONLY;
     GLuint internal_format = GL_RGBA32F;
   };
@@ -31,8 +31,9 @@ class ComputeShader {
   void SetTextureBinding(const TextureBinding& texture_binding);
 
   void SetCamera(const Camera& camera);
-  void SetScreenSize(const glm::vec2& screen_size);
-  void SetTimeSeed(int frame_num);
+  void SetResolution(const glm::vec2& resolution);
+  void SetFrameNum(int frame_num);
+  void SetWorkGroupNum(const glm::vec3& work_group_num);
 
  protected:
   void CheckInternalFormat(const renderer::Texture& texture) const;

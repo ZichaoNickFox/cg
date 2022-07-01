@@ -70,20 +70,23 @@ ComputeShader::ComputeShader(const Scene& scene, const std::string& shader_name)
   program_.SetInt("material_repo_num", scene.material_repo().num());
   program_.SetInt("bvh_num", scene.bvh().num());
   program_.SetInt("primitive_repo_num", scene.primitive_repo().num());
-
-  work_group_num_ = {scene.io().screen_size().x / 32 + 1, scene.io().screen_size().x / 32 + 1, 1};
 }
 
 void ComputeShader::Run() const {
   program_.Use();
+  CGCHECK(work_group_num_ != glm::vec3()) << " Setting work group num";
   glDispatchCompute_(work_group_num_.x, work_group_num_.y, work_group_num_.z);
   glMemoryBarrier_(GL_ALL_BARRIER_BITS);
 }
 
+void ComputeShader::SetWorkGroupNum(const glm::vec3& work_group_num) {
+  work_group_num_ = work_group_num;
+}
+
 void ComputeShader::SetTextureBinding(const TextureBinding& binding) {
   CheckInternalFormat(binding.texture);
-  int unit = program_.SetTexture(binding.uniform, binding.texture);
-  glBindImageTexture_(unit, binding.texture.id(), 0, GL_FALSE, 0,
+  int texture_unit = program_.SetTexture(binding.uniform_name, binding.texture);
+  glBindImageTexture_(texture_unit, binding.texture.id(), 0, GL_FALSE, 0,
                       binding.read_write_type, binding.internal_format);
 }
 
@@ -99,11 +102,11 @@ void ComputeShader::SetCamera(const Camera& camera) {
   renderer::SetCamera(camera, &program_);
 }
 
-void ComputeShader::SetScreenSize(const glm::vec2& screen_size) {
-  program_.SetVec2("screen_size", screen_size);
+void ComputeShader::SetResolution(const glm::vec2& resolution) {
+  program_.SetVec2("resolution", resolution);
 }
 
-void ComputeShader::SetTimeSeed(int frame_num) {
+void ComputeShader::SetFrameNum(int frame_num) {
   program_.SetInt("frame_num", frame_num);
 }
 
@@ -273,7 +276,7 @@ RandomShader::RandomShader(const Param& param, const Scene& scene)
     : ComputeShader(scene, "random_test") {
   SetTextureBinding({param.input, "texture_input", GL_WRITE_ONLY, GL_RGBA32F});
   SetTextureBinding({param.output, "texture_output", GL_READ_ONLY, GL_RGBA32F});
-  SetTimeSeed(param.frame_num);
+  SetFrameNum(param.frame_num);
   Run();
 }
 

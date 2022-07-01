@@ -15,22 +15,15 @@ using namespace renderer;
 class PathTracingShader : public renderer::ComputeShader {
  public:
   struct Param {
-    std::vector<renderer::Sphere> spheres;
     renderer::Texture canvas;
   };
   PathTracingShader(const Param& param, const Scene& scene) 
       : ComputeShader(scene, "path_tracing_scene") {
     SetCamera(scene.camera());
-    SetScreenSize(scene.io().screen_size());
     SetTextureBinding({param.canvas, "canvas", GL_READ_WRITE, GL_RGBA32F});
-    SetTimeSeed(scene.frame_stat().frame_num());
-    for (int i = 0; i < param.spheres.size(); ++i) {
-      const Sphere& sphere = param.spheres[i];
-      program_.SetInt(fmt::format("spheres[{}].id", i), sphere.id);
-      program_.SetVec3(fmt::format("spheres[{}].center_pos", i), sphere.translation);
-      program_.SetVec4(fmt::format("spheres[{}].color", i), sphere.color);
-      program_.SetFloat(fmt::format("spheres[{}].radius", i), sphere.radius);
-    }
+    SetFrameNum(scene.frame_stat().frame_num());
+    SetWorkGroupNum({param.canvas.meta().width / 32, param.canvas.meta().height / 32, 1});
+    SetResolution({param.canvas.meta().width, param.canvas.meta().height});
     Run();
   }
 };
@@ -41,9 +34,9 @@ void PathTracingScene::OnEnter() {
                           glm::quat(0.070520, {-0.005535, -0.994436, -0.078057}), {1, 1, 1}});
 
   // path tracing
-  glm::ivec2 framebuffer_size = io_->framebuffer_size();
-  std::vector<glm::vec4> canvas(framebuffer_size.x * framebuffer_size.y, kBlack);
-  canvas_ = CreateTexture2D(framebuffer_size.x, framebuffer_size.y, canvas);
+  glm::vec3 canvas_size(3240, 2160, 0);
+  std::vector<glm::vec4> canvas_data(canvas_size.x * canvas_size.y, kBlack);
+  canvas_ = CreateTexture2D(canvas_size.x, canvas_size.y, canvas_data);
 
   object_repo_.AddOrReplace(object_metas_);
   object_repo_.GetPrimitives(mesh_repo_, material_repo_, {}, &primitive_repo_);
@@ -77,9 +70,6 @@ void PathTracingScene::Rasterization() {
 }
 
 void PathTracingScene::PathTracing() {
-  PathTracingShader::Param param;
-  param.canvas = canvas_;
-
-  PathTracingShader(param, *this);
+  PathTracingShader({canvas_}, *this);
   FullscreenQuadShader({canvas_}, *this);
 }

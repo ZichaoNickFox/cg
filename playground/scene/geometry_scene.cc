@@ -20,7 +20,7 @@ class GeometrySceneShader : public ComputeShader {
       : ComputeShader(scene, "geometry_scene") {
     SetCamera(scene.camera());
     SetTextureBinding({param.canvas, "canvas", GL_READ_WRITE, GL_RGBA32F});
-    SetScreenSize(scene.io().screen_size());
+    SetResolution(param.canvas.meta().Resolution());
     program_.SetInt("triangle_num", param.triangle_num);
     program_.SetInt("aabb_num", param.aabb_num);
     Run();

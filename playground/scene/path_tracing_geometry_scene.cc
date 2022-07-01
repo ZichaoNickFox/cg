@@ -19,8 +19,8 @@ class PathTracingGeometrySceneShader : public renderer::ComputeShader {
       : ComputeShader(scene, "path_tracing_geometry_scene") {
     SetCamera(scene.camera());
     SetTextureBinding({param.canvas, "canvas", GL_READ_ONLY, GL_RGBA32F});
-    SetScreenSize(scene.io().screen_size());
-    SetTimeSeed(scene.frame_stat().frame_num());
+    SetResolution(param.canvas.meta().Resolution());
+    SetFrameNum(scene.frame_stat().frame_num());
     for (int i = 0; i < param.spheres.size(); ++i) {
       const Sphere& sphere = param.spheres[i];
       program_.SetInt(fmt::format("spheres[{}].id", i), sphere.id);

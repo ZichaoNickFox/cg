@@ -2,7 +2,6 @@
 
 #include "renderer/shader/bvh.glsl"
 #include "renderer/shader/camera.glsl"
-#include "renderer/shader/compute_shader.glsl"
 #include "renderer/shader/color.glsl"
 #include "renderer/shader/convert.glsl"
 #include "renderer/shader/geometry.glsl"
@@ -10,12 +9,11 @@
 #include "renderer/shader/random.glsl"
 #include "renderer/shader/sample.glsl"
 
-uniform vec2 screen_size;
-uniform Camera camera;
-uniform mat4 view;
-uniform mat4 project;
-
+layout (local_size_x = 32, local_size_y = 32) in;
 layout (rgba32f, binding = 0) uniform image2D canvas;
+
+uniform vec2 resolution;
+uniform Camera camera;
 
 const float pi = 3.1415926;
 const float bias = 0.0001;
@@ -25,7 +23,7 @@ vec4 path_tracing(Ray ray, vec4 color) {
   Ray ray_iter = ray;
   vec4 radiance = vec4(1, 1, 1, 1);
 
-  int count = 10;
+  int count = 5;
   while(bool(count--)) {
     const float P_RR = 0.95;
     if (Random() > P_RR) {
@@ -61,7 +59,7 @@ vec4 path_tracing(Ray ray, vec4 color) {
 void main() {
   InitRNG(gl_GlobalInvocationID.xy);
 
-  vec3 near_pos_ss = vec3(gl_GlobalInvocationID.xy / screen_size, 0.0);
+  vec3 near_pos_ss = vec3(gl_GlobalInvocationID.xy / resolution, 0.0);
   vec3 near_pos_ws = PositionSS2WS(camera.view, camera.project, near_pos_ss);
   vec3 camera_dir_ws = normalize(near_pos_ws - camera.pos_ws);
   

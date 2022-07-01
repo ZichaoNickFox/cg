@@ -59,11 +59,10 @@ int main(int argc, char **argv)
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // 3.2+ only
 
-  // Create window with graphics context
   constexpr int kScreenWidth = 3240;
   constexpr int kScreenHeight = 2160;
-  GLFWwindow* window = glfwCreateWindow(kScreenWidth, kScreenHeight, "CG",
-                                        NULL, NULL);
+  GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+  GLFWwindow* window = glfwCreateWindow(kScreenWidth, kScreenHeight, "CG", monitor, NULL);
   CGCHECK(window) << "GLFW create window failed";
   glfwMakeContextCurrent(window);
   glfwSwapInterval(1); // Enable vsync
