@@ -87,6 +87,7 @@ cc_library(
     "object.cc",
     "pass.h",
     "pass.cc",
+    "ping_pong.h",
     "primitive.h",
     "primitive.cc",
     "scene.h",

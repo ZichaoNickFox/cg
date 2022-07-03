@@ -18,7 +18,7 @@ class PathTracingGeometrySceneShader : public renderer::ComputeShader {
   PathTracingGeometrySceneShader(const Param& param, const Scene& scene)
       : ComputeShader(scene, "path_tracing_geometry_scene") {
     SetCamera(scene.camera());
-    SetTextureBinding({param.canvas, "canvas", GL_READ_ONLY, GL_RGBA32F});
+    SetTextureBinding({param.canvas, "canvas", GL_READ_ONLY});
     SetResolution(param.canvas.meta().Resolution());
     SetFrameNum(scene.frame_stat().frame_num());
     for (int i = 0; i < param.spheres.size(); ++i) {

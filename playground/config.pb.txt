@@ -220,6 +220,28 @@ shader_config {
 }
 
 shader_config {
+  name : "rtrt_geometry";
+  vs_path : "playground/shader/rtrt/rtrt_geometry.vs.glsl";
+  gs_path : "playground/shader/rtrt/rtrt_geometry.gs.glsl";
+  fs_path : "playground/shader/rtrt/rtrt_geometry.fs.glsl";
+}
+
+shader_config {
+  name : "rtrt_path_tracing";
+  cs_path : "playground/shader/rtrt/rtrt_path_tracing.cs.glsl";
+}
+
+shader_config {
+  name : "rtrt_outlier_clamping";
+  cs_path : "playground/shader/rtrt/rtrt_outlier_clamping.cs.glsl";
+}
+
+shader_config {
+  name : "rtrt_denoise";
+  cs_path : "playground/shader/rtrt/rtrt_denoise.cs.glsl";
+}
+
+shader_config {
   name : "pbr_BRDF";
   cs_path : "renderer/shader/pbr/pbr_BRDF.glsl";
 }

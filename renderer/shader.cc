@@ -77,15 +77,15 @@ void ComputeShader::SetWorkGroupNum(const glm::vec3& work_group_num) {
 }
 
 void ComputeShader::SetTextureBinding(const TextureBinding& binding) {
-  CheckInternalFormat(binding.texture);
+  CheckTextureBindingInternalFormat(binding.texture);
   int texture_unit = program_.SetTexture(binding.uniform_name, binding.texture);
   glBindImageTexture_(texture_unit, binding.texture.id(), 0, GL_FALSE, 0,
-                      binding.read_write_type, binding.internal_format);
+                      binding.read_write_type, binding.texture.meta().gl_internal_format);
 }
 
-void ComputeShader::CheckInternalFormat(const renderer::Texture& texture) const {
+void ComputeShader::CheckTextureBindingInternalFormat(const renderer::Texture& texture) const {
   GLuint internal_format = texture.meta().gl_internal_format;
-  std::set<GLint> supported_format = { GL_RGBA, GL_RGBA32F };
+  std::set<GLint> supported_format = { GL_RGB32F, GL_RGBA32F };
   if (supported_format.count(internal_format) <= 0) {
     CGCHECK(false) << "Unsupported Internal Format : " << std::hex << internal_format << std::dec;
   }
@@ -278,8 +278,8 @@ BlurShader::BlurShader(const Param& param, const Scene& scene, const Object& obj
 
 RandomShader::RandomShader(const Param& param, const Scene& scene)
     : ComputeShader(scene, "random_test") {
-  SetTextureBinding({param.input, "texture_input", GL_WRITE_ONLY, GL_RGBA32F});
-  SetTextureBinding({param.output, "texture_output", GL_READ_ONLY, GL_RGBA32F});
+  SetTextureBinding({param.input, "texture_input", GL_WRITE_ONLY});
+  SetTextureBinding({param.output, "texture_output", GL_READ_ONLY});
   SetFrameNum(param.frame_num);
   Run();
 }

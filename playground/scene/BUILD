@@ -41,6 +41,8 @@ cc_library(
     "geometry_scene.cc",
     "ray_tracing_scene.h",
     "ray_tracing_scene.cc",
+    "rtrt_scene.h",
+    "rtrt_scene.cc",
     "sample_scene.h",
     "sample_scene.cc",
 #    "shadow_scene.h",

@@ -1,3 +1,6 @@
+#include "renderer/shader/definition.glsl"
+// #include "renderer/shader/lut/distance_lut.glsl"
+// #include "renderer/shader/lut/gaussian_lut.glsl"
 #include "renderer/shader/random.glsl"
 
 // random x:[0,1] y[0,1] in uv
@@ -84,3 +87,16 @@ vec3 SampleUnitSphereDir(vec3 normal) {
   float z = Random() * 2 - 1;
   return normalize(vec3(x, y ,z));
 }
+
+/*
+// https://www.mathsisfun.com/data/standard-normal-distribution-table.html
+float StandardGaussianPercent(float from, float to) {
+  // TODO 
+  return 0.0;
+}
+
+float SampleGaussianWeight(int sample_radius, float distance) {
+  float index = min(distance, float(sample_radius));
+  return gaussian_lut[sample_radius][int(index) * 10 - 1];
+}
+*/

@@ -15,16 +15,16 @@ using namespace renderer;
 class PathTracingShader : public renderer::ComputeShader {
  public:
   struct Param {
-    renderer::Texture canvas;
+    renderer::Texture texture_in_out;
     bool dirty = false;
   };
   PathTracingShader(const Param& param, const Scene& scene) 
       : ComputeShader(scene, "path_tracing_scene") {
     SetCamera(scene.camera());
-    SetTextureBinding({param.canvas, "canvas", GL_READ_WRITE, GL_RGBA32F});
+    SetTextureBinding({param.texture_in_out, "texture_in_out", GL_READ_WRITE});
     SetFrameNum(scene.frame_stat().frame_num());
-    SetWorkGroupNum({param.canvas.meta().width / 32, param.canvas.meta().height / 32, 1});
-    SetResolution({param.canvas.meta().width, param.canvas.meta().height});
+    SetWorkGroupNum({scene.io().screen_size().x / 32, scene.io().screen_size().y / 32, 1});
+    SetResolution({scene.io().screen_size().x, scene.io().screen_size().y});
     SetDirty(param.dirty);
     Run();
   }
@@ -38,7 +38,7 @@ void PathTracingScene::OnEnter() {
   // path tracing
   glm::vec3 canvas_size(3240, 2160, 0);
   std::vector<glm::vec4> canvas_data(canvas_size.x * canvas_size.y, kBlack);
-  canvas_ = CreateTexture2D(canvas_size.x, canvas_size.y, canvas_data);
+  texture_in_out_ = CreateTexture2D(canvas_size.x, canvas_size.y, canvas_data);
 
   object_repo_.AddOrReplace(object_metas_);
   object_repo_.GetPrimitives(mesh_repo_, material_repo_, {}, &primitive_repo_);
@@ -74,6 +74,6 @@ void PathTracingScene::Rasterization() {
 void PathTracingScene::PathTracing() {
   bool dirty = !(dirty_camera_transform_ == camera_->transform());
   dirty_camera_transform_ = camera_->transform();
-  PathTracingShader({canvas_, dirty}, *this);
-  FullscreenQuadShader({canvas_}, *this);
+  PathTracingShader({texture_in_out_, dirty}, *this);
+  FullscreenQuadShader({texture_in_out_}, *this);
 }

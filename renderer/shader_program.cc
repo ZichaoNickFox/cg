@@ -234,6 +234,7 @@ ShaderProgram ShaderProgramRepo::GetShader(const std::string& name) const {
   CGCHECK(shaders_.count(name) > 0) << "No shader name : " << name;
   ShaderLoadState* shader_load_state = &shaders_.at(name);
   if (shader_load_state->loaded == false) {
+    CGLOG(ERROR) << "Loading Shading Begin : " << name;
     ShaderLoader shader_loader;
     shader_load_state->shader = shader_loader.Load(name, {
         {ShaderLoader::kVS, shader_load_state->config.has_vs_path() ? shader_load_state->config.vs_path() : ""},
@@ -241,6 +242,7 @@ ShaderProgram ShaderProgramRepo::GetShader(const std::string& name) const {
         {ShaderLoader::kGS, shader_load_state->config.has_gs_path() ? shader_load_state->config.gs_path() : ""},
         {ShaderLoader::kTS, shader_load_state->config.has_ts_path() ? shader_load_state->config.ts_path() : ""},
         {ShaderLoader::kCS, shader_load_state->config.has_cs_path() ? shader_load_state->config.cs_path() : ""}});
+    CGLOG(ERROR) << "Loading Shading End : " << name;
     shader_load_state->loaded = true;
   }
   return shader_load_state->shader;

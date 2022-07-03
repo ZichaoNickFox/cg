@@ -259,7 +259,14 @@ void glBindTexture_(GLenum target, GLuint texture) {
 void glBindImageTexture_(GLuint unit, GLuint texture, GLint level, GLboolean layered,
                          GLint layer, GLenum access, GLenum format) {
   glBindImageTexture(unit, texture, level, layered, layer, access, format);
-  CGCHECKGL();
+  CGCHECKGL() << "glBindImageTexture"
+              << " unit~" << unit
+              << " texture~" << texture
+              << " level~" << level
+              << " layered~" << bool(layered)
+              << " layer~" << layer
+              << " access~" << std::hex << access << std::dec
+              << " format~" << std::hex << format << std::dec;
 }
 
 void glActiveTexture_(GLenum texture) {
@@ -314,7 +321,7 @@ GLenum glCheckFramebufferStatus_(GLenum target) {
 
 void glDrawBuffers_(GLsizei n, const GLenum *bufs) {
   glDrawBuffers(n, bufs);
-  CGCHECKGL();
+  CGCHECKGL() << "glDrawBuffers n~" << n << " bufs~" << bufs;
 }
 
 void glClear_(GLbitfield mask) {

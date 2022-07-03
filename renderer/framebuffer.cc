@@ -26,21 +26,14 @@ void Framebuffer::Init(const Option& option) {
   for (int i = 0; i < option_.attachments.size(); ++i) {
     const FramebufferAttachment& attachment = option_.attachments[i];
     CGCHECK(textures_.count(attachment.name) == 0) << "Attachments has same name : " << attachment.name;
-    Texture* texture = &textures_[attachment.name];
-    glGenTextures_(1, texture->mutable_id());
-    glBindTexture_(GL_TEXTURE_2D, texture->id());
-    glTexImage2D_(GL_TEXTURE_2D, 0, attachment.texture_internal_type, option.size.x, option.size.y, 0,
-      attachment.texture_format, attachment.texture_type, NULL);
-    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, attachment.texture_param_min_filter);
-    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, attachment.texture_param_mag_filter);
-    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, attachment.texture_param_wrap_s);
-    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, attachment.texture_param_wrap_t);
 
-    GLuint gl_attachment = attachment.GetAttachmentBase() + texture_unit_indices[attachment.type]++;
-    glFramebufferTexture2D_(GL_FRAMEBUFFER, gl_attachment, GL_TEXTURE_2D, texture->id(), 0);
+    Texture attachment_texture = CreateAttachmentTexture(attachment);
+
+    textures_[attachment.name] = attachment_texture;
+    GLuint attachment_unit = attachment.GetAttachmentBase() + texture_unit_indices[attachment.type]++;
+    glFramebufferTexture2D_(GL_FRAMEBUFFER, attachment_unit, GL_TEXTURE_2D, attachment_texture.id(), 0);
     if (attachment.type == FramebufferAttachment::kColor) {
-      draw_buffers_.push_back(gl_attachment);
-      draw_buffers_clear_color_.push_back(attachment.clear_color);
+      draw_buffers_.push_back(attachment_unit);
     }
   }
   GLenum framebuffer_status = glCheckFramebufferStatus_(GL_FRAMEBUFFER);
@@ -58,16 +51,9 @@ void Framebuffer::Bind() {
   glGetIntegerv_(GL_FRAMEBUFFER_BINDING, &resumption_fbo_);
   glViewport_(0, 0, option_.size.x, option_.size.y);
   glBindFramebuffer_(GL_FRAMEBUFFER, fbo_);
-
-  glClear_(GL_DEPTH_BUFFER_BIT);
-  if (draw_buffers_.size() > 0) {
-    glDrawBuffers_(draw_buffers_.size(), draw_buffers_.data());
-    for (int i = 0; i < draw_buffers_.size(); ++i) {
-      glClearBufferfv_(GL_COLOR, i, glm::value_ptr(draw_buffers_clear_color_[i]));
-    }
-  } else {
-    glDrawBuffer_(GL_NONE);
-  }
+  glClearColor_(option_.clear_color.r, option_.clear_color.g, option_.clear_color.b, option_.clear_color.a);
+  glClear_(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+  glDrawBuffers_(draw_buffers_.size(), draw_buffers_.data());
 }
 
 void Framebuffer::Unbind() {
@@ -85,5 +71,28 @@ void Framebuffer::Blit(Framebuffer* framebuffer) {
   glBindFramebuffer_(GL_DRAW_FRAMEBUFFER, framebuffer ? framebuffer->fbo() : 0);
   glBlitFramebuffer_(0, 0, option_.size.x, option_.size.y, 0, 0, option_.size.x, option_.size.y,
                      GL_COLOR_BUFFER_BIT, GL_NEAREST);
+}
+
+Texture Framebuffer::CreateAttachmentTexture(const FramebufferAttachment& attachment) {
+  Texture::Meta texture_meta = attachment.texture_meta;
+  texture_meta.width = option_.size.x;
+  texture_meta.height = option_.size.y;
+  if (attachment.texture_meta.gl_internal_format == GL_RGBA32F) {
+    std::vector<glm::vec4> data(texture_meta.data_size_in_byte() / sizeof(glm::vec4), kBlack);
+    return CreateTexture2D(texture_meta, {(data.data())});
+  } else if (attachment.texture_meta.gl_internal_format == GL_DEPTH_COMPONENT32F) {
+    std::vector<float> data(texture_meta.data_size_in_byte() / sizeof(float), 0.0);
+    return CreateTexture2D(texture_meta, {(data.data())});
+  } else if (attachment.texture_meta.gl_internal_format == GL_RGB32F) {
+    std::vector<glm::vec3> data(texture_meta.data_size_in_byte() / sizeof(glm::vec3), glm::vec3(0, 0, 0));
+    return CreateTexture2D(texture_meta, {(data.data())});
+  } else if (attachment.texture_meta.gl_internal_format == GL_RG32F) {
+    std::vector<glm::vec2> data(texture_meta.data_size_in_byte() / sizeof(glm::vec2), glm::vec2(0, 0));
+    return CreateTexture2D(texture_meta, {(data.data())});
+  } else {
+    CGCHECK(false) << " Unsupported Internal format"
+                   << std::hex << attachment.texture_meta.gl_internal_format << std::dec;
+    return Texture();
+  }
 }
 }

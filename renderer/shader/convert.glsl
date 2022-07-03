@@ -49,3 +49,7 @@ vec4 PositionWS2CS(mat4 view, mat4 project, vec3 position_ws) {
 vec4 PositionWS2CS(mat4 view_project, vec3 position_ws) {
   return view_project * vec4(position_ws, 1.0);
 }
+
+vec3 SurfaceNormal(vec3 position1_ws, vec3 position2_ws, vec3 position3_ws) {
+  return normalize(cross(position2_ws - position1_ws, position3_ws - position1_ws));
+}

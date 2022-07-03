@@ -21,7 +21,6 @@ class ComputeShader {
     Texture texture;
     std::string uniform_name;
     GLuint read_write_type = GL_READ_ONLY;
-    GLuint internal_format = GL_RGBA32F;
   };
   void Run() const;
 
@@ -37,7 +36,7 @@ class ComputeShader {
   void SetWorkGroupNum(const glm::vec3& work_group_num);
 
  protected:
-  void CheckInternalFormat(const renderer::Texture& texture) const;
+  void CheckTextureBindingInternalFormat(const renderer::Texture& texture) const;
 
   ShaderProgram program_;
   glm::vec3 work_group_num_;

@@ -19,7 +19,7 @@ class GeometrySceneShader : public ComputeShader {
   GeometrySceneShader(const Param& param, const Scene& scene)
       : ComputeShader(scene, "geometry_scene") {
     SetCamera(scene.camera());
-    SetTextureBinding({param.canvas, "canvas", GL_READ_WRITE, GL_RGBA32F});
+    SetTextureBinding({param.canvas, "canvas", GL_READ_WRITE});
     SetResolution(param.canvas.meta().Resolution());
     program_.SetInt("triangle_num", param.triangle_num);
     program_.SetInt("aabb_num", param.aabb_num);

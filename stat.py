@@ -2,7 +2,7 @@ import os
 import pathlib
 
 dirs = ["playground", "renderer"]
-exts = [".cc", ".h", ".cpp", ".hpp", ".glsl"]
+exts = [".cc", ".h", ".cpp", ".hpp", ".glsl", ".py"]
 
 all_file = []
 for dir in dirs:
@@ -13,6 +13,8 @@ for dir in dirs:
 file_num = 0;
 line_num = 0;
 for file in all_file:
+  if file.find("_lut") != -1:
+    continue
   ext = pathlib.Path(file).suffix
   if ext in exts:
     file_num = file_num + 1

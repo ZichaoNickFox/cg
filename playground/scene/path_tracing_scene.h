@@ -38,6 +38,6 @@ class PathTracingScene : public renderer::Scene {
         "cornell_box_tall_box", "cornell_box_tall_box"},
   };
 
-  renderer::Texture canvas_;
+  renderer::Texture texture_in_out_;
   renderer::Transform dirty_camera_transform_;
 };

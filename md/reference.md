@@ -9,7 +9,8 @@
 https://github.com/knightcrawler25/GLSL-PathTracer
 - 文刀秋二 EDXRay  
 https://github.com/behindthepixels/EDXRay
-
+- tinsel
+https://github.com/mmacklin/tinsel
 
 # radiance
 - https://zhuanlan.zhihu.com/p/158025828

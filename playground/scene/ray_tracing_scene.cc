@@ -25,7 +25,7 @@ class RayTracingShader : public renderer::ComputeShader {
       program_.SetVec4(fmt::format("spheres[{}].color", i), sphere.color);
       program_.SetFloat(fmt::format("spheres[{}].radius", i), sphere.radius);
     }
-    SetTextureBinding({param.canvas, "canvas", GL_READ_ONLY, GL_RGBA32F});
+    SetTextureBinding({param.canvas, "canvas", GL_READ_ONLY});
     Run();
   }
 };

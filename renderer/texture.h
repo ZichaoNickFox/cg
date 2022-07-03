@@ -53,9 +53,9 @@ class Texture {
     int level_num = -1;
     int depth = -1; // for texture3d
 
-    int gl_internal_format = -1;
-    int gl_format = -1;
-    int gl_type = -1;
+    int gl_internal_format = -1; // GL_RGBA32F
+    int gl_format = -1;   // GL_RGBA
+    int gl_type = -1;     // GL_FLOAT
     int gl_min_filter = -1; // GL_LINEAR GL_NEAREST
     int gl_mag_filter = -1;
     int gl_wrap_s = -1;  // GL_REPEAT GL_MIRRORED_REPEAT GL_CLAMP_TO_EDGE GL_CLAMP_TO_BORDER
@@ -103,6 +103,7 @@ std::vector<ChannelType> Texture::GetData() const {
   return data;
 }
 
+Texture CreateTexture2D(const Texture::Meta& meta, const std::vector<void*>& datas);
 Texture CreateTexture2D(int width, int height, const std::vector<glm::vec4>& data, GLuint min_filter = GL_LINEAR,
                         GLuint mag_filter = GL_LINEAR, GLuint wrap_s = GL_REPEAT, GLuint wrap_t = GL_REPEAT);
 

@@ -309,7 +309,7 @@ void TryMakeDir(const std::string& path_with_ext) {
 bool Texture::Meta::Varify() const {
   CGCHECK(width > 0) << width;
   CGCHECK(height > 0) << height;
-  CGCHECK(channel_num == 4) << channel_num;
+  CGCHECK(channel_num >= 1 && channel_num <= 4) << channel_num;
   CGCHECK(type != Texture::kUnknown) << type;
   CGCHECK(level_num != -1) << level_num;
   CGCHECK(depth != -1) << depth;

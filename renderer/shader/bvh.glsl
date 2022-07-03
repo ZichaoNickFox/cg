@@ -32,7 +32,7 @@ int BVHRightNode(BVH bvh) {
 struct RayBVHResult {
   bool hitted;
   AABB aabb;
-  int material_index;
+  int primitive_index;
   float dist;
   vec3 normal;
   vec3 pos;
@@ -64,7 +64,7 @@ RayBVHResult RayBVH(Ray ray) {
         RayTriangleResult ray_triangle_result = RayTriangle(ray, PrimitiveTriangle(primitive));
         if (ray_triangle_result.hitted && ray_triangle_result.dist < res.dist) {
           res.hitted = true;
-          res.material_index = PrimitiveMaterialIndex(primitive);
+          res.primitive_index = i;
           res.dist = ray_triangle_result.dist;
           res.aabb = visit_node.aabb;
           res.normal = PrimitiveNormal(primitive);
