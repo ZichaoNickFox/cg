@@ -226,21 +226,6 @@ bool Texture::Varify() const {
   return not_empty && meta_.Varify();
 }
 
-// void SaveImage(const std::string& filename, const Texture::Meta& meta, const Texture2DData& data) {
-//   std::string file_ext = util::FileExt(filename);
-//   if (file_ext == "bmp") {
-//     CGCHECK(stbi_write_bmp(filename.c_str(), width, height, channels, (void*)data));
-//   } else if (file_ext == "tga") {
-//     CGCHECK(stbi_write_tga(filename.c_str(), width, height, channels, (void*)data));
-//   } else if (file_ext == "dds") {
-//     CGCHECK(stbi_write_hdr(filename.c_str(), width, height, channels, (float*)data));
-//   } else if (file_ext == "png") {
-//     CGCHECK(stbi_write_png(filename.c_str(), width, height, channels, (void*)data, 0));
-//   } else if (file_ext == "jpg") {
-//     CGCHECK(stbi_write_jpg(filename.c_str(), width, height, channels, (void*)data, width * channels));
-//   }
-// }
-
 // std::string GetCubemapPath(const std::unordered_map<std::string, std::string>& paths,
 //                            int level, int texture_unit_offset) {
 //   std::vector<std::string> faces = {"px", "nx", "py", "ny", "pz", "nz"};
@@ -331,6 +316,22 @@ int Texture::Meta::data_size_in_byte(int level) const {
 int Texture::Meta::resized_data_size_in_byte(int resized_width, int resized_height, int level) const {
   int channel_size_in_byte = hdr ? 4 : 1;   // GLfloat GLubyte
   return resized_width * resized_height * depth * channel_num * channel_size_in_byte;
+}
+
+void SaveTexture(const std::string& file_name, const Texture& texture) {
+  if (texture.meta().hdr) {
+    std::string name = file_name + ".hdr";
+    std::vector<float> data = texture.GetData<float>();
+    FlipVertically(texture.meta(), data.data());
+    CGCHECK(stbi_write_hdr(name.c_str(), texture.meta().width, texture.meta().height,
+                           texture.meta().channel_num, data.data())) << "Save failed : " << file_name;
+  } else {
+    std::string name = file_name + ".png";
+    std::vector<unsigned char> data = texture.GetData<unsigned char>();
+    FlipVertically(texture.meta(), data.data());
+    CGCHECK(stbi_write_png(name.c_str(), texture.meta().width, texture.meta().height,
+                           texture.meta().channel_num, data.data(), 0)) << "Save failed : " << file_name;
+  }
 }
 
 // void SaveTexture2DImpl(const std::unordered_map<std::string, std::string>& paths,

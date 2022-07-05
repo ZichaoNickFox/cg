@@ -3,12 +3,12 @@
 #include "renderer/shader/bvh.glsl"
 #include "renderer/shader/camera.glsl"
 #include "renderer/shader/color.glsl"
-#include "renderer/shader/convert.glsl"
 #include "renderer/shader/geometry.glsl"
 #include "renderer/shader/path_tracing.glsl"
 #include "renderer/shader/random.glsl"
-// #include "renderer/shader/sample.glsl"
+#include "renderer/shader/sample.glsl"
 #include "renderer/shader/scene.glsl"
+#include "renderer/shader/transform.glsl"
 
 layout (local_size_x = 32, local_size_y = 32) in;
 layout (rgba32f, binding = 0) uniform image2D texture_in_out;

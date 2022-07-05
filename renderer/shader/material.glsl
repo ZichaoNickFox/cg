@@ -9,9 +9,9 @@ struct Material {
   vec4 emission;
   vec4 roughness_metalness_shininess; // free w
 
-::vec4 texture_index_normal_specular_ambient_diffuse;
-::vec4 texture_index_basecolor_roughness_metalness_ambientocclusion;
-::vec4 texture_index_height_shininess; // free y w
+  vec4 texture_index_normal_specular_ambient_diffuse;
+  vec4 texture_index_basecolor_roughness_metalness_ambientocclusion;
+  vec4 texture_index_height_shininess; // free y w
 };
 
 uniform int material_repo_num;

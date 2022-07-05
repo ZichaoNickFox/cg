@@ -98,7 +98,7 @@ std::vector<ChannelType> Texture::GetData() const {
   meta_.Varify();
   std::vector<ChannelType> data;
   glBindTexture_(GL_TEXTURE_2D, id_);
-  data.resize(data_size_in_byte());
+  data.resize(data_size_in_byte() / sizeof(ChannelType));
   glGetTexImage_(GL_TEXTURE_2D, 0, meta_.gl_format, meta_.gl_type, data.data());
   return data;
 }
@@ -106,6 +106,7 @@ std::vector<ChannelType> Texture::GetData() const {
 Texture CreateTexture2D(const Texture::Meta& meta, const std::vector<void*>& datas);
 Texture CreateTexture2D(int width, int height, const std::vector<glm::vec4>& data, GLuint min_filter = GL_LINEAR,
                         GLuint mag_filter = GL_LINEAR, GLuint wrap_s = GL_REPEAT, GLuint wrap_t = GL_REPEAT);
+void SaveTexture(const std::string& file_name, const Texture& texture);
 
 class TextureRepo {
   // Maybe deprecated

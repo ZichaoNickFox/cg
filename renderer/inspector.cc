@@ -20,9 +20,6 @@ void Inspector::Inspect(const std::string& scene_name, Scene* scene) {
   GuiFps(scene);
   ImGui::Separator();
 
-  MoveCamera(scene);
-  ImGui::Separator();
-
   InspectCamera(scene);
   ImGui::Separator();
 
@@ -77,6 +74,9 @@ void Inspector::InspectCamera(Scene* scene) {
   ImGui::Text("camera_near_pos_ws %s", glm::to_string(near_pos_ws).c_str());
   ImGui::Text("camera_far_pos_ws %s", glm::to_string(far_pos_ws).c_str());
   ImGui::Text("pick dir %s", glm::to_string(glm::normalize(far_pos_ws - near_pos_ws)).c_str());
+
+  ImGui::SliderFloat("camera move speed", scene->mutable_camera()->mutable_move_speed(), 1, 10);
+  ImGui::SliderFloat("rotate speed", scene->mutable_camera()->mutable_rotate_speed(), 1, 10);
 }
 
 void Inspector::InSpectCursor(Scene* scene) {
@@ -226,36 +226,6 @@ void Inspector::InspectMaterials(Scene* scene) {
 
 void Inspector::GuiFps(Scene* scene) {
   scene->frame_stat().Gui();
-}
-
-void Inspector::MoveCamera(Scene* scene) {
-  ImGui::SliderFloat("camera move speed", scene->mutable_camera()->mutable_move_speed(), 1, 10);
-  ImGui::SliderFloat("rotate speed", scene->mutable_camera()->mutable_rotate_speed(), 1, 10);
-  float camera_move_speed = scene->mutable_camera()->move_speed() / 200.0;
-  float camera_rotate_speed = scene->mutable_camera()->rotate_speed() / 3000.0;
-
-  if (scene->io().gui_captured_cursor()) {
-    return;
-  }
-  Camera* camera = scene->mutable_camera();
-  if (scene->io().HadKeyInput("w")) {
-    camera->MoveForwardWS(camera_move_speed);
-  } else if (scene->io().HadKeyInput("s")) {
-    camera->MoveForwardWS(-camera_move_speed);
-  } else if (scene->io().HadKeyInput("a")) {
-    camera->MoveRightWS(-camera_move_speed);
-  } else if (scene->io().HadKeyInput("d")) {
-    camera->MoveRightWS(camera_move_speed);
-  } else if (scene->io().HadKeyInput("esc")) {
-    exit(0);
-  }
-  
-  if (scene->io().left_button_pressed()) {
-    double cursor_delta_x = scene->io().GetCursorDelta().x * camera_rotate_speed;
-    double cursor_delta_y = scene->io().GetCursorDelta().y * camera_rotate_speed;
-    camera->RotateHorizontal(cursor_delta_x);
-    camera->RotateVerticle(cursor_delta_y);
-  }
 }
 
 RaytracingDebugCommon::LightPath::LightPath() {

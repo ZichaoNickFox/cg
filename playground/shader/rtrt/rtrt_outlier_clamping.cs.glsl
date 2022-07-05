@@ -18,7 +18,6 @@ void main() {
   int row_end = min(int(gl_GlobalInvocationID.y) + radius + 1, int(resolution.y));
   int col_begin = max(int(gl_GlobalInvocationID.x) - radius, 0);
   int col_end = min(int(gl_GlobalInvocationID.x) + radius + 1, int(resolution.x));
-  float weight = 1 / (radius * radius);
   vec4 mean = vec4(0, 0, 0, 0);
   int n = 0;
   for (int r = row_begin; r < row_end; ++r) {

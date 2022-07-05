@@ -25,6 +25,9 @@ template<typename PtrType>
 std::string AsString(PtrType* ptr) {
   return Format("{}", uint64_t(ptr));
 }
+std::string TrimLeft(std::string str);
+std::string TrimRight(std::string str);
+std::string Trim(std::string str);
 
 // proto
 template<typename MessageType>

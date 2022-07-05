@@ -68,7 +68,7 @@ private:
   float near_clip_ = 0.1;
   float far_clip_ = 50;
   
-  float aspect_ = 1920.0f / 1080.0f;
+  float aspect_ = 0.0;
 
   Type type_ = Type::Perspective;
 

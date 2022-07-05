@@ -23,6 +23,7 @@ void ShaderParser::ParseAFile(const std::string& file_path) {
   if (file_meta_map_.find(file_path) != file_meta_map_.end()) {
     return;
   }
+  const std::string kComment = "\/\/";
   const std::string kIncludeIdentifierPrefix = "#include \"";
   const std::string kIncludeIdentifierSuffix = "\"";
   std::ifstream file(file_path);
@@ -33,8 +34,10 @@ void ShaderParser::ParseAFile(const std::string& file_path) {
   std::string file_content;
   std::vector<std::string> dependances;
   while (std::getline(file, line)) {
+    bool is_comment = util::StartsWith(util::TrimLeft(line), kComment);
     int prefix_start = line.find(kIncludeIdentifierPrefix);
-    if (prefix_start != std::string::npos) {
+    bool is_include = prefix_start != std::string::npos;
+    if (is_include && !is_comment) {
       int dependance_start = prefix_start + kIncludeIdentifierPrefix.size();
       int dependance_end = line.find(kIncludeIdentifierSuffix, dependance_start);
       CGCHECK(dependance_end != std::string::npos) << " No Suffix to finish Prefix : file_path~" << file_path << " name:" << name_;
@@ -53,8 +56,6 @@ void ShaderParser::ParseAFile(const std::string& file_path) {
     line_num++;
   }
   CGCHECK(file_content.size() > 0) << "Empty file : file_path~" << file_path << " name~" << name_;
-  CGCHECK(file_content.find("#include") == std::string::npos) << "Double Check #include failed : file_path~"
-      << file_path << " name~" << name_;
   CGCHECK(file_content != "") << "Content should not empty : file_path~" << file_path << " name~" << name_;
 
   file_meta_map_[file_path].line_num = line_num;

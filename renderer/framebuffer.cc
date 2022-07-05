@@ -52,7 +52,13 @@ void Framebuffer::Bind() {
   glViewport_(0, 0, option_.size.x, option_.size.y);
   glBindFramebuffer_(GL_FRAMEBUFFER, fbo_);
   glClearColor_(option_.clear_color.r, option_.clear_color.g, option_.clear_color.b, option_.clear_color.a);
-  glClear_(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+  glClear_(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  for (int i = 0; i < option_.attachments.size(); ++i) {
+    const FramebufferAttachment& attachment = option_.attachments[i];
+    if (attachment.type == FramebufferAttachment::kColor && attachment.clear_type == FramebufferAttachment::kClear) {
+      glClearBufferfv_(GL_COLOR, i, glm::value_ptr(option_.clear_color));
+    }
+  }
   glDrawBuffers_(draw_buffers_.size(), draw_buffers_.data());
 }
 

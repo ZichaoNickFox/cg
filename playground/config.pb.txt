@@ -242,6 +242,11 @@ shader_config {
 }
 
 shader_config {
+  name : "rtrt_temproal_accumulation";
+  cs_path : "playground/shader/rtrt/rtrt_temproal_accumulation.cs.glsl";
+}
+
+shader_config {
   name : "pbr_BRDF";
   cs_path : "renderer/shader/pbr/pbr_BRDF.glsl";
 }

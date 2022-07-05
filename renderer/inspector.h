@@ -13,7 +13,6 @@ class Inspector {
  private:
   void GuiFps(Scene* scene);
   void InspectCamera(Scene* scene);
-  void MoveCamera(Scene* scene);
   void InSpectCursor(Scene* scene);
   void ReloadShaderPrograms(Scene* scene);
 

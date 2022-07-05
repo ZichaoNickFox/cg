@@ -53,6 +53,8 @@ class Scene {
   const Io& io() const { return *io_; }
 
  protected:
+  void MoveCamera();
+
   std::string name_;
 
   Io* io_;

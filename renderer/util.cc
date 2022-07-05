@@ -105,6 +105,18 @@ bool EndsWith(const std::string& str, const std::string& end_with) {
   }
 }
 
+std::string TrimLeft(std::string str) {
+  return str.erase(str.find_last_not_of(' ') + 1);
+}
+
+std::string TrimRight(std::string str) {
+  return str.erase(str.find_first_not_of(' '));
+}
+
+std::string Trim(std::string str) {
+  return TrimRight(TrimLeft(str));
+}
+
 Time Now() {
   return std::chrono::high_resolution_clock::now();
 }

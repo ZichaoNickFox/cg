@@ -22,6 +22,13 @@ void SetCamera(const Camera& camera, ShaderProgram* program) {
   program->SetFloat("camera.u_near", camera.near_clip());
   program->SetFloat("camera.u_far", camera.far_clip());
 }
+void SetCamera1(const Camera& camera_1, ShaderProgram* program) {
+  program->SetVec3("camera_1.pos_ws", camera_1.transform().translation());
+  program->SetMat4("camera_1.view", camera_1.GetViewMatrix());
+  program->SetMat4("camera_1.project", camera_1.GetProjectMatrix());
+  program->SetFloat("camera_1.u_near", camera_1.near_clip());
+  program->SetFloat("camera_1.u_far", camera_1.far_clip());
+}
 }
 
 RenderShader::RenderShader(const Scene& scene, const std::string& shader_name) {
@@ -46,6 +53,10 @@ void RenderShader::SetModel(const Object& object) {
 
 void RenderShader::SetCamera(const Camera& camera) {
   renderer::SetCamera(camera, &program_);
+}
+
+void RenderShader::SetCamera1(const Camera& camera_1) {
+  renderer::SetCamera1(camera_1, &program_);
 }
 
 void RenderShader::SetMaterialIndex(int material_index) {
@@ -93,6 +104,10 @@ void ComputeShader::CheckTextureBindingInternalFormat(const renderer::Texture& t
 
 void ComputeShader::SetCamera(const Camera& camera) {
   renderer::SetCamera(camera, &program_);
+}
+
+void ComputeShader::SetCamera1(const Camera& camera_1) {
+  renderer::SetCamera1(camera_1, &program_);
 }
 
 void ComputeShader::SetResolution(const glm::vec2& resolution) {

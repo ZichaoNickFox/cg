@@ -44,7 +44,11 @@ class RTRTScene : public renderer::Scene {
         "cornell_box_tall_box", "cornell_box_tall_box"},
   };
 
-  renderer::Framebuffer fbo1_;
-  renderer::Framebuffer fbo2_;
-  renderer::PingPong<renderer::Framebuffer> ping_pong_;
+  renderer::Framebuffer fbo_;
+
+  renderer::Texture color1_;
+  renderer::Texture color2_;
+  renderer::PingPong<renderer::Texture> ping_pong_;
+
+  renderer::Camera camera_1_;
 };

@@ -51,7 +51,7 @@ bool StartsWith(const std::string& str, const std::string& start_with) {
 } 
 
 std::string ShaderProgram::GetOneLineCompilerError430(const std::vector<ShaderProgram::CodePart>& code_parts,
-                                               const std::string& gl_log) {
+                                                      const std::string& gl_log) {
   std::string res = gl_log;
   int source_line_num = 0;
   const std::string starting = "0(";
@@ -77,12 +77,12 @@ std::string ShaderProgram::GetOneLineCompilerError430(const std::vector<ShaderPr
       }
     }
   }
-  CGKILL("Cannot find a file? source_line_num ~ ") << gl_log;
+  CGKILL("Cannot find a file? source_line_num ~ ") << name_ << " | " << gl_log;
   return "";
 }
 
 std::string ShaderProgram::GetMultipleLineCompileError(const std::vector<ShaderProgram::CodePart>& code_parts,
-                                                const std::string& gl_log) {
+                                                       const std::string& gl_log) {
   std::vector<std::string> error_logs;
   std::string one_error;
   for (const char c : gl_log) {
@@ -253,4 +253,4 @@ void ShaderProgramRepo::ReloadShaderPrograms() {
     p.second.loaded = false;
   }
 }
-}
+} // namespace renderer

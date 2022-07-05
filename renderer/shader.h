@@ -30,6 +30,7 @@ class ComputeShader {
   void SetTextureBinding(const TextureBinding& texture_binding);
 
   void SetCamera(const Camera& camera);
+  void SetCamera1(const Camera& camera_1);
   void SetResolution(const glm::vec2& resolution);
   void SetFrameNum(int frame_num);
   void SetDirty(bool dirty);
@@ -52,6 +53,7 @@ class RenderShader {
   void SetModel(const glm::mat4& model);
   void SetModel(const Object& object);
   void SetCamera(const Camera& camera);
+  void SetCamera1(const Camera& camera_1);
   void SetMaterialIndex(int material_index);
   void SetNearFar(const Camera& camera);
   void SetScreenSize(const glm::vec2& screen_size);
