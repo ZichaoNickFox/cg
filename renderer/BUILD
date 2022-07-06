@@ -85,8 +85,6 @@ cc_library(
     "model_loader.cc",
     "object.h",
     "object.cc",
-    "pass.h",
-    "pass.cc",
     "ping_pong.h",
     "primitive.h",
     "primitive.cc",

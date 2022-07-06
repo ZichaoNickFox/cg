@@ -1,10 +1,8 @@
-uniform int frame_num;
-
 //internal RNG state 
 uvec4 seed;
 vec2 pixel;
 
-void InitRNG(vec2 p) {
+void InitRNG(vec2 p, int frame_num) {
   pixel = p;
   seed = uvec4(p, uint(frame_num), uint(p.x) + uint(p.y));
 }

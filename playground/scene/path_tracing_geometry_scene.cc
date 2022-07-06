@@ -20,7 +20,7 @@ class PathTracingGeometrySceneShader : public renderer::ComputeShader {
     SetCamera(scene.camera());
     SetTextureBinding({param.canvas, "canvas", GL_READ_ONLY});
     SetResolution(param.canvas.meta().Resolution());
-    SetFrameNum(scene.frame_stat().frame_num());
+    SetFrameNum(scene);
     for (int i = 0; i < param.spheres.size(); ++i) {
       const Sphere& sphere = param.spheres[i];
       program_.SetInt(fmt::format("spheres[{}].id", i), sphere.id);

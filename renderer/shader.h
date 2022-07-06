@@ -7,7 +7,6 @@
 #include "renderer/geometry.h"
 #include "renderer/mesh/lines_mesh.h"
 #include "renderer/object.h"
-#include "renderer/pass.h"
 #include "renderer/shader.h"
 #include "renderer/shader_program.h"
 #include "renderer/texture.h"
@@ -32,7 +31,7 @@ class ComputeShader {
   void SetCamera(const Camera& camera);
   void SetCamera1(const Camera& camera_1);
   void SetResolution(const glm::vec2& resolution);
-  void SetFrameNum(int frame_num);
+  void SetFrameNum(const Scene& scene);
   void SetDirty(bool dirty);
   void SetWorkGroupNum(const glm::vec3& work_group_num);
 
@@ -201,19 +200,6 @@ class PbrBRDFIntegrationMapGeneratorShader : public renderer::RenderShader {
  public:
   struct Param {};
   PbrBRDFIntegrationMapGeneratorShader(const Param& param, const Scene& scene);
-};
-
-class SSAOShader : public renderer::RenderShader {
- public:
-  struct ParamGBuffer {};
-  struct ParamSSAO {
-    renderer::Texture texture_position_vs;
-    renderer::Texture texture_normal_vs;
-    renderer::Texture texture_noise;
-    std::array<glm::vec3, 64> sampler_ts;
-  };
-  SSAOShader(const ParamGBuffer& param, const Scene& scene, const Object& object);
-  SSAOShader(const ParamSSAO& param, const Scene& scene, const Object& object);
 };
 
 class BlurShader : public renderer::RenderShader {

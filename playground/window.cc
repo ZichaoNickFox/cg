@@ -61,8 +61,8 @@ int main(int argc, char **argv)
 
   constexpr int kScreenWidth = 3240;
   constexpr int kScreenHeight = 2160;
-  // GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-  GLFWwindow* window = glfwCreateWindow(kScreenWidth, kScreenHeight, "CG", /*monitor*/NULL, NULL);
+  GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+  GLFWwindow* window = glfwCreateWindow(kScreenWidth, kScreenHeight, "CG", monitor, NULL);
   CGCHECK(window) << "GLFW create window failed";
   glfwMakeContextCurrent(window);
   glfwSwapInterval(1); // Enable vsync

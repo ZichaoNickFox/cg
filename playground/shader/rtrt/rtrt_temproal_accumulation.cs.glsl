@@ -12,10 +12,11 @@ layout (rgba32f, binding = 2) uniform image2D texture_ping;
 layout (rgba32f, binding = 3) uniform image2D texture_pong;
 uniform vec2 resolution;
 uniform Camera camera_1;
+uniform int frame_num;
 
 // https://www.bilibili.com/video/BV1YK4y1T7yY?p=12 0:58:42
 void main() {
-  InitRNG(gl_GlobalInvocationID.xy);
+  InitRNG(gl_GlobalInvocationID.xy, frame_num);
 
   vec4 color = vec4(0,0,0,1);
   vec4 color_1 = vec4(0, 0, 0, 1);
@@ -30,7 +31,7 @@ void main() {
   } else if (all(greaterThanEqual(position_ss_1.xy, vec2(0, 0))) && all(lessThanEqual(position_ss_1.xy, vec2(1, 1)))) {
     color_1 = imageLoad(texture_ping, ivec2(position_ss_1.xy * resolution));
     if (color != vec4(0, 0, 0, 1)) {
-      color = mix(color, color_1, 0.9);
+      color = color;
     } else {
       color = color_1;
     }

@@ -47,7 +47,7 @@ class RTRTPathTracingShader : public renderer::ComputeShader {
     SetTextureBinding({param.rasterized_position_ws, "in_rasterized_position_ws", GL_READ_ONLY});
     SetTextureBinding({param.rasterized_surface_normal_ws, "in_rasterized_surface_normal_ws", GL_READ_ONLY});
 
-    SetFrameNum(scene.frame_stat().frame_num());
+    SetFrameNum(scene);
     SetWorkGroupNum({param.resolution.x / 32 + 1, param.resolution.y / 32 + 1, 1});
     SetResolution(param.resolution);
     Run();
@@ -109,6 +109,7 @@ class RTRTTemproalAccumulationShader : public renderer::ComputeShader {
     SetTextureBinding({param.pong_color, "texture_pong", GL_WRITE_ONLY});
     SetWorkGroupNum({param.resolution.x / 32 + 1, param.resolution.y / 32 + 1, 1});
     SetResolution(param.resolution);
+    SetFrameNum(scene);
     Run();
   }
 };

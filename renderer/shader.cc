@@ -19,15 +19,15 @@ void SetCamera(const Camera& camera, ShaderProgram* program) {
   program->SetVec3("camera.pos_ws", camera.transform().translation());
   program->SetMat4("camera.view", camera.GetViewMatrix());
   program->SetMat4("camera.project", camera.GetProjectMatrix());
-  program->SetFloat("camera.u_near", camera.near_clip());
-  program->SetFloat("camera.u_far", camera.far_clip());
+  program->SetFloat("camera.near", camera.near_clip());
+  program->SetFloat("camera.far", camera.far_clip());
 }
 void SetCamera1(const Camera& camera_1, ShaderProgram* program) {
   program->SetVec3("camera_1.pos_ws", camera_1.transform().translation());
   program->SetMat4("camera_1.view", camera_1.GetViewMatrix());
   program->SetMat4("camera_1.project", camera_1.GetProjectMatrix());
-  program->SetFloat("camera_1.u_near", camera_1.near_clip());
-  program->SetFloat("camera_1.u_far", camera_1.far_clip());
+  program->SetFloat("camera_1.near", camera_1.near_clip());
+  program->SetFloat("camera_1.far", camera_1.far_clip());
 }
 }
 
@@ -88,6 +88,7 @@ void ComputeShader::SetWorkGroupNum(const glm::vec3& work_group_num) {
 }
 
 void ComputeShader::SetTextureBinding(const TextureBinding& binding) {
+  CGCHECK(!binding.texture.empty()) << binding.uniform_name;
   CheckTextureBindingInternalFormat(binding.texture);
   int texture_unit = program_.SetTexture(binding.uniform_name, binding.texture);
   glBindImageTexture_(texture_unit, binding.texture.id(), 0, GL_FALSE, 0,
@@ -96,7 +97,7 @@ void ComputeShader::SetTextureBinding(const TextureBinding& binding) {
 
 void ComputeShader::CheckTextureBindingInternalFormat(const renderer::Texture& texture) const {
   GLuint internal_format = texture.meta().gl_internal_format;
-  std::set<GLint> supported_format = { GL_RGB32F, GL_RGBA32F };
+  std::set<GLint> supported_format = { GL_RG32F, GL_RGBA32F, GL_DEPTH_COMPONENT32F };
   if (supported_format.count(internal_format) <= 0) {
     CGCHECK(false) << "Unsupported Internal Format : " << std::hex << internal_format << std::dec;
   }
@@ -114,8 +115,8 @@ void ComputeShader::SetResolution(const glm::vec2& resolution) {
   program_.SetVec2("resolution", resolution);
 }
 
-void ComputeShader::SetFrameNum(int frame_num) {
-  program_.SetInt("frame_num", frame_num);
+void ComputeShader::SetFrameNum(const Scene& scene) {
+  program_.SetInt("frame_num", scene.frame_stat().frame_num());
 }
 
 void ComputeShader::SetDirty(bool dirty) {
@@ -266,25 +267,6 @@ PbrPrefilteredColorCubemapGeneratorShader::PbrPrefilteredColorCubemapGeneratorSh
 PbrBRDFIntegrationMapGeneratorShader::PbrBRDFIntegrationMapGeneratorShader(const Param& param, const Scene& scene)
     : RenderShader(scene, "pbr_BRDF_integration_map_generator") {}
 
-SSAOShader::SSAOShader(const ParamGBuffer& param_g_buffer, const Scene& scene, const Object& object)
-    : RenderShader(scene, "SSAO_g_buffer") {
-  const Camera& camera = scene.camera();
-  SetModel(object);
-  SetCamera(camera);
-}
-
-SSAOShader::SSAOShader(const ParamSSAO& param, const Scene& scene, const Object& object)
-    : RenderShader(scene, "SSAO_SSAO") {
-  const Camera& camera = scene.camera();
-  program_.SetMat4("u_projection", camera.GetProjectMatrix());
-  program_.SetTexture("ut_position_vs", param.texture_position_vs);
-  program_.SetTexture("ut_normal_vs", param.texture_normal_vs);
-  program_.SetTexture("ut_noise", param.texture_noise);
-  for (int i = 0; i < 64; ++i) {
-    program_.SetVec3(fmt::format("u_samples_ts[{}]", i).c_str(), param.sampler_ts[i]);
-  }
-}
-
 BlurShader::BlurShader(const Param& param, const Scene& scene, const Object& object)
     : RenderShader(scene, "blur") {
   program_.SetTexture("u_texture_input", param.texture);
@@ -295,7 +277,7 @@ RandomShader::RandomShader(const Param& param, const Scene& scene)
     : ComputeShader(scene, "random_test") {
   SetTextureBinding({param.input, "texture_input", GL_WRITE_ONLY});
   SetTextureBinding({param.output, "texture_output", GL_READ_ONLY});
-  SetFrameNum(param.frame_num);
+  SetFrameNum(scene);
   Run();
 }
 

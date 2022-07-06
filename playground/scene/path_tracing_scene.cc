@@ -22,7 +22,7 @@ class PathTracingShader : public renderer::ComputeShader {
       : ComputeShader(scene, "path_tracing_scene") {
     SetCamera(scene.camera());
     SetTextureBinding({param.texture_in_out, "texture_in_out", GL_READ_WRITE});
-    SetFrameNum(scene.frame_stat().frame_num());
+    SetFrameNum(scene);
     SetWorkGroupNum({scene.io().screen_size().x / 32, scene.io().screen_size().y / 32, 1});
     SetResolution({scene.io().screen_size().x, scene.io().screen_size().y});
     SetDirty(param.dirty);

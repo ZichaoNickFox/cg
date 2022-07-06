@@ -20,10 +20,10 @@ float Lerp(float from, float to, float scale);
 float Clamp(float value, float min, float max);
 
 // sample
-std::vector<glm::vec3> SampleSemishphere(int num);
+std::vector<glm::vec4> SampleSemishphere(int num);
 
 // noise
-std::vector<glm::vec3> Noise(int row_num, int col_num);
+std::vector<glm::vec4> Noise(int row_num, int col_num);
 
 // random : 3 precisely
 float RandFromTo(float from, float to);

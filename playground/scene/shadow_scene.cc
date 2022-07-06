@@ -11,7 +11,6 @@
 #include "renderer/constants.h"
 #include "renderer/framebuffer_attachment.h"
 #include "renderer/math.h"
-#include "renderer/pass.h"
 #include "renderer/transform.h"
 #include "renderer/util.h"
 #include "playground/object/empty_object.h"

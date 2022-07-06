@@ -16,11 +16,12 @@ layout (rgba32f, binding = 1) uniform image2D in_rasterized_position_ws;
 layout (rgba32f, binding = 2) uniform image2D in_rasterized_surface_normal_ws;
 
 uniform vec2 resolution;
+uniform int frame_num;
 uniform Camera camera;
 
 // https://www.bilibili.com/video/BV1X7411F744?p=16 0:58:08
 void main() {
-  InitRNG(gl_GlobalInvocationID.xy);
+  InitRNG(gl_GlobalInvocationID.xy, frame_num);
 
   vec3 near_pos_ss = vec3(gl_GlobalInvocationID.xy / resolution, 0.0);
   vec3 near_pos_ws = PositionSS2WS(camera.view, camera.project, near_pos_ss);

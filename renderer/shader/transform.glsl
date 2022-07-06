@@ -16,6 +16,11 @@ vec3 NormalWS2VS(mat4 view, vec3 normal_ws) {
 //  return vec3(view * vec4(normal_ws, 1.0));
 }
 
+vec3 NormalVS2WS(mat4 view, vec3 normal_vs) {
+  mat3 normal_matrix = inverse(transpose(inverse(mat3(view))));
+  return normalize(normal_matrix * normal_vs);
+}
+
 vec3 PositionLS2WS(mat4 model, vec3 position_ls) {
   return vec3(model * vec4(position_ls, 1.0));
 }
@@ -38,6 +43,10 @@ vec4 PositionWS2SS(mat4 view, mat4 project, vec3 position_ws) {
   return pos_cs / pos_cs.w * 0.5 + 0.5;
 }
 
+vec3 PositionLS2VS(mat4 model, mat4 view, vec3 position_ls) {
+  return vec3(view * model * vec4(position_ls, 1.0));
+}
+
 vec4 PositionLS2CS(mat4 model, mat4 view, mat4 project, vec3 position_ls) {
   return project * view * model * vec4(position_ls, 1.0);
 }
@@ -48,6 +57,19 @@ vec4 PositionWS2CS(mat4 view, mat4 project, vec3 position_ws) {
 
 vec4 PositionWS2CS(mat4 view_project, vec3 position_ws) {
   return view_project * vec4(position_ws, 1.0);
+}
+
+vec4 PositionVS2CS(mat4 project, vec3 position_vs) {
+  return project * vec4(position_vs, 1.0);
+}
+
+vec4 PositionVS2SS(mat4 project, vec3 position_vs) {
+  vec4 position_cs = project * vec4(position_vs, 1.0);
+  return position_cs / position_cs.w * 0.5 + 0.5;
+}
+
+vec3 PositionVS2WS(mat4 view, vec3 position_vs) {
+  return vec3(inverse(view) * vec4(position_vs, 1.0));
 }
 
 vec3 SurfaceNormal(vec3 position1_ws, vec3 position2_ws, vec3 position3_ws) {

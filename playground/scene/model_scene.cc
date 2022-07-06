@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "renderer/gl.h"
-#include "renderer/pass.h"
 #include "renderer/shader.h"
 #include "renderer/util.h"
 

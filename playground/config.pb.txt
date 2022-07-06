@@ -164,15 +164,14 @@ shader_config {
 }
 
 shader_config {
-  name : "SSAO_g_buffer";
-  vs_path : "renderer/shader/SSAO/SSAO_g_buffer.vs.glsl";
-  fs_path : "renderer/shader/SSAO/SSAO_g_buffer.fs.glsl";
+  name : "ssao_geometry";
+  vs_path : "playground/shader/ssao/ssao_geometry.vs.glsl";
+  fs_path : "playground/shader/ssao/ssao_geometry.fs.glsl";
 }
 
 shader_config {
-  name : "SSAO_SSAO";
-  vs_path : "renderer/shader/fullscreen_quad.vs.glsl";
-  fs_path : "renderer/shader/SSAO/SSAO_SSAO.fs.glsl";
+  name : "ssao";
+  cs_path : "playground/shader/ssao/ssao.cs.glsl";
 }
 
 shader_config {

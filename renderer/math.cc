@@ -29,25 +29,25 @@ float RandFromTo(float from, float to) {
   return res / 1000.0;
 }
 
-std::vector<glm::vec3> SampleSemishphere(int num) {
-  std::vector<glm::vec3> res(num);
+std::vector<glm::vec4> SampleSemishphere(int num) {
+  std::vector<glm::vec4> res(num);
   for (int i = 0; i < num; ++i) {
     glm::vec3 sample(RandFromTo(-1, 1), RandFromTo(-1, 1), RandFromTo(0, 1));
     sample = glm::normalize(sample);
     float scale = float(i) / num;
     scale = Lerp(0.1, 1.0, scale * scale);
     sample = sample * util::RandFromTo(0, 1) * scale;
-    res[i] = sample;
+    res[i] = glm::vec4(sample, 1.0);
   }
   return res;
 }
 
-std::vector<glm::vec3> Noise(int row_num, int col_num) {
-  std::vector<glm::vec3> res(row_num * col_num);
+std::vector<glm::vec4> Noise(int row_num, int col_num) {
+  std::vector<glm::vec4> res(row_num * col_num);
   for (int i = 0; i < row_num; ++i) {
     for (int j = 0; j < col_num; ++j) {
       glm::vec3 noice(util::RandFromTo(-1, 1), util::RandFromTo(-1, 1), 0.0);
-      res[i * col_num + j] = noice;
+      res[i * col_num + j] = glm::vec4(noice, 1.0);
     }
   }
   return res;

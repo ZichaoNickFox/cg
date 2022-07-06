@@ -3,7 +3,6 @@
 #include "renderer/camera.h"
 #include "renderer/framebuffer.h"
 #include "renderer/framebuffer_attachment.h"
-#include "renderer/pass.h"
 #include "renderer/scene.h"
 #include "renderer/shader.h"
 #include "renderer/texture.h"
