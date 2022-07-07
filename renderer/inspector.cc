@@ -199,7 +199,7 @@ void Inspector::InspectLights(Scene* scene) {
         if (ImGui::RadioButton("PointLight", light->type)) { light->type = Light::kPointLight; }
         ImGui::SameLine();
         if (ImGui::RadioButton("SpotLight", light->type)) { light->type = Light::kSpotLight; }
-        ImGui::SliderFloat3("pos", glm::value_ptr(light->pos), -5, 5);
+        ImGui::SliderFloat3("pos", glm::value_ptr(light->position), -5, 5);
         ImGui::ColorEdit4("color", glm::value_ptr(light->color));
         ImGui::SliderFloat3("attenuation_2_1_0", glm::value_ptr(light->attenuation_2_1_0), 0, 1);
 

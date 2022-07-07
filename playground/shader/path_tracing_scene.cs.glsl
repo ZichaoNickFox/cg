@@ -3,6 +3,7 @@
 #include "renderer/shader/bvh.glsl"
 #include "renderer/shader/camera.glsl"
 #include "renderer/shader/color.glsl"
+#include "renderer/shader/fr/BRDF.glsl"
 #include "renderer/shader/geometry.glsl"
 #include "renderer/shader/path_tracing.glsl"
 #include "renderer/shader/random.glsl"

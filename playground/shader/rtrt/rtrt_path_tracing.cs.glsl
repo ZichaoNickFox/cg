@@ -1,9 +1,10 @@
 #include "renderer/shader/version.glsl"
 
+
 #include "renderer/shader/camera.glsl"
 #include "renderer/shader/color.glsl"
+#include "renderer/shader/fr/BRDF.glsl"
 #include "renderer/shader/path_tracing.glsl"
-#include "renderer/shader/pbr/pbr_BRDF.glsl"
 #include "renderer/shader/random.glsl"
 #include "renderer/shader/sample.glsl"
 #include "renderer/shader/scene.glsl"

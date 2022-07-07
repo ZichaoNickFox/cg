@@ -91,6 +91,7 @@ struct Triangle {
   AABB AsAABB() const;
   std::string AsString() const;
   glm::vec3 Normal() const;
+  float GetArea() const;
 
   bool operator==(const Triangle& other) const = default;
 };

@@ -229,6 +229,12 @@ glm::vec3 Triangle::Normal() const {
   return glm::cross(b - a, c - a);
 }
 
+float Triangle::GetArea() const {
+  glm::vec3 e1 = b - a;
+  glm::vec3 e2 = c - a;
+  return glm::cross(e1, e2).length() / 2.0;
+}
+
 // Mollar Trumbore Algorithm
 // wikipedia
 // https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm

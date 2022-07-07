@@ -29,18 +29,23 @@ void SetCamera1(const Camera& camera_1, ShaderProgram* program) {
   program->SetFloat("camera_1.near", camera_1.near_clip());
   program->SetFloat("camera_1.far", camera_1.far_clip());
 }
+void SetShaderCommonParam(const Scene& scene, const std::string& shader_name, ShaderProgram* program) {
+  program->Use();
+  if (scene.texture_repo().size() > 0) {
+    program->SetTexture("texture_repo", scene.texture_repo().AsTextureRepo());
+  }
+  program->SetInt("light_repo_num", scene.light_repo().num());
+  program->SetInt("material_repo_num", scene.material_repo().num());
+  program->SetInt("bvh_num", scene.bvh().num());
+  program->SetInt("primitive_repo_num", scene.primitive_repo().num());
+  program->SetInt("primitive_light_num", scene.light_repo().primitive_light_num());
+  program->SetFloat("primitive_light_area", scene.light_repo().primitive_light_area());
+}
 }
 
 RenderShader::RenderShader(const Scene& scene, const std::string& shader_name) {
   program_ = scene.shader_program_repo().GetShader(shader_name);
-  program_.Use();
-  if (scene.texture_repo().size() > 0) {
-    program_.SetTexture("texture_repo", scene.texture_repo().AsTextureRepo());
-  }
-  program_.SetInt("light_repo_num", scene.light_repo().num());
-  program_.SetInt("material_repo_num", scene.material_repo().num());
-  program_.SetInt("bvh_num", scene.bvh().num());
-  program_.SetInt("primitive_repo_num", scene.primitive_repo().num());
+  SetShaderCommonParam(scene, shader_name, &program_);
 }
 
 void RenderShader::SetModel(const glm::mat4& model) {
@@ -73,14 +78,7 @@ void RenderShader::Run(const Mesh& mesh) const {
 
 ComputeShader::ComputeShader(const Scene& scene, const std::string& shader_name) {
   program_ = scene.shader_program_repo().GetShader(shader_name);
-  program_.Use();
-  if (scene.texture_repo().size() > 0) {
-    program_.SetTexture("texture_repo", scene.texture_repo().AsTextureRepo());
-  }
-  program_.SetInt("light_repo_num", scene.light_repo().num());
-  program_.SetInt("material_repo_num", scene.material_repo().num());
-  program_.SetInt("bvh_num", scene.bvh().num());
-  program_.SetInt("primitive_repo_num", scene.primitive_repo().num());
+  SetShaderCommonParam(scene, shader_name, &program_);
 }
 
 void ComputeShader::SetWorkGroupNum(const glm::vec3& work_group_num) {

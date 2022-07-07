@@ -1,6 +1,7 @@
 #include "renderer/shader/definition.glsl"
 // #include "renderer/shader/lut/distance_lut.glsl"
 // #include "renderer/shader/lut/gaussian_lut.glsl"
+#include "renderer/shader/light.glsl"
 #include "renderer/shader/random.glsl"
 
 // random x:[0,1] y[0,1] in uv
@@ -100,3 +101,7 @@ float SampleGaussianWeight(int sample_radius, float distance) {
   return gaussian_lut[sample_radius][int(index) * 10 - 1];
 }
 */
+
+void SampleLight() {
+
+}

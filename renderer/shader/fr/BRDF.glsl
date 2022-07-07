@@ -1,3 +1,4 @@
+#include "renderer/shader/material.glsl"
 #include "renderer/shader/pbr/pbr_geometry.glsl"
 #include "renderer/shader/pbr/pbr_fresnel.glsl"
 #include "renderer/shader/pbr/pbr_NDF.glsl"
@@ -14,4 +15,11 @@ float BRDF_specular(vec3 V, vec3 L, vec3 N, float roughness) {
 vec4 BRDF_diffuse(vec4 color) {
   const float pi = 3.1415926;
   return color / pi;
+}
+
+vec4 FR(vec3 Li, vec3 Lo, vec3 N, Material material) {
+  float f_r_specular = BRDF_specular(Li, Lo, N, MaterialRoughness(material));
+  vec4 f_r_diffuse = BRDF_diffuse(MaterialDiffuse(material));
+  vec4 f_r = 0.0 * f_r_specular + 1.0 * f_r_diffuse;
+  return f_r;
 }

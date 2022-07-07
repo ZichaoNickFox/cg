@@ -22,13 +22,15 @@ void Scene::Enter(const std::string& name, Config* config, Io* io, FrameStat* fr
   glEnable_(GL_DEPTH_TEST);
 
   OnEnter();
+
+  light_repo_.Add(primitive_repo_, material_repo_);
 }
 
 void Scene::Update() {
   material_repo_.UpdateSSBO();
-  light_repo_.UpdateSSBO();
   bvh_.UpdateSSBO();
   primitive_repo_.UpdateSSBO(bvh_.GetPrimitiveSequence());
+  light_repo_.UpdateSSBO();
 
   MoveCamera();
   OnUpdate();

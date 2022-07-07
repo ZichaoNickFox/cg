@@ -90,3 +90,7 @@ float MaterialShininess(Material material, vec2 uv) {
   }
   return res;
 }
+
+float MaterialRoughness(Material material) {
+  return material.roughness_metalness_shininess.x;
+}
