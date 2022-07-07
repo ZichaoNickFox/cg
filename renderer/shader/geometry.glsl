@@ -16,13 +16,13 @@
 // RayTriangle
 
 struct Ray {
-  vec3 origin;
-  vec3 dir; // must normalized
+  vec3 position;
+  vec3 direction; // must normalized
 };
 
 struct Sphere {
   int id;
-  vec3 center_pos;
+  vec3 center_position;
   vec4 color;
   float radius;
 };
@@ -49,8 +49,8 @@ vec3 TriangleNormal(Triangle triangle) {
 
 struct RaySphereResult {
   bool hitted;
-  vec3 pos;
-  float dist;
+  vec3 position;
+  float distance;
   vec3 normal;
 };
 
@@ -59,10 +59,10 @@ RaySphereResult RaySphere(Sphere sphere, Ray ray, float limit) {
   RaySphereResult res;
   res.hitted = false;
 
-  vec3 normalized_dir = normalize(ray.dir);
-  vec3 oc = sphere.center_pos - ray.origin;
-  float a = dot(normalized_dir, normalized_dir);
-  float b = -2 * dot(normalized_dir, oc);
+  vec3 normalized_direction = normalize(ray.direction);
+  vec3 oc = sphere.center_position - ray.position;
+  float a = dot(normalized_direction, normalized_direction);
+  float b = -2 * dot(normalized_direction, oc);
   float c = dot(oc, oc) - sphere.radius * sphere.radius;
   float delta = b * b - 4 * a * c;
   if (delta >= 0) {
@@ -70,15 +70,15 @@ RaySphereResult RaySphere(Sphere sphere, Ray ray, float limit) {
     float root1 = (-b - sqrtd) / (2 * a);
     float root2 = (-b + sqrtd) / (2 * a);
     if (root1 > 0 && root1 <= limit) {
-      res.dist = root1;
-      res.pos= ray.origin + res.dist * normalized_dir;
+      res.distance = root1;
+      res.position = ray.position + res.distance * normalized_direction;
       res.hitted = true;
-      res.normal = normalize(res.pos- sphere.center_pos);
+      res.normal = normalize(res.position - sphere.center_position);
     } else if (root2 > 0 && root2 <= limit) {
-      res.dist = root2;
-      res.pos = ray.origin + res.dist * normalized_dir;
+      res.distance = root2;
+      res.position = ray.position + res.distance * normalized_direction;
       res.hitted = true;
-      res.normal = normalize(res.pos - sphere.center_pos);
+      res.normal = normalize(res.position - sphere.center_position);
     }
   }
   return res;
@@ -87,25 +87,25 @@ RaySphereResult RaySphere(Sphere sphere, Ray ray, float limit) {
 struct RayPlaneResult {
   bool hitted;
   vec3 pos;
-  float dist;
+  float distance;
 };
 
 // https://www.bilibili.com/video/BV1X7411F744?p=13 - 1:14:45
 RayPlaneResult RayPlane(Ray ray, Plane plane) {
   RayPlaneResult res;
-  res.dist = (plane.point.x - ray.origin.x) / ray.dir.x;
-  res.hitted = res.dist >= 0.0;
+  res.distance = (plane.point.x - ray.position.x) / ray.direction.x;
+  res.hitted = res.distance >= 0.0;
   if (res.hitted) {
-    res.pos = ray.origin + ray.dir * res.dist;
+    res.pos = ray.position + ray.direction * res.distance;
   }
   return res;
 }
 
 struct RayTriangleResult {
   bool hitted;
-  vec3 pos;
+  vec3 position;
   vec3 normal;
-  float dist;
+  float distance;
 };
 
 // https://www.bilibili.com/video/BV1X7411F744?p=13 0:51:50
@@ -118,18 +118,18 @@ RayTriangleResult RayTriangle(Ray ray, Triangle triangle) {
 
   edge1 = triangle.b.xyz - triangle.a.xyz;
   edge2 = triangle.c.xyz - triangle.a.xyz;
-  h = cross(ray.dir, edge2);
+  h = cross(ray.direction, edge2);
   a = dot(edge1, h);
   if (abs(a) < FLT_EPSILON) {
     return res; // The ray is parallel to the triangle
   }
   f = 1.0 / a;
-  s = ray.origin - triangle.a.xyz;
+  s = ray.position - triangle.a.xyz;
   u = f * dot(s, h);
   if (u < 0.0 || u > 1.0)
     return res;
   q = cross(s, edge1);
-  v = f * dot(ray.dir, q);
+  v = f * dot(ray.direction, q);
   if (v < 0.0 || u + v > 1.0) {
     return res;
   }
@@ -139,9 +139,9 @@ RayTriangleResult RayTriangle(Ray ray, Triangle triangle) {
   }
 
   res.hitted = true;
-  res.dist = t;
+  res.distance = t;
   res.normal = normalize(cross(edge1, edge2));
-  res.pos = ray.origin + ray.dir * t;
+  res.position = ray.position + ray.direction * t;
   return res;
 }
 
@@ -160,28 +160,28 @@ RayAABBResult RayAABB(Ray ray, AABB aabb) {
   float t_exit_x = FLT_MAX;
   float t_exit_y = FLT_MAX;
   float t_exit_z = FLT_MAX;
-  if (ray.dir.x > 0) {
-    t_enter_x = (aabb.minimum.x - ray.origin.x) / ray.dir.x;
-    t_exit_x = (aabb.maximum.x - ray.origin.x) / ray.dir.x;
-  } else if (ray.dir.x < 0) {
-    t_enter_x = (aabb.maximum.x - ray.origin.x) / ray.dir.x;
-    t_exit_x = (aabb.minimum.x - ray.origin.x) / ray.dir.x;
+  if (ray.direction.x > 0) {
+    t_enter_x = (aabb.minimum.x - ray.position.x) / ray.direction.x;
+    t_exit_x = (aabb.maximum.x - ray.position.x) / ray.direction.x;
+  } else if (ray.direction.x < 0) {
+    t_enter_x = (aabb.maximum.x - ray.position.x) / ray.direction.x;
+    t_exit_x = (aabb.minimum.x - ray.position.x) / ray.direction.x;
   }
 
-  if (ray.dir.y > 0) {
-    t_enter_y = (aabb.minimum.y - ray.origin.y) / ray.dir.y;
-    t_exit_y = (aabb.maximum.y - ray.origin.y) / ray.dir.y;
-  } else if (ray.dir.y < 0) {
-    t_enter_y = (aabb.maximum.y - ray.origin.y) / ray.dir.y;
-    t_exit_y = (aabb.minimum.y - ray.origin.y) / ray.dir.y;
+  if (ray.direction.y > 0) {
+    t_enter_y = (aabb.minimum.y - ray.position.y) / ray.direction.y;
+    t_exit_y = (aabb.maximum.y - ray.position.y) / ray.direction.y;
+  } else if (ray.direction.y < 0) {
+    t_enter_y = (aabb.maximum.y - ray.position.y) / ray.direction.y;
+    t_exit_y = (aabb.minimum.y - ray.position.y) / ray.direction.y;
   }
 
-  if (ray.dir.z > 0) {
-    t_enter_z = (aabb.minimum.z - ray.origin.z) / ray.dir.z;
-    t_exit_z = (aabb.maximum.z - ray.origin.z) / ray.dir.z;
-  } else if (ray.dir.z < 0) {
-    t_enter_z = (aabb.maximum.z - ray.origin.z) / ray.dir.z;
-    t_exit_z = (aabb.minimum.z - ray.origin.z) / ray.dir.z;
+  if (ray.direction.z > 0) {
+    t_enter_z = (aabb.minimum.z - ray.position.z) / ray.direction.z;
+    t_exit_z = (aabb.maximum.z - ray.position.z) / ray.direction.z;
+  } else if (ray.direction.z < 0) {
+    t_enter_z = (aabb.maximum.z - ray.position.z) / ray.direction.z;
+    t_exit_z = (aabb.minimum.z - ray.position.z) / ray.direction.z;
   }
 
   float t_enter = max(max(t_enter_x, t_enter_y), t_enter_z);

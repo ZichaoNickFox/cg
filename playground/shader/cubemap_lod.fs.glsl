@@ -9,6 +9,6 @@ out vec4 FragColor;
 
 void main()
 {
-  float dist = distance(view_pos_ws, frag_pos_ws_);
-  FragColor = textureLod(texture_cubemap, frag_pos_ls_, dist / 2);
+  float distance = distance(view_pos_ws, frag_pos_ws_);
+  FragColor = textureLod(texture_cubemap, frag_pos_ls_, distance / 2);
 }

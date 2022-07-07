@@ -102,6 +102,31 @@ float SampleGaussianWeight(int sample_radius, float distance) {
 }
 */
 
-void SampleLight() {
+// https://blogs.sas.com/content/iml/2020/10/19/random-points-in-triangle.html
+vec3 SampleTriangle(Triangle triangle) {
+  float x = Random();
+  float y = Random();
+  vec3 e1 = triangle.b.xyz - triangle.a.xyz;
+  vec3 e2 = triangle.c.xyz - triangle.a.xyz;
+  if (x + y > 1) {
+    x = 1 - x;
+    y = 1 - y;
+  }
+  return triangle.a.xyz + x * e1 + y * e2;
+}
 
+struct SampleLightResult {
+  vec3 position;
+  vec3 normal;
+  int primitive_index;
+};
+SampleLightResult SampleLight() {
+  int primitive_index = int(clamp(Random() * primitive_light_num, 0, primitive_light_num - 1));
+  Primitive primitive = primitive_repo[primitive_index];
+
+  SampleLightResult res;
+  res.position = SampleTriangle(PrimitiveTriangle(primitive));
+  res.normal = PrimitiveNormal(primitive);
+  res.primitive_index = primitive_index;
+  return res;
 }

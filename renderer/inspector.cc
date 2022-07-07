@@ -55,11 +55,11 @@ void Inspector::InspectCamera(Scene* scene) {
     scene->io().write_clipboard_func()(camera_pos_ws.c_str());
   }
 
-  std::string camera_dir_ws = glm::to_string(scene->camera().front_ws());
-  ImGui::Text("camera_dir_ws %s", camera_dir_ws.c_str());
+  std::string camera_direction_ws = glm::to_string(scene->camera().front_ws());
+  ImGui::Text("camera_direction_ws %s", camera_direction_ws.c_str());
   ImGui::SameLine();
-  if (ImGui::Button("Copy##camera_dir_ws")) {
-    scene->io().write_clipboard_func()(camera_dir_ws.c_str());
+  if (ImGui::Button("Copy##camera_direction_ws")) {
+    scene->io().write_clipboard_func()(camera_direction_ws.c_str());
   }
 
   std::string camera_rotation_quat = glm::to_string(scene->camera().transform().rotation());

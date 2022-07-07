@@ -297,10 +297,10 @@ RayBVHResult RayBVH(const Ray& ray, const BVH& bvh, const PrimitiveRepo& primiti
         int primitive_index = bvh.primitive_sequence_[i];
         CGCHECK(primitive_index < primitive_repo.num()) << primitive_index << " " << primitive_repo.num();
         RayTriangleResult ray_triangle_result = RayTriangle(ray, primitive_repo.GetTriangle(primitive_index));
-        if (ray_triangle_result.hitted && ray_triangle_result.dist < res.dist) {
+        if (ray_triangle_result.hitted && ray_triangle_result.distance < res.distance) {
           res.hitted = true;
           res.primitive_index = primitive_index;
-          res.dist = ray_triangle_result.dist;
+          res.distance = ray_triangle_result.distance;
           res.aabb = node.aabb;
         }
       }

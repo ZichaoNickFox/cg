@@ -88,7 +88,7 @@ struct RayBVHResult {
   bool hitted = false;
   AABB aabb;
   int primitive_index;
-  float dist = std::numeric_limits<float>::max();
+  float distance = std::numeric_limits<float>::max();
 };
 RayBVHResult RayBVH(const Ray& ray, const BVH& bvh, const PrimitiveRepo& primitives);
   

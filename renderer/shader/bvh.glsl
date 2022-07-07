@@ -33,15 +33,15 @@ struct RayBVHResult {
   bool hitted;
   AABB aabb;
   int primitive_index;
-  float dist;
+  float distance;
   vec3 normal;
-  vec3 pos;
+  vec3 position;
 };
 
 RayBVHResult RayBVH(Ray ray) {
   RayBVHResult res;
   res.hitted = false;
-  res.dist = FLT_MAX;
+  res.distance = FLT_MAX;
 
   if (bvh_num == 0) {
     return res;
@@ -62,13 +62,13 @@ RayBVHResult RayBVH(Ray ray) {
       for (int i = primitive_begin; i < primitive_begin + BVHPrimitiveNum(visit_node); ++i) {
         Primitive primitive = primitive_repo[i];
         RayTriangleResult ray_triangle_result = RayTriangle(ray, PrimitiveTriangle(primitive));
-        if (ray_triangle_result.hitted && ray_triangle_result.dist < res.dist) {
+        if (ray_triangle_result.hitted && ray_triangle_result.distance < res.distance) {
           res.hitted = true;
           res.primitive_index = i;
-          res.dist = ray_triangle_result.dist;
+          res.distance = ray_triangle_result.distance;
           res.aabb = visit_node.aabb;
           res.normal = PrimitiveNormal(primitive);
-          res.pos = ray_triangle_result.pos;
+          res.position = ray_triangle_result.position;
         }
       }
     } else {

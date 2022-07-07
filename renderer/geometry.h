@@ -8,8 +8,8 @@
 
 namespace renderer {
 struct Ray {
-  glm::vec3 origin;
-  glm::vec3 dir;
+  glm::vec3 position;
+  glm::vec3 direction;
   std::string AsString() const;
 };
 
@@ -106,9 +106,9 @@ struct TriangleGPU {
 
 struct RayTriangleResult {
   bool hitted;
-  glm::vec3 pos;
+  glm::vec3 position;
   glm::vec3 normal;
-  float dist;
+  float distance;
 };
 
 RayTriangleResult RayTriangle(const Ray& ray, const Triangle& triangle);

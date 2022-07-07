@@ -57,3 +57,8 @@ bool IsLight(int primitive_index) {
   }
   return false;
 }
+
+float LightAttenuation(Light light, float distance) {
+  return 1.0 / (distance * distance * LightQuadratic(light) + distance * LightLinear(light)
+      + LightConstant(light));
+}

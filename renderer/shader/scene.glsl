@@ -4,25 +4,25 @@
 struct RaySceneResult {
   bool hitted;
   int primitive_index;
-  float dist;
+  float distance;
   vec3 normal;
-  vec3 pos;
+  vec3 position;
 };
 
 RaySceneResult RaySceneRaw(Ray ray) {
   RaySceneResult res;
   res.hitted = false;
-  res.dist = FLT_MAX;
+  res.distance = FLT_MAX;
   for (int i = 0; i < primitive_repo_num; ++i) {
     Primitive primitive = primitive_repo[i];
     Triangle triangle = PrimitiveTriangle(primitive);
     RayTriangleResult result = RayTriangle(ray, triangle);
-    if (result.hitted && result.dist < res.dist) {
+    if (result.hitted && result.distance < res.distance) {
       res.hitted = result.hitted;
       res.primitive_index = i;
-      res.pos = result.pos;
+      res.position = result.position;
       res.normal = result.normal;
-      res.dist = result.dist;
+      res.distance = result.distance;
     }
   }
   return res;
@@ -33,8 +33,8 @@ RaySceneResult RaySceneBVH(Ray ray) {
   RayBVHResult result = RayBVH(ray);
   res.hitted = result.hitted;
   res.primitive_index = result.primitive_index;
-  res.dist = result.dist;
+  res.distance = result.distance;
   res.normal = result.normal;
-  res.pos = result.pos;
+  res.position = result.position;
   return res;
 }

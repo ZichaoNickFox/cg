@@ -26,16 +26,16 @@ void main() {
 
   vec3 near_pos_ss = vec3(gl_GlobalInvocationID.xy / resolution, 0.0);
   vec3 near_pos_ws = PositionSS2WS(camera.view, camera.project, near_pos_ss);
-  vec3 camera_dir_ws = normalize(near_pos_ws - camera.pos_ws);
+  vec3 camera_direction_ws = normalize(near_pos_ws - camera.pos_ws);
   
   vec4 color = imageLoad(in_rasterized_color, ivec2(gl_GlobalInvocationID.xy));
   vec3 position_ws = imageLoad(in_rasterized_position_ws, ivec2(gl_GlobalInvocationID.xy)).xyz;
   vec3 surface_normal_ws = imageLoad(in_rasterized_surface_normal_ws, ivec2(gl_GlobalInvocationID.xy)).xyz;
-  vec3 dir_ws = SampleUnitHemisphereDir(surface_normal_ws);
+  vec3 direction_ws = SampleUnitHemisphereDir(surface_normal_ws);
   vec4 emission = imageLoad(in_rasterized_emission, ivec2(gl_GlobalInvocationID.xy));
 
   bool ray_from_light = emission != vec4(0, 0, 0, 1);
-  Ray ray = Ray(position_ws, dir_ws);
+  Ray ray = Ray(position_ws, direction_ws);
   color = path_tracing(ray, color, ray_from_light, 5, 0.9);
   imageStore(in_rasterized_color, ivec2(gl_GlobalInvocationID.xy), color);
 }

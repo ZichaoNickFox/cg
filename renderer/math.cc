@@ -24,8 +24,8 @@ float Clamp(float value, float min, float max) {
 float RandFromTo(float from, float to) {
   std::random_device rd;
   std::mt19937 gen(rd());
-  std::uniform_int_distribution<> distr(from * 1000, to * 1000);
-  int res = distr(gen);
+  std::uniform_int_distribution<> distribution(from * 1000, to * 1000);
+  int res = distribution(gen);
   return res / 1000.0;
 }
 

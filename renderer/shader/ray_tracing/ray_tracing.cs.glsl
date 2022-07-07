@@ -25,8 +25,8 @@ RayTracingResult RayTracing(Sphere spheres[10], Ray ray, float limit) {
   for (int i = 0; i < 10; ++i) {
     Sphere sphere = spheres[i];
     RaySphereResult hit_result = RaySphere(sphere, ray, limit);
-    if (hit_result.hitted && hit_result.dist <= camera.far && t_min >= hit_result.dist) {
-      t_min = hit_result.dist;
+    if (hit_result.hitted && hit_result.distance <= camera.far && t_min >= hit_result.distance) {
+      t_min = hit_result.distance;
       res = RayTracingResult(sphere, hit_result);
     }
   }
@@ -84,7 +84,7 @@ void main() {
     float light_dist = length(light.center_pos - color_result.hit_info.pos);
     Ray shadow_ray = Ray(origin, light_dir);
     RayTracingResult shadow_result = RayTracing(spheres, shadow_ray, 50);
-    if (shadow_result.hit_info.hitted && light_dist >= shadow_result.hit_info.dist) {
+    if (shadow_result.hit_info.hitted && light_dist >= shadow_result.hit_info.distance) {
       colors[depth_iter] = colors[depth_iter] / 2;
       colors[depth_iter].w = 1.0;
     }

@@ -17,6 +17,7 @@ namespace renderer {
 namespace {
 void SetCamera(const Camera& camera, ShaderProgram* program) {
   program->SetVec3("camera.pos_ws", camera.transform().translation());
+  program->SetVec3("camera.front", camera.front_ws());
   program->SetMat4("camera.view", camera.GetViewMatrix());
   program->SetMat4("camera.project", camera.GetProjectMatrix());
   program->SetFloat("camera.near", camera.near_clip());
@@ -24,6 +25,7 @@ void SetCamera(const Camera& camera, ShaderProgram* program) {
 }
 void SetCamera1(const Camera& camera_1, ShaderProgram* program) {
   program->SetVec3("camera_1.pos_ws", camera_1.transform().translation());
+  program->SetVec3("camera_1.front", camera_1.front_ws());
   program->SetMat4("camera_1.view", camera_1.GetViewMatrix());
   program->SetMat4("camera_1.project", camera_1.GetProjectMatrix());
   program->SetFloat("camera_1.near", camera_1.near_clip());

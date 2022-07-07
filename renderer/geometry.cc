@@ -10,8 +10,8 @@
 namespace renderer {
 std::string Ray::AsString() const {
   std::string res;
-  res += "origin ~ " + glm::to_string(origin);
-  res += "dir ~ " + glm::to_string(dir);
+  res += "origin ~ " + glm::to_string(position);
+  res += "dir ~ " + glm::to_string(direction);
   return res;
 }
 
@@ -185,28 +185,28 @@ RayAABBResult RayAABB(const Ray& ray, const AABB& aabb) {
   float t_exit_x = std::numeric_limits<float>::max();
   float t_exit_y = std::numeric_limits<float>::max();
   float t_exit_z = std::numeric_limits<float>::max();
-  if (ray.dir.x > 0) {
-    t_enter_x = (aabb.minimum.x - ray.origin.x) / ray.dir.x;
-    t_exit_x = (aabb.maximum.x - ray.origin.x) / ray.dir.x;
-  } else if (ray.dir.x < 0) {
-    t_enter_x = (aabb.maximum.x - ray.origin.x) / ray.dir.x;
-    t_exit_x = (aabb.minimum.x - ray.origin.x) / ray.dir.x;
+  if (ray.direction.x > 0) {
+    t_enter_x = (aabb.minimum.x - ray.position.x) / ray.direction.x;
+    t_exit_x = (aabb.maximum.x - ray.position.x) / ray.direction.x;
+  } else if (ray.direction.x < 0) {
+    t_enter_x = (aabb.maximum.x - ray.position.x) / ray.direction.x;
+    t_exit_x = (aabb.minimum.x - ray.position.x) / ray.direction.x;
   }
 
-  if (ray.dir.y > 0) {
-    t_enter_y = (aabb.minimum.y - ray.origin.y) / ray.dir.y;
-    t_exit_y = (aabb.maximum.y - ray.origin.y) / ray.dir.y;
-  } else if (ray.dir.y < 0) {
-    t_enter_y = (aabb.maximum.y - ray.origin.y) / ray.dir.y;
-    t_exit_y = (aabb.minimum.y - ray.origin.y) / ray.dir.y;
+  if (ray.direction.y > 0) {
+    t_enter_y = (aabb.minimum.y - ray.position.y) / ray.direction.y;
+    t_exit_y = (aabb.maximum.y - ray.position.y) / ray.direction.y;
+  } else if (ray.direction.y < 0) {
+    t_enter_y = (aabb.maximum.y - ray.position.y) / ray.direction.y;
+    t_exit_y = (aabb.minimum.y - ray.position.y) / ray.direction.y;
   }
 
-  if (ray.dir.z > 0) {
-    t_enter_z = (aabb.minimum.z - ray.origin.z) / ray.dir.z;
-    t_exit_z = (aabb.maximum.z - ray.origin.z) / ray.dir.z;
-  } else if (ray.dir.z < 0) {
-    t_enter_z = (aabb.maximum.z - ray.origin.z) / ray.dir.z;
-    t_exit_z = (aabb.minimum.z - ray.origin.z) / ray.dir.z;
+  if (ray.direction.z > 0) {
+    t_enter_z = (aabb.minimum.z - ray.position.z) / ray.direction.z;
+    t_exit_z = (aabb.maximum.z - ray.position.z) / ray.direction.z;
+  } else if (ray.direction.z < 0) {
+    t_enter_z = (aabb.maximum.z - ray.position.z) / ray.direction.z;
+    t_exit_z = (aabb.minimum.z - ray.position.z) / ray.direction.z;
   }
 
   float t_enter = std::max(std::max(t_enter_x, t_enter_y), t_enter_z);
@@ -236,10 +236,8 @@ float Triangle::GetArea() const {
 }
 
 // Mollar Trumbore Algorithm
-// wikipedia
-// https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
-// GAMES101
-// https://www.bilibili.com/video/BV1X7411F744?p=13 0:51:50
+// wikipedia https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
+// GAMES101 https://www.bilibili.com/video/BV1X7411F744?p=13 0:51:50
 RayTriangleResult RayTriangle(const Ray& ray, const Triangle& triangle) {
   RayTriangleResult res;
   res.hitted = false;
@@ -249,18 +247,18 @@ RayTriangleResult RayTriangle(const Ray& ray, const Triangle& triangle) {
 
   edge1 = triangle.b - triangle.a;
   edge2 = triangle.c - triangle.a;
-  h = glm::cross(ray.dir, edge2);
+  h = glm::cross(ray.direction, edge2);
   a = glm::dot(edge1, h);
   if (std::abs(a) < std::numeric_limits<float>::epsilon()) {
     return res; // The ray is parallel to the triangle
   }
   f = 1.0 / a;
-  s = ray.origin - triangle.a;
+  s = ray.position - triangle.a;
   u = f * glm::dot(s, h);
   if (u < 0.0 || u > 1.0)
     return res;
   q = glm::cross(s, edge1);
-  v = f * glm::dot(ray.dir, q);
+  v = f * glm::dot(ray.direction, q);
   if (v < 0.0 || u + v > 1.0) {
     return res;
   }
@@ -270,9 +268,9 @@ RayTriangleResult RayTriangle(const Ray& ray, const Triangle& triangle) {
   }
 
   res.hitted = true;
-  res.dist = t;
+  res.distance = t;
   res.normal = glm::normalize(glm::cross(edge1, edge2));
-  res.pos = ray.origin + ray.dir * t;
+  res.position = ray.position + ray.direction * t;
   return res;
 }
 
