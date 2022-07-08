@@ -92,7 +92,7 @@ class Mesh {
   template<typename ElementType>
   void AddVertexAttribute(const VertexAttribute& meta, const std::vector<ElementType>& data);
 
-  void GetPrimitives(const Transform& transform, PrimitiveRepo* primitive_repo, int material_index) const;
+  int BreakIntoPrimitives(int material_index, const Transform& transform, PrimitiveRepo* primitive_repo) const;
 
  protected:
   GLuint vao_ = std::numeric_limits<GLuint>::max();
@@ -145,7 +145,8 @@ class MeshRepo {
   MeshRepo();
   bool Has(const std::string& mesh_name) const { return name_2_index_.find(mesh_name) != name_2_index_.end(); }
   void Add(const std::string& mesh_name, std::unique_ptr<Mesh> mesh);
-  void GetPrimitives(int mesh_index, const Transform& transform, PrimitiveRepo* primitives, int material_index) const;
+  int BreakIntoPrimitives(int mesh_index, int material_index, const Transform& transform,
+                         PrimitiveRepo* primitive_repo) const;
   const Mesh* GetMesh(int mesh_index) const;
   int GetIndex(const std::string& mesh_name) const;
   std::string GetName(int mesh_index) const;

@@ -30,12 +30,8 @@ void main() {
   if (dirty) {
     color = kBlack;
   } else {
-    PathTracingInitialRay initial_ray;
-    initial_ray.ray = Ray(camera.pos_ws, camera_direction_ws);
-    initial_ray.radiance = vec4(1, 1, 1, 1);
-    initial_ray.normal = camera.front;
-    initial_ray.from_light = false;
-    vec4 path_tracing_result = path_tracing(initial_ray, 5, 0.9);
+    Ray ray = Ray(camera.pos_ws, camera_direction_ws);
+    vec4 path_tracing_result = path_tracing_from_camera(ray);
     if (color == vec4(0, 0, 0, 1)) {
       color = path_tracing_result;
     } else if (path_tracing_result == vec4(0, 0, 0, 1)) {

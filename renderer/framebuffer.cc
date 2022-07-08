@@ -68,7 +68,7 @@ void Framebuffer::Unbind() {
 }
 
 Texture Framebuffer::GetTexture(const std::string& name) {
-  CGCHECK(textures_.count(name) == 1) << " Cannot find texture in framebuffer " << name;
+  CGCHECK(textures_.count(name) == 1) << " Cannot find texture in framebuffer : " << name;
   return textures_[name];
 }
 
@@ -94,6 +94,9 @@ Texture Framebuffer::CreateAttachmentTexture(const FramebufferAttachment& attach
     return CreateTexture2D(texture_meta, {(data.data())});
   } else if (attachment.texture_meta.gl_internal_format == GL_RG32F) {
     std::vector<glm::vec2> data(texture_meta.data_size_in_byte() / sizeof(glm::vec2), glm::vec2(0, 0));
+    return CreateTexture2D(texture_meta, {(data.data())});
+  } else if (attachment.texture_meta.gl_internal_format == GL_R32F) {
+    std::vector<float> data(texture_meta.data_size_in_byte() / sizeof(float), 0);
     return CreateTexture2D(texture_meta, {(data.data())});
   } else {
     CGCHECK(false) << " Unsupported Internal format"

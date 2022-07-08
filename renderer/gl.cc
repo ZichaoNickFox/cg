@@ -468,7 +468,9 @@ void glMemoryBarrier_(GLbitfield barriers) {
 
 void glUniform1f_(GLint location, GLfloat v0) {
   glUniform1f(location, v0);
-  CGCHECKGL();
+  CGCHECKGL() << "glUniform1f_"
+              << " location~" << location
+              << " v0~" << v0;
 }
 
 void glUniform2f_(GLint location, GLfloat v0, GLfloat v1) {

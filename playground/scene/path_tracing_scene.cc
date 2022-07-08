@@ -41,7 +41,7 @@ void PathTracingScene::OnEnter() {
   texture_in_out_ = CreateTexture2D(canvas_size.x, canvas_size.y, canvas_data);
 
   object_repo_.AddOrReplace(object_metas_);
-  object_repo_.GetPrimitives(mesh_repo_, material_repo_, {}, &primitive_repo_);
+  object_repo_.BreakIntoPrimitives(mesh_repo_, material_repo_, {}, &primitive_repo_);
   bvh_.Build(primitive_repo_, {100, BVH::Partition::kPos, 64});
 
   glEnable_(GL_DEPTH_TEST);

@@ -38,8 +38,8 @@ class Camera {
   renderer::Transform* mutable_transform() { return &transform_; }
   const Transform& transform() const { return transform_; }
 
-  glm::vec3 front_ws() const { return transform_.rotation() * glm::vec3(0, 0, -1); }
-  glm::vec3 right_ws() const { return transform_.rotation() * glm::vec3(1, 0, 0); }
+  glm::vec3 front_ws() const { return glm::normalize(transform_.rotation() * glm::vec3(0, 0, -1)); }
+  glm::vec3 right_ws() const { return glm::normalize(transform_.rotation() * glm::vec3(1, 0, 0)); }
 
   void MoveForwardWS(float delta);
   void MoveRightWS(float delta);

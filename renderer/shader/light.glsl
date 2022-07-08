@@ -1,5 +1,6 @@
 #include "renderer/shader/definition.glsl"
 
+#include "renderer/shader/material.glsl"
 #include "renderer/shader/primitive.glsl"
 
 // primitive_light = 0
@@ -15,7 +16,7 @@ struct Light {
 
 uniform int light_repo_num;
 uniform int primitive_light_num;
-uniform int primitive_light_area;
+uniform float primitive_light_area;
 layout (std430, binding = SSBO_LIGHT_REPO) buffer LightRepo {
   Light light_repo[];
 };
@@ -49,13 +50,9 @@ float LightConstant(Light light) {
 }
 
 bool IsLight(int primitive_index) {
-  for (int i = 0; i < light_repo_num; ++i) {
-    Light light = light_repo[i];
-    if (LightPrimitiveIndex(light) == primitive_index) {
-      return true;
-    }
-  }
-  return false;
+  Primitive primitive = primitive_repo[primitive_index];
+  Material material = material_repo[PrimitiveMaterialIndex(primitive)];
+  return MaterialEmission(material) != vec4(0, 0, 0, 1);
 }
 
 float LightAttenuation(Light light, float distance) {

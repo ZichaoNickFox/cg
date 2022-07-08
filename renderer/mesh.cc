@@ -102,7 +102,7 @@ bool Mesh::Intersect(const glm::vec3& origin_ls, const glm::vec3& dir_ls,
   return (found_index != -1);
 }
 
-void Mesh::GetPrimitives(const Transform& transform, PrimitiveRepo* primitive_repo, int material_index) const {
+int Mesh::BreakIntoPrimitives(int material_index, const Transform& transform, PrimitiveRepo* primitive_repo) const {
   std::vector<glm::vec3> world_positions(positions_.size());
   glm::mat4 model = transform.GetModelMatrix();
   for (int i = 0; i < positions_.size(); ++i) {
@@ -118,12 +118,15 @@ void Mesh::GetPrimitives(const Transform& transform, PrimitiveRepo* primitive_re
       Triangle triangle{world_positions[mesh_index_i], world_positions[mesh_index_j], world_positions[mesh_index_k]};
       primitive_repo->PushTriangle(triangle, material_index);
     }
+    return indices_.size() / 3;
   } else {
+    CGCHECK(positions_.size() % 3 == 0);
     int index = 0;
     for (int i = 0, j = 1, k = 2; k < positions_.size(); i += 3, j += 3, k += 3) {
       Triangle triangle{world_positions[i], world_positions[j], world_positions[k]};
       primitive_repo->PushTriangle(triangle, material_index);
     }
+    return positions_.size() / 3;
   }
 }
 
@@ -152,8 +155,9 @@ void MeshRepo::Add(const std::string& mesh_name, std::unique_ptr<Mesh> mesh) {
   index_2_mesh_[mesh_index] = std::move(mesh);
 }
 
-void MeshRepo::GetPrimitives(int mesh_index, const Transform& transform, PrimitiveRepo* primitives, int material_index) const {
-  return GetMesh(mesh_index)->GetPrimitives(transform, primitives, material_index);
+int MeshRepo::BreakIntoPrimitives(int mesh_index, int material_index, const Transform& transform,
+                                  PrimitiveRepo* primitive_repo) const {
+  return GetMesh(mesh_index)->BreakIntoPrimitives(material_index, transform, primitive_repo);
 }
 
 const Mesh* MeshRepo::GetMesh(int mesh_index) const {

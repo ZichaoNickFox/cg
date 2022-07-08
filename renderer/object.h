@@ -19,10 +19,13 @@ struct ObjectMeta {
 };
 
 struct Object {
-  int object_index;
+  int object_index = -1;
   Transform transform;
-  int mesh_index;      // Only used in CPU
-  int material_index;
+  int mesh_index = -1;      // Only used in CPU
+  int material_index = -1;
+  int primitive_start_index = -1;
+
+  bool operator==(const Object& other) const = default;
 };
 
 struct ObjectRepo {
@@ -37,8 +40,8 @@ struct ObjectRepo {
   int GetIndex(const std::string& name) const;
   std::vector<Object> GetObjects(const Filter& filter = Filter()) const;
   std::vector<Object*> MutableObjects(const Filter& filter = Filter());
-  void GetPrimitives(const MeshRepo& mesh_repo, const MaterialRepo& material_repo, const Filter& filter = Filter(),
-                     PrimitiveRepo* primitive_repo = nullptr);
+  void BreakIntoPrimitives(const MeshRepo& mesh_repo, const MaterialRepo& material_repo, const Filter& filter = Filter(),
+                           PrimitiveRepo* primitive_repo = nullptr);
   std::string GetName(int object_index) const;
   bool Has(const std::string& object_name) const;
   bool Has(int object_index) const;

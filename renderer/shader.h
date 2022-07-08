@@ -57,6 +57,7 @@ class RenderShader {
   void SetNearFar(const Camera& camera);
   void SetScreenSize(const glm::vec2& screen_size);
   void SetTimeSeed(int frame_num);
+  void SetPrimitiveStartIndex(const Object& object);
 
  protected:
   ShaderProgram program_;

@@ -70,34 +70,43 @@ int ObjectRepo::GetIndex(const std::string& name) const {
 }
 
 std::vector<Object> ObjectRepo::GetObjects(const Filter& filter) const {
-  std::vector<Object> res;
+  CGCHECK(name_2_index_.size() == index_2_object_.size());
+  std::vector<Object> res(name_2_index_.size());
   for (const auto& p : name_2_index_) {
     const std::string& name = p.first;
     int index = p.second;
     if (filter.Pass(name)) {
-      res.push_back(index_2_object_.at(index));
+      res[index] = index_2_object_.at(index);
     }
   }
+  Object empty;
+  util::Remove(empty, &res);
   return res;
 }
 
 std::vector<Object*> ObjectRepo::MutableObjects(const Filter& filter) {
-  std::vector<Object*> res;
+  CGCHECK(name_2_index_.size() == index_2_object_.size());
+  std::vector<Object*> res(name_2_index_.size(), (Object*)nullptr);
   for (const auto& p : name_2_index_) {
     const std::string& name = p.first;
     int index = p.second;
     if (filter.Pass(name)) {
-      res.push_back(&index_2_object_[index]);
+      res[index] = &index_2_object_[index];
     }
   }
+  util::Remove((Object*)nullptr, &res);
   return res;
 }
 
-void ObjectRepo::GetPrimitives(const MeshRepo& mesh_repo, const MaterialRepo& material_repo, const Filter& filter,
-                               PrimitiveRepo* primitive_repo) {
-  for (const Object& object : GetObjects(filter)) {
-    const Transform transform = object.transform;
-    mesh_repo.GetPrimitives(object.mesh_index, transform, primitive_repo, object.material_index);
+void ObjectRepo::BreakIntoPrimitives(const MeshRepo& mesh_repo, const MaterialRepo& material_repo, const Filter& filter,
+                                     PrimitiveRepo* primitive_repo) {
+  int primitive_start_index = 0;
+  for (Object* object : MutableObjects()) {
+    const Transform transform = object->transform;
+    object->primitive_start_index = primitive_start_index;
+    int primitive_num = mesh_repo.BreakIntoPrimitives(object->mesh_index, object->material_index, transform,
+                                                      primitive_repo);
+    primitive_start_index += primitive_num;
   }
 }
 

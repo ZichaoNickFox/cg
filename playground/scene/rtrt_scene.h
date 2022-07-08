@@ -46,9 +46,13 @@ class RTRTScene : public renderer::Scene {
 
   renderer::Framebuffer fbo_;
 
-  renderer::Texture color1_;
-  renderer::Texture color2_;
-  renderer::PingPong<renderer::Texture> ping_pong_;
+  renderer::Texture current_frame1_;
+  renderer::Texture current_frame2_;
+  renderer::PingPong<renderer::Texture> current_frame_;
+
+  renderer::Texture last_frame1_;
+  renderer::Texture last_frame2_;
+  renderer::PingPong<renderer::Texture> last_frame_;
 
   renderer::Camera camera_1_;
 };

@@ -1,5 +1,6 @@
 #include "renderer/shader/definition.glsl"
 #include "renderer/shader/geometry.glsl"
+#include "renderer/shader/material.glsl"
 
 struct Primitive {
   vec4 a_materialIndex;
@@ -22,4 +23,9 @@ Triangle PrimitiveTriangle(Primitive primitive) {
 
 vec3 PrimitiveNormal(Primitive primitive) {
   return normalize(TriangleNormal(PrimitiveTriangle(primitive)));
+}
+
+Material PrimitiveMaterial(int primitive_index) {
+  Primitive primitive = primitive_repo[primitive_index];
+  return material_repo[PrimitiveMaterialIndex(primitive)];
 }

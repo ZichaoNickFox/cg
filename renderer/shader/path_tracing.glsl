@@ -5,28 +5,12 @@
 
 //! #include certain FR function before this file. Such as fr/BRDF.glsl
 
-struct PathTracingInitialRay {
-  Ray ray;
-  vec4 radiance;
-  vec3 normal;
-  bool from_light;
-};
-
-// If first ray is rasterized, radiance is that color. RayFromLight may be light
-// Else radiance is vec4(1, 1, 1, 1). RayFromLight = false
-// max_depth : 5
-// rr : 0.9
-// https://www.bilibili.com/video/BV1X7411F744?p=16 0:58:08
-vec4 path_tracing(PathTracingInitialRay initial_ray, int max_depth, float rr) {
-  if (initial_ray.from_light) { return initial_ray.radiance; }
-
+// https://www.bilibili.com/video/BV1X7411F744?p=16 00:59:00
+vec4 path_tracing(vec4 radiance, Ray ray_iter, vec3 lo_normal, int max_depth, float rr) {
   const float kPi = 3.1415926;
   const float kBias = 0.0001;
-
   vec4 res = vec4(0, 0, 0, 1);
-  Ray ray_iter = initial_ray.ray;
-  vec4 radiance = initial_ray.radiance;
-
+  radiance = dot(lo_normal, ray_iter.direction) * radiance;
   while(bool(max_depth--)) {
     if (Random() > rr) { break; }
 
@@ -53,55 +37,85 @@ vec4 path_tracing(PathTracingInitialRay initial_ray, int max_depth, float rr) {
   return res;
 }
 
-/*
 // https://www.bilibili.com/video/BV1X7411F744?p=16 01:12:12
-vec4 path_tracing_v2(PathTracingInitialRay initial_ray, int max_depth, float rr) {
-  if (initial_ray.from_light) { return initial_ray.radiance; }
-
+vec4 path_tracing_v2(vec4 radiance, Ray ray_iter, vec3 lo_normal_iter, int max_depth, float rr) {
   const float kPi = 3.1415926;
   const float kBias = 0.0001;
-
   vec4 res = vec4(0, 0, 0, 1);
-  Ray ray_iter = initial_ray.ray;
 
-  vec4 radiance = initial_ray.radiance;
-  vec3 lo_normal = initial_ray.normal;
-
-  vec4 directional_lights[20];
+  vec4 direct_lightings[20];
   vec4 shade[20];
-  vec4 indirectional_light_factors[20];
+  vec4 indirect_lighting_factors[20];
+  for (int i = 0; i < 20; ++i) {
+    direct_lightings[i] = vec4(0, 0, 0, 0);
+    shade[i] = vec4(1, 1, 1, 1);
+    indirect_lighting_factors[i] = vec4(0, 0, 0, 0);
+  }
 
   int depth = 0;
   while(depth < max_depth) {
     float pdf_light = 1 / primitive_light_area;
     SampleLightResult sample_light_result = SampleLight();
     Ray directional_ray = Ray(ray_iter.position, normalize(sample_light_result.position - ray_iter.position));
-    float lo_cosine = max(dot(directional_ray.direction, lo_normal), 0);
+    float lo_cosine = max(dot(directional_ray.direction, lo_normal_iter), 0);
     float li_cosine = max(dot(-directional_ray.direction, sample_light_result.normal), 0);
     RaySceneResult directional_result = RaySceneRaw(directional_ray);
-    if (directional_result.hitted && directional_result.primitive_index == directional_result.primitive_index) {
+    if (directional_result.hitted && directional_result.primitive_index == sample_light_result.primitive_index) {
       Material material = material_repo[directional_result.primitive_index];
-      directional_lights[depth] = MaterialDiffuse(material) * lo_cosine * li_cosine / pdf_light;
+      direct_lightings[depth] = radiance * lo_cosine * li_cosine / pdf_light;
     }
 
     if (Random() > rr) { break; }
     RaySceneResult indirectional_result = RaySceneRaw(ray_iter);
     if (indirectional_result.hitted == false) { break; }
-    Primitive primitive = primitive_repo[indirectional_result.primitive_index];
-    Material material = material_repo[PrimitiveMaterialIndex(primitive)];
+    Material material = PrimitiveMaterial(indirectional_result.primitive_index);
     vec3 N = indirectional_result.normal;
     const float pdf = 1 / (2 * kPi);
     if (IsLight(indirectional_result.primitive_index)) { break; }
-    vec3 direction_ws = SampleUnitHemisphereDir(N);
-    vec4 f_r = FR(-ray_iter.direction, direction_ws, indirectional_result.normal, material);
-    float cosine = max(dot(direction_ws, N), 0.0);
-    radiance = radiance * f_r * cosine / pdf / rr;
-    ray_iter = Ray(indirectional_result.position + kBias * direction_ws, direction_ws);
+    vec3 Li = SampleUnitHemisphereDir(N);
+    vec4 f_r = FR(-ray_iter.direction, Li, indirectional_result.normal, material);
+    float cosine = max(dot(Li, N), 0.0);
+    ray_iter = Ray(indirectional_result.position + kBias * Li, Li);
+    indirect_lighting_factors[depth] = f_r * cosine / pdf / rr;
+    lo_normal_iter = N;
     depth++;
   }
   for (int i = depth - 1; i >= 0; --i) {
-    shade[i] = directional_lights[i + 1] + shade[i + 1];
+    shade[i] = direct_lightings[i] + shade[i + 1] * indirect_lighting_factors[i];
   }
   return shade[0];
 }
-*/
+
+struct FromRasterization {
+  vec3 Li;
+  vec3 Lo;
+  vec3 position;
+  vec3 normal;
+  int primitive_index;
+};
+
+vec4 path_tracing_from_rasterization(FromRasterization param, bool v2) {
+  // vec4 f_r = FR(param.Li, param.Lo, param.normal, PrimitiveMaterial(param.primitive_index));
+  vec4 f_r = MaterialDiffuse(PrimitiveMaterial(param.primitive_index));
+  if (IsLight(param.primitive_index)) { return f_r; }
+  Ray ray = Ray(param.position, param.Lo);
+  vec4 radiance = f_r;
+  if (v2) {
+    return path_tracing_v2(f_r, ray, param.normal, 5, 0.9);
+  } else {
+    return path_tracing(f_r, ray, param.normal, 5, 0.9);
+  }
+}
+
+struct FromCamera {
+  Ray ray;
+  vec3 normal;
+};
+
+vec4 path_tracing_from_camera(FromCamera param, bool v2) {
+  if (v2) {
+    return path_tracing_v2(vec4(1, 1, 1, 1), param.ray, param.normal, 5, 0.9);
+  } else {
+    return path_tracing(vec4(1, 1, 1, 1), param.ray, param.normal, 5, 0.9);
+  }
+}

@@ -14,17 +14,12 @@ using namespace renderer;
 
 class RTRTGeometryShader : public renderer::RenderShader {
  public:
-  struct Param {
-    glm::vec4 color = glm::vec4(1, 0, 0, 1);
-    glm::vec4 emission = glm::vec4(0, 0, 0, 1);
-  };
-  RTRTGeometryShader(const Param& param, const Scene& scene, const Object& object)
+  RTRTGeometryShader(const Scene& scene, const Object& object)
       : RenderShader(scene, "rtrt_geometry") {
     const Camera& camera = scene.camera();
     SetModel(object);
     SetCamera(camera);
-    program_.SetVec4("color", param.color);
-    program_.SetVec4("emission", param.emission);
+    SetPrimitiveStartIndex(object);
     Run(scene, object);
   }
 };
@@ -33,19 +28,19 @@ class RTRTPathTracingShader : public renderer::ComputeShader {
  public:
   struct Param {
     glm::vec2 resolution;
-    renderer::Texture rasterized_color;
-    renderer::Texture rasterized_emission;
     renderer::Texture rasterized_position_ws;
     renderer::Texture rasterized_surface_normal_ws;
+    renderer::Texture rasterized_primitive_index;
+    renderer::Texture current_ping;
   };
   RTRTPathTracingShader(const Param& param, const Scene& scene) 
       : ComputeShader(scene, "rtrt_path_tracing") {
     SetCamera(scene.camera());
 
-    SetTextureBinding({param.rasterized_color, "in_rasterized_color", GL_READ_WRITE});
-    SetTextureBinding({param.rasterized_emission, "in_rasterized_emission", GL_READ_ONLY});
-    SetTextureBinding({param.rasterized_position_ws, "in_rasterized_position_ws", GL_READ_ONLY});
-    SetTextureBinding({param.rasterized_surface_normal_ws, "in_rasterized_surface_normal_ws", GL_READ_ONLY});
+    SetTextureBinding({param.rasterized_position_ws, "rasterized_position_ws", GL_READ_ONLY});
+    SetTextureBinding({param.rasterized_surface_normal_ws, "rasterized_surface_normal_ws", GL_READ_ONLY});
+    SetTextureBinding({param.rasterized_primitive_index, "rasterized_primitive_index", GL_READ_ONLY});
+    SetTextureBinding({param.current_ping, "current_ping", GL_WRITE_ONLY});
 
     SetFrameNum(scene);
     SetWorkGroupNum({param.resolution.x / 32 + 1, param.resolution.y / 32 + 1, 1});
@@ -95,18 +90,18 @@ class RTRTTemproalAccumulationShader : public renderer::ComputeShader {
   struct Param {
     glm::vec2 resolution;
     renderer::Camera camera_1;
-    renderer::Texture texture_color;
     renderer::Texture texture_position_ws;
-    renderer::Texture ping_color;
-    renderer::Texture pong_color;
+    renderer::Texture current_ping;
+    renderer::Texture last_ping;
+    renderer::Texture last_pong;
   };
   RTRTTemproalAccumulationShader(const Param& param, const Scene& scene) 
       : ComputeShader(scene, "rtrt_temproal_accumulation") {
     SetCamera1(param.camera_1);
-    SetTextureBinding({param.texture_color, "texture_color", GL_READ_ONLY});
     SetTextureBinding({param.texture_position_ws, "texture_position_ws", GL_READ_ONLY});
-    SetTextureBinding({param.ping_color, "texture_ping", GL_READ_ONLY});
-    SetTextureBinding({param.pong_color, "texture_pong", GL_WRITE_ONLY});
+    SetTextureBinding({param.current_ping, "current_ping", GL_READ_ONLY});
+    SetTextureBinding({param.last_ping, "last_ping", GL_READ_ONLY});
+    SetTextureBinding({param.last_pong, "last_pong", GL_WRITE_ONLY});
     SetWorkGroupNum({param.resolution.x / 32 + 1, param.resolution.y / 32 + 1, 1});
     SetResolution(param.resolution);
     SetFrameNum(scene);
@@ -121,19 +116,22 @@ void RTRTScene::OnEnter() {
 
   glm::vec3 canvas_size(3240, 2160, 0);
   std::vector<renderer::FramebufferAttachment> fbo_attachments = {
-    kAttachmentColor, kAttachmentEmission, kAttachmentPositionWS, kAttachmentSurfaceNormalWS, kAttachmentDepth
+    kAttachmentPositionWS, kAttachmentSurfaceNormalWS, kAttachmentPrimitiveIndex, kAttachmentDepth
   };
   fbo_.Init({canvas_size, fbo_attachments, kBlack});
 
   object_repo_.AddOrReplace(object_metas_);
-  object_repo_.GetPrimitives(mesh_repo_, material_repo_, {}, &primitive_repo_);
+  object_repo_.BreakIntoPrimitives(mesh_repo_, material_repo_, {}, &primitive_repo_);
   bvh_.Build(primitive_repo_, {100, BVH::Partition::kPos, 64});
 
   std::vector<glm::vec4> color(3240 * 2160, kBlack);
-  color1_ = renderer::CreateTexture2D(3240, 2160, color);
-  color2_ = renderer::CreateTexture2D(3240, 2160, color);
+  current_frame1_ = renderer::CreateTexture2D(3240, 2160, color);
+  current_frame2_ = renderer::CreateTexture2D(3240, 2160, color);
+  last_frame1_ = renderer::CreateTexture2D(3240, 2160, color);
+  last_frame2_ = renderer::CreateTexture2D(3240, 2160, color);
 
-  ping_pong_.Init(&color1_, &color2_);
+  current_frame_.Init(&current_frame1_, &current_frame2_);
+  last_frame_.Init(&last_frame1_, &last_frame2_);
 
   camera_1_ = *camera_;
 
@@ -149,39 +147,38 @@ void RTRTScene::OnRender() {
   // OutlierClamping();
   // Denoise();
   TemproalAccumulate();
-  FullscreenQuadShader({*ping_pong_.ping()}, *this);
+  FullscreenQuadShader({*last_frame_.pong()}, *this);
 }
 
 void RTRTScene::Rasterization() {
   fbo_.Bind();
-  for (const Object& object : object_repo_.GetObjects({Filter::kExcludes, {"sphere"}})) {
-    RTRTGeometryShader({material_repo_.GetMaterial(object.material_index).diffuse,
-                        material_repo_.GetMaterial(object.material_index).emission}, *this, object);
+  for (const Object& object : object_repo_.GetObjects()) {
+    RTRTGeometryShader(*this, object);
   }
   fbo_.Unbind();
 }
 
 void RTRTScene::PathTracing() {
-  RTRTPathTracingShader({{3240, 2160}, fbo_.GetTexture("color"), fbo_.GetTexture("emission"),
-                         fbo_.GetTexture("position_ws"), fbo_.GetTexture("surface_normal_ws")}, *this);
+  RTRTPathTracingShader({{3240, 2160}, fbo_.GetTexture("position_ws"), fbo_.GetTexture("surface_normal_ws"),
+                         fbo_.GetTexture("primitive_index"), *current_frame_.ping()}, *this);
 }
 
 void RTRTScene::OutlierClamping() {
-  RTRTOutlierClampingShader({{3240, 2160}, *ping_pong_.ping(), *ping_pong_.pong()}, *this);
-  ping_pong_.Swap();
+  RTRTOutlierClampingShader({{3240, 2160}, *current_frame_.ping(), *current_frame_.pong()}, *this);
+  current_frame_.Swap();
 }
 
 void RTRTScene::Denoise() {
-  RTRTDenoiseShader({{3240, 2160}, *ping_pong_.ping(), *ping_pong_.pong(),
+  RTRTDenoiseShader({{3240, 2160}, *current_frame_.ping(), *current_frame_.pong(),
                      fbo_.GetTexture("surface_normal_ws")}, *this);
-  ping_pong_.Swap();
+  current_frame_.Swap();
 }
 
 void RTRTScene::TemproalAccumulate() {
-  RTRTTemproalAccumulationShader({{3240, 2160}, camera_1_, fbo_.GetTexture("color"),
-                                  fbo_.GetTexture("position_ws"), *ping_pong_.ping(), *ping_pong_.pong()}, *this);
+  RTRTTemproalAccumulationShader({{3240, 2160}, camera_1_, fbo_.GetTexture("position_ws"), 
+                                  *current_frame_.ping(), *last_frame_.ping(), *last_frame_.pong()}, *this);
   camera_1_ = *camera_;
-  ping_pong_.Swap();
+  last_frame_.Swap();
 }
 
 void RTRTScene::OnExit() {

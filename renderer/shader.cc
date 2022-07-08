@@ -70,6 +70,11 @@ void RenderShader::SetMaterialIndex(int material_index) {
   program_.SetInt("material_index", material_index);
 }
 
+void RenderShader::SetPrimitiveStartIndex(const Object& object) {
+  CGCHECK(object.primitive_start_index != -1);
+  program_.SetInt("primitive_start_index", object.primitive_start_index);
+}
+
 void RenderShader::Run(const Scene& scene, const Object& object) const {
   scene.mesh_repo().GetMesh(object.mesh_index)->Submit();
 }
@@ -97,7 +102,7 @@ void ComputeShader::SetTextureBinding(const TextureBinding& binding) {
 
 void ComputeShader::CheckTextureBindingInternalFormat(const renderer::Texture& texture) const {
   GLuint internal_format = texture.meta().gl_internal_format;
-  std::set<GLint> supported_format = { GL_RG32F, GL_RGBA32F, GL_DEPTH_COMPONENT32F };
+  std::set<GLint> supported_format = { GL_R32F, GL_RG32F, GL_RGBA32F };
   if (supported_format.count(internal_format) <= 0) {
     CGCHECK(false) << "Unsupported Internal Format : " << std::hex << internal_format << std::dec;
   }
