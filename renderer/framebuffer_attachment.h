@@ -91,7 +91,7 @@ static const FramebufferAttachment kAttachmentTest = {
     GL_RGBA, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER},
     1, FramebufferAttachment::kClear};
 static const FramebufferAttachment kAttachmentPrimitiveIndex = {
-    FramebufferAttachment::kColor, "primitive_index", {Texture::kTexture2D, -1, -1, 1, true, 1, 1, GL_R32F,
-    GL_RED, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER},
+    FramebufferAttachment::kColor, "primitive_index", {Texture::kTexture2D, -1, -1, 1, true, 1, 1, GL_R32UI,
+    GL_RED_INTEGER, GL_UNSIGNED_INT, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER},
     1, FramebufferAttachment::kClear};
 } // namespace renderer

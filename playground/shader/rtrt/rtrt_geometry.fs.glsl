@@ -4,7 +4,7 @@
 
 layout (location = 0) out vec4 out_position_ws;
 layout (location = 1) out vec4 out_surface_normal;
-layout (location = 2) out float out_primitive_index;
+layout (location = 2) out int out_primitive_index;
 
 in vec3 gf_surface_normal_ws;
 in vec3 gf_position_ws;

@@ -1,5 +1,6 @@
 #include "renderer/shader/definition.glsl"
 
+#include "renderer/shader/color.glsl"
 #include "renderer/shader/material.glsl"
 #include "renderer/shader/primitive.glsl"
 
@@ -58,4 +59,17 @@ bool IsLight(int primitive_index) {
 float LightAttenuation(Light light, float distance) {
   return 1.0 / (distance * distance * LightQuadratic(light) + distance * LightLinear(light)
       + LightConstant(light));
+}
+
+Light GetPrimitiveLight(int primitive_light_index) {
+  for (int i = 0, j = 0; i < light_repo_num; ++i) {
+    Light light = light_repo[i];
+    if (LightType(light) == 0) {
+      if (j == primitive_light_index) {
+        return light;
+      }
+      j++;
+    }
+  }
+  return Light(kColorError, kColorError, kColorError, kColorError);
 }

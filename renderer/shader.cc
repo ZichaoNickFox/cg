@@ -102,7 +102,7 @@ void ComputeShader::SetTextureBinding(const TextureBinding& binding) {
 
 void ComputeShader::CheckTextureBindingInternalFormat(const renderer::Texture& texture) const {
   GLuint internal_format = texture.meta().gl_internal_format;
-  std::set<GLint> supported_format = { GL_R32F, GL_RG32F, GL_RGBA32F };
+  std::set<GLint> supported_format = { GL_R32UI, GL_RG32F, GL_RGBA32F };
   if (supported_format.count(internal_format) <= 0) {
     CGCHECK(false) << "Unsupported Internal Format : " << std::hex << internal_format << std::dec;
   }

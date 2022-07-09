@@ -1,8 +1,8 @@
 #include "renderer/shader/version.glsl"
 
+#include "renderer/shader/bxdf/brdf.glsl"
 #include "renderer/shader/camera.glsl"
 #include "renderer/shader/color.glsl"
-#include "renderer/shader/fr/BRDF.glsl"
 #include "renderer/shader/path_tracing.glsl"
 #include "renderer/shader/primitive.glsl"
 #include "renderer/shader/random.glsl"
@@ -13,7 +13,7 @@
 layout (local_size_x = 32, local_size_y = 32) in;
 layout (rgba32f, binding = 0) uniform image2D rasterized_position_ws;
 layout (rgba32f, binding = 1) uniform image2D rasterized_surface_normal_ws;
-layout (r32f, binding = 2) uniform image2D rasterized_primitive_index;
+layout (r32ui, binding = 2) uniform uimage2D rasterized_primitive_index;
 layout (rgba32f, binding = 3) uniform image2D current_ping;
 
 uniform vec2 resolution;
@@ -44,7 +44,8 @@ void main() {
   from_camera.ray = Ray(camera.pos_ws, Li);
   from_camera.normal = camera.front;
 
-  // vec4 color = path_tracing_from_camera(from_camera, false);
-  vec4 color = path_tracing_from_rasterization(from_rasterization, false);
+  vec4 color = path_tracing_from_camera(from_camera, true);
+  // vec4 color = path_tracing_from_rasterization(from_rasterization, true);
+
   imageStore(current_ping, ivec2(gl_GlobalInvocationID.xy), color);
 }

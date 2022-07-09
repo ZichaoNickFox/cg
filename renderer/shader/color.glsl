@@ -39,3 +39,5 @@ const vec4 kColorCircle[kColorCircleNum] = vec4[kColorCircleNum] (
   kRed2, kOrange2, kYellow2, kGreen2, kCyan2, kBlue2, kPurple2, kWhite2,
   kRed3, kOrange3, kYellow3, kGreen3, kCyan3, kBlue3, kPurple3, kWhite3
 );
+
+const vec4 kColorError = vec4(255 / 255., 192 / 255., 203 / 255., 1);

@@ -118,15 +118,19 @@ vec3 SampleTriangle(Triangle triangle) {
 struct SampleLightResult {
   vec3 position;
   vec3 normal;
+  int primitive_light_index;
   int primitive_index;
 };
 SampleLightResult SampleLight() {
-  int primitive_index = int(clamp(Random() * primitive_light_num, 0, primitive_light_num - 1));
+  int primitive_light_index = int(clamp(Random() * primitive_light_num, 0, primitive_light_num - 1));
+  Light primitive_light = GetPrimitiveLight(primitive_light_index);
+  int primitive_index = LightPrimitiveIndex(primitive_light);
   Primitive primitive = primitive_repo[primitive_index];
 
   SampleLightResult res;
   res.position = SampleTriangle(PrimitiveTriangle(primitive));
   res.normal = PrimitiveNormal(primitive);
+  res.primitive_light_index = primitive_light_index;
   res.primitive_index = primitive_index;
   return res;
 }

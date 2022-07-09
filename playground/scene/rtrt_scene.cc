@@ -147,7 +147,7 @@ void RTRTScene::OnRender() {
   // OutlierClamping();
   // Denoise();
   TemproalAccumulate();
-  FullscreenQuadShader({*last_frame_.pong()}, *this);
+  FullscreenQuadShader({*last_frame_.ping()}, *this);
 }
 
 void RTRTScene::Rasterization() {
