@@ -12,6 +12,9 @@
 #include "renderer/shader.h"
 #include "renderer/texture.h"
 
+// ao : https://creativecoding.soe.ucsc.edu/courses/cmpm164/_schedule/AmbientOcclusion.pdf
+// ssao : https://www.bilibili.com/video/BV1YK4y1T7yY?p=8 01:17:44
+// hbao : https://developer.download.nvidia.cn/presentations/2008/SIGGRAPH/HBAO_SIG08b.pdf 
 class SSAOScene : public renderer::Scene {
  public:
   void OnEnter() override;
