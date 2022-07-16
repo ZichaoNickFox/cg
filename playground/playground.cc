@@ -31,7 +31,7 @@
 //#include "playground/scene/texture_lod_scene.h"
 
 const std::string kConfigPath = "playground/config.pb.txt";
-const std::string kDefaultSceneName = "SSAOScene";
+const std::string kDefaultSceneName = "RTRTScene";
 const std::unordered_map<std::string, std::function<renderer::Scene*()>> kFactory = {
   // {"ForwardShadingScene", [] () { return new ForwardShadingScene; }},
   // {"DeferredShadingScene", [] () { return new DeferredShadingScene; }},

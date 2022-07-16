@@ -15,7 +15,7 @@ vec4 path_tracing(Ray ray_iter, int max_depth, float rr) {
   while(bool(max_depth--)) {
     if (Random() > rr) { break; }
 
-    RaySceneResult result = RaySceneRaw(ray_iter);
+    RaySceneResult result = RayScene(ray_iter);
     if (result.hitted == false) { break; }
 
     Material material = PrimitiveMaterial(result.primitive_index);
@@ -55,7 +55,7 @@ vec4 path_tracing_v2(Ray ray_iter, int max_depth, float rr) {
   vec3 normal_iter = ray_iter.direction;
   const float pdf = 1 / (2 * kPi);
   while(depth < max_depth) {
-    RaySceneResult result = RaySceneRaw(ray_iter);
+    RaySceneResult result = RayScene(ray_iter);
     if (result.hitted == false) { break; }
     Material material = PrimitiveMaterial(result.primitive_index);
     vec3 N = result.normal;
@@ -71,7 +71,7 @@ vec4 path_tracing_v2(Ray ray_iter, int max_depth, float rr) {
     Ray light_ray = Ray(result.position + kBias * normalized_light_vector, normalized_light_vector);
     float li_cosine = max(dot(sample_light_result.normal, -light_ray.direction), 0);
     float lo_cosine = max(dot(result.normal, light_ray.direction), 0);
-    RaySceneResult directional_result = RaySceneRaw(light_ray);
+    RaySceneResult directional_result = RayScene(light_ray);
     if (directional_result.hitted && directional_result.primitive_index == sample_light_result.primitive_index) {
       Material light_material = PrimitiveMaterial(sample_light_result.primitive_index);
       float distance = pow(length(light_vector), 2);

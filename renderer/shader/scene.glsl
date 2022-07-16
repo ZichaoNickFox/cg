@@ -1,5 +1,6 @@
 #include "renderer/shader/bvh.glsl"
 #include "renderer/shader/geometry.glsl"
+#include "renderer/shader/primitive.glsl"
 
 struct RaySceneResult {
   bool hitted;
@@ -37,4 +38,12 @@ RaySceneResult RaySceneBVH(Ray ray) {
   res.normal = result.normal;
   res.position = result.position;
   return res;
+}
+
+RaySceneResult RayScene(Ray ray) {
+  // if (primitive_repo_num > 100) {
+  //   return RaySceneBVH(ray);
+  // } else {
+    return RaySceneRaw(ray);
+  // }
 }

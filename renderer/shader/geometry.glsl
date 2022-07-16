@@ -154,38 +154,13 @@ RayAABBResult RayAABB(Ray ray, AABB aabb) {
   RayAABBResult res;
   res.hitted = false;
 
-  float t_enter_x = FLT_LOWEST;
-  float t_enter_y = FLT_LOWEST;
-  float t_enter_z = FLT_LOWEST;
-  float t_exit_x = FLT_MAX;
-  float t_exit_y = FLT_MAX;
-  float t_exit_z = FLT_MAX;
-  if (ray.direction.x > 0) {
-    t_enter_x = (aabb.minimum.x - ray.position.x) / ray.direction.x;
-    t_exit_x = (aabb.maximum.x - ray.position.x) / ray.direction.x;
-  } else if (ray.direction.x < 0) {
-    t_enter_x = (aabb.maximum.x - ray.position.x) / ray.direction.x;
-    t_exit_x = (aabb.minimum.x - ray.position.x) / ray.direction.x;
-  }
-
-  if (ray.direction.y > 0) {
-    t_enter_y = (aabb.minimum.y - ray.position.y) / ray.direction.y;
-    t_exit_y = (aabb.maximum.y - ray.position.y) / ray.direction.y;
-  } else if (ray.direction.y < 0) {
-    t_enter_y = (aabb.maximum.y - ray.position.y) / ray.direction.y;
-    t_exit_y = (aabb.minimum.y - ray.position.y) / ray.direction.y;
-  }
-
-  if (ray.direction.z > 0) {
-    t_enter_z = (aabb.minimum.z - ray.position.z) / ray.direction.z;
-    t_exit_z = (aabb.maximum.z - ray.position.z) / ray.direction.z;
-  } else if (ray.direction.z < 0) {
-    t_enter_z = (aabb.maximum.z - ray.position.z) / ray.direction.z;
-    t_exit_z = (aabb.minimum.z - ray.position.z) / ray.direction.z;
-  }
-
-  float t_enter = max(max(t_enter_x, t_enter_y), t_enter_z);
-  float t_exit = min(min(t_exit_x, t_exit_y), t_exit_z);
+  vec3 inverse_direction = 1.0 / ray.direction;
+  vec3 m = (aabb.maximum.xyz - ray.position) * inverse_direction;
+  vec3 n = (aabb.minimum.xyz - ray.position) * inverse_direction;
+  vec3 t_max = max(m, n);
+  vec3 t_min = min(m, n);
+  float t_enter = max(max(t_min.x, t_min.y), t_min.z);
+  float t_exit = min(min(t_max.x, t_max.y), t_max.z);
 
   res.hitted = (t_enter <= t_exit && t_exit >= 0);
 
