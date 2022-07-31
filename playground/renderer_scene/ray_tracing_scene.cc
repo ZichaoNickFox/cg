@@ -1,4 +1,4 @@
-#include "playground/scene/ray_tracing_scene.h"
+#include "playground/renderer_scene/ray_tracing_scene.h"
 
 #include "renderer/filter.h"
 #include "renderer/inspector.h"

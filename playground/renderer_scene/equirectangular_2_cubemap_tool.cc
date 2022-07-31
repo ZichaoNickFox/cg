@@ -1,4 +1,4 @@
-#include "playground/scene/equirectangular_2_cubemap_tool.h"
+#include "playground/renderer_scene/equirectangular_2_cubemap_tool.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -9,7 +9,7 @@
 #include "renderer/repo/texture_repo.h"
 #include "renderer/transform.h"
 #include "playground/object/sphere_object.h"
-#include "playground/scene/common.h"
+#include "playground/renderer_scene/common.h"
 
 constexpr int kEnvironmentCubemapSize = 2048;
 constexpr char input[] = "tropical_equirectangular";

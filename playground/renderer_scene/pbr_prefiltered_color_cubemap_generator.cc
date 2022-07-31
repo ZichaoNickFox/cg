@@ -1,4 +1,4 @@
-#include "playground/scene/pbr_prefiltered_color_cubemap_generator.h"
+#include "playground/renderer_scene/pbr_prefiltered_color_cubemap_generator.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -10,7 +10,7 @@
 #include "renderer/transform.h"
 #include "renderer/util.h"
 #include "playground/object/sphere_object.h"
-#include "playground/scene/common.h"
+#include "playground/renderer_scene/common.h"
 
 std::string input = "pbr_environment_tropical";
 std::string output = "pbr_prefiltered_color_tropical";

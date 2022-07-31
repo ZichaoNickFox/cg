@@ -1,4 +1,4 @@
-#include "playground/scene/pbr_scene.h"
+#include "playground/renderer_scene/pbr_scene.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "renderer/transform.h"
-#include "playground/scene/common.h"
+#include "playground/renderer_scene/common.h"
 
 void PbrScene::OnEnter(Scene *context)
 {

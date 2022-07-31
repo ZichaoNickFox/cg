@@ -118,3 +118,11 @@ http_archive(
   strip_prefix = "ordered-map-1.0.0",
   urls = ["https://github.com/Tessil/ordered-map/archive/refs/tags/v1.0.0.tar.gz"],
 )
+
+http_archive(
+  name = "eigen",
+  build_file = "@//:thirdparty/eigen.BUILD",
+  sha256 = "8586084f71f9bde545ee7fa6d00288b264a2b7ac3607b974e54d13e7162c1c72",
+  strip_prefix="eigen-3.4.0",
+  urls = [ "https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz" ],
+)

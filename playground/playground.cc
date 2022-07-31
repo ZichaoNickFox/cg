@@ -3,32 +3,33 @@
 #include <glm/glm.hpp>
 #include "imgui.h"
 
-#include "playground/scene/angry_bunny_scene.h"
-//#include "playground/scene/equirectangular_2_cubemap_tool.h"
-//#include "playground/scene/forward_shading_scene.h"
-#include "playground/scene/geometry_scene.h"
-//#include "playground/scene/instance_scene.h"
-#include "playground/scene/model_scene.h"
-//#include "playground/scene/mrt_scene.h"
-//#include "playground/scene/normal_scene.h"
-#include "playground/scene/path_tracing_scene.h"
-#include "playground/scene/path_tracing_geometry_scene.h"
-//#include "playground/scene/pbr_BRDF_integration_map_generator.h"
-//#include "playground/scene/pbr_irradiance_cubemap_generator.h"
-//#include "playground/scene/pbr_prefiltered_color_cubemap_generator.h"
-//#include "playground/scene/pbr_scene.h"
-//#include "playground/scene/random_test_scene.h"
-#include "playground/scene/ray_tracing_scene.h"
-#include "playground/scene/rtrt_scene.h"
-#include "playground/scene/sample_scene.h"
-//#include "playground/scene/shadow_scene.h"
-//#include "playground/scene/share_scene.h"
-//#include "playground/scene/skybox_scene.h"
-#include "playground/scene/ssao_scene.h"
-//#include "playground/scene/texture_lod_scene.h"
+#include "playground/geometry_scene/fitting_scene.h"
+#include "playground/physics_scene/angry_bunny_scene.h"
+//#include "playground/renderer_scene/equirectangular_2_cubemap_tool.h"
+//#include "playground/renderer_scene/forward_shading_scene.h"
+#include "playground/renderer_scene/geometry_scene.h"
+//#include "playground/renderer_scene/instance_scene.h"
+#include "playground/renderer_scene/model_scene.h"
+//#include "playground/renderer_scene/mrt_scene.h"
+//#include "playground/renderer_scene/normal_scene.h"
+#include "playground/renderer_scene/path_tracing_scene.h"
+#include "playground/renderer_scene/path_tracing_geometry_scene.h"
+//#include "playground/renderer_scene/pbr_BRDF_integration_map_generator.h"
+//#include "playground/renderer_scene/pbr_irradiance_cubemap_generator.h"
+//#include "playground/renderer_scene/pbr_prefiltered_color_cubemap_generator.h"
+//#include "playground/renderer_scene/pbr_scene.h"
+//#include "playground/renderer_scene/random_test_scene.h"
+#include "playground/renderer_scene/ray_tracing_scene.h"
+#include "playground/renderer_scene/rtrt_scene.h"
+#include "playground/renderer_scene/sample_scene.h"
+//#include "playground/renderer_scene/shadow_scene.h"
+//#include "playground/renderer_scene/share_scene.h"
+//#include "playground/renderer_scene/skybox_scene.h"
+#include "playground/renderer_scene/ssao_scene.h"
+//#include "playground/renderer_scene/texture_lod_scene.h"
 
 const std::string kConfigPath = "playground/config.pb.txt";
-const std::string kDefaultSceneName = "AngryBunnyScene";
+const std::string kDefaultSceneName = "FittingScene";
 const std::unordered_map<std::string, std::function<renderer::Scene*()>> kFactory = {
   // {"ForwardShadingScene", [] () { return new ForwardShadingScene; }},
   // {"DeferredShadingScene", [] () { return new DeferredShadingScene; }},
@@ -59,6 +60,7 @@ const std::unordered_map<std::string, std::function<renderer::Scene*()>> kFactor
   {"RTRTScene", [] () { return new RTRTScene(); }},
   {"SSAOScene", [] () { return new SSAOScene(); }},
   {"AngryBunnyScene", [] () { return new AngryBunnyScene(); }},
+  {"FittingScene", [] () { return new FittingScene(); }},
 };
 
 Playground::Playground() {

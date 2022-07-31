@@ -1,10 +1,8 @@
 package(default_visibility=["//visibility:public"])
 
 cc_library(
-  name = "scenes",
+  name = "renderer_scene",
   srcs = [
-    "angry_bunny_scene.h",
-    "angry_bunny_scene.cc",
 #    "random_test_scene.h",
 #    "random_test_scene.cc",
 #    "equirectangular_2_cubemap_tool.h",

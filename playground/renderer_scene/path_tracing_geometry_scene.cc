@@ -1,4 +1,4 @@
-#include "playground/scene/path_tracing_geometry_scene.h"
+#include "playground/renderer_scene/path_tracing_geometry_scene.h"
 
 #include "renderer/filter.h"
 #include "renderer/inspector.h"

@@ -1,4 +1,4 @@
-#include "playground/scene/shadow_scene.h"
+#include "playground/renderer_scene/shadow_scene.h"
 
 #include <glm/glm.hpp>
 #include <glm/ext/quaternion_trigonometric.hpp>
@@ -14,7 +14,7 @@
 #include "renderer/transform.h"
 #include "renderer/util.h"
 #include "playground/object/empty_object.h"
-#include "playground/scene/common.h"
+#include "playground/renderer_scene/common.h"
 
 void ShadowScene::OnEnter(Scene *context)
 {

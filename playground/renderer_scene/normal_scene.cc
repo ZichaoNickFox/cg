@@ -1,4 +1,4 @@
-#include "playground/scene/normal_scene.h"
+#include "playground/renderer_scene/normal_scene.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -8,7 +8,7 @@
 
 #include "renderer/math.h"
 #include "renderer/transform.h"
-#include "playground/scene/common.h"
+#include "playground/renderer_scene/common.h"
 
 void NormalScene::OnEnter(Scene *context)
 {

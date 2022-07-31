@@ -1,4 +1,4 @@
-#include "playground/scene/geometry_scene.h"
+#include "playground/renderer_scene/geometry_scene.h"
 
 #include <glm/glm.hpp>
 

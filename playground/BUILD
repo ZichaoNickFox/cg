@@ -38,22 +38,9 @@ cc_library(
   deps = [
     "//renderer:renderer",
     "//renderer/proto:cc_config_proto",
-    "//playground/scene:scenes",
+    "//playground/geometry_scene:geometry_scene",
+    "//playground/physics_scene:physics_scene",
+    "//playground/renderer_scene:renderer_scene",
     "@fmt",
-  ],
-)
-
-cc_test (
-  name = "test",
-  srcs = [
-      "test.cc",
-  ],
-  deps = [
-    "//renderer:renderer",
-    "//renderer:util",
-    "@gtest//:gtest",
-    "@gtest//:gtest_main",
-    "@glew",
-    "@glm",
   ],
 )

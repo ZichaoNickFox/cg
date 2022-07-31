@@ -1,4 +1,4 @@
-#include "playground/scene/skybox_scene.h"
+#include "playground/renderer_scene/skybox_scene.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -9,7 +9,7 @@
 #include "renderer/math.h"
 #include "renderer/shader.h"
 #include "renderer/transform.h"
-#include "playground/scene/common.h"
+#include "playground/renderer_scene/common.h"
 
 void SkyboxScene::OnEnter(Scene *context)
 {

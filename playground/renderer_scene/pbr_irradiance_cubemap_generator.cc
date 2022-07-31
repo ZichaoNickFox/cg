@@ -1,4 +1,4 @@
-#include "playground/scene/pbr_irradiance_cubemap_generator.h"
+#include "playground/renderer_scene/pbr_irradiance_cubemap_generator.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -9,7 +9,7 @@
 #include "renderer/repo/texture_repo.h"
 #include "renderer/transform.h"
 #include "playground/object/sphere_object.h"
-#include "playground/scene/common.h"
+#include "playground/renderer_scene/common.h"
 
 constexpr int kLevel0Size = 512;
 constexpr char input[] = "pbr_environment_tropical";

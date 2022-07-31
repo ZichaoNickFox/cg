@@ -1,9 +1,9 @@
-#include "playground/scene/instance_scene.h"
+#include "playground/renderer_scene/instance_scene.h"
 
 #include "renderer/shader.h"
 #include "renderer/transform.h"
 #include "renderer/math.h"
-#include "playground/scene/common.h"
+#include "playground/renderer_scene/common.h"
 
 constexpr int instance_num = 10000;
 

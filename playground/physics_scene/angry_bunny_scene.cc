@@ -1,4 +1,4 @@
-#include "playground/renderer_scene/angry_bunny_scene.h"
+#include "playground/physics_scene/angry_bunny_scene.h"
 
 #include <glm/glm.hpp>
 #include <glm/ext/quaternion_trigonometric.hpp>

@@ -1,11 +1,11 @@
-#include "playground/scene/random_test_scene.h"
+#include "playground/renderer_scene/random_test_scene.h"
 
 #include "renderer/geometry.h"
 #include "renderer/math.h"
 #include "renderer/shader.h"
 #include "renderer/transform.h"
 #include "playground/object/empty_object.h"
-#include "playground/scene/common.h"
+#include "playground/renderer_scene/common.h"
 
 void RandomTestScene::OnEnter(Scene* context) {
   glm::ivec2 screen_size = context->io().screen_size();

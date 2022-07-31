@@ -1,4 +1,4 @@
 bazel test --test_output=all ^
-  --cxxopt="/std:c++17" ^
+  --cxxopt="/std:c++20" ^
   --verbose_failures  ^
-  //playground:test
+  //playground/test:*

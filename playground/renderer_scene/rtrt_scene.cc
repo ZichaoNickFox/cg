@@ -1,4 +1,4 @@
-#include "playground/scene/rtrt_scene.h"
+#include "playground/renderer_scene/rtrt_scene.h"
 
 #include "glm/gtx/string_cast.hpp"
 #include <memory>

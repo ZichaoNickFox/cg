@@ -1,4 +1,4 @@
-#include "playground/scene/texture_lod_scene.h"
+#include "playground/renderer_scene/texture_lod_scene.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>

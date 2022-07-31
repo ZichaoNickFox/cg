@@ -1,4 +1,4 @@
-#include "playground/scene/path_tracing_scene.h"
+#include "playground/renderer_scene/path_tracing_scene.h"
 
 #include "glm/gtx/string_cast.hpp"
 #include <memory>

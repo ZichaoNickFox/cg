@@ -1,4 +1,4 @@
-#include "playground/scene/model_scene.h"
+#include "playground/renderer_scene/model_scene.h"
 
 #include <glm/ext/quaternion_trigonometric.hpp>
 #include <glm/glm.hpp>

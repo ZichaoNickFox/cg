@@ -1,4 +1,4 @@
-#include "playground/scene/sample_scene.h"
+#include "playground/renderer_scene/sample_scene.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>

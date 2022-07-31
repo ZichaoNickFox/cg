@@ -1,4 +1,4 @@
-#include "playground/scene/SSAO_scene.h"
+#include "playground/renderer_scene/disney_scene.h"
 
 #include <glm/glm.hpp>
 #include <glm/ext/quaternion_trigonometric.hpp>
