@@ -4,7 +4,7 @@
 #include <map>
 #include <math.h>
 
-#include "renderer/debug.h"
+#include "base/debug.h"
 #include "renderer/mesh/mesh_util.h"
 
 SphereMesh::SphereMesh(int refine) {

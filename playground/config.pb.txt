@@ -515,3 +515,16 @@ model_config {
   model_dir : "playground/resource/model/cornell_box";
   model_file : "tall_box.obj";
 }
+
+model_config {
+  name : "bunny";
+  model_dir : "playground/resource/model";
+  model_file : "bunny.obj";
+}
+
+texture_config {
+  name : "tiled";
+  level_num : 1;
+  texture_type : Texture2D;
+  path : [ "playground/resource/texture/tiled.png" ]
+}

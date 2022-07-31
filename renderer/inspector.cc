@@ -5,8 +5,8 @@
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "base/debug.h"
 #include "renderer/color.h"
-#include "renderer/debug.h"
 #include "renderer/io.h"
 #include "renderer/mesh/lines_mesh.h"
 #include "renderer/scene.h"

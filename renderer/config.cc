@@ -1,6 +1,6 @@
 #include "renderer/config.h"
 
-#include "renderer/debug.h"
+#include "base/debug.h"
 #include "renderer/util.h"
 
 namespace renderer {
@@ -32,7 +32,7 @@ const TextureConfig& Config::texture_config(const std::string& name) const {
 }
 
 const ModelConfig& Config::model_config(const std::string& name) const {
-  CGCHECK(model_configs_.find(name) != model_configs_.end()) << name;
+  CGCHECK(model_configs_.find(name) != model_configs_.end()) << "model not in config : model~" << name;
   return model_configs_.at(name);
 }
 

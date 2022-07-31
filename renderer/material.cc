@@ -2,7 +2,7 @@
 
 #include <glm/gtx/string_cast.hpp>
 
-#include "renderer/debug.h"
+#include "base/debug.h"
 #include "renderer/util.h"
 
 namespace renderer {
@@ -14,8 +14,7 @@ static const std::unordered_map<std::string, Material::Properties> kDefaultMater
             {kShininess, 51.2}}},
   {"silver", {{kAmbient, glm::vec4(0.19225, 0.19225, 0.19225, 1)},
               {kDiffuse, glm::vec4(0.50754, 0.50754, 0.50754, 1)},
-              {kSpecular, glm::vec4(0.508273, 0.508273, 0.508273, 1)},
-              {kShininess, 51.2}}},
+              {kSpecular, glm::vec4(0.508273, 0.508273, 0.508273, 1)}, {kShininess, 51.2}}},
   {"jade", {{kAmbient, glm::vec4(0.135, 0.2225, 0.1575, 0.95)},
             {kDiffuse, glm::vec4(0.54, 0.89, 0.63, 0.95)},
             {kSpecular, glm::vec4(0.316228, 0.316228, 0.316228, 0.95)},

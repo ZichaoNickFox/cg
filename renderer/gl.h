@@ -2,7 +2,7 @@
 
 #include "GL/glew.h"
 
-#include "renderer/debug.h"
+#include "base/debug.h"
 
 #define CGCHECKGL() int error = glGetError(); CGCHECK(error == 0) << std::hex << error << std::dec << " | "
 

@@ -22,7 +22,7 @@ vec4 PhongModel(PhongModelInput param) {
     vec4 ambient_component = LightColor(light) * param.ambient;
 
     // diffuse
-    vec3 L = normalize(LightPos(light) - param.frag_pos_ws);
+    vec3 L = normalize(LightPosition(light) - param.frag_pos_ws);
     vec3 N = param.normal;
     float diffuse_factor = max(dot(N, L), 0.0);
     vec4 diffuse_component = LightColor(light) * diffuse_factor * param.diffuse;
@@ -39,8 +39,8 @@ vec4 PhongModel(PhongModelInput param) {
     }
     vec4 specular_component = LightColor(light) * spec_factor * param.specular;
 
-    float distance = length(LightPos(light) - param.frag_pos_ws);
-    float attenuation = LightAttenuation(distance);
+    float distance = length(LightPosition(light) - param.frag_pos_ws);
+    float attenuation = LightAttenuation(light, distance);
     result += (ambient_component + diffuse_component + specular_component); //* attenuation;
   }
   return result;

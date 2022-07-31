@@ -11,7 +11,7 @@ class Transform {
  public:
   Transform() {}
   Transform(const Transform& other);
-  Transform(const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale);
+  Transform(const glm::vec3& translation, const glm::quat& rotation, const glm::vec3& scale);
   void SetTranslation(const glm::vec3& translation) { translation_ = translation; }
   void SetRotation(const glm::quat& rotation) { rotation_ = glm::normalize(rotation); }
   void SetScale(const glm::vec3& scale) { scale_ = scale; }
@@ -25,7 +25,7 @@ class Transform {
   void Rotate(const glm::quat& quat) { rotation_ = glm::normalize(quat * rotation_); }
   void scaling(const glm::vec3& scaling) { scale_ *= scaling; };
 
-  glm::vec3* mutable_translation() { return &translation_; }
+  glm::vec3* mutable_position() { return &translation_; }
   glm::vec3* mutable_scale() { return &scale_; }
 
   bool operator==(const Transform& other) const = default;

@@ -9,7 +9,7 @@
 #include "stb_image_resize.h"
 #include <unordered_map>
 
-#include "renderer/debug.h"
+#include "base/debug.h"
 #include "renderer/util.h"
 
 namespace renderer {
@@ -506,20 +506,20 @@ int TextureRepo::size() const {
   return index_2_texture_.size();
 }
 
-Texture TextureRepo::AsTextureRepo(int width, int height) const {
+Texture TextureRepo::AsTexture2DArray(int width, int height) const {
   bool dirty = (dirty_index_2_texture_ != index_2_texture_);
   if (dirty) {
     std::vector<Texture> textures;
     for (const auto& p : index_2_texture_) {
       textures.push_back(p.second);
     }
-    if (!texture_repo_.empty()) {
-      glDeleteTextures(1, &texture_repo_.id());
+    if (!texture_2d_array_.empty()) {
+      glDeleteTextures(1, &texture_2d_array_.id());
     }
-    texture_repo_ = CreateTexture2DArray(textures, width, height);
+    texture_2d_array_ = CreateTexture2DArray(textures, width, height);
     dirty_index_2_texture_ = index_2_texture_;
   }
-  texture_repo_.Varify();
-  return texture_repo_;
+  texture_2d_array_.Varify();
+  return texture_2d_array_;
 }
 } // namespace renderer

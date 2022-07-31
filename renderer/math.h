@@ -11,7 +11,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 
-#include "renderer/debug.h"
+#include "base/debug.h"
 
 namespace util {
 

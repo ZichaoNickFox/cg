@@ -8,30 +8,9 @@ cc_library (
     "gl.cc",
   ],
   deps = [
-    "//renderer:debug",
+    "//base:debug",
     "@glew",
   ],
-)
-
-cc_library (
-  name = "debug",
-  srcs = [
-    "debug.h"
-  ],
-  deps = [
-    "@boost//:stacktrace",
-    "@com_github_google_glog//:glog"
-  ],
-  defines = select({
-    "@platforms//os:windows": [
-      "CG_PLATFORM_WINDOWS",
-    ],
-    "@platforms//os:macos": [
-      "CG_PLATFORM_MACOS"
-    ],
-    "//conditions:default": [
-    ],
-  }),
 )
 
 cc_library(
@@ -108,7 +87,7 @@ cc_library(
     "transform.cc",
   ],
   deps = [
-    "//renderer:debug",
+    "//base:debug",
     "//renderer:gl",
     "//renderer:util",
     "@assimp",
@@ -126,7 +105,7 @@ cc_library(
     "util.cc",
   ],
   deps = [
-    "//renderer:debug",
+    "//base:debug",
     # TODO : for compile success
     "//renderer/proto:cc_config_proto",
     "@fmt",

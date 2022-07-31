@@ -7,7 +7,7 @@
 
 #include <glm/glm.hpp>
 
-#include "renderer/debug.h"
+#include "base/debug.h"
 #include "renderer/definition.h"
 #include "renderer/ssbo.h"
 #include "renderer/texture.h"

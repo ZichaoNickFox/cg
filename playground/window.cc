@@ -11,9 +11,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "base/debug.h"
 #include "playground/playground.h"
 #include "renderer/color.h"
-#include "renderer/debug.h"
 #include "renderer/io.h"
 
 #include <GLFW/glfw3.h> // Have to included after gl

@@ -4,7 +4,7 @@
 #include "glm/gtx/string_cast.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-#include "renderer/debug.h"
+#include "base/debug.h"
 #include "renderer/shader_loader.h"
 #include "renderer/util.h"
 

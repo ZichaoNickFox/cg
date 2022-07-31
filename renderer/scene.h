@@ -3,9 +3,9 @@
 #include <functional>
 #include <stack>
 
+#include "base/debug.h"
 #include "renderer/bvh.h"
 #include "renderer/config.h"
-#include "renderer/debug.h"
 #include "renderer/camera.h"
 #include "renderer/frame_stat.h"
 #include "renderer/io.h"

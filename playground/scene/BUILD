@@ -3,6 +3,8 @@ package(default_visibility=["//visibility:public"])
 cc_library(
   name = "scenes",
   srcs = [
+    "angry_bunny_scene.h",
+    "angry_bunny_scene.cc",
 #    "random_test_scene.h",
 #    "random_test_scene.cc",
 #    "equirectangular_2_cubemap_tool.h",
@@ -45,6 +47,7 @@ cc_library(
 #    "texture_lod_scene.cc",
   ],
   deps = [
+    "//physics:physics",
     "//renderer:renderer",
     "@fmt",
     "@glm",

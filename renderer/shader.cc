@@ -6,8 +6,8 @@
 #include "imgui.h"
 #include <set>
 
+#include "base/debug.h"
 #include "renderer/bvh.h"
-#include "renderer/debug.h"
 #include "renderer/mesh/empty_mesh.h"
 #include "renderer/geometry.h"
 #include "renderer/scene.h"
@@ -34,7 +34,7 @@ void SetCamera1(const Camera& camera_1, ShaderProgram* program) {
 void SetShaderCommonParam(const Scene& scene, const std::string& shader_name, ShaderProgram* program) {
   program->Use();
   if (scene.texture_repo().size() > 0) {
-    program->SetTexture("texture_repo", scene.texture_repo().AsTextureRepo());
+    program->SetTexture("texture_repo", scene.texture_repo().AsTexture2DArray());
   }
   program->SetInt("light_repo_num", scene.light_repo().num());
   program->SetInt("material_repo_num", scene.material_repo().num());

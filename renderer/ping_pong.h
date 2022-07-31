@@ -1,6 +1,6 @@
 #pragma once
 
-#include "renderer/debug.h"
+#include "base/debug.h"
 
 namespace renderer {
 

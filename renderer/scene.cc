@@ -1,6 +1,6 @@
 #include "renderer/scene.h"
 
-#include "renderer/debug.h"
+#include "base/debug.h"
 #include "renderer/definition.h"
 #include "renderer/inspector.h"
 #include "renderer/util.h"

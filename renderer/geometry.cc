@@ -3,8 +3,8 @@
 #include <glm/gtx/quaternion.hpp>
 #include "glm/gtx/string_cast.hpp"
 
+#include "base/debug.h"
 #include "renderer/color.h"
-#include "renderer/debug.h"
 #include "renderer/util.h"
 
 namespace renderer {

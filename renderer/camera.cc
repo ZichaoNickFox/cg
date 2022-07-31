@@ -4,7 +4,7 @@
 #include <glm/ext/quaternion_trigonometric.hpp>
 #include <glm/gtx/string_cast.hpp>
 
-#include "renderer/debug.h"
+#include "base/debug.h"
 
 namespace renderer {
 

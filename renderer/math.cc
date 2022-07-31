@@ -2,7 +2,7 @@
 
 #include <random>
 
-#include "renderer/debug.h"
+#include "base/debug.h"
 #include "renderer/util.h"
 
 namespace util {

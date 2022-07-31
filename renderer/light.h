@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "renderer/color.h"
 #include "renderer/definition.h"
 #include "renderer/material.h"
 #include "renderer/primitive.h"
@@ -24,7 +25,8 @@ struct Light {
     kSpotLight
   };
   Light(Type in_type, int in_primitive_id);
-  Light(Type in_type, const glm::vec3& in_position, const glm::vec4& in_color, const glm::vec3& in_attenuation_2_1_0);
+  Light(Type in_type, const glm::vec3& in_position, const glm::vec4& in_color = kWhite,
+        const glm::vec3& in_attenuation_2_1_0 = glm::vec3(1.0, 0.0014, 0.000007));
   Type type;
   int primitive_index = -1;
   glm::vec3 position;
@@ -36,6 +38,7 @@ struct Light {
 
 struct LightRepo {
   LightRepo() : ssbo_(SSBO_LIGHT_REPO) {}
+  void Add(const Light& light) { lights_.push_back(light); }
   void Add(const std::vector<Light>& lights) { lights_.insert(lights_.end(), lights.begin(), lights.end()); }
   void Add(const PrimitiveRepo& primitive_repo, const MaterialRepo& material_repo); 
   void UpdateSSBO();

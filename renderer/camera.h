@@ -5,7 +5,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "renderer/debug.h"
+#include "base/debug.h"
 #include "renderer/geometry.h"
 #include "renderer/transform.h"
 

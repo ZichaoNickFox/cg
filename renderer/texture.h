@@ -7,8 +7,8 @@
 
 #include "glm/glm.hpp"
 
+#include "base/debug.h"
 #include "renderer/config.h"
-#include "renderer/debug.h"
 #include "renderer/gl.h"
 
 namespace renderer {
@@ -107,6 +107,7 @@ Texture CreateTexture2D(const Texture::Meta& meta, const std::vector<void*>& dat
 Texture CreateTexture2D(int width, int height, const std::vector<glm::vec4>& data, GLuint min_filter = GL_LINEAR,
                         GLuint mag_filter = GL_LINEAR, GLuint wrap_s = GL_REPEAT, GLuint wrap_t = GL_REPEAT);
 void SaveTexture(const std::string& file_name, const Texture& texture);
+Texture ReadTexture(const std::string& fullpath);
 
 class TextureRepo {
   // Maybe deprecated
@@ -123,7 +124,7 @@ class TextureRepo {
   int AddUnique(const std::string& name, const Texture& texture);
   bool Has(const std::string& path) const;
   bool Has(int index) const;
-  Texture AsTextureRepo(int width = 512, int height = 512) const;
+  Texture AsTexture2DArray(int width = 512, int height = 512) const;
   int size() const;
   void MergeIamge() const;
 
@@ -133,6 +134,6 @@ class TextureRepo {
   mutable std::unordered_map<int, Texture> dirty_index_2_texture_;
 
   const Config* config_;
-  mutable Texture texture_repo_;
+  mutable Texture texture_2d_array_;
 };
 } // namespace renderer

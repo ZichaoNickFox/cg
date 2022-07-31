@@ -3,10 +3,7 @@
 #include <glm/glm.hpp>
 #include "imgui.h"
 
-//#include "playground/scene/AA_scene.h"
-//#include "playground/scene/AA_test_scene.h"
-//#include "playground/scene/deferred_shading_scene.h"
-//#include "playground/scene/depth_scene.h"
+#include "playground/scene/angry_bunny_scene.h"
 //#include "playground/scene/equirectangular_2_cubemap_tool.h"
 //#include "playground/scene/forward_shading_scene.h"
 #include "playground/scene/geometry_scene.h"
@@ -31,7 +28,7 @@
 //#include "playground/scene/texture_lod_scene.h"
 
 const std::string kConfigPath = "playground/config.pb.txt";
-const std::string kDefaultSceneName = "RTRTScene";
+const std::string kDefaultSceneName = "AngryBunnyScene";
 const std::unordered_map<std::string, std::function<renderer::Scene*()>> kFactory = {
   // {"ForwardShadingScene", [] () { return new ForwardShadingScene; }},
   // {"DeferredShadingScene", [] () { return new DeferredShadingScene; }},
@@ -61,6 +58,7 @@ const std::unordered_map<std::string, std::function<renderer::Scene*()>> kFactor
   {"SampleScene", [] () { return new SampleScene(); }},
   {"RTRTScene", [] () { return new RTRTScene(); }},
   {"SSAOScene", [] () { return new SSAOScene(); }},
+  {"AngryBunnyScene", [] () { return new AngryBunnyScene(); }},
 };
 
 Playground::Playground() {

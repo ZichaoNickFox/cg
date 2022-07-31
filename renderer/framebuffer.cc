@@ -5,7 +5,7 @@
 #include "glog/logging.h"
 #include "assert.h"
 
-#include "renderer/debug.h"
+#include "base/debug.h"
 #include "renderer/gl.h"
 
 namespace renderer {

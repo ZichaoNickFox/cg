@@ -5,7 +5,7 @@
 #include <string>
 #include <sys/stat.h>
 
-#include "renderer/debug.h"
+#include "base/debug.h"
 
 namespace util {
 

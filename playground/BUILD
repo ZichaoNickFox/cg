@@ -8,7 +8,7 @@ cc_binary(
     "window.cc",
   ],
   deps = [
-    "//renderer:debug",
+    "//base:debug",
     "//renderer:gl",
     "//playground:playground",
     "@fmt",

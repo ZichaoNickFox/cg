@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include "imgui.h"
 
-#include "renderer/debug.h"
+#include "base/debug.h"
 
 namespace renderer {
 FrameStat::FrameStat() {

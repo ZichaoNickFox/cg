@@ -6,8 +6,8 @@
 #include <string>
 #include <iostream>
 
+#include "base/debug.h"
 #include "renderer/config.h"
-#include "renderer/debug.h"
 #include "renderer/texture.h"
 #include "renderer/gl.h"
 

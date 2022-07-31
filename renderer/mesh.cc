@@ -5,7 +5,7 @@
 #include "glm/gtc/type_ptr.hpp"
 #include <limits>
 
-#include "renderer/debug.h"
+#include "base/debug.h"
 #include "renderer/gl.h"
 #include "renderer/mesh/cube_mesh.h"
 #include "renderer/mesh/lines_mesh.h"

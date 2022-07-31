@@ -6,7 +6,7 @@
 #include <assimp/scene.h>
 #include <memory>
 
-#include "renderer/debug.h"
+#include "base/debug.h"
 #include "renderer/object.h"
 
 namespace renderer {
