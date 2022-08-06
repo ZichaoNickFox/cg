@@ -1,15 +1,36 @@
 #include "renderer/config.h"
 
 #include "base/debug.h"
-#include "renderer/util.h"
+#include "base/util.h"
+#include <google/protobuf/text_format.h>
 
 namespace renderer {
+namespace {
+
+// proto
+template<typename MessageType>
+void ParseFromString(const std::string& content, MessageType* message) {
+  CGCHECK(google::protobuf::TextFormat::ParseFromString(content, message));
+}
+template<typename ElemType>
+std::vector<ElemType> ProtoRepeatedToVector(const google::protobuf::RepeatedPtrField<ElemType>& data) {
+  return {data.begin(), data.end()};
+}
+template<typename KeyType, typename ValueType>
+std::unordered_map<KeyType, ValueType> ProtoMap2UnorderedMap(const google::protobuf::Map<KeyType, ValueType>& map) {
+  std::unordered_map<KeyType, ValueType> res;
+  for (auto& p : map) {
+    res[p.first] = p.second;
+  }
+  return res;
+}
+}
 
 void Config::Init(const std::string& config_path) {
   ConfigData config_data;
   std::string content;
   util::ReadFileToString(config_path, &content);
-  util::ParseFromString(content, &config_data);
+  ParseFromString(content, &config_data);
   for (const ShaderConfig& shader_config : config_data.shader_config()) {
     shader_configs_[shader_config.name()] = shader_config;
   }

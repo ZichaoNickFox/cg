@@ -6,7 +6,7 @@
 #include "imgui.h"
 #include <memory>
 
-#include "renderer/math.h"
+#include "base/math.h"
 #include "renderer/shader.h"
 #include "renderer/transform.h"
 #include "playground/renderer_scene/common.h"

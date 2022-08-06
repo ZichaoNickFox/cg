@@ -1,5 +1,5 @@
 package(default_visibility=["//visibility:public"])
-load("@rules_cc//cc:defs.bzl", "cc_binary")
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_binary")
 
 cc_library (
   name = "gl",
@@ -44,8 +44,6 @@ cc_library(
     "light.cc",
     "material.h",
     "material.cc",
-    "math.h",
-    "math.cc",
     "mesh.h",
     "mesh.cc",
     "mesh/cube_mesh.h",
@@ -87,28 +85,14 @@ cc_library(
     "transform.cc",
   ],
   deps = [
-    "//base:debug",
+    "//base:base",
     "//renderer:gl",
-    "//renderer:util",
+    "//renderer/proto:cc_config_proto",
     "@assimp",
+    "@com_google_protobuf//:protobuf",
     "@glm",
     "@imgui",
     "@ordered_map",
     "@stb"
-  ],
-)
-
-cc_library(
-  name = "util",
-  srcs = [
-    "util.h",
-    "util.cc",
-  ],
-  deps = [
-    "//base:debug",
-    # TODO : for compile success
-    "//renderer/proto:cc_config_proto",
-    "@fmt",
-    "@glm",
   ],
 )

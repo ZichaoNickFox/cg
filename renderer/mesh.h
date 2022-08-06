@@ -10,7 +10,7 @@
 #include "renderer/gl.h"
 #include "renderer/primitive.h"
 #include "renderer/transform.h"
-#include "renderer/util.h"
+#include "base/util.h"
 
 namespace renderer {
 constexpr char kVertexAttributePosition[] = "position";

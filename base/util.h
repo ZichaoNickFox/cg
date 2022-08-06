@@ -1,9 +1,9 @@
 #pragma once
 
-#include <fmt/format.h>
+#include <chrono>
 #include <glm/glm.hpp>
-#include <google/protobuf/text_format.h>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "base/debug.h"
@@ -28,24 +28,6 @@ std::string AsString(PtrType* ptr) {
 std::string TrimLeft(std::string str);
 std::string TrimRight(std::string str);
 std::string Trim(std::string str);
-
-// proto
-template<typename MessageType>
-void ParseFromString(const std::string& content, MessageType* message) {
-  CGCHECK(google::protobuf::TextFormat::ParseFromString(content, message));
-}
-template<typename ElemType>
-std::vector<ElemType> ProtoRepeatedToVector(const google::protobuf::RepeatedPtrField<ElemType>& data) {
-  return {data.begin(), data.end()};
-}
-template<typename KeyType, typename ValueType>
-std::unordered_map<KeyType, ValueType> ProtoMap2UnorderedMap(const google::protobuf::Map<KeyType, ValueType>& map) {
-  std::unordered_map<KeyType, ValueType> res;
-  for (auto& p : map) {
-    res[p.first] = p.second;
-  }
-  return res;
-}
 
 // stl
 template<typename ElemType>

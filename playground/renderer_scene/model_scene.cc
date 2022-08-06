@@ -10,7 +10,7 @@
 
 #include "renderer/gl.h"
 #include "renderer/shader.h"
-#include "renderer/util.h"
+#include "base/util.h"
 
 using namespace renderer;
 

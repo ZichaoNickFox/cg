@@ -8,7 +8,7 @@
 #include "renderer/config.h"
 #include "renderer/io.h"
 #include "renderer/scene.h"
-#include "renderer/util.h"
+#include "base/util.h"
 
 // CG roadmap? https://github.com/miloyip/game-programmer
 class Playground {

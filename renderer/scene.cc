@@ -3,7 +3,7 @@
 #include "base/debug.h"
 #include "renderer/definition.h"
 #include "renderer/inspector.h"
-#include "renderer/util.h"
+#include "base/util.h"
 
 namespace renderer {
 void Scene::Enter(const std::string& name, Config* config, Io* io, FrameStat* frame_stat) {

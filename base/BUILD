@@ -4,11 +4,14 @@ load("@rules_cc//cc:defs.bzl", "cc_binary")
 cc_library (
   name = "debug",
   srcs = [
-    "debug.h"
+    "debug.h",
+    "math.h",
+    "math.cc"
   ],
   deps = [
     "@boost//:stacktrace",
-    "@com_github_google_glog//:glog"
+    "@com_github_google_glog//:glog",
+    "@glm"
   ],
   defines = select({
     "@platforms//os:windows": [
@@ -20,4 +23,20 @@ cc_library (
     "//conditions:default": [
     ],
   }),
+)
+
+cc_library(
+  name = "base",
+  srcs = [
+    "eigen_util.h",
+    "math.h",
+    "math.cc",
+    "util.h",
+    "util.cc"
+  ],
+  deps = [
+    "//base:debug",
+    "@eigen",
+    "@glm"
+  ]
 )

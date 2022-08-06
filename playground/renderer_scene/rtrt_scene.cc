@@ -3,9 +3,9 @@
 #include "glm/gtx/string_cast.hpp"
 #include <memory>
 
+#include "base/math.h"
 #include "renderer/color.h"
 #include "renderer/inspector.h"
-#include "renderer/math.h"
 #include "renderer/mesh/lines_mesh.h"
 #include "renderer/shader.h"
 #include "renderer/transform.h"

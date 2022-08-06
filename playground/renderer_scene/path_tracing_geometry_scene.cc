@@ -1,8 +1,10 @@
 #include "playground/renderer_scene/path_tracing_geometry_scene.h"
 
+#include <format>
+
+#include "base/math.h"
 #include "renderer/filter.h"
 #include "renderer/inspector.h"
-#include "renderer/math.h"
 #include "renderer/object.h"
 #include "renderer/shader.h"
 #include "renderer/transform.h"
@@ -23,10 +25,10 @@ class PathTracingGeometrySceneShader : public renderer::ComputeShader {
     SetFrameNum(scene);
     for (int i = 0; i < param.spheres.size(); ++i) {
       const Sphere& sphere = param.spheres[i];
-      program_.SetInt(fmt::format("spheres[{}].id", i), sphere.id);
-      program_.SetVec3(fmt::format("spheres[{}].center_pos", i), sphere.translation);
-      program_.SetVec4(fmt::format("spheres[{}].color", i), sphere.color);
-      program_.SetFloat(fmt::format("spheres[{}].radius", i), sphere.radius);
+      program_.SetInt(std::format("spheres[{}].id", i), sphere.id);
+      program_.SetVec3(std::format("spheres[{}].center_pos", i), sphere.translation);
+      program_.SetVec4(std::format("spheres[{}].color", i), sphere.color);
+      program_.SetFloat(std::format("spheres[{}].radius", i), sphere.radius);
     }
     Run();
   }

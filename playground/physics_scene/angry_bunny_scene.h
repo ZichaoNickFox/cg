@@ -3,11 +3,11 @@
 #include <glm/ext/quaternion_trigonometric.hpp>
 #include <glm/glm.hpp>
 
+#include "base/math.h"
 #include "physics/leap_frog.h"
 #include "renderer/camera.h"
 #include "renderer/framebuffer.h"
 #include "renderer/framebuffer_attachment.h"
-#include "renderer/math.h"
 #include "renderer/object.h"
 #include "renderer/scene.h"
 #include "renderer/shader.h"

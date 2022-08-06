@@ -2,8 +2,8 @@
 
 #include <stack>
 
-#include "renderer/math.h"
-#include "renderer/util.h"
+#include "base/math.h"
+#include "base/util.h"
 
 namespace renderer {
 
@@ -82,7 +82,7 @@ std::vector<BVH::SAHBucket> BVH::DivideBuckets(const PrimitiveRepo& primitives, 
   for (int i = begin; i < end; ++i) {
     const AABB& aabb = primitives.GetAABB(primitive_sequence_[i]);
     float point = aabb.GetCenterByAxis(max_length_axis);
-    int bucket_index = util::Clamp(int((point - min_point) / (max_point - min_point) * option_.sah_bucket_num),
+    int bucket_index = math::Clamp(int((point - min_point) / (max_point - min_point) * option_.sah_bucket_num),
                                    0, option_.sah_bucket_num - 1);
     res[bucket_index].aabb.Union(aabb);
     res[bucket_index].sequence.push_back(i);
@@ -160,7 +160,7 @@ int BVH::PartitionBuckets(const PrimitiveRepo& primitives, std::vector<SAHBucket
       return pos_left <= pos_right;
     };
     CGCHECK(bucket->sequence.size() > 0);
-    mid = util::QuickSelect(&bucket->sequence, 0, bucket->sequence.size(), bucket->sequence.size() / 2, le_compare);
+    mid = math::QuickSelect(&bucket->sequence, 0, bucket->sequence.size(), bucket->sequence.size() / 2, le_compare);
   } else {
     bool found = false;
     for (int i = min_cost_bucket; i < buckets->size(); ++i) {
@@ -217,7 +217,7 @@ int BVH::PartitionByPos(const PrimitiveRepo& primitives, int begin, int end, int
     float pos_right = primitives.GetAABB(right_value).GetCenterByAxis(max_length_axis);
     return pos_left <= pos_right;
   };
-  int mid = util::QuickSelect(&primitive_sequence_, begin, end, begin + (end - begin) / 2, le_compare);
+  int mid = math::QuickSelect(&primitive_sequence_, begin, end, begin + (end - begin) / 2, le_compare);
   AABB left_aabb;
   for (int i = begin; i < mid; ++i) {
     left_aabb.Union(primitives.GetAABB(primitive_sequence_[i]));

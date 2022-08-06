@@ -11,7 +11,6 @@ cc_binary(
     "//base:debug",
     "//renderer:gl",
     "//playground:playground",
-    "@fmt",
     "@glew",
     "@glfw",
     "@glm",
@@ -37,10 +36,8 @@ cc_library(
   ],
   deps = [
     "//renderer:renderer",
-    "//renderer/proto:cc_config_proto",
     "//playground/geometry_scene:geometry_scene",
     "//playground/physics_scene:physics_scene",
     "//playground/renderer_scene:renderer_scene",
-    "@fmt",
   ],
 )

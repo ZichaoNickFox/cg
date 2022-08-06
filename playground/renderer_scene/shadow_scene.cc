@@ -8,11 +8,11 @@
 #include "imgui.h"
 #include <memory>
 
+#include "base/math.h"
 #include "renderer/constants.h"
 #include "renderer/framebuffer_attachment.h"
-#include "renderer/math.h"
 #include "renderer/transform.h"
-#include "renderer/util.h"
+#include "base/util.h"
 #include "playground/object/empty_object.h"
 #include "playground/renderer_scene/common.h"
 

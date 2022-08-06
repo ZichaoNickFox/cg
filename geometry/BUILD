@@ -7,7 +7,8 @@ cc_library (
     "plot.h",
   ],
   deps = [
-    "//base:debug",
+    "//base:base",
     "@glew",
+    # "@matplotplusplus",
   ],
 )

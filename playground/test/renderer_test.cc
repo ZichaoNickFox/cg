@@ -4,8 +4,8 @@
 #include <map>
 #include <math.h>
 
-#include "renderer/math.h"
-#include "renderer/util.h"
+#include "base/math.h"
+#include "base/util.h"
 
 TEST(renderer_test, util)
 {

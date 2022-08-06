@@ -7,10 +7,10 @@ cc_library(
     "fitting_scene.cc",
   ],
   deps = [
+    "//base:base",
     "//geometry:geometry",
     "//renderer:renderer",
     "@eigen",
-    "@fmt",
     "@glm",
     "@imgui",
   ],

@@ -8,7 +8,7 @@
 
 #include "renderer/repo/texture_repo.h"
 #include "renderer/transform.h"
-#include "renderer/util.h"
+#include "base/util.h"
 #include "playground/object/sphere_object.h"
 #include "playground/renderer_scene/common.h"
 

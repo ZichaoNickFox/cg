@@ -2,9 +2,9 @@
 
 #include <glm/glm.hpp>
 
+#include "base/math.h"
 #include "renderer/color.h"
 #include "renderer/inspector.h"
-#include "renderer/math.h"
 #include "renderer/shader.h"
 
 using namespace renderer;
@@ -29,19 +29,19 @@ class GeometrySceneShader : public ComputeShader {
 
 void GeometryScene::OnEnter() {
   for (int i = 0; i < kTriangleNum; ++i) {
-    glm::vec3 center = glm::vec3(util::RandFromTo(-5, 5), util::RandFromTo(-5, 5), util::RandFromTo(-5, 5));
-    glm::vec3 a_offset = glm::vec3(util::RandFromTo(-0.5, 0.5), util::RandFromTo(-0.5, 0.5),
-                                   util::RandFromTo(-0.5, 0.5));
-    glm::vec3 b_offset = glm::vec3(util::RandFromTo(-0.5, 0.5), util::RandFromTo(-0.5, 0.5),
-                                   util::RandFromTo(-0.5, 0.5));
-    glm::vec3 c_offset = glm::vec3(util::RandFromTo(-0.5, 0.5), util::RandFromTo(-0.5, 0.5),
-                                   util::RandFromTo(-0.5, 0.5));
+    glm::vec3 center = glm::vec3(math::RandFromTo(-5, 5), math::RandFromTo(-5, 5), math::RandFromTo(-5, 5));
+    glm::vec3 a_offset = glm::vec3(math::RandFromTo(-0.5, 0.5), math::RandFromTo(-0.5, 0.5),
+                                   math::RandFromTo(-0.5, 0.5));
+    glm::vec3 b_offset = glm::vec3(math::RandFromTo(-0.5, 0.5), math::RandFromTo(-0.5, 0.5),
+                                   math::RandFromTo(-0.5, 0.5));
+    glm::vec3 c_offset = glm::vec3(math::RandFromTo(-0.5, 0.5), math::RandFromTo(-0.5, 0.5),
+                                   math::RandFromTo(-0.5, 0.5));
     triangles_[i] = renderer::Triangle{center + a_offset, center + b_offset, center + c_offset};
   }
 
   for (int i = 0; i < kAABBNum; ++i) {
-    glm::vec3 center = glm::vec3(util::RandFromTo(-5, 5), util::RandFromTo(-5, 5), util::RandFromTo(-5, 5));
-    glm::vec3 offset = glm::vec3(util::RandFromTo(0.1, 0.5), util::RandFromTo(0.1, 0.5), util::RandFromTo(0.1, 0.5));
+    glm::vec3 center = glm::vec3(math::RandFromTo(-5, 5), math::RandFromTo(-5, 5), math::RandFromTo(-5, 5));
+    glm::vec3 offset = glm::vec3(math::RandFromTo(0.1, 0.5), math::RandFromTo(0.1, 0.5), math::RandFromTo(0.1, 0.5));
     aabbs_[i] = renderer::AABB{center + offset, center - offset};
   }
 

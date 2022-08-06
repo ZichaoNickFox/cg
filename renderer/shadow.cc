@@ -1,7 +1,7 @@
 #include "renderer/shadow.h"
 
 #include "renderer/ssbo.h"
-#include "renderer/util.h"
+#include "base/util.h"
 
 namespace renderer {
 

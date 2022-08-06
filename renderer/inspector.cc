@@ -1,5 +1,6 @@
 #include "renderer/inspector.h"
 
+#include <format>
 #include "imgui.h"
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -114,7 +115,7 @@ void Inspector::ReloadShaderPrograms(Scene* scene) {
 void Inspector::InspectMesh(Scene* scene, const Object& object) {
   const std::string& mesh_name = scene->mesh_repo().GetName(object.mesh_index);
   const Mesh* mesh = scene->mesh_repo().GetMesh(object.mesh_index);
-  if (ImGui::TreeNode(fmt::format("mesh : index ~ {} name ~ {}", object.mesh_index, mesh_name).c_str())) {
+  if (ImGui::TreeNode(std::format("mesh : index ~ {} name ~ {}", object.mesh_index, mesh_name).c_str())) {
     ImGui::PushID(mesh_name.c_str());
     ImGui::Text("Position Num : %lu", mesh->positions().size());
     ImGui::Text("Normal Num : %lu  Maybe all (0,0,0)", mesh->normals().size());
@@ -127,7 +128,7 @@ void Inspector::InspectMesh(Scene* scene, const Object& object) {
 }
 
 void Inspector::InspectMaterial(int material_index, const std::string& material_name, Material* material) {
-  if (ImGui::TreeNode(fmt::format("material index ~ {} name ~ {}", material_index, material_name).c_str())) {
+  if (ImGui::TreeNode(std::format("material index ~ {} name ~ {}", material_index, material_name).c_str())) {
     ImGui::PushID(material_name.c_str());
     ImGui::ColorEdit4("albedo", glm::value_ptr(material->albedo));
     ImGui::ColorEdit4("ambient", glm::value_ptr(material->ambient));
@@ -171,7 +172,7 @@ void Inspector::InspectObjects(Scene* scene) {
     ImGui::PushID("Objects");
     for (const Object& object : scene->object_repo().GetObjects()) {
       std::string object_name = scene->object_repo().GetName(object.object_index);
-      if (ImGui::TreeNode(fmt::format("Object : index ~ {} name ~ {}",
+      if (ImGui::TreeNode(std::format("Object : index ~ {} name ~ {}",
                           object.object_index, object_name).c_str())) {
         InspectMesh(scene, object);
 
@@ -192,8 +193,8 @@ void Inspector::InspectLights(Scene* scene) {
     ImGui::PushID("Lights");
     for (int i = 0; i < scene->light_repo().num(); ++i) {
       Light* light = scene->mutable_light_repo()->mutable_light(i);
-      if (ImGui::TreeNode(fmt::format("Light {}", i).c_str())) {
-        ImGui::PushID(fmt::format("{}", i).c_str());
+      if (ImGui::TreeNode(std::format("Light {}", i).c_str())) {
+        ImGui::PushID(std::format("{}", i).c_str());
         if (ImGui::RadioButton("DirectionalLight", light->type)) { light->type = Light::kDirectionalLight; }
         ImGui::SameLine();
         if (ImGui::RadioButton("PointLight", light->type)) { light->type = Light::kPointLight; }

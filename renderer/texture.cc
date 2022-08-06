@@ -10,7 +10,7 @@
 #include <unordered_map>
 
 #include "base/debug.h"
-#include "renderer/util.h"
+#include "base/util.h"
 
 namespace renderer {
 
@@ -229,7 +229,7 @@ bool Texture::Varify() const {
 // std::string GetCubemapPath(const std::unordered_map<std::string, std::string>& paths,
 //                            int level, int texture_unit_offset) {
 //   std::vector<std::string> faces = {"px", "nx", "py", "ny", "pz", "nz"};
-//   std::string key = fmt::format("level{}_{}", level, faces[texture_unit_offset]);
+//   std::string key = std::format("level{}_{}", level, faces[texture_unit_offset]);
 //   CGCHECK(!paths.empty());
 //   CGCHECK(paths.count(key) > 0) << " Cannot find path " << key;
 //   return paths.at(key);

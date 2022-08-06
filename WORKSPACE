@@ -6,14 +6,14 @@
 # )
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
 http_archive(
-  name = "rules_proto",
-  sha256 = "66bfdf8782796239d3875d37e7de19b1d94301e8972b3cbd2446b332429b4df1",
-  strip_prefix = "rules_proto-4.0.0",
-  urls = [
-    "https://mirror.bazel.build/github.com/bazelbuild/rules_proto/archive/refs/tags/4.0.0.tar.gz",
-    "https://github.com/bazelbuild/rules_proto/archive/refs/tags/4.0.0.tar.gz",
-  ],
+    name = "rules_proto",
+    sha256 = "e017528fd1c91c5a33f15493e3a398181a9e821a804eb7ff5acdd1d2d6c2b18d",
+    strip_prefix = "rules_proto-4.0.0-3.20.0",
+    urls = [
+        "https://github.com/bazelbuild/rules_proto/archive/refs/tags/4.0.0-3.20.0.tar.gz",
+    ],
 )
 load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
 rules_proto_dependencies()
@@ -54,14 +54,6 @@ http_archive(
     sha256 = "21bc744fb7f2fa701ee8db339ded7dce4f975d0d55837a97be7d46e8382dea5a",
     strip_prefix = "glog-0.5.0",
     urls = ["https://github.com/google/glog/archive/v0.5.0.zip"],
-)
-
-http_archive(
-  name = "fmt",
-  build_file = "@//:thirdparty/fmt.BUILD",
-  sha256 = "23778bad8edba12d76e4075da06db591f3b0e3c6c04928ced4a7282ca3400e5d",
-  strip_prefix = "fmt-8.1.1",
-  urls = ["https://github.com/fmtlib/fmt/releases/download/8.1.1/fmt-8.1.1.zip"],
 )
 
 http_archive(
@@ -125,4 +117,12 @@ http_archive(
   sha256 = "8586084f71f9bde545ee7fa6d00288b264a2b7ac3607b974e54d13e7162c1c72",
   strip_prefix="eigen-3.4.0",
   urls = [ "https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz" ],
+)
+
+http_archive(
+  name = "matplotplusplus",
+  build_file = "@//:thirdparty/matplotplusplus.BUILD",
+  sha256 = "5c3a1bdfee12f5c11fd194361040fe4760f57e334523ac125ec22b2cb03f27bb",
+  strip_prefix="matplotplusplus-1.1.0",
+  urls = [ "https://github.com/alandefreitas/matplotplusplus/archive/refs/tags/v1.1.0.tar.gz" ],
 )

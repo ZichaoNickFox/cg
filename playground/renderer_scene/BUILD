@@ -47,7 +47,6 @@ cc_library(
   deps = [
     "//physics:physics",
     "//renderer:renderer",
-    "@fmt",
     "@glm",
     "@imgui",
   ],

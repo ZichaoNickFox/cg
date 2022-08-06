@@ -1,5 +1,8 @@
 #pragma once
 
+#include <vector>
+
+#include <eigen/Core>
 #include "renderer/camera.h"
 #include "renderer/scene.h"
 
@@ -11,5 +14,8 @@ class FittingScene : public renderer::Scene {
   void OnExit() override;
 
  private:
-  void power_base_fitting();
+  void PowerBasedFitting();
+
+  std::vector<float> xs_;
+  std::vector<float> ys_;
 };

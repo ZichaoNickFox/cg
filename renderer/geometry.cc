@@ -5,7 +5,7 @@
 
 #include "base/debug.h"
 #include "renderer/color.h"
-#include "renderer/util.h"
+#include "base/util.h"
 
 namespace renderer {
 std::string Ray::AsString() const {
@@ -135,8 +135,8 @@ AABB Triangle::AsAABB() const {
 }
 
 std::string AABB::AsString() const {
-  return fmt::format("{},{},{}|{},{},{}",
-                      maximum.x, maximum.y, maximum.z, minimum.x, minimum.y, minimum.z);
+  return std::format("{},{},{}|{},{},{}",
+                     maximum.x, maximum.y, maximum.z, minimum.x, minimum.y, minimum.z);
 }
 
 #if CGDEBUG

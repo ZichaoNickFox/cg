@@ -11,7 +11,7 @@
 #include "renderer/mesh/empty_mesh.h"
 #include "renderer/geometry.h"
 #include "renderer/scene.h"
-#include "renderer/util.h"
+#include "base/util.h"
 
 namespace renderer {
 namespace {
@@ -297,7 +297,7 @@ SimpleModelShader::SimpleModelShader(const Scene& scene, ModelObject* model)
       const std::string uniform_name = pair.first;
       const std::vector<Texture>& textures = pair.second;
       if (textures.size() > 0) {
-        std::string use_uniform_name = fmt::format("use_{}", uniform_name);
+        std::string use_uniform_name = std::format("use_{}", uniform_name);
       }
     }
   }
@@ -315,7 +315,7 @@ InstanceSceneShader::InstanceSceneShader(const Scene& scene, Object* object)
       const std::string uniform_name = pair.first;
       const std::vector<Texture>& textures = pair.second;
       if (textures.size() > 0) {
-        std::string use_uniform_name = fmt::format("use_{}", uniform_name);
+        std::string use_uniform_name = std::format("use_{}", uniform_name);
       }
     }
   }

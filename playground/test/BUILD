@@ -4,8 +4,8 @@ cc_test (
     "eigen_test.cc",
   ],
   deps = [
+    "//base:eigen_util",
     "//renderer:renderer",
-    "//renderer:util",
     "@eigen",
     "@gtest//:gtest",
     "@gtest//:gtest_main",
@@ -21,7 +21,6 @@ cc_test (
   ],
   deps = [
     "//renderer:renderer",
-    "//renderer:util",
     "@eigen",
     "@gtest//:gtest",
     "@gtest//:gtest_main",
@@ -37,7 +36,6 @@ cc_test (
   ],
   deps = [
     "//renderer:renderer",
-    "//renderer:util",
     "@gtest//:gtest",
     "@gtest//:gtest_main",
     "@glew",

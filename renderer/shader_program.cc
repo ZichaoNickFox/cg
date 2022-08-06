@@ -6,7 +6,7 @@
 
 #include "base/debug.h"
 #include "renderer/shader_loader.h"
-#include "renderer/util.h"
+#include "base/util.h"
 
 namespace renderer {
 
@@ -72,7 +72,7 @@ std::string ShaderProgram::GetOneLineCompilerError430(const std::vector<ShaderPr
         line_sum++;
         line_num_in_file ++;
         if (line_sum == source_line_num) {
-          return fmt::format("\"{}\" {} {}", code_part.glsl_path, line_num_in_file, res);
+          return std::format("\"{}\" {} {}", code_part.glsl_path, line_num_in_file, res);
         }
       }
     }

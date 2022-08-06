@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -7,13 +8,13 @@
 #else
 #include <math.h>
 #endif
-
+#include <functional>
 #include <glm/glm.hpp>
 #include <vector>
 
 #include "base/debug.h"
 
-namespace util {
+namespace math {
 
 // util
 float Lerp(float from, float to, float scale);
@@ -69,4 +70,7 @@ int QuickSelect(std::vector<ElemType>* elems, int begin, int end, int index, con
   return index;
 }
 
-} // namespace util
+std::vector<float> Linspace(float from, float to, float interval);
+std::vector<float> Transform(const std::vector<float>& vs, const std::function<float(float)>& func);
+
+} // namespace math
