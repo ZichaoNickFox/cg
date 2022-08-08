@@ -122,7 +122,6 @@ http_archive(
 http_archive(
   name = "matplotplusplus",
   build_file = "@//:thirdparty/matplotplusplus.BUILD",
-  sha256 = "869c657d1c423ad25e9bbae3d992733de318c4ad5615efdf9b6556524f961283",
   strip_prefix="matplotplusplus-master",
   urls = [ "https://github.com/ZichaoNickFox/matplotplusplus/archive/refs/heads/master.zip" ],
 )
