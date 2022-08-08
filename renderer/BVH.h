@@ -1,13 +1,13 @@
 #pragma once
 
+#include "base/geometry.h"
 #include "renderer/definition.h"
-#include "renderer/geometry.h"
 #include "renderer/primitive.h"
 #include "renderer/ssbo.h"
 
 #include <vector>
 
-namespace renderer {
+namespace cg {
 
 class BVH {
   struct Node {

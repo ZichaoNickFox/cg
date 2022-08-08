@@ -3,15 +3,15 @@
 #include <optional>
 #include <glm/glm.hpp>
 
+#include "base/geometry.h"
 #include "renderer/camera.h"
-#include "renderer/geometry.h"
 #include "renderer/mesh/lines_mesh.h"
 #include "renderer/object.h"
 #include "renderer/shader.h"
 #include "renderer/shader_program.h"
 #include "renderer/texture.h"
 
-namespace renderer {
+namespace cg {
 
 class Scene;
 class ComputeShader {
@@ -36,7 +36,7 @@ class ComputeShader {
   void SetWorkGroupNum(const glm::vec3& work_group_num);
 
  protected:
-  void CheckTextureBindingInternalFormat(const renderer::Texture& texture) const;
+  void CheckTextureBindingInternalFormat(const cg::Texture& texture) const;
 
   ShaderProgram program_;
   glm::vec3 work_group_num_;
@@ -63,7 +63,7 @@ class RenderShader {
   ShaderProgram program_;
 };
 
-class PhongShader : public renderer::RenderShader {
+class PhongShader : public cg::RenderShader {
  public:
   struct Param {
     bool use_blinn_phong = true;
@@ -71,17 +71,17 @@ class PhongShader : public renderer::RenderShader {
   PhongShader(const Param& param, const Scene& scene, const Object& object);
 };
 
-class PbrShader : public renderer::RenderShader {
+class PbrShader : public cg::RenderShader {
  public:
   struct Param {
-    renderer::Texture texture_irradiance_cubemap;
-    renderer::Texture texture_prefiltered_color_cubemap;
-    renderer::Texture texture_BRDF_integration_map;
+    cg::Texture texture_irradiance_cubemap;
+    cg::Texture texture_prefiltered_color_cubemap;
+    cg::Texture texture_BRDF_integration_map;
   };
   PbrShader(const Param& param, const Scene& scene, const Object& object);
 };
 
-class NormalShader : public renderer::RenderShader {
+class NormalShader : public cg::RenderShader {
  public:
   struct Param {
     bool show_triangle = false;
@@ -95,7 +95,7 @@ class NormalShader : public renderer::RenderShader {
   NormalShader(const Param& param, const Scene& scene, const Object& object);
 };
 
-class LinesShader : public renderer::RenderShader {
+class LinesShader : public cg::RenderShader {
  public:
   struct Param {
     float line_width = 1.0;
@@ -104,7 +104,7 @@ class LinesShader : public renderer::RenderShader {
               const Transform& transform = Transform());
 };
 
-class ColorShader : public renderer::RenderShader {
+class ColorShader : public cg::RenderShader {
  public:
   struct Param {
     glm::vec4 color = glm::vec4(1, 0, 0, 1);
@@ -112,112 +112,112 @@ class ColorShader : public renderer::RenderShader {
   ColorShader(const Param& param, const Scene& scene, const Object& object);
 };
 
-class TextureShader : public renderer::RenderShader {
+class TextureShader : public cg::RenderShader {
  public:
   struct Param {
-    renderer::Texture texture0;
+    cg::Texture texture0;
   };
   TextureShader(const Param& param, const Scene& scene, const Object& object);
 };
 
-class Texture2DLodShader : public renderer::RenderShader {
+class Texture2DLodShader : public cg::RenderShader {
  public:
   struct Param {
-    renderer::Texture texture2D0;
+    cg::Texture texture2D0;
   };
   Texture2DLodShader(const Param& param, const Scene& scene, const Object& object);
 };
 
-class CubemapLodShader : public renderer::RenderShader {
+class CubemapLodShader : public cg::RenderShader {
  public:
   struct Param {
-    renderer::Texture cubemap;
+    cg::Texture cubemap;
     glm::vec3 view_pos_ws;
   };
   CubemapLodShader(const Param& param, const Scene& scene, const Object& object);
 };
 
 /*
-class DepthBufferShader : public renderer::RenderShader {
+class DepthBufferShader : public cg::RenderShader {
  public:
   struct Param {
-    const renderer::Camera* camera;
-    renderer::Shader depth_buffer_shader;
+    const cg::Camera* camera;
+    cg::Shader depth_buffer_shader;
   };
   DepthBufferShader(const Param& param, const Object& object);
 };
 */
 
-class CubemapShader : public renderer::RenderShader {
+class CubemapShader : public cg::RenderShader {
  public:
   struct Param {
-    renderer::Texture cubemap;
+    cg::Texture cubemap;
   };
   CubemapShader(const Param& param, const Scene& scene, const Object& object);
 };
 
-class FullscreenQuadShader : public renderer::RenderShader {
+class FullscreenQuadShader : public cg::RenderShader {
  public:
   struct Param {
-    renderer::Texture texture0;
+    cg::Texture texture0;
   };
   FullscreenQuadShader(const Param& param, const Scene& scene);
 };
 
-class PbrEnvironmentCubemapGerneratorShader : public renderer::RenderShader {
+class PbrEnvironmentCubemapGerneratorShader : public cg::RenderShader {
  public:
   struct Param {
-    renderer::Texture texture2D0;
-    renderer::Camera* camera = nullptr;
+    cg::Texture texture2D0;
+    cg::Camera* camera = nullptr;
   };
   PbrEnvironmentCubemapGerneratorShader(const Param& param, const Scene& scene, const Object& object);
 };
 
-class TexcoordShader : public renderer::RenderShader {
+class TexcoordShader : public cg::RenderShader {
  public:
   struct Param {};
   TexcoordShader(const Param& param, const Scene& scene, const Object& object);
 };
 
-class PbrIrradianceCubemapGeneratorShader : public renderer::RenderShader {
+class PbrIrradianceCubemapGeneratorShader : public cg::RenderShader {
  public:
   struct Param {
-    renderer::Texture environment_map;
-    renderer::Camera* camera = nullptr;
+    cg::Texture environment_map;
+    cg::Camera* camera = nullptr;
   };
   PbrIrradianceCubemapGeneratorShader(const Param& param, const Scene& scene, const Object& object);
 };
 
-class PbrPrefilteredColorCubemapGeneratorShader : public renderer::RenderShader {
+class PbrPrefilteredColorCubemapGeneratorShader : public cg::RenderShader {
  public:
   struct Param {
-    renderer::Texture environment_map;
-    renderer::Camera* camera = nullptr;
+    cg::Texture environment_map;
+    cg::Camera* camera = nullptr;
   };
   PbrPrefilteredColorCubemapGeneratorShader(const Param& param, const Scene& scene, const Object& object);
 };
 
-class PbrBRDFIntegrationMapGeneratorShader : public renderer::RenderShader {
+class PbrBRDFIntegrationMapGeneratorShader : public cg::RenderShader {
  public:
   struct Param {};
   PbrBRDFIntegrationMapGeneratorShader(const Param& param, const Scene& scene);
 };
 
-class BlurShader : public renderer::RenderShader {
+class BlurShader : public cg::RenderShader {
  public:
   struct Param{
-    renderer::Texture texture;
+    cg::Texture texture;
     glm::vec2 viewport_size;
   };
   BlurShader(const Param& param, const Scene& scene, const Object& object);
 };
 
-class RandomShader : public renderer::ComputeShader {
+class RandomShader : public cg::ComputeShader {
  public:
   struct Param{
     glm::ivec2 screen_size;
-    renderer::Texture input;
-    renderer::Texture output;
+    cg::Texture input;
+    cg::Texture output;
     int frame_num;
   };
   RandomShader(const Param& param, const Scene& scene);
@@ -226,12 +226,12 @@ class RandomShader : public renderer::ComputeShader {
   Param param_;
 };
 
-class RayTracingCanvasShader : public renderer::RenderShader {
+class RayTracingCanvasShader : public cg::RenderShader {
  public:
   struct Param {
-    renderer::Texture texture0;
+    cg::Texture texture0;
     int sample_frame_num = 1;
   };
   RayTracingCanvasShader(const Param& param, const Scene& scene);
 };
-} // namespace renderer
+} // namespace cg

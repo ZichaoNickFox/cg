@@ -12,7 +12,7 @@
 #include "renderer/shader.h"
 #include "renderer/texture.h"
 
-class DisneyScene : public renderer::Scene {
+class DisneyScene : public cg::Scene {
  public:
   void OnEnter() override;
   void OnUpdate() override;
@@ -20,9 +20,9 @@ class DisneyScene : public renderer::Scene {
   void OnExit() override;
 
  private:
-  std::vector<renderer::ObjectMeta> object_metas_ = {
+  std::vector<cg::ObjectMeta> object_metas_ = {
     
   };
 
-  renderer::Framebuffer fbo_;
+  cg::Framebuffer fbo_;
 };

@@ -2,11 +2,11 @@
 
 #include <glm/glm.hpp>
 
-#include "renderer/color.h"
-#include "renderer/geometry.h"
+#include "base/color.h"
+#include "base/geometry.h"
 #include "renderer/mesh.h"
 
-namespace renderer {
+namespace cg {
 
 class LinesMesh : public Mesh {
  public:
@@ -21,7 +21,8 @@ class CoordinatorMesh : public LinesMesh {
   CoordinatorMesh() : LinesMesh({glm::vec3(0, 0, 0), glm::vec3(1, 0, 0),
                                  glm::vec3(0, 0, 0), glm::vec3(0, 1, 0),
                                  glm::vec3(0, 0, 0), glm::vec3(0, 0, 1)},
-                                {kRed, kRed, kGreen, kGreen, kBlue, kBlue}, GL_LINES) {}
+                                {kRed, kRed, kGreen, kGreen, kBlue, kBlue},
+                                GL_LINES) {}
 };
 
-} // namespace renderer
+} // namespace cg

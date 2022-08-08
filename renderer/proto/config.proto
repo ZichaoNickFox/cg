@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package renderer;
+package cg;
 
 message ShaderConfig {
   string name = 1;

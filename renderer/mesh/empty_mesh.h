@@ -2,11 +2,11 @@
 
 #include "renderer/mesh.h"
 
-namespace renderer {
+namespace cg {
 
 class EmptyMesh : public Mesh {
  public:
   EmptyMesh();
 };
 
-} // namespace renderer
+} // namespace cg

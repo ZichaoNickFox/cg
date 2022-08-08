@@ -9,7 +9,7 @@
 #include "base/debug.h"
 #include "renderer/object.h"
 
-namespace renderer {
+namespace cg {
 
 namespace {
 std::unique_ptr<Mesh> ProcessMesh(const aiMesh& ai_mesh) {
@@ -158,4 +158,4 @@ bool LoadModel(const Config& config, const std::string& model_name, MeshRepo* me
   return true;
 }
 
-} // namespace renderer
+} // namespace cg

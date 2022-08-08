@@ -1,6 +1,6 @@
 #include "renderer/filter.h"
 
-namespace renderer {
+namespace cg {
 
 bool Filter::Pass(const std::string& judgement) const {
   if (type_ == kNone) {
@@ -14,4 +14,4 @@ bool Filter::Pass(const std::string& judgement) const {
   }
 }
 
-} // namespace renderer
+} // namespace cg

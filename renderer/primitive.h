@@ -1,10 +1,10 @@
 #pragma once
 
+#include "base/geometry.h"
 #include "renderer/definition.h"
-#include "renderer/geometry.h"
 #include "renderer/ssbo.h"
 
-namespace renderer {
+namespace cg {
 
 struct Primitive {
   Triangle triangle;
@@ -45,4 +45,4 @@ class PrimitiveRepo {
   int acitive_material = -1;
 };
 
-} // namespace renderer
+} // namespace cg

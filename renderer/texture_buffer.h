@@ -2,7 +2,7 @@
 
 #include "renderer/gl.h"
 
-namespace renderer {
+namespace cg {
 
 class TextureBuffer {
  public:

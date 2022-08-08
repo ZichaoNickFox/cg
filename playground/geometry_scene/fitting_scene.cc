@@ -3,22 +3,39 @@
 #include <eigen/Dense>
 #include <eigen/Sparse>
 
+#include "base/color.h"
+#include "base/debug.h"
 #include "base/math.h"
 #include "geometry/plot.h"
 #include "renderer/shader.h"
 #include "renderer/transform.h"
 
+using namespace cg;
+
 void FittingScene::OnEnter() {
   xs_ = std::vector<float>{1, 2, 3, 4, 5, 6};
   ys_ = std::vector<float>{5, 2, 4, 1, 3, 6};
 
-  PowerBasedFitting();
+  // PowerBasedFitting();
+  // matplot::plot();
+  using namespace matplot;
+  std::vector<double> x = linspace(0, 2 * pi);
+  std::vector<double> y = transform(x, [](auto x) { return sin(x); });
+
+  plot(x, y, "-o");
+  hold(on);
+  plot(x, transform(y, [](auto y) { return -y; }), "--xr");
+  plot(x, transform(x, [](auto x) { return x / pi - 1.; }), "-:gs");
+  plot({1.0, 0.7, 0.4, 0.0, -0.4, -0.7, -1}, "k");
+
+  // show();
 }
 
 void FittingScene::OnUpdate() {
 }
 
 void FittingScene::OnRender() {
+  // FullscreenQuadShader fullscreen({texture_}, *this);
 }
 
 void FittingScene::OnExit() {
@@ -42,13 +59,20 @@ void FittingScene::PowerBasedFitting() {
   }
   eigen::VectorXf w = A.colPivHouseholderQr().solve(b);
 
-  geometry::Plot(xs_, [&w, max_pow] (float x) {
-    float xn = 1;
-    float res = 0;
-    for (int i = 0; i <= max_pow; ++i) {
-      res += xn * w[i];
-      xn *= x;
-    }
-    return res;
+  int screen_width = io_->screen_size().x;
+  int screen_height = io_->screen_size().y;
+  data_.resize(screen_width * screen_height);
+  Plot(screen_width, screen_height, &data_, kRed, 10, xs_, [&w, max_pow] (float x) {
+    // float xn = 1;
+    // float res = 0;
+    // for (int i = 0; i <= max_pow; ++i) {
+    //   res += xn * w[i];
+    //   xn *= x;
+    // }
+    // return res;
+    // return x * x;
+    return x * x;
   });
+
+  texture_ = CreateTexture2D(io_->screen_size().x, io_->screen_size().y, data_);
 }

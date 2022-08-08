@@ -3,7 +3,7 @@
 #include "renderer/ssbo.h"
 #include "base/util.h"
 
-namespace renderer {
+namespace cg {
 
 Light::Light(Type in_type, int in_primitive_id) : type(in_type), primitive_index(in_primitive_id) {}
 
@@ -42,4 +42,4 @@ LightRepo::LightGPU::LightGPU(const Light& light) {
   color = light.color;
   attenuation_2_1_0 = glm::vec4(light.attenuation_2_1_0, 0.0);
 }
-} // namespace renderer
+} // namespace cg

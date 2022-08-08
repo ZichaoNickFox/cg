@@ -11,7 +11,7 @@
 #include "renderer/texture.h"
 #include "renderer/transform.h"
 
-class ModelScene : public renderer::Scene {
+class ModelScene : public cg::Scene {
  public:
   void OnEnter() override;
   void OnUpdate() override;
@@ -19,12 +19,12 @@ class ModelScene : public renderer::Scene {
   void OnExit() override;
 
  private:
-  std::vector<renderer::ObjectMeta> object_metas_ = {
+  std::vector<cg::ObjectMeta> object_metas_ = {
     // {"teapot", {glm::vec3(), glm::quat(), glm::vec3(0.2, 0.2, 0.2)}, "teapot", "gold"},
     {"cerberus", {glm::vec3(), glm::quat(), glm::vec3(0.02, 0.02, 0.02)}, "cerberus", "cerberus"}
   };
-  std::vector<renderer::Light> lights = {
-    {renderer::Light::kPointLight, glm::vec3(0, 3, -5), glm::vec4(1, 1, 1, 1), {1.0, 0.0014, 0.000007}},
+  std::vector<cg::Light> lights = {
+    {cg::Light::kPointLight, glm::vec3(0, 3, -5), glm::vec4(1, 1, 1, 1), {1.0, 0.0014, 0.000007}},
   };
 
   float shininess_ = 1;

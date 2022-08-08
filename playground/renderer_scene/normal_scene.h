@@ -33,7 +33,7 @@ class NormalScene : public Scene {
   PointLightObject point_light_;
   PlaneObject plane_;
   SphereObject sphere_;
-  std::shared_ptr<renderer::Camera> camera_ = std::make_shared<renderer::Camera>();
+  std::shared_ptr<cg::Camera> camera_ = std::make_shared<cg::Camera>();
 
   std::string material_property_name_ = "gold";
 

@@ -2,12 +2,12 @@
 
 #include <vector>
 
+#include "base/geometry.h"
 #include "renderer/camera.h"
-#include "renderer/geometry.h"
 #include "renderer/scene.h"
 #include "renderer/ssbo.h"
 
-class GeometryScene : public renderer::Scene {
+class GeometryScene : public cg::Scene {
  public:
   GeometryScene() : ssbo_triangle_(SSBO_USER_0), ssbo_aabb_(SSBO_USER_1) {}
   void OnEnter() override;
@@ -17,17 +17,17 @@ class GeometryScene : public renderer::Scene {
 
  private:
   static constexpr int kTriangleNum = 100;
-  std::array<renderer::Triangle, 100> triangles_;
+  std::array<cg::Triangle, 100> triangles_;
 
   static constexpr int kAABBNum = 100;
-  std::array<renderer::AABB, 100> aabbs_;
+  std::array<cg::AABB, 100> aabbs_;
 
   void Rasterization();
   void Raytracing();
 
-  renderer::SSBO ssbo_triangle_;
-  renderer::SSBO ssbo_aabb_;
+  cg::SSBO ssbo_triangle_;
+  cg::SSBO ssbo_aabb_;
 
-  renderer::Texture canvas_;
+  cg::Texture canvas_;
 };
 

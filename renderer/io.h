@@ -5,7 +5,7 @@
 #include <string>
 #include "glm/glm.hpp"
 
-namespace renderer {
+namespace cg {
 class Io {
  public:
   void SetScreenSize(const glm::ivec2& screen_size) { screen_size_ = screen_size; }
@@ -42,4 +42,4 @@ class Io {
   glm::ivec2 framebuffer_size_;
   std::function<void(const std::string&)> write_clipboard_func_;
 };
-} // namespace renderer
+} // namespace cg

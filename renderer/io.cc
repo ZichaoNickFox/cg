@@ -1,6 +1,6 @@
 #include "renderer/io.h"
 
-namespace renderer {
+namespace cg {
 void Io::FeedCursorPos(const glm::vec2& cursor_pos) {
   last_cursor_pos_ = cursor_pos_;
   cursor_pos_ = cursor_pos;
@@ -22,4 +22,4 @@ void Io::SetWriteClipboardFunc(const std::function<void(const std::string&)>& fu
 const std::function<void(const std::string&)>& Io::write_clipboard_func() const {
   return write_clipboard_func_;
 }
-} // namespace renderer
+} // namespace cg

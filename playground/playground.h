@@ -20,16 +20,16 @@ class Playground {
   void EndFrame();
   void Destoy();
 
-  renderer::Io* mutable_io() { return &io_; }
-  const renderer::Io& io() { return io_; }
+  cg::Io* mutable_io() { return &io_; }
+  const cg::Io& io() { return io_; }
  
  private:
-  renderer::Config config_;
-  renderer::Io io_;
-  renderer::FrameStat frame_stat_;
+  cg::Config config_;
+  cg::Io io_;
+  cg::FrameStat frame_stat_;
 
   std::string current_scene_name_;
-  renderer::Scene* current_scene_ = nullptr;
+  cg::Scene* current_scene_ = nullptr;
 
   util::Time frame_start_time_;
 };

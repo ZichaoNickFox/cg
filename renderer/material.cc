@@ -5,7 +5,7 @@
 #include "base/debug.h"
 #include "base/util.h"
 
-namespace renderer {
+namespace cg {
 
 static const std::unordered_map<std::string, Material::Properties> kDefaultMaterialProperties = {
   {"gold", {{kAmbient, glm::vec4(0.24725, 0.1995, 0.0745, 1)},

@@ -14,7 +14,7 @@
 #include "renderer/texture.h"
 
 // https://games103.games-cn.org/HW1/lab1.pdf
-class AngryBunnyScene : public renderer::Scene {
+class AngryBunnyScene : public cg::Scene {
  public:
   void OnEnter() override;
   void OnUpdate() override;
@@ -22,7 +22,7 @@ class AngryBunnyScene : public renderer::Scene {
   void OnExit() override;
 
  private:
-  std::vector<renderer::ObjectMeta> object_metas_ = {
+  std::vector<cg::ObjectMeta> object_metas_ = {
     {"bunny", {}, "bunny", "ruby"},
     {"light", {glm::vec3(), glm::quat(), glm::vec3(0.02, 0.02, 0.02)}, "sphere", "gold"},
     {"plane1", {glm::vec3(), glm::quat(), glm::vec3(5, 5, 5)}, "plane", "tiled"},

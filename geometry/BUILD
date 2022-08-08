@@ -9,6 +9,6 @@ cc_library (
   deps = [
     "//base:base",
     "@glew",
-    # "@matplotplusplus",
+    "@matplotplusplus",
   ],
 )

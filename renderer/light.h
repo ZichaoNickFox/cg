@@ -4,13 +4,13 @@
 #include <unordered_map>
 #include <vector>
 
-#include "renderer/color.h"
+#include "base/color.h"
 #include "renderer/definition.h"
 #include "renderer/material.h"
 #include "renderer/primitive.h"
 #include "renderer/ssbo.h"
 
-namespace renderer {
+namespace cg {
 
 // Light Attenuation
 // {7, {1.0, 0.7, 1.8}},
@@ -68,4 +68,4 @@ struct LightRepo {
   std::vector<Light> dirty_lights_;
 };
 
-} // namespace renderer
+} // namespace cg

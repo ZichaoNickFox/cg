@@ -5,7 +5,7 @@
 #include "renderer/inspector.h"
 #include "base/util.h"
 
-namespace renderer {
+namespace cg {
 void Scene::Enter(const std::string& name, Config* config, Io* io, FrameStat* frame_stat) {
   name_ = name;
 

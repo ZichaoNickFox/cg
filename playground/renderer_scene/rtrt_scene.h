@@ -2,19 +2,19 @@
 
 #include <unordered_map>
 
+#include "base/geometry.h"
 #include "renderer/automic_counter.h"
 #include "renderer/BVH.h"
 #include "renderer/camera.h"
 #include "renderer/definition.h"
 #include "renderer/framebuffer.h"
-#include "renderer/geometry.h"
 #include "renderer/object.h"
 #include "renderer/ping_pong.h"
 #include "renderer/primitive.h"
 #include "renderer/scene.h"
 #include "renderer/ssbo.h"
 
-class RTRTScene : public renderer::Scene {
+class RTRTScene : public cg::Scene {
  public:
   void OnEnter() override;
   void OnUpdate() override;
@@ -29,7 +29,7 @@ class RTRTScene : public renderer::Scene {
   void Denoise();
   void TemproalAccumulate();
 
-  std::vector<renderer::ObjectMeta> object_metas_ = {
+  std::vector<cg::ObjectMeta> object_metas_ = {
     {"cornell_box_floor", {glm::vec3(), glm::quat(), glm::vec3(0.002, 0.002, 0.002)},
         "cornell_box_floor", "cornell_box_floor"},
     {"cornell_box_left", {glm::vec3(), glm::quat(), glm::vec3(0.002, 0.002, 0.002)},
@@ -44,15 +44,15 @@ class RTRTScene : public renderer::Scene {
         "cornell_box_tall_box", "cornell_box_tall_box"},
   };
 
-  renderer::Framebuffer fbo_;
+  cg::Framebuffer fbo_;
 
-  renderer::Texture current_frame1_;
-  renderer::Texture current_frame2_;
-  renderer::PingPong<renderer::Texture> current_frame_;
+  cg::Texture current_frame1_;
+  cg::Texture current_frame2_;
+  cg::PingPong<cg::Texture> current_frame_;
 
-  renderer::Texture last_frame1_;
-  renderer::Texture last_frame2_;
-  renderer::PingPong<renderer::Texture> last_frame_;
+  cg::Texture last_frame1_;
+  cg::Texture last_frame2_;
+  cg::PingPong<cg::Texture> last_frame_;
 
-  renderer::Camera camera_1_;
+  cg::Camera camera_1_;
 };

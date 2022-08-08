@@ -48,10 +48,10 @@ void ShadowScene::OnEnter(Scene *context)
   
   glEnable_(GL_DEPTH_TEST);
 
-  depth_framebuffer_.Init({context->framebuffer_size(), {renderer::kAttachmentDepth}});
+  depth_framebuffer_.Init({context->framebuffer_size(), {cg::kAttachmentDepth}});
   depth_buffer_pass_.Init(&depth_framebuffer_, camera_);
 
-  forward_framebuffer_.Init({context->framebuffer_size(), {renderer::kAttachmentColor, renderer::kAttachmentDepth}});
+  forward_framebuffer_.Init({context->framebuffer_size(), {cg::kAttachmentColor, cg::kAttachmentDepth}});
   forward_pass_.Init(&forward_framebuffer_);
 }
 
@@ -81,11 +81,11 @@ void ShadowScene::OnRender(Scene *context)
   RunForwardPass_Deprecated(context, &forward_pass_);
 
   EmptyObject quad;
-  FullscreenQuadShader({forward_framebuffer_.GetTexture(renderer::kAttachmentColor.name)}, context, &quad);
+  FullscreenQuadShader({forward_framebuffer_.GetTexture(cg::kAttachmentColor.name)}, context, &quad);
   quad.OnRender(context);
 }
 
-void ShadowScene::RunDepthBufferPass(Scene* context, renderer::DepthBufferPass* depth_buffer_pass) {
+void ShadowScene::RunDepthBufferPass(Scene* context, cg::DepthBufferPass* depth_buffer_pass) {
   depth_buffer_pass->Begin();
 
   DepthBufferShader::Param param{depth_buffer_pass->camera(), context->GetShader("depth_buffer")};
@@ -101,10 +101,10 @@ void ShadowScene::RunDepthBufferPass(Scene* context, renderer::DepthBufferPass* 
   depth_buffer_pass->End();
 }
 
-void ShadowScene::RunForwardPass_Deprecated(Scene* context, renderer::ForwardPass* forward_pass) {
+void ShadowScene::RunForwardPass_Deprecated(Scene* context, cg::ForwardPass* forward_pass) {
   forward_pass->Begin();
 
-  const renderer::MaterialProperty& material_property = renderer::kMaterialProperties.at("gold");
+  const cg::MaterialProperty& material_property = cg::kMaterialProperties.at("gold");
   PhongShader::Param phong{material_property.ambient, material_property.diffuse,
                            material_property.specular, material_property.shininess};
   phong.scene_shadow_info = forward_pass->prepass_shadow_info();

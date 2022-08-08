@@ -4,7 +4,7 @@
 #include "base/util.h"
 #include <google/protobuf/text_format.h>
 
-namespace renderer {
+namespace cg {
 namespace {
 
 // proto
@@ -57,4 +57,4 @@ const ModelConfig& Config::model_config(const std::string& name) const {
   return model_configs_.at(name);
 }
 
-} // namespace renderer
+} // namespace cg

@@ -3,7 +3,7 @@
 #include "renderer/texture.h"
 #include "renderer/shader.h"
 
-namespace renderer {
+namespace cg {
 class Scene;
 // Put in OnUpdate before everything
 class Inspector {
@@ -38,6 +38,6 @@ class RaytracingDebugCommon {
     LightPath();
     glm::vec4 light_path[20];
   };
-  RaytracingDebugCommon(const renderer::Texture& fullscreen_texture, const Scene& scene, const LightPath& light_path);
+  RaytracingDebugCommon(const cg::Texture& fullscreen_texture, const Scene& scene, const LightPath& light_path);
 };
-} // namespace renderer
+} // namespace cg

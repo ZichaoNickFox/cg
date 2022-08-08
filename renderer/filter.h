@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-namespace renderer {
+namespace cg {
 
 struct Filter {
  public:
@@ -20,4 +20,4 @@ struct Filter {
   Type type_;
 };
 
-} // namespace renderer
+} // namespace cg

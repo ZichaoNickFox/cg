@@ -8,7 +8,7 @@
 #include "renderer/shader_loader.h"
 #include "base/util.h"
 
-namespace renderer {
+namespace cg {
 
 ShaderProgram::ShaderProgram(const std::string& name, const std::vector<CodePart>& vs, const std::vector<CodePart>& fs,
                const std::vector<CodePart>& gs, const std::vector<CodePart>& ts) {
@@ -253,4 +253,4 @@ void ShaderProgramRepo::ReloadShaderPrograms() {
     p.second.loaded = false;
   }
 }
-} // namespace renderer
+} // namespace cg

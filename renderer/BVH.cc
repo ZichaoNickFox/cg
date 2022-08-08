@@ -5,7 +5,7 @@
 #include "base/math.h"
 #include "base/util.h"
 
-namespace renderer {
+namespace cg {
 
 void BVH::Build(const PrimitiveRepo& primitive_repo, const Option& option) {
   option_ = option;
@@ -312,4 +312,4 @@ RayBVHResult RayBVH(const Ray& ray, const BVH& bvh, const PrimitiveRepo& primiti
   return res;
 }
 
-} // namespace renderer
+} // namespace cg

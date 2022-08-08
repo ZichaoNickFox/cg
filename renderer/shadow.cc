@@ -3,7 +3,7 @@
 #include "renderer/ssbo.h"
 #include "base/util.h"
 
-namespace renderer {
+namespace cg {
 
 void ShadowRepo::UpdateSSBO() {
   bool dirty = !(shadows_ == dirty_shadows_);
@@ -13,4 +13,4 @@ void ShadowRepo::UpdateSSBO() {
   }
 }
 
-} // namespace renderer
+} // namespace cg

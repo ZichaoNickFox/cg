@@ -6,14 +6,13 @@
 #include "backends/imgui_impl_opengl3.h"
 #include "glog/logging.h"
 #include "imgui.h"
-#include <stdio.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "base/color.h"
 #include "base/debug.h"
 #include "playground/playground.h"
-#include "renderer/color.h"
 #include "renderer/io.h"
 
 #include <GLFW/glfw3.h> // Have to included after gl
@@ -22,7 +21,7 @@ static void glfw_error_callback(int error, const char *description) {
   fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
-void FillIoInput(GLFWwindow* window, ImGuiIO* imgui_io, renderer::Io* io) {
+void FillIoInput(GLFWwindow* window, ImGuiIO* imgui_io, cg::Io* io) {
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     io->FeedKeyInput("w");
   if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -99,8 +98,8 @@ int main(int argc, char **argv)
 
   while (!glfwWindowShouldClose(window)) {
     playground.BeginFrame();
-    glClearColor_(renderer::kClearColor.x * renderer::kClearColor.w, renderer::kClearColor.y * renderer::kClearColor.w,
-                  renderer::kClearColor.z * renderer::kClearColor.w, renderer::kClearColor.w);
+    glClearColor_(cg::kClearColor.x * cg::kClearColor.w, cg::kClearColor.y * cg::kClearColor.w,
+                  cg::kClearColor.z * cg::kClearColor.w, cg::kClearColor.w);
     glClear_(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     glfwPollEvents();
@@ -112,7 +111,7 @@ int main(int argc, char **argv)
 
     FillIoInput(window, &imgui_io, playground.mutable_io());
 
-    renderer::Io io = playground.io();
+    cg::Io io = playground.io();
     if (playground.io().gui_captured_cursor()) {
       glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     } else {

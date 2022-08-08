@@ -4,7 +4,7 @@
 #include "renderer/gl.h"
 #include <glm/glm.hpp>
 
-namespace renderer {
+namespace cg {
 
 class SSBO {
  public:
@@ -46,4 +46,4 @@ DataStruct SSBO::GetData() {
   return data_ptr;
 }
 
-};
+} // namespace cg

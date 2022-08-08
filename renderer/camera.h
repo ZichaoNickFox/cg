@@ -6,10 +6,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "base/debug.h"
-#include "renderer/geometry.h"
+#include "base/geometry.h"
 #include "renderer/transform.h"
 
-namespace renderer {
+namespace cg {
 
 class Camera {
  public:
@@ -35,7 +35,7 @@ class Camera {
   Type type() const { return type_; }
 
   void SetTransform(const Transform& transform) { transform_ = transform; }
-  renderer::Transform* mutable_transform() { return &transform_; }
+  cg::Transform* mutable_transform() { return &transform_; }
   const Transform& transform() const { return transform_; }
 
   glm::vec3 front_ws() const { return glm::normalize(transform_.rotation() * glm::vec3(0, 0, -1)); }
@@ -53,7 +53,7 @@ class Camera {
 
   void GetPickRay(const glm::vec2& cursor_screen_pos, glm::vec3* cursor_world_pos_near,
                   glm::vec3* cursor_world_pos_far) const;
-  renderer::Ray GetPickRay(const glm::vec2& cursor_screen_pos) const;
+  Ray GetPickRay(const glm::vec2& cursor_screen_pos) const;
   
   float* mutable_move_speed() { return &move_speed_; }
   float* mutable_rotate_speed() { return &rotate_speed_; }

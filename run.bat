@@ -6,4 +6,3 @@ bazel --output_user_root="./.cache" build ^
 if errorlevel 1 exit /B 1
 
 .\bazel-bin\playground\window.exe
-

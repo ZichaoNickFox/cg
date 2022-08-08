@@ -8,7 +8,7 @@
 
 #include "renderer/shader.h"
 
-namespace renderer {
+namespace cg {
 
 class ShaderParser {
   struct FileMeta {

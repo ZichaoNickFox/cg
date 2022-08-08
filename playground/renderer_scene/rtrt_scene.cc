@@ -3,16 +3,17 @@
 #include "glm/gtx/string_cast.hpp"
 #include <memory>
 
+#include "base/color.h"
 #include "base/math.h"
-#include "renderer/color.h"
 #include "renderer/inspector.h"
 #include "renderer/mesh/lines_mesh.h"
 #include "renderer/shader.h"
 #include "renderer/transform.h"
 
-using namespace renderer;
+using namespace cg;
+using namespace cg;
 
-class RTRTGeometryShader : public renderer::RenderShader {
+class RTRTGeometryShader : public cg::RenderShader {
  public:
   RTRTGeometryShader(const Scene& scene, const Object& object)
       : RenderShader(scene, "rtrt_geometry") {
@@ -24,14 +25,14 @@ class RTRTGeometryShader : public renderer::RenderShader {
   }
 };
 
-class RTRTPathTracingShader : public renderer::ComputeShader {
+class RTRTPathTracingShader : public cg::ComputeShader {
  public:
   struct Param {
     glm::vec2 resolution;
-    renderer::Texture rasterized_position_ws;
-    renderer::Texture rasterized_surface_normal_ws;
-    renderer::Texture rasterized_primitive_index;
-    renderer::Texture current_ping;
+    cg::Texture rasterized_position_ws;
+    cg::Texture rasterized_surface_normal_ws;
+    cg::Texture rasterized_primitive_index;
+    cg::Texture current_ping;
   };
   RTRTPathTracingShader(const Param& param, const Scene& scene) 
       : ComputeShader(scene, "rtrt_path_tracing") {
@@ -49,12 +50,12 @@ class RTRTPathTracingShader : public renderer::ComputeShader {
   }
 };
 
-class RTRTOutlierClampingShader : public renderer::ComputeShader {
+class RTRTOutlierClampingShader : public cg::ComputeShader {
  public:
   struct Param {
     glm::vec2 resolution;
-    renderer::Texture ping_color;
-    renderer::Texture pong_color;
+    cg::Texture ping_color;
+    cg::Texture pong_color;
   };
   RTRTOutlierClampingShader(const Param& param, const Scene& scene) 
       : ComputeShader(scene, "rtrt_outlier_clamping") {
@@ -66,13 +67,13 @@ class RTRTOutlierClampingShader : public renderer::ComputeShader {
   }
 };
 
-class RTRTDenoiseShader : public renderer::ComputeShader {
+class RTRTDenoiseShader : public cg::ComputeShader {
  public:
   struct Param {
     glm::vec2 resolution;
-    renderer::Texture ping_color;
-    renderer::Texture pong_color;
-    renderer::Texture texture_surface_normal;
+    cg::Texture ping_color;
+    cg::Texture pong_color;
+    cg::Texture texture_surface_normal;
   };
   RTRTDenoiseShader(const Param& param, const Scene& scene) 
       : ComputeShader(scene, "rtrt_denoise") {
@@ -85,15 +86,15 @@ class RTRTDenoiseShader : public renderer::ComputeShader {
   }
 };
 
-class RTRTTemproalAccumulationShader : public renderer::ComputeShader {
+class RTRTTemproalAccumulationShader : public cg::ComputeShader {
  public:
   struct Param {
     glm::vec2 resolution;
-    renderer::Camera camera_1;
-    renderer::Texture texture_position_ws;
-    renderer::Texture current_ping;
-    renderer::Texture last_ping;
-    renderer::Texture last_pong;
+    cg::Camera camera_1;
+    cg::Texture texture_position_ws;
+    cg::Texture current_ping;
+    cg::Texture last_ping;
+    cg::Texture last_pong;
   };
   RTRTTemproalAccumulationShader(const Param& param, const Scene& scene) 
       : ComputeShader(scene, "rtrt_temproal_accumulation") {
@@ -115,7 +116,7 @@ void RTRTScene::OnEnter() {
                           glm::quat(0.070520, {-0.005535, -0.994436, -0.078057}), {1, 1, 1}});
 
   glm::vec3 canvas_size(3240, 2160, 0);
-  std::vector<renderer::FramebufferAttachment> fbo_attachments = {
+  std::vector<cg::FramebufferAttachment> fbo_attachments = {
     kAttachmentPositionWS, kAttachmentSurfaceNormalWS, kAttachmentPrimitiveIndex, kAttachmentDepth
   };
   fbo_.Init({canvas_size, fbo_attachments, kBlack});
@@ -125,10 +126,10 @@ void RTRTScene::OnEnter() {
   bvh_.Build(primitive_repo_, {100, BVH::Partition::kPos, 64});
 
   std::vector<glm::vec4> color(3240 * 2160, kBlack);
-  current_frame1_ = renderer::CreateTexture2D(3240, 2160, color);
-  current_frame2_ = renderer::CreateTexture2D(3240, 2160, color);
-  last_frame1_ = renderer::CreateTexture2D(3240, 2160, color);
-  last_frame2_ = renderer::CreateTexture2D(3240, 2160, color);
+  current_frame1_ = cg::CreateTexture2D(3240, 2160, color);
+  current_frame2_ = cg::CreateTexture2D(3240, 2160, color);
+  last_frame1_ = cg::CreateTexture2D(3240, 2160, color);
+  last_frame2_ = cg::CreateTexture2D(3240, 2160, color);
 
   current_frame_.Init(&current_frame1_, &current_frame2_);
   last_frame_.Init(&last_frame1_, &last_frame2_);

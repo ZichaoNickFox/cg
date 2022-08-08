@@ -1,6 +1,6 @@
 #include "renderer/mesh/lines_mesh.h"
 
-namespace renderer {
+namespace cg {
 
 LinesMesh::LinesMesh(const std::vector<Triangle>& triangles, const glm::vec4& color) {
   colors_.assign(6 * triangles.size(), color);
@@ -33,7 +33,7 @@ LinesMesh::LinesMesh(const std::vector<AABB>& aabbs, const glm::vec4& force_colo
     colors_ = std::vector<glm::vec4>(colors_.size(), force_color);
   }
   int i = 0;
-  for (const renderer::AABB& aabb : aabbs) {
+  for (const cg::AABB& aabb : aabbs) {
     glm::vec4 a{aabb.minimum.x, aabb.minimum.y, aabb.minimum.z, 1.0};
     glm::vec4 b{aabb.minimum.x, aabb.maximum.y, aabb.minimum.z, 1.0};
     glm::vec4 c{aabb.minimum.x, aabb.maximum.y, aabb.maximum.z, 1.0};
@@ -77,4 +77,4 @@ LinesMesh::LinesMesh(const std::vector<glm::vec4>& positions, const std::vector<
   Setup();
 }
 
-} // namespace renderer
+} // namespace cg

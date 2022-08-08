@@ -19,7 +19,7 @@
 #include "renderer/shadow.h"
 #include "renderer/texture.h"
 
-namespace renderer {
+namespace cg {
 class Scene {
  public:
   virtual ~Scene() {}
@@ -76,4 +76,4 @@ class Scene {
 
   Inspector inspector_;
 };
-} // namespace renderer
+} // namespace cg

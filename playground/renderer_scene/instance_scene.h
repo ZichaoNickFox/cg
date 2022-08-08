@@ -17,7 +17,7 @@ class InstanceScene : public Scene {
   ModelObject rock_;
   ModelObject planet_;
 
-  std::shared_ptr<renderer::Camera> camera_ = std::make_shared<renderer::Camera>();
+  std::shared_ptr<cg::Camera> camera_ = std::make_shared<cg::Camera>();
 
   std::vector<glm::mat4> models_;
 };

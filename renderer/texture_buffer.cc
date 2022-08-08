@@ -1,6 +1,6 @@
 #include "renderer/texture_buffer.h"
 
-namespace renderer {
+namespace cg {
 
 TextureBuffer::TextureBuffer() {
   glGenBuffers_(1, &buffer_);

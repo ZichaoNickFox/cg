@@ -1,7 +1,7 @@
 #include "playground/renderer_scene/random_test_scene.h"
 
+#include "base/geometry.h"
 #include "base/math.h"
-#include "renderer/geometry.h"
 #include "renderer/shader.h"
 #include "renderer/transform.h"
 #include "playground/object/empty_object.h"

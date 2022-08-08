@@ -2,7 +2,7 @@
 
 #include "renderer/gl.h"
 
-namespace renderer {
+namespace cg {
 
 AutomicCounter::AutomicCounter() {
   glGenBuffers_(1, &automic_counter_buffer_);

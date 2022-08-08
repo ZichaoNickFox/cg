@@ -3,7 +3,7 @@
 #include <boost/circular_buffer.hpp>
 #include <queue>
 
-namespace renderer {
+namespace cg {
 class FrameStat {
  public:
   FrameStat();

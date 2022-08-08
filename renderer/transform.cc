@@ -6,7 +6,7 @@
 
 #include "base/debug.h" 
 
-namespace renderer {
+namespace cg {
 
 Transform::Transform(const Transform& other)
     : translation_(other.translation_), rotation_(other.rotation_), scale_(other.scale_) {}
@@ -32,4 +32,4 @@ Transform operator*(const glm::mat4& transform, const Transform& source) {
   return Transform(translation, rotation, scale);
 }
 
-}
+} // namespace cg

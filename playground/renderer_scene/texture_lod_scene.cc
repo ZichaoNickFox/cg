@@ -19,7 +19,7 @@ void TextureLodScene::OnEnter(Scene *context) {
 
   glEnable_(GL_DEPTH_TEST);
 
-  renderer::ColorFramebuffer::Option option;
+  cg::ColorFramebuffer::Option option;
   option.clear_color = context->clear_color();
   option.mrt = 1;
   option.size = glm::ivec2{kLevel0Size, kLevel0Size};
@@ -31,7 +31,7 @@ void TextureLodScene::OnEnter(Scene *context) {
 
 void TextureLodScene::InitTexture2DLod(Scene *context) {
   // TODO : why a 512 * 512 rgba8 texture must use 512 * 512 * 4 * 4 size?
-  renderer::Texture2DData data(3, kLevel0Size * kLevel0Size * 4 * 4);
+  cg::Texture2DData data(3, kLevel0Size * kLevel0Size * 4 * 4);
   // Red
   for (int i = 0; i < kLevel0Size * kLevel0Size * 4; i += 4) {
     data.mutable_data(0)[i] = 255;
@@ -54,7 +54,7 @@ void TextureLodScene::InitTexture2DLod(Scene *context) {
 
 void TextureLodScene::InitCubemapLod(Scene *context) {
   // TODO : why a 512 * 512 rgba8 texture must use 512 * 512 * 4 * 4 size?
-  renderer::CubemapData data(3, kLevel0Size * kLevel0Size * 4 * 4);
+  cg::CubemapData data(3, kLevel0Size * kLevel0Size * 4 * 4);
   for (int texture_unit_offset = 0; texture_unit_offset < 6; ++texture_unit_offset) {
     // Red
     for (int i = 0; i < kLevel0Size * kLevel0Size * 4; i += 4) {

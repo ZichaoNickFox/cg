@@ -6,7 +6,9 @@
 
 #include "base/debug.h"
 
-namespace renderer {
+using namespace cg;
+
+namespace cg {
 
 glm::mat4 Camera::GetProjectMatrix() const {
   if (type_ == Type::Perspective) {
@@ -82,11 +84,11 @@ void Camera::GetPickRay(const glm::vec2& cursor_pos_ss, glm::vec3* near_position
   *far_position_ws = world_spaces[1];
 }
 
-renderer::Ray Camera::GetPickRay(const glm::vec2& cursor_pos_ss) const {
+Ray Camera::GetPickRay(const glm::vec2& cursor_pos_ss) const {
   glm::vec3 near_position_ws;
   glm::vec3 far_position_ws;
   GetPickRay(cursor_pos_ss, &near_position_ws, &far_position_ws);
-  return renderer::Ray{near_position_ws, glm::normalize(far_position_ws - near_position_ws)};
+  return Ray{near_position_ws, glm::normalize(far_position_ws - near_position_ws)};
 }
 
 }

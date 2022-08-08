@@ -7,13 +7,13 @@
 #include <set>
 
 #include "base/debug.h"
+#include "base/geometry.h"
 #include "renderer/bvh.h"
 #include "renderer/mesh/empty_mesh.h"
-#include "renderer/geometry.h"
 #include "renderer/scene.h"
 #include "base/util.h"
 
-namespace renderer {
+namespace cg {
 namespace {
 void SetCamera(const Camera& camera, ShaderProgram* program) {
   program->SetVec3("camera.pos_ws", camera.transform().translation());
@@ -59,11 +59,11 @@ void RenderShader::SetModel(const Object& object) {
 }
 
 void RenderShader::SetCamera(const Camera& camera) {
-  renderer::SetCamera(camera, &program_);
+  cg::SetCamera(camera, &program_);
 }
 
 void RenderShader::SetCamera1(const Camera& camera_1) {
-  renderer::SetCamera1(camera_1, &program_);
+  cg::SetCamera1(camera_1, &program_);
 }
 
 void RenderShader::SetMaterialIndex(int material_index) {
@@ -100,7 +100,7 @@ void ComputeShader::SetTextureBinding(const TextureBinding& binding) {
                       binding.read_write_type, binding.texture.meta().gl_internal_format);
 }
 
-void ComputeShader::CheckTextureBindingInternalFormat(const renderer::Texture& texture) const {
+void ComputeShader::CheckTextureBindingInternalFormat(const cg::Texture& texture) const {
   GLuint internal_format = texture.meta().gl_internal_format;
   std::set<GLint> supported_format = { GL_R32UI, GL_RG32F, GL_RGBA32F };
   if (supported_format.count(internal_format) <= 0) {
@@ -109,11 +109,11 @@ void ComputeShader::CheckTextureBindingInternalFormat(const renderer::Texture& t
 }
 
 void ComputeShader::SetCamera(const Camera& camera) {
-  renderer::SetCamera(camera, &program_);
+  cg::SetCamera(camera, &program_);
 }
 
 void ComputeShader::SetCamera1(const Camera& camera_1) {
-  renderer::SetCamera1(camera_1, &program_);
+  cg::SetCamera1(camera_1, &program_);
 }
 
 void ComputeShader::SetResolution(const glm::vec2& resolution) {
@@ -327,4 +327,4 @@ RayTracingCanvasShader::RayTracingCanvasShader(const Param& param, const Scene& 
   program_.SetTexture("texture0", param.texture0); 
   program_.SetInt("sample_frame_num", param.sample_frame_num); 
 }
-} // namespace renderer
+} // namespace cg

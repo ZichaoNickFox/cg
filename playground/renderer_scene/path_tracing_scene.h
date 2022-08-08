@@ -2,17 +2,17 @@
 
 #include <unordered_map>
 
+#include "base/geometry.h"
 #include "renderer/automic_counter.h"
 #include "renderer/BVH.h"
 #include "renderer/camera.h"
 #include "renderer/definition.h"
-#include "renderer/geometry.h"
 #include "renderer/object.h"
 #include "renderer/primitive.h"
 #include "renderer/scene.h"
 #include "renderer/ssbo.h"
 
-class PathTracingScene : public renderer::Scene {
+class PathTracingScene : public cg::Scene {
  public:
   void OnEnter() override;
   void OnUpdate() override;
@@ -23,7 +23,7 @@ class PathTracingScene : public renderer::Scene {
   void Rasterization();
   void PathTracing();
 
-  std::vector<renderer::ObjectMeta> object_metas_ = {
+  std::vector<cg::ObjectMeta> object_metas_ = {
     {"cornell_box_floor", {glm::vec3(), glm::quat(), glm::vec3(0.002, 0.002, 0.002)},
         "cornell_box_floor", "cornell_box_floor"},
     {"cornell_box_left", {glm::vec3(), glm::quat(), glm::vec3(0.002, 0.002, 0.002)},
@@ -38,6 +38,6 @@ class PathTracingScene : public renderer::Scene {
         "cornell_box_tall_box", "cornell_box_tall_box"},
   };
 
-  renderer::Texture texture_in_out_;
-  renderer::Transform dirty_camera_transform_;
+  cg::Texture texture_in_out_;
+  cg::Transform dirty_camera_transform_;
 };

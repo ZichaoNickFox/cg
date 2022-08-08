@@ -2,7 +2,7 @@
 
 #include "base/debug.h"
 
-namespace renderer {
+namespace cg {
 
 // Ping means who has the "ball"
 template<typename PlayerType>
@@ -37,4 +37,4 @@ void PingPong<PlayerType>::Init(PlayerType* player1, PlayerType* player2) {
   ping_ = player1;
 }
 
-} // namespace renderer
+} // namespace cg

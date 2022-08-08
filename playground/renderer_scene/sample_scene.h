@@ -7,7 +7,7 @@
 #include "renderer/ssbo.h"
 #include "renderer/texture.h"
 
-class SampleScene : public renderer::Scene {
+class SampleScene : public cg::Scene {
  public:
   SampleScene() : samples_ssbo_(SSBO_USER_0) {}
   void OnEnter() override;
@@ -15,8 +15,8 @@ class SampleScene : public renderer::Scene {
   void OnRender() override;
   void OnExit() override;
 
-  renderer::ObjectMeta object_metas_ = { "sphere", {}, "sphere", "gold"};
+  cg::ObjectMeta object_metas_ = { "sphere", {}, "sphere", "gold"};
 
  private:
-  renderer::SSBO samples_ssbo_;
+  cg::SSBO samples_ssbo_;
 };

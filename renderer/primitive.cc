@@ -4,7 +4,7 @@
 
 #include "base/util.h"
 
-namespace renderer {
+namespace cg {
 
 void PrimitiveRepo::UpdateSSBO(const std::vector<int>& primitive_sequence) {
   CGCHECK(primitive_sequence.size() == primitives_.size());
@@ -42,4 +42,4 @@ void PrimitiveRepo::PushTriangle(const Triangle& triangle, int material_index) {
   primitives_.push_back({triangle, triangle.AsAABB(), material_index});
 }
 
-} // namespace renderer
+} // namespace cg

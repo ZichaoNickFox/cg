@@ -21,11 +21,11 @@ class PbrPrefilteredColorCubemapGenerator : public Scene {
   void OnExit() override;
 
  private:
-  std::shared_ptr<renderer::Camera> camera_ = std::make_shared<renderer::Camera>();
+  std::shared_ptr<cg::Camera> camera_ = std::make_shared<cg::Camera>();
   CubeObject cube_;
 
-  renderer::Camera cubemap_cameras_[6];
-  std::vector<renderer::Transform> transforms_ = {
+  cg::Camera cubemap_cameras_[6];
+  std::vector<cg::Transform> transforms_ = {
     // px image : camera looks nx, stand in (1, 0, 0)
     {glm::vec3(1, 0, 0), glm::angleAxis(float(M_PI) / 2.0f, glm::vec3(0.0f, 1.0f, 0.0f)), glm::vec3(1, 1, 1)},
     // nx image : camera looks px, stand in (-1, 0, 0)
@@ -44,5 +44,5 @@ class PbrPrefilteredColorCubemapGenerator : public Scene {
   static constexpr int kLevel0Size = 512;
   static constexpr int kMipmapMaxLevel = 5;
   static constexpr char kCubemapNamePrefix[] = "pbr_prefiltered_color_cubemap_level_";
-  renderer::ColorFramebuffer color_framebuffers_[kMipmapMaxLevel];
+  cg::ColorFramebuffer color_framebuffers_[kMipmapMaxLevel];
 };

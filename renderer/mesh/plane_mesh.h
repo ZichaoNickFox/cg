@@ -2,7 +2,7 @@
 
 #include "renderer/mesh.h"
 
-class PlaneMesh : public renderer::Mesh {
+class PlaneMesh : public cg::Mesh {
  public:
   PlaneMesh();
 };

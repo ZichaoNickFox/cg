@@ -14,7 +14,7 @@
 constexpr int kLevel0Size = 512;
 
 void PbrBRDFIntegrationMapGenerator::OnEnter(Scene *context) {
-  renderer::ColorFramebuffer::Option option;
+  cg::ColorFramebuffer::Option option;
   option.clear_color = context->clear_color();
   option.mrt = 1;
   option.size = glm::ivec2{kLevel0Size, kLevel0Size};
@@ -28,7 +28,7 @@ void PbrBRDFIntegrationMapGenerator::OnUpdate(Scene *context) {
 }
 
 void PbrBRDFIntegrationMapGenerator::OnRender(Scene *context, int instance_num) {
-  renderer::Texture2DData data(1, kLevel0Size * kLevel0Size * 4 * 4);
+  cg::Texture2DData data(1, kLevel0Size * kLevel0Size * 4 * 4);
 
   color_framebuffer_.Bind();
   EmptyObject empty_object;
@@ -38,7 +38,7 @@ void PbrBRDFIntegrationMapGenerator::OnRender(Scene *context, int instance_num) 
 
   data.UpdateData(0, color_framebuffer_.GetColorTextureData(0));
 
-  renderer::TextureParam param{1, kLevel0Size, kLevel0Size, &data};
+  cg::TextureParam param{1, kLevel0Size, kLevel0Size, &data};
   context->ResetTexture2D("pbr_BRDF_integration_map", param);
   context->SaveTexture2D("pbr_BRDF_integration_map");
   exit(0);

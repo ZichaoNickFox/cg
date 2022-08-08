@@ -2,7 +2,7 @@
 
 #include "renderer/mesh.h"
 
-class SphereMesh : public renderer::Mesh {
+class SphereMesh : public cg::Mesh {
  public:
   SphereMesh(int refine = 4);
 

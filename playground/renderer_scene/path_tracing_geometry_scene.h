@@ -2,14 +2,14 @@
 
 #include <unordered_map>
 
+#include "base/geometry.h"
 #include "renderer/automic_counter.h"
 #include "renderer/camera.h"
 #include "renderer/definition.h"
-#include "renderer/geometry.h"
 #include "renderer/scene.h"
 #include "renderer/ssbo.h"
 
-class PathTracingGeometryScene : public renderer::Scene {
+class PathTracingGeometryScene : public cg::Scene {
  public:
   PathTracingGeometryScene() {}
   void OnEnter() override;
@@ -18,7 +18,7 @@ class PathTracingGeometryScene : public renderer::Scene {
   void OnExit() override;
 
  private:
-  std::unordered_map<std::string, renderer::Sphere> sphere_map_ = {
+  std::unordered_map<std::string, cg::Sphere> sphere_map_ = {
     {"light", {1, {0, 5.4, 1}, {1, 1, 1, 1}, 3}},
     {"ground", {2, {0, -100.5, 1}, {0.8, 0.8, 0.8, 1.0}, 100}},
     {"ceiling", {3, {0, 102.5, 1}, {0.8, 0.8, 0.8, 1.0}, 100}},
@@ -31,5 +31,5 @@ class PathTracingGeometryScene : public renderer::Scene {
     {"metal2_ball", {10, {-0.6, -0.3, 2}, {0.8, 0.6, 0.2, 1.0}, 0.2}}
   };
 
-  renderer::Texture canvas_;
+  cg::Texture canvas_;
 };

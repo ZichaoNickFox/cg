@@ -6,7 +6,7 @@
 #include "renderer/ssbo.h"
 #include "renderer/texture.h"
 
-namespace renderer {
+namespace cg {
 
 struct Shadow {
   glm::mat4 light_space_vp;
@@ -27,4 +27,4 @@ struct ShadowRepo {
   SSBO ssbo_;
 };
 
-} // namespace renderer
+} // namespace cg

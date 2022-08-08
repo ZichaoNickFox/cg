@@ -2,17 +2,17 @@
 
 #include <glm/glm.hpp>
 
+#include "base/color.h"
 #include "base/math.h"
-#include "renderer/color.h"
 #include "renderer/inspector.h"
 #include "renderer/shader.h"
 
-using namespace renderer;
+using namespace cg;
 
 class GeometrySceneShader : public ComputeShader {
  public:
   struct Param {
-    renderer::Texture canvas;
+    cg::Texture canvas;
     size_t triangle_num;
     size_t aabb_num;
   };
@@ -36,21 +36,21 @@ void GeometryScene::OnEnter() {
                                    math::RandFromTo(-0.5, 0.5));
     glm::vec3 c_offset = glm::vec3(math::RandFromTo(-0.5, 0.5), math::RandFromTo(-0.5, 0.5),
                                    math::RandFromTo(-0.5, 0.5));
-    triangles_[i] = renderer::Triangle{center + a_offset, center + b_offset, center + c_offset};
+    triangles_[i] = cg::Triangle{center + a_offset, center + b_offset, center + c_offset};
   }
 
   for (int i = 0; i < kAABBNum; ++i) {
     glm::vec3 center = glm::vec3(math::RandFromTo(-5, 5), math::RandFromTo(-5, 5), math::RandFromTo(-5, 5));
     glm::vec3 offset = glm::vec3(math::RandFromTo(0.1, 0.5), math::RandFromTo(0.1, 0.5), math::RandFromTo(0.1, 0.5));
-    aabbs_[i] = renderer::AABB{center + offset, center - offset};
+    aabbs_[i] = cg::AABB{center + offset, center - offset};
   }
 
-  std::vector<renderer::TriangleGPU> triangle_gpus; 
-  std::vector<renderer::AABBGPU> aabb_gpus;
+  std::vector<cg::TriangleGPU> triangle_gpus; 
+  std::vector<cg::AABBGPU> aabb_gpus;
   std::transform(triangles_.begin(), triangles_.end(), std::back_inserter(triangle_gpus),
-                 [] (const renderer::Triangle& triangle) { return renderer::TriangleGPU(triangle, 0); });
+                 [] (const cg::Triangle& triangle) { return cg::TriangleGPU(triangle, 0); });
   std::transform(aabbs_.begin(), aabbs_.end(), std::back_inserter(aabb_gpus),
-                 [] (const renderer::AABB& aabb) { return renderer::AABBGPU(aabb); });
+                 [] (const cg::AABB& aabb) { return cg::AABBGPU(aabb); });
   ssbo_triangle_.SetData(util::VectorSizeInByte(triangle_gpus), triangle_gpus.data());
   ssbo_aabb_.SetData(util::VectorSizeInByte(aabb_gpus), aabb_gpus.data());
 
@@ -63,20 +63,20 @@ void GeometryScene::OnUpdate() {
 }
 
 void GeometryScene::Rasterization() {
-  renderer::Ray ray = camera_->GetPickRay(io_->GetCursorPosSS());
+  cg::Ray ray = camera_->GetPickRay(io_->GetCursorPosSS());
   for (int i = 0; i < kTriangleNum; ++i) {
-    glm::vec4 color = renderer::kBlack;
+    glm::vec4 color = cg::kBlack;
     if (RayTriangle(ray, triangles_[i]).hitted) {
-      color = renderer::kRed;
+      color = cg::kRed;
     }
 
     LinesShader({}, *this, {{triangles_[i]}, color});
   }
 
   for (int i = 0; i < kAABBNum; ++i) {
-    glm::vec4 color = renderer::kBlack;
+    glm::vec4 color = cg::kBlack;
     if (RayAABB(ray, aabbs_[i]).hitted) {
-      color = renderer::kRed;
+      color = cg::kRed;
     }
 
     LinesShader({}, *this, {{aabbs_[i]}, color});

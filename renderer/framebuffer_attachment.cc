@@ -2,7 +2,7 @@
 
 #include "renderer/framebuffer_attachment.h"
 
-namespace renderer {
+namespace cg {
 GLuint FramebufferAttachment::GetAttachmentBase() const {
   if (type == Type::kColor) {
     return GL_COLOR_ATTACHMENT0;
@@ -15,4 +15,4 @@ GLuint FramebufferAttachment::GetAttachmentBase() const {
     return GL_NONE;
   }
 }
-} // namespace renderer
+} // namespace cg

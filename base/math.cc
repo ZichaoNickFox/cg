@@ -54,7 +54,7 @@ std::vector<glm::vec4> Noise(int row_num, int col_num) {
 
 std::vector<float> Linspace(float from, float to, float interval) {
   std::vector<float> res;
-  for (float iter = from; from < to; iter += interval) {
+  for (float iter = from; iter < to; iter += interval) {
     res.push_back(iter);
   }
   return res;

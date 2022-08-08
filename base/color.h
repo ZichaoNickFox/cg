@@ -2,7 +2,7 @@
 
 #include "glm/glm.hpp"
 
-namespace renderer {
+namespace cg {
 const glm::vec4 kRed = glm::vec4(1, 0, 0, 1);
 const glm::vec4 kRed2 = glm::vec4(1 / 2., 0, 0, 1);
 const glm::vec4 kRed3 = glm::vec4(1 / 3., 0, 0, 1);
@@ -37,4 +37,4 @@ const glm::vec4 kColorCircle[kColorCircleNum] = {
     kRed, kOrange, kYellow, kGreen, kCyan, kBlue, kPurple, kWhite,
     kRed2, kOrange2, kYellow2, kGreen2, kCyan2, kBlue2, kPurple2, kWhite2,
     kRed3, kOrange3, kYellow3, kGreen3, kCyan3, kBlue3, kPurple3, kWhite3};
-}
+} // namespace cg

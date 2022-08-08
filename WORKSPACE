@@ -64,7 +64,7 @@ http_archive(
   urls = ["https://github.com/g-truc/glm/releases/download/0.9.9.8/glm-0.9.9.8.zip"],
 )
 
-# TODO here is window platform
+# TODO Only support window platform for now
 http_archive(
   name = "glew",
   build_file = "@//:thirdparty/glew.BUILD",
@@ -122,7 +122,7 @@ http_archive(
 http_archive(
   name = "matplotplusplus",
   build_file = "@//:thirdparty/matplotplusplus.BUILD",
-  sha256 = "5c3a1bdfee12f5c11fd194361040fe4760f57e334523ac125ec22b2cb03f27bb",
-  strip_prefix="matplotplusplus-1.1.0",
-  urls = [ "https://github.com/alandefreitas/matplotplusplus/archive/refs/tags/v1.1.0.tar.gz" ],
+  sha256 = "869c657d1c423ad25e9bbae3d992733de318c4ad5615efdf9b6556524f961283",
+  strip_prefix="matplotplusplus-master",
+  urls = [ "https://github.com/ZichaoNickFox/matplotplusplus/archive/refs/heads/master.zip" ],
 )

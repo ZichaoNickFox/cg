@@ -7,13 +7,13 @@
 #include "renderer/shader.h"
 #include "renderer/transform.h"
 
-using namespace renderer;
+using namespace cg;
 
-class RayTracingShader : public renderer::ComputeShader {
+class RayTracingShader : public cg::ComputeShader {
  public:
   struct Param {
-    std::vector<renderer::Sphere> spheres;
-    renderer::Texture canvas;
+    std::vector<cg::Sphere> spheres;
+    cg::Texture canvas;
   };
   RayTracingShader(const Param& param, const Scene& scene)
       : ComputeShader(scene, "ray_tracing") {

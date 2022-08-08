@@ -3,10 +3,13 @@
 #include <vector>
 
 #include <eigen/Core>
+#include <glm/glm.hpp>
+
 #include "renderer/camera.h"
 #include "renderer/scene.h"
 
-class FittingScene : public renderer::Scene {
+// https://github.com/Ubpa/GAMES102/tree/main/homeworks/hw1
+class FittingScene : public cg::Scene {
  public:
   void OnEnter() override;
   void OnUpdate() override;
@@ -18,4 +21,7 @@ class FittingScene : public renderer::Scene {
 
   std::vector<float> xs_;
   std::vector<float> ys_;
+
+  cg::Texture texture_;
+  std::vector<glm::vec4> data_;
 };

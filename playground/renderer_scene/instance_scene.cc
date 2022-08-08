@@ -13,7 +13,7 @@ void InstanceScene::OnEnter(Scene* context) {
 
   InitModelMatrices();
 
-  rock_.AddVertexAttribute({"model", renderer::kVertexLayoutIndex5, renderer::kVertexLayoutIndex8, 4, 1}, models_);
+  rock_.AddVertexAttribute({"model", cg::kVertexLayoutIndex5, cg::kVertexLayoutIndex8, 4, 1}, models_);
     
   context->SetCamera(camera_.get());
   camera_->mutable_transform()->SetTranslation(glm::vec3(0, 0, 15));

@@ -5,11 +5,11 @@
 
 #include <glm/glm.hpp>
 
-#include "renderer/color.h"
+#include "base/color.h"
 #include "renderer/gl.h"
 #include "renderer/texture.h"
 
-namespace renderer {
+namespace cg {
 struct FramebufferAttachment {
   enum Type {
     kColor = 0,
@@ -94,4 +94,4 @@ static const FramebufferAttachment kAttachmentPrimitiveIndex = {
     FramebufferAttachment::kColor, "primitive_index", {Texture::kTexture2D, -1, -1, 1, true, 1, 1, GL_R32UI,
     GL_RED_INTEGER, GL_UNSIGNED_INT, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER},
     1, FramebufferAttachment::kClear};
-} // namespace renderer
+} // namespace cg

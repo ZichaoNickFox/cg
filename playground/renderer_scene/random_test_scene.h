@@ -12,8 +12,8 @@ class RandomTestScene : public Scene {
   void OnExit() override;
 
  private:
-  std::shared_ptr<renderer::Camera> camera_ = std::make_shared<renderer::Camera>();
+  std::shared_ptr<cg::Camera> camera_ = std::make_shared<cg::Camera>();
   
-  renderer::Texture input_;
-  renderer::Texture output_;
+  cg::Texture input_;
+  cg::Texture output_;
 };

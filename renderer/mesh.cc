@@ -13,7 +13,7 @@
 #include "renderer/mesh/sphere_mesh.h"
 #include "renderer/object.h"
 
-namespace renderer {
+namespace cg {
 Mesh::Mesh() {
   glGenVertexArrays_(1, &vao_);
 }
@@ -182,4 +182,4 @@ std::string MeshRepo::GetName(int mesh_index) const {
   }
   return "";
 }
-}
+} // namespace cg

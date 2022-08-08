@@ -28,7 +28,10 @@ cc_library (
 cc_library(
   name = "base",
   srcs = [
+    "color.h",
     "eigen_util.h",
+    "geometry.h",
+    "geometry.cc",
     "math.h",
     "math.cc",
     "util.h",

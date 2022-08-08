@@ -12,7 +12,7 @@
 #include "renderer/shader.h"
 #include "base/util.h"
 
-using namespace renderer;
+using namespace cg;
 
 void ModelScene::OnEnter() {
   camera_->mutable_transform()->SetTranslation(glm::vec3(0.329854, 2.252055, 1.987056));

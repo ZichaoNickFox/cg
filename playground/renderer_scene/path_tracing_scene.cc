@@ -3,19 +3,19 @@
 #include "glm/gtx/string_cast.hpp"
 #include <memory>
 
+#include "base/color.h"
 #include "base/math.h"
-#include "renderer/color.h"
 #include "renderer/inspector.h"
 #include "renderer/mesh/lines_mesh.h"
 #include "renderer/shader.h"
 #include "renderer/transform.h"
 
-using namespace renderer;
+using namespace cg;
 
-class PathTracingShader : public renderer::ComputeShader {
+class PathTracingShader : public cg::ComputeShader {
  public:
   struct Param {
-    renderer::Texture texture_in_out;
+    cg::Texture texture_in_out;
     bool dirty = false;
   };
   PathTracingShader(const Param& param, const Scene& scene) 

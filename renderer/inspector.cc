@@ -6,14 +6,14 @@
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "base/color.h"
 #include "base/debug.h"
-#include "renderer/color.h"
 #include "renderer/io.h"
 #include "renderer/mesh/lines_mesh.h"
 #include "renderer/scene.h"
 #include "renderer/shader.h"
 
-namespace renderer {
+namespace cg {
 void Inspector::Inspect(const std::string& scene_name, Scene* scene) {
   bool open = true;
   ImGui::Begin(scene_name.c_str(), &open, ImGuiWindowFlags_AlwaysAutoResize);
@@ -251,4 +251,4 @@ RaytracingDebugCommon::RaytracingDebugCommon(const Texture& fullscreen_texture, 
 
   glEnable_(GL_DEPTH_TEST);
 }
-} // namespace renderer
+} // namespace cg

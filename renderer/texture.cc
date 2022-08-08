@@ -12,7 +12,7 @@
 #include "base/debug.h"
 #include "base/util.h"
 
-namespace renderer {
+namespace cg {
 
 template<typename ChannelType>
 void FlipVertically(const Texture::Meta meta, ChannelType* pixels) {
@@ -268,7 +268,7 @@ void TryMakeDir(const std::string& path_with_ext) {
 //    py
 // nx pz px nz
 //    ny
-// renderer::Texture CreateCubemapPreviewTexture2DImpl(const CubemapParam& param) {
+// cg::Texture CreateCubemapPreviewTexture2DImpl(const CubemapParam& param) {
 //   GLuint ret;
 //   glGenTextures_(1, &ret);
 //   glBindTexture_(GL_TEXTURE_2D, ret);
@@ -335,7 +335,7 @@ void SaveTexture(const std::string& file_name, const Texture& texture) {
 }
 
 // void SaveTexture2DImpl(const std::unordered_map<std::string, std::string>& paths,
-//                        const renderer::Texture& texture, int level_num, bool multiple_sample = false) {
+//                        const cg::Texture& texture, int level_num, bool multiple_sample = false) {
 //   GLuint target = multiple_sample ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
 //   glBindTexture_(target, texture.id());
 //   int w = texture.width();
@@ -399,7 +399,7 @@ void SaveTexture(const std::string& file_name, const Texture& texture) {
 // }
 
 // int SaveCubemapImpl(const std::unordered_map<std::string, std::string>& paths,
-//                     const renderer::Texture& texture, int level_num) {
+//                     const cg::Texture& texture, int level_num) {
 //   glBindTexture_(GL_TEXTURE_CUBE_MAP, texture.id());
 //   int w = texture.width();
 //   int h = texture.height();
@@ -429,7 +429,7 @@ void TextureRepo::Init(const Config& config) {
 //   LOG(ERROR) << "TextureRepo::SaveTexture2D " << name;
 //   CGCHECK(textures_.count(name) > 0) << name;
 //   State* state = &textures_[name];
-//   CGCHECK(state->texture.type() == renderer::Texture::Type::kTexture2D);
+//   CGCHECK(state->texture.type() == cg::Texture::Type::kTexture2D);
 //   SaveTexture2DImpl(state->paths, state->texture, state->level_num);
 // }
 
@@ -437,7 +437,7 @@ void TextureRepo::Init(const Config& config) {
 //   LOG(ERROR) << "TextureRepo::SaveCubemap " << name;
 //   CGCHECK(textures_.count(name) > 0) << name;
 //   State* state = &textures_[name];
-//   CGCHECK(state->texture.type() == renderer::Texture::Type::kCubemap);
+//   CGCHECK(state->texture.type() == cg::Texture::Type::kCubemap);
 //   const std::unordered_map<std::string, std::string>& path = state->paths;
 //   SaveCubemapImpl(path, state->texture, state->level_num);
 // }
@@ -448,7 +448,7 @@ void TextureRepo::Init(const Config& config) {
 //   State* state = &textures_[name];
 //   state->texture = CreateTextureImpl(param);
 //   state->loaded = true;
-//   state->texture_type = renderer::Texture::Texture2D;
+//   state->texture_type = cg::Texture::Texture2D;
 // }
 
 // Texture TextureRepo::CreateTexture(const TextureParam& param) {
@@ -467,7 +467,7 @@ void TextureRepo::Init(const Config& config) {
 //   State* state = &textures_[name];
 //   state->texture = ResetCubemapImpl(param);
 //   state->loaded = true;
-//   state->texture_type = renderer::Texture::Cubemap;
+//   state->texture_type = cg::Texture::Cubemap;
 // }
 
 int TextureRepo::AddUnique(const std::string& full_path) {
@@ -522,4 +522,4 @@ Texture TextureRepo::AsTexture2DArray(int width, int height) const {
   texture_2d_array_.Varify();
   return texture_2d_array_;
 }
-} // namespace renderer
+} // namespace cg

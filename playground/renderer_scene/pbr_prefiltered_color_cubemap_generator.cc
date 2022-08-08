@@ -29,7 +29,7 @@ void PbrPrefilteredColorCubemapGenerator::OnEnter(Scene *context)
   }
 
   for (int level = 0; level < kMipmapMaxLevel; ++level) {
-    renderer::ColorFramebuffer::Option option;
+    cg::ColorFramebuffer::Option option;
     option.clear_color = context->clear_color();
     option.mrt = 1;
     int size = kLevel0Size * static_cast<float>(std::pow(0.5, level));
@@ -48,7 +48,7 @@ void PbrPrefilteredColorCubemapGenerator::OnUpdate(Scene *context)
 void PbrPrefilteredColorCubemapGenerator::OnRender(Scene *context, int instance_num)
 {
   // TODO why * 4 * 4?
-  renderer::CubemapData data(kMipmapMaxLevel, kLevel0Size * kLevel0Size * 4 * 4);
+  cg::CubemapData data(kMipmapMaxLevel, kLevel0Size * kLevel0Size * 4 * 4);
   
   for (int level = 0; level < kMipmapMaxLevel; ++level) {
     for (int face = 0; face < 6; ++face) {
@@ -62,7 +62,7 @@ void PbrPrefilteredColorCubemapGenerator::OnRender(Scene *context, int instance_
       data.UpdateData(face, level, color_framebuffers_[level].GetColorTextureData(0));
     }
   }
-  renderer::CubemapParam param{kMipmapMaxLevel, kLevel0Size, kLevel0Size, &data};
+  cg::CubemapParam param{kMipmapMaxLevel, kLevel0Size, kLevel0Size, &data};
   context->ResetCubemap(output, param);
   context->SaveCubemap(output);
   exit(0);

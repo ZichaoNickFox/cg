@@ -1,13 +1,14 @@
-#include "renderer/geometry.h"
+#include "base/geometry.h"
 
 #include <glm/gtx/quaternion.hpp>
 #include "glm/gtx/string_cast.hpp"
 
+#include "base/color.h"
 #include "base/debug.h"
-#include "renderer/color.h"
+#include "base/math.h"
 #include "base/util.h"
 
-namespace renderer {
+namespace cg {
 std::string Ray::AsString() const {
   std::string res;
   res += "origin ~ " + glm::to_string(position);
@@ -279,4 +280,33 @@ TriangleGPU::TriangleGPU(const Triangle& triangle, int material_index) {
   b = glm::vec4(triangle.b, 0.0);
   c = glm::vec4(triangle.c, 0.0);
 }
-} // namespace renderer
+
+void LineSegment::Bresenham(int width, int height, const std::function<void(const glm::vec2&)>& callback) {
+  float dx = b.x - a.x;
+  float dy = b.y - a.y;
+  float xsign = dx > 0 ? 1 : -1;
+  float ysign = dy > 0 ? 1 : -1;
+  dx = std::abs(dx);
+  dy = std::abs(dy);
+  float xx, xy, yx, yy;
+  if (dx > dy) {
+    xx = xsign, xy = 0, yx = 0, yy = ysign;
+  } else {
+    std::swap(dx, dy);
+    xx = 0, xy = ysign, yx = xsign, yy = 0;
+  }
+  float D = 2 * dy - dx;
+  float y = 0;
+  std::vector<glm::vec2> res;
+  for (float x = 0; x < dx + 1; x += 1) {
+    glm::vec2 v(math::Clamp(a.x + x * xx, 0, width - 1), math::Clamp(a.y + x * xy + y * yy, 0, height - 1));
+    callback(v);
+    if (D >= 0) {
+      y += 1;
+      D -= 2 * dx;
+    }
+    D += 2 * dy;
+  }
+}
+
+} // namespace cg

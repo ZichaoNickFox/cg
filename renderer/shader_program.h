@@ -11,7 +11,7 @@
 #include "renderer/texture.h"
 #include "renderer/gl.h"
 
-namespace renderer {
+namespace cg {
 class ShaderProgram
 {
  public:
@@ -55,14 +55,14 @@ class ShaderProgram
 class ShaderProgramRepo {
  public:
   void Init(const Config& config);
-  renderer::ShaderProgram GetShader(const std::string& name) const;
+  cg::ShaderProgram GetShader(const std::string& name) const;
   void ReloadShaderPrograms();
 
  private:
   struct ShaderLoadState {
     ShaderLoadState(const ShaderConfig& in_config) { config = in_config; }
     bool loaded = false;
-    renderer::ShaderProgram shader;
+    cg::ShaderProgram shader;
     ShaderConfig config;
   };
   mutable std::unordered_map<std::string, ShaderLoadState> shaders_;

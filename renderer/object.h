@@ -9,7 +9,7 @@
 #include "renderer/ssbo.h"
 #include "renderer/transform.h"
 
-namespace renderer {
+namespace cg {
 
 struct ObjectMeta {
   std::string object_name;
@@ -56,4 +56,4 @@ struct ObjectRepo {
   TextureRepo* texture_repo_;
 };
 
-} // namespace renderer
+} // namespace cg

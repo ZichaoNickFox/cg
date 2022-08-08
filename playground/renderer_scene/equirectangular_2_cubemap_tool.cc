@@ -27,7 +27,7 @@ void Equirectangular2CubemapTool::OnEnter(Scene *context)
     cubemap_cameras_[i].SetAspect(1);
   }
 
-  renderer::ColorFramebuffer::Option option;
+  cg::ColorFramebuffer::Option option;
   option.clear_color = context->clear_color();
   option.mrt = 1;
   option.size = glm::ivec2{kEnvironmentCubemapSize, kEnvironmentCubemapSize};
@@ -43,7 +43,7 @@ void Equirectangular2CubemapTool::OnUpdate(Scene *context)
 
 void Equirectangular2CubemapTool::OnRender(Scene *context, int instance_num) {
   // TODO : why * 4 * 4 not * 4
-  renderer::CubemapData data(1, kEnvironmentCubemapSize * kEnvironmentCubemapSize * 4 * 4);
+  cg::CubemapData data(1, kEnvironmentCubemapSize * kEnvironmentCubemapSize * 4 * 4);
   for (int face = 0; face < 6; ++face) {
     color_framebuffer_.Bind();
     PbrEnvironmentCubemapGerneratorShader({context->GetTexture(input, true), &cubemap_cameras_[face]},
@@ -53,7 +53,7 @@ void Equirectangular2CubemapTool::OnRender(Scene *context, int instance_num) {
 
     data.UpdateData(face, 0, color_framebuffer_.GetColorTextureData(0));
   }
-  renderer::CubemapParam param{1, kEnvironmentCubemapSize, kEnvironmentCubemapSize, &data};
+  cg::CubemapParam param{1, kEnvironmentCubemapSize, kEnvironmentCubemapSize, &data};
   context->ResetCubemap(output, param);
   context->SaveCubemap(output);
   exit(0);

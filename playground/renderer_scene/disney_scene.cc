@@ -13,7 +13,7 @@
 #include "renderer/transform.h"
 #include "base/util.h"
 
-using namespace renderer;
+using namespace cg;
 
 class SSAOGeometryShader : public RenderShader {
  public:

@@ -1,12 +1,14 @@
 #pragma once
 
+#include <functional>
 #include <glm/glm.hpp>
 #include <string>
 #include <vector>
 
 #include "base/debug.h"
 
-namespace renderer {
+namespace cg {
+
 struct Ray {
   glm::vec3 position;
   glm::vec3 direction;
@@ -113,4 +115,13 @@ struct RayTriangleResult {
 
 RayTriangleResult RayTriangle(const Ray& ray, const Triangle& triangle);
 
-} // namespace renderer
+struct LineSegment {
+  LineSegment(const glm::vec2& in_a, const glm::vec2 in_b) : a(in_a), b(in_b) {}
+
+  void Bresenham(int width, int height, const std::function<void(const glm::vec2&)>& callback);
+
+  glm::vec2 a;
+  glm::vec2 b;
+};
+
+} // namespace cg

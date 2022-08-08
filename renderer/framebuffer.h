@@ -5,11 +5,11 @@
 #include <unordered_map>
 #include <vector>
 
-#include "renderer/color.h"
+#include "base/color.h"
 #include "renderer/texture.h"
 #include "renderer/framebuffer_attachment.h"
 
-namespace renderer {
+namespace cg {
 class Framebuffer {
 public:
   struct Option {
@@ -44,4 +44,4 @@ public:
 
   bool inited_ = false;
 };
-} // namespace renderer
+} // namespace cg

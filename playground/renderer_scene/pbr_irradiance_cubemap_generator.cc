@@ -28,7 +28,7 @@ void PbrIrradianceCubemapGenerator::OnEnter(Scene *context) {
     cubemap_cameras_[i].SetAspect(1);
   }
 
-  renderer::ColorFramebuffer::Option option;
+  cg::ColorFramebuffer::Option option;
   option.clear_color = context->clear_color();
   option.mrt = 1;
   option.size = glm::ivec2{kLevel0Size, kLevel0Size};
@@ -42,7 +42,7 @@ void PbrIrradianceCubemapGenerator::OnUpdate(Scene *context) {
 }
 
 void PbrIrradianceCubemapGenerator::OnRender(Scene *context, int instance_num) {
-  renderer::CubemapData data(3, kLevel0Size * kLevel0Size * 4 * 4);
+  cg::CubemapData data(3, kLevel0Size * kLevel0Size * 4 * 4);
   for (int face = 0; face < 6; ++face) {
     color_framebuffer_.Bind();
     PbrIrradianceCubemapGeneratorShader({context->GetTexture(input),
@@ -52,7 +52,7 @@ void PbrIrradianceCubemapGenerator::OnRender(Scene *context, int instance_num) {
 
     data.UpdateData(face, 0, color_framebuffer_.GetColorTextureData(0));
   }
-  renderer::CubemapParam param{1, kLevel0Size, kLevel0Size, &data};
+  cg::CubemapParam param{1, kLevel0Size, kLevel0Size, &data};
   context->ResetCubemap(output, param);
   context->SaveCubemap(output);
   exit(0);

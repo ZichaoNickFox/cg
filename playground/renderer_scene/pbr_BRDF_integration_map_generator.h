@@ -20,6 +20,6 @@ class PbrBRDFIntegrationMapGenerator : public Scene {
   void OnExit() override;
 
  private:
-  std::shared_ptr<renderer::Camera> camera_ = std::make_shared<renderer::Camera>();
-  renderer::ColorFramebuffer color_framebuffer_;
+  std::shared_ptr<cg::Camera> camera_ = std::make_shared<cg::Camera>();
+  cg::ColorFramebuffer color_framebuffer_;
 };

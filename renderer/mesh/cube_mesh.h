@@ -2,7 +2,7 @@
 
 #include "renderer/mesh.h"
 
-class CubeMesh : public renderer::Mesh {
+class CubeMesh : public cg::Mesh {
  public:
   CubeMesh();
 };

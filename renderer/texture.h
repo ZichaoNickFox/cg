@@ -11,7 +11,7 @@
 #include "renderer/config.h"
 #include "renderer/gl.h"
 
-namespace renderer {
+namespace cg {
 /*
 struct Texture2DData {
   Texture2DData() = default;
@@ -136,4 +136,4 @@ class TextureRepo {
   const Config* config_;
   mutable Texture texture_2d_array_;
 };
-} // namespace renderer
+} // namespace cg

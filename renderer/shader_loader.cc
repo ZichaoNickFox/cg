@@ -2,7 +2,7 @@
 
 #include "base/util.h"
 
-namespace renderer {
+namespace cg {
 
 ShaderParser::ShaderParser(const std::string& name) {
   name_ = name;
@@ -115,4 +115,4 @@ ShaderProgram ShaderLoader::Load(const std::string& name, const std::unordered_m
   }
 }
 
-} // namespace renderer
+} // namespace cg

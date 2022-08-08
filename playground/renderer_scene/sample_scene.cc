@@ -9,9 +9,9 @@
 #include "renderer/inspector.h"
 #include "renderer/transform.h"
 
-using namespace renderer;
+using namespace cg;
 
-class SampleSceneShader : public renderer::RenderShader {
+class SampleSceneShader : public cg::RenderShader {
  public:
   SampleSceneShader(const Scene& scene, const Object& object)
       : RenderShader(scene, "sample_scene") {

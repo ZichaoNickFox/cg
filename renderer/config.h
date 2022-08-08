@@ -4,7 +4,7 @@
 
 #include "renderer/proto/config.pb.h"
 
-namespace renderer {
+namespace cg {
 
 class Config {
  public:
@@ -22,4 +22,4 @@ class Config {
   std::unordered_map<std::string, ModelConfig> model_configs_;
 };
 
-} // namespace renderer
+} // namespace cg

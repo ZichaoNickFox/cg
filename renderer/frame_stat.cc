@@ -5,7 +5,7 @@
 
 #include "base/debug.h"
 
-namespace renderer {
+namespace cg {
 FrameStat::FrameStat() {
   frame_intervals_.set_capacity(acc_frame_num_);
 }

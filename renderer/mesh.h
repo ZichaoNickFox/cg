@@ -12,7 +12,7 @@
 #include "renderer/transform.h"
 #include "base/util.h"
 
-namespace renderer {
+namespace cg {
 constexpr char kVertexAttributePosition[] = "position";
 constexpr char kVertexAttributeNormal[] = "normal";
 constexpr char kVertexAttributeTexcoord[] = "texcoord";
@@ -155,4 +155,4 @@ class MeshRepo {
   std::unordered_map<int, std::unique_ptr<Mesh>> index_2_mesh_;
   std::unordered_map<std::string, int> name_2_index_;
 };
-} // namespace renderer
+} // namespace cg

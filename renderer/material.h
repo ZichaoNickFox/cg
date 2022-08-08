@@ -12,7 +12,7 @@
 #include "renderer/ssbo.h"
 #include "renderer/texture.h"
 
-namespace renderer {
+namespace cg {
 
 constexpr char kAlbedo[] = "albedo";
 constexpr char kAmbient[] = "ambient";

@@ -6,7 +6,7 @@
 
 // Quaternion
 // https://krasjet.github.io/quaternion/quaternion.pdf
-namespace renderer {
+namespace cg {
 class Transform {
  public:
   Transform() {}
@@ -36,4 +36,4 @@ class Transform {
   glm::vec3 scale_ = glm::vec3(1, 1, 1);
 };
 
-} // namespace renderer
+} // namespace cg

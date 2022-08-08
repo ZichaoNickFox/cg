@@ -2,7 +2,7 @@
 
 #include "renderer/model_loader.h"
 
-namespace renderer {
+namespace cg {
 void ObjectRepo::Init(const Config* config, MeshRepo* mesh_repo, MaterialRepo* material_repo,
                       TextureRepo* texture_repo) {
   config_ = config;

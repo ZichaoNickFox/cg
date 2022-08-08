@@ -21,8 +21,8 @@ class ShadowScene : public Scene {
   void OnExit() override;
 
  private:
-  void RunDepthBufferPass(Scene* context, renderer::DepthBufferPass* depth_buffer_pass);
-  void RunForwardPass_Deprecated(Scene* context, renderer::ForwardPass* forward_pass);
+  void RunDepthBufferPass(Scene* context, cg::DepthBufferPass* depth_buffer_pass);
+  void RunForwardPass_Deprecated(Scene* context, cg::ForwardPass* forward_pass);
 
   int point_lights_num_ = 10;
   std::vector<PointLightObject> point_lights_;
@@ -33,11 +33,11 @@ class ShadowScene : public Scene {
 
   ModelObject nanosuit_;
 
-  std::shared_ptr<renderer::Camera> camera_ = std::make_shared<renderer::Camera>();
+  std::shared_ptr<cg::Camera> camera_ = std::make_shared<cg::Camera>();
 
-  renderer::Framebuffer depth_framebuffer_;
-  renderer::Framebuffer forward_framebuffer_;
+  cg::Framebuffer depth_framebuffer_;
+  cg::Framebuffer forward_framebuffer_;
 
-  renderer::DepthBufferPass depth_buffer_pass_;
-  renderer::ForwardPass forward_pass_;
+  cg::DepthBufferPass depth_buffer_pass_;
+  cg::ForwardPass forward_pass_;
 };

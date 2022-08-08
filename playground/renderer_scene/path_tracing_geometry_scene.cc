@@ -9,13 +9,13 @@
 #include "renderer/shader.h"
 #include "renderer/transform.h"
 
-using namespace renderer;
+using namespace cg;
 
-class PathTracingGeometrySceneShader : public renderer::ComputeShader {
+class PathTracingGeometrySceneShader : public cg::ComputeShader {
  public:
   struct Param {
-    std::vector<renderer::Sphere> spheres;
-    renderer::Texture canvas;
+    std::vector<cg::Sphere> spheres;
+    cg::Texture canvas;
   };
   PathTracingGeometrySceneShader(const Param& param, const Scene& scene)
       : ComputeShader(scene, "path_tracing_geometry_scene") {

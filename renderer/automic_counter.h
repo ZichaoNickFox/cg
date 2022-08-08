@@ -3,7 +3,7 @@
 #include "renderer/gl.h"
 #include <glm/glm.hpp>
 
-namespace renderer {
+namespace cg {
 
 class AutomicCounter {
  public:

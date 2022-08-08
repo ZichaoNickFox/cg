@@ -23,9 +23,9 @@ class TextureLodScene : public Scene {
   void InitTexture2DLod(Scene *context);
   void InitCubemapLod(Scene *context);
 
-  renderer::Texture lod_texture2d_;
-  renderer::Texture lod_cubemap_;
+  cg::Texture lod_texture2d_;
+  cg::Texture lod_cubemap_;
 
-  std::shared_ptr<renderer::Camera> camera_ = std::make_shared<renderer::Camera>();
-  renderer::ColorFramebuffer color_framebuffer_;
+  std::shared_ptr<cg::Camera> camera_ = std::make_shared<cg::Camera>();
+  cg::ColorFramebuffer color_framebuffer_;
 };
