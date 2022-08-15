@@ -6,6 +6,7 @@
 #include "backends/imgui_impl_opengl3.h"
 #include "glog/logging.h"
 #include "imgui.h"
+#include "implot.h"
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -74,6 +75,8 @@ int main(int argc, char **argv)
   ImGui::StyleColorsDark();
   ImGuiIO& imgui_io = ImGui::GetIO();
 
+  ImPlot::CreateContext();
+
   ImGui_ImplGlfw_InitForOpenGL(window, true);
   const char *glsl_version = "#version 150";
   ImGui_ImplOpenGL3_Init(glsl_version);
@@ -129,6 +132,8 @@ int main(int argc, char **argv)
   }
 
   playground.Destoy();
+
+  ImPlot::DestroyContext();
 
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();

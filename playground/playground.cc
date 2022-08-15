@@ -4,6 +4,7 @@
 #include "imgui.h"
 
 #include "playground/geometry_scene/fitting_scene.h"
+#include "playground/geometry_scene/implot_demo_scene.h"
 #include "playground/physics_scene/angry_bunny_scene.h"
 //#include "playground/renderer_scene/equirectangular_2_cubemap_tool.h"
 //#include "playground/renderer_scene/forward_shading_scene.h"
@@ -61,6 +62,7 @@ const std::unordered_map<std::string, std::function<cg::Scene*()>> kFactory = {
   {"SSAOScene", [] () { return new SSAOScene(); }},
   {"AngryBunnyScene", [] () { return new AngryBunnyScene(); }},
   {"FittingScene", [] () { return new FittingScene(); }},
+  {"ImPlotDemoScene", [] () { return new ImPlotDemoScene(); }},
 };
 
 Playground::Playground() {

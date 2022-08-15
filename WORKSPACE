@@ -120,8 +120,9 @@ http_archive(
 )
 
 http_archive(
-  name = "matplotplusplus",
-  build_file = "@//:thirdparty/matplotplusplus.BUILD",
-  strip_prefix="matplotplusplus-master",
-  urls = [ "https://github.com/ZichaoNickFox/matplotplusplus/archive/refs/heads/master.zip" ],
+  name = "implot",
+  build_file = "@//:thirdparty/implot.BUILD",
+  sha256 = "90a4446a8a08005867be6857d6d1b4f978cd49eb74c7c62a87367b3af15530a5",
+  strip_prefix="implot-master",
+  urls = [ "https://github.com/epezent/implot/archive/refs/heads/master.zip" ],
 )

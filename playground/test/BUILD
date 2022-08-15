@@ -4,7 +4,7 @@ cc_test (
     "eigen_test.cc",
   ],
   deps = [
-    "//base:eigen_util",
+    "//base:base",
     "//renderer:renderer",
     "@eigen",
     "@gtest//:gtest",

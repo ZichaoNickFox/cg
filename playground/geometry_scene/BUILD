@@ -5,6 +5,8 @@ cc_library(
   srcs = [
     "fitting_scene.h",
     "fitting_scene.cc",
+    "implot_demo_scene.h",
+    "implot_demo_scene.cc",
   ],
   deps = [
     "//base:base",

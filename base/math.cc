@@ -52,11 +52,16 @@ std::vector<glm::vec4> Noise(int row_num, int col_num) {
   return res;
 }
 
-std::vector<float> Linspace(float from, float to, float interval) {
-  std::vector<float> res;
-  for (float iter = from; iter < to; iter += interval) {
-    res.push_back(iter);
+std::vector<float> Linspace(float from, float to, int num) {
+  CGCHECK(num > 0);
+  std::vector<float> res(num);
+  float interval = (to - from) / num;
+  float iter = from;
+  for (int i = 0; i < num - 1; ++i) {
+    res[i] = iter;
+    iter += interval;
   }
+  res[num - 1] = to;
   return res;
 }
 
@@ -66,6 +71,14 @@ std::vector<float> Transform(const std::vector<float>& vs, const std::function<f
     res[i] = func(vs[i]);
   }
   return res;
+}
+
+float Min(const std::vector<float>& vs) {
+  return *std::min_element(vs.begin(), vs.end());
+}
+
+float Max(const std::vector<float>& vs) {
+  return *std::max_element(vs.begin(), vs.end());
 }
 
 } // namespace math

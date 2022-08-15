@@ -5,10 +5,11 @@ cc_library (
   name = "geometry",
   srcs = [
     "plot.h",
+    "plot.cc",
   ],
   deps = [
     "//base:base",
     "@glew",
-    "@matplotplusplus",
+    "@implot",
   ],
 )

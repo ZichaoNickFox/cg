@@ -1,6 +1,9 @@
 #pragma once
 
 #include <cmath>
+#include <Eigen/Dense>
+#include <functional>
+#include <glm/glm.hpp>
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -8,11 +11,11 @@
 #else
 #include <math.h>
 #endif
-#include <functional>
-#include <glm/glm.hpp>
 #include <vector>
 
 #include "base/debug.h"
+
+namespace eigen = Eigen;
 
 namespace math {
 
@@ -70,7 +73,16 @@ int QuickSelect(std::vector<ElemType>* elems, int begin, int end, int index, con
   return index;
 }
 
-std::vector<float> Linspace(float from, float to, float interval);
+std::vector<float> Linspace(float from, float to, int num);
 std::vector<float> Transform(const std::vector<float>& vs, const std::function<float(float)>& func);
 
+float Min(const std::vector<float>& vs);
+float Max(const std::vector<float>& vs);
+
+inline eigen::VectorXd Std2Eigen(std::vector<double> v) {
+  return eigen::Map<eigen::VectorXd>(v.data(), v.size());
+}
+inline eigen::VectorXf Std2Eigen(std::vector<float> v) {
+  return eigen::Map<eigen::VectorXf>(v.data(), v.size());
+}
 } // namespace math

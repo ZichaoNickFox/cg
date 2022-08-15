@@ -5,8 +5,6 @@ cc_library (
   name = "debug",
   srcs = [
     "debug.h",
-    "math.h",
-    "math.cc"
   ],
   deps = [
     "@boost//:stacktrace",
@@ -29,7 +27,6 @@ cc_library(
   name = "base",
   srcs = [
     "color.h",
-    "eigen_util.h",
     "geometry.h",
     "geometry.cc",
     "math.h",
