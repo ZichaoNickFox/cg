@@ -8,6 +8,7 @@
 
 #include "base/math.h"
 #include "renderer/transform.h"
+#include "rhi/device.h"
 #include "playground/renderer_scene/common.h"
 
 void NormalScene::OnEnter(Scene *context)
@@ -40,7 +41,7 @@ void NormalScene::OnEnter(Scene *context)
                         {glm::vec3(1, 0, 0), glm::vec3(1, 0, 0)}, GL_LINES};
   line_.SetMesh(line_data);
 
-  glEnable_(GL_DEPTH_TEST);
+  cg::rhi::GetDevice().SetDepthTestEnabled(true);
 }
 
 void NormalScene::OnUpdate(Scene *context)

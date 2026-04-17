@@ -1,0 +1,20 @@
+add_library(
+  cg_geometry_scene
+  STATIC
+    fitting_scene.h
+    fitting_scene.cc
+    implot_demo_scene.h
+    implot_demo_scene.cc
+)
+target_link_libraries(
+  cg_geometry_scene
+  PUBLIC
+    cg::project_options
+    cg_base
+    cg_geometry
+    cg_renderer
+    cg::eigen
+    cg::glm
+    cg::imgui
+)
+add_library(cg::geometry_scene ALIAS cg_geometry_scene)

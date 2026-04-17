@@ -149,9 +149,9 @@
         "platform/win32/arguments": "",
         "platform/win32/autoconnect": true,
         "platform/win32/environment": "",
-        "platform/win32/executable": "C:/Users/liuzichao/Desktop/cg/bazel-bin/playground/window.exe",
+        "platform/win32/executable": "C:/Users/liuzichao/Desktop/cg/build/dev/bin/window.exe",
         "platform/win32/executable/history": [
-            "C:/Users/liuzichao/Desktop/cg/bazel-bin/playground/window.exe"
+            "C:/Users/liuzichao/Desktop/cg/build/dev/bin/window.exe"
         ],
         "platform/win32/workingdir": "C:/Users/liuzichao/Desktop/cg",
         "platform/win32/workingdir/history": [

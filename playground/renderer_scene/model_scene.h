@@ -6,6 +6,7 @@
 
 #include "renderer/camera.h"
 #include "renderer/light.h"
+#include "rhi/types.h"
 #include "renderer/scene.h"
 #include "renderer/shader.h"
 #include "renderer/texture.h"
@@ -42,6 +43,6 @@ class ModelScene : public cg::Scene {
   float rotate_speed_ = 0.01;
 
   bool enable_cull_face_ = false;
-  int call_face_ = GL_BACK;
-  int cw_ = GL_CW;
+  cg::rhi::CullMode cull_mode_ = cg::rhi::CullMode::kBack;
+  cg::rhi::FrontFace front_face_ = cg::rhi::FrontFace::kClockwise;
 };

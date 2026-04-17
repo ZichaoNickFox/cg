@@ -1,145 +1,217 @@
 #include "playground/renderer_scene/shadow_scene.h"
 
-#include <glm/glm.hpp>
+#include <algorithm>
 #include <glm/ext/quaternion_trigonometric.hpp>
-#include <glm/gtx/string_cast.hpp>
-#include <glm/gtx/transform.hpp>
-#include "glog/logging.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "imgui.h"
-#include <memory>
 
-#include "base/math.h"
-#include "renderer/constants.h"
 #include "renderer/framebuffer_attachment.h"
-#include "renderer/transform.h"
-#include "base/util.h"
-#include "playground/object/empty_object.h"
-#include "playground/renderer_scene/common.h"
+#include "renderer/shader.h"
 
-void ShadowScene::OnEnter(Scene *context)
-{
-  for (int i = 0; i < point_lights_num_; ++i) {
-    point_lights_.push_back(PointLightObject());
-    glm::vec3 point_light_pos(util::RandFromTo(-5, 5), util::RandFromTo(0, 5), util::RandFromTo(-5, 5));
-    point_lights_[i].mutable_transform()->SetTranslation(point_light_pos);
-    point_lights_[i].mutable_transform()->SetScale(glm::vec3(0.2, 0.2, 0.2));
-    glm::vec4 color(util::RandFromTo(0, 1), util::RandFromTo(0, 1), util::RandFromTo(0, 1), 1.0);
-    point_lights_[i].SetColor(color);
-  }
+using namespace cg;
 
-  camera_->mutable_transform()->SetTranslation(glm::vec3(1.78, 0.47, -2.30));
-  camera_->mutable_transform()->SetRotation(glm::quat(-0.66, 0.19, -0.70, -0.18));
-  context->SetCamera(camera_.get());
+namespace {
+constexpr char kShadowModeShadowMap[] = "ShadowMap";
+constexpr char kShadowModePCF[] = "PCF";
+constexpr char kShadowModePCSS[] = "PCSS";
+const char* kShadowModeNames[] = {kShadowModeShadowMap, kShadowModePCF, kShadowModePCSS};
 
-  plane_.mutable_transform()->SetTranslation(glm::vec3(0, -1, 0));
-  plane_.mutable_transform()->SetScale(glm::vec3(10, 0, 10));
-
-  directional_light_.Init(context);
-  directional_light_.mutable_transform()->SetTranslation(glm::vec3(-5, 6.3, -4.6));
-  directional_light_.mutable_transform()->SetRotation(glm::quat(glm::vec3(2.48, -0.82, -3.09)));
-
-  nanosuit_.Init(context, "nanosuit", "nanosuit");
-  for (int i = 0; i < nanosuit_.model_part_num(); ++i) {
-    glm::quat rotation = glm::angleAxis(-float(M_PI) / 2, glm::vec3(1, 0, 0));
-    nanosuit_.mutable_model_part(i)->mutable_transform()->SetRotation(rotation);
-    nanosuit_.mutable_model_part(i)->mutable_transform()->SetScale(glm::vec3(0.2, 0.2, 0.2));
-    nanosuit_.mutable_model_part(i)->mutable_transform()->SetTranslation(glm::vec3(0, -0.5, 0));
-  }
-  
-  glEnable_(GL_DEPTH_TEST);
-
-  depth_framebuffer_.Init({context->framebuffer_size(), {cg::kAttachmentDepth}});
-  depth_buffer_pass_.Init(&depth_framebuffer_, camera_);
-
-  forward_framebuffer_.Init({context->framebuffer_size(), {cg::kAttachmentColor, cg::kAttachmentDepth}});
-  forward_pass_.Init(&forward_framebuffer_);
+const char* ShadowModeName(ShadowScene::ShadowMode shadow_mode) {
+  return kShadowModeNames[shadow_mode];
 }
 
-void ShadowScene::OnUpdate(Scene *context)
-{
-  OnUpdateCommon _(context, "SSAOScene");
+class ShadowSceneDepthShader : public RenderShader {
+ public:
+  ShadowSceneDepthShader(const glm::mat4& light_view_project, const Scene& scene, const Object& object)
+      : RenderShader(scene, "shadow_scene_depth") {
+    SetModel(object);
+    program_.SetMat4("light_view_project", light_view_project);
+    Run(scene, object);
+  }
+};
 
+class ShadowSceneShader : public RenderShader {
+ public:
+  struct Param {
+    glm::mat4 light_view_project;
+    Texture shadow_map;
+    glm::vec3 light_direction_ws;
+    glm::vec3 light_color;
+    float light_intensity = 1.0f;
+    float ambient_strength = 0.15f;
+    float shadow_bias = 0.001f;
+    float normal_bias_scale = 0.01f;
+    int shadow_mode = ShadowScene::kShadowMap;
+    float pcf_filter_radius = 1.0f;
+    float pcss_light_size_uv = 0.0f;
+    float pcss_blocker_search_scale = 1.0f;
+    float pcss_min_filter_radius = 0.0f;
+    float pcss_max_filter_radius = 1.0f;
+    bool disable_shadow = false;
+    bool debug_show_shadow_factor = false;
+  };
+
+  ShadowSceneShader(const Param& param, const Scene& scene, const Object& object)
+      : RenderShader(scene, "shadow_scene") {
+    SetModel(object);
+    SetCamera(scene.camera());
+    SetMaterialIndex(object.material_index);
+
+    program_.SetMat4("light_view_project", param.light_view_project);
+    program_.SetTexture("shadow_map", param.shadow_map);
+    program_.SetVec3("light_direction_ws", param.light_direction_ws);
+    program_.SetVec3("light_color", param.light_color);
+    program_.SetFloat("light_intensity", param.light_intensity);
+    program_.SetFloat("ambient_strength", param.ambient_strength);
+    program_.SetFloat("shadow_bias", param.shadow_bias);
+    program_.SetFloat("normal_bias_scale", param.normal_bias_scale);
+    program_.SetInt("shadow_mode", param.shadow_mode);
+    program_.SetFloat("pcf_filter_radius", param.pcf_filter_radius);
+    program_.SetFloat("pcss_light_size_uv", param.pcss_light_size_uv);
+    program_.SetFloat("pcss_blocker_search_scale", param.pcss_blocker_search_scale);
+    program_.SetFloat("pcss_min_filter_radius", param.pcss_min_filter_radius);
+    program_.SetFloat("pcss_max_filter_radius", param.pcss_max_filter_radius);
+    program_.SetBool("disable_shadow", param.disable_shadow);
+    program_.SetBool("debug_show_shadow_factor", param.debug_show_shadow_factor);
+    Run(scene, object);
+  }
+};
+
+}  // namespace
+
+void ShadowScene::OnEnter() {
+  camera_->mutable_transform()->SetTranslation(glm::vec3(0.0f, 3.0f, 8.0f));
+  camera_->mutable_transform()->SetRotation(glm::angleAxis(-0.28f, glm::vec3(1.0f, 0.0f, 0.0f)));
+
+  shadow_fbo_.Init({shadow_map_size_, {kAttachmentDepth}});
+  main_fbo_.Init({io().framebuffer_size(), {kAttachmentColor, kAttachmentDepth}});
+
+  object_repo_.AddOrReplace(object_metas_);
+}
+
+void ShadowScene::OnUpdate() {
+  int shadow_mode = shadow_mode_;
+  ImGui::Text("Shadow Scene");
+  ImGui::Combo("shadow mode", &shadow_mode, kShadowModeNames, IM_ARRAYSIZE(kShadowModeNames));
+  shadow_mode_ = static_cast<ShadowMode>(shadow_mode);
+  ImGui::Text("Current mode: %s", ShadowModeName(shadow_mode_));
+  ImGui::Text("PCF shader: playground/shader/shadow_scene/shadow_scene_pcf.glsl");
+  ImGui::Text("PCSS shader: playground/shader/shadow_scene/shadow_scene_pcss.glsl");
+  ImGui::Text("Shadow map: %d x %d", shadow_map_size_.x, shadow_map_size_.y);
   ImGui::Separator();
 
-  ImGui::Text("Camera Type");
-  ImGui::SameLine();
+  ImGui::SliderFloat3("light position", &light_position_.x, -10.0f, 10.0f);
+  ImGui::SliderFloat3("light target", &light_target_.x, -5.0f, 5.0f);
+  ImGui::SliderFloat("light ortho width", &light_ortho_width_, 2.0f, 30.0f);
+  ImGui::SliderFloat("light near", &light_near_clip_, 0.01f, 5.0f);
+  ImGui::SliderFloat("light far", &light_far_clip_, 2.0f, 60.0f);
+  ImGui::Separator();
 
-  for (int i = 0; i < point_lights_num_; ++i) {
-    point_lights_[i].OnUpdate(context);
+  ImGui::SliderFloat("light intensity", &light_intensity_, 0.0f, 4.0f);
+  ImGui::SliderFloat("ambient strength", &ambient_strength_, 0.0f, 1.0f);
+  ImGui::SliderFloat("shadow bias", &shadow_bias_, 0.0f, 0.02f, "%.5f");
+  ImGui::SliderFloat("normal bias scale", &normal_bias_scale_, 0.0f, 0.1f, "%.4f");
+  if (shadow_mode_ == kPCF) {
+    ImGui::SliderFloat("pcf filter radius", &pcf_filter_radius_, 0.0f, 6.0f);
+  } else if (shadow_mode_ == kPCSS) {
+    ImGui::SliderFloat("pcss light size ws", &pcss_light_size_ws_, 0.0f, 4.0f);
+    ImGui::SliderFloat("pcss blocker search scale", &pcss_blocker_search_scale_, 0.0f, 8.0f);
+    ImGui::SliderFloat("pcss min filter radius", &pcss_min_filter_radius_, 0.0f, 8.0f);
+    ImGui::SliderFloat("pcss max filter radius", &pcss_max_filter_radius_, 0.0f, 16.0f);
   }
+  ImGui::Separator();
 
-  coord_.OnUpdate(context);
-  plane_.OnUpdate(context);
-  directional_light_.OnUpdate(context);
+  ImGui::Checkbox("show shadow map", &debug_show_shadow_map_);
+  ImGui::Checkbox("disable shadow", &debug_disable_shadow_);
+  ImGui::Checkbox("show shadow factor", &debug_show_shadow_factor_);
 }
 
-void ShadowScene::OnRender(Scene *context)
-{
-  RunDepthBufferPass(context, &depth_buffer_pass_);
+void ShadowScene::OnRender() {
+  RenderShadowMap();
+  RenderMainPass();
 
-  forward_pass_.Update(depth_buffer_pass_.scene_shadow_info());
-  RunForwardPass_Deprecated(context, &forward_pass_);
-
-  EmptyObject quad;
-  FullscreenQuadShader({forward_framebuffer_.GetTexture(cg::kAttachmentColor.name)}, context, &quad);
-  quad.OnRender(context);
+  if (debug_show_shadow_map_) {
+    FullscreenQuadShader({shadow_fbo_.GetTexture("depth")}, *this);
+  } else {
+    FullscreenQuadShader({main_fbo_.GetTexture("color")}, *this);
+  }
 }
 
-void ShadowScene::RunDepthBufferPass(Scene* context, cg::DepthBufferPass* depth_buffer_pass) {
-  depth_buffer_pass->Begin();
+void ShadowScene::RenderShadowMap() {
+  shadow_fbo_.Bind();
 
-  DepthBufferShader::Param param{depth_buffer_pass->camera(), context->GetShader("depth_buffer")};
-  DepthBufferShader{param, &plane_};
-  plane_.OnRender(context);
-
-  for (int i = 0; i < nanosuit_.model_part_num(); ++i) {
-    ModelPartObject* model_part = nanosuit_.mutable_model_part(i);
-    DepthBufferShader{param, model_part};
-    model_part->OnRender(context);
+  const glm::mat4 light_view_project = GetLightViewProject();
+  for (const Object& object : object_repo_.GetObjects()) {
+    ShadowSceneDepthShader(light_view_project, *this, object);
   }
 
-  depth_buffer_pass->End();
+  shadow_fbo_.Unbind();
 }
 
-void ShadowScene::RunForwardPass_Deprecated(Scene* context, cg::ForwardPass* forward_pass) {
-  forward_pass->Begin();
+void ShadowScene::RenderMainPass() {
+  main_fbo_.Bind();
 
-  const cg::MaterialProperty& material_property = cg::kMaterialProperties.at("gold");
-  PhongShader::Param phong{material_property.ambient, material_property.diffuse,
-                           material_property.specular, material_property.shininess};
-  phong.scene_shadow_info = forward_pass->prepass_shadow_info();
-  phong.scene_light_info = AsSceneLightInfo(point_lights_);
-  for (int i = 0; i < point_lights_num_; ++i) {
-    ColorShader({point_lights_[i].color()}, context, &point_lights_[i]);
-    point_lights_[i].OnRender(context);
+  float light_size_uv = 0.0f;
+  if (light_ortho_width_ > 1e-6f) {
+    light_size_uv = pcss_light_size_ws_ / light_ortho_width_;
   }
+  float pcss_min_filter_radius = std::min(pcss_min_filter_radius_, pcss_max_filter_radius_);
+  float pcss_max_filter_radius = std::max(pcss_min_filter_radius_, pcss_max_filter_radius_);
 
-  LinesShader({}, context, &coord_);
-  coord_.OnRender(context);
+  ShadowSceneShader::Param param;
+  param.light_view_project = GetLightViewProject();
+  param.shadow_map = shadow_fbo_.GetTexture("depth");
+  param.light_direction_ws = GetLightDirection();
+  param.light_color = light_color_;
+  param.light_intensity = light_intensity_;
+  param.ambient_strength = ambient_strength_;
+  param.shadow_bias = shadow_bias_;
+  param.normal_bias_scale = normal_bias_scale_;
+  param.shadow_mode = shadow_mode_;
+  param.pcf_filter_radius = pcf_filter_radius_;
+  param.pcss_light_size_uv = light_size_uv;
+  param.pcss_blocker_search_scale = pcss_blocker_search_scale_;
+  param.pcss_min_filter_radius = pcss_min_filter_radius;
+  param.pcss_max_filter_radius = pcss_max_filter_radius;
+  param.disable_shadow = debug_disable_shadow_;
+  param.debug_show_shadow_factor = debug_show_shadow_factor_;
 
-  PhongShader(&phong, context, &plane_);
-  plane_.OnRender(context);
-
-  LinesShader({}, context, directional_light_.mutable_lines());
-  TextureShader({context->GetTexture("directional_light")}, context, directional_light_.mutable_billboard());
-  directional_light_.OnRender(context);
-
-  for (int i = 0; i < nanosuit_.model_part_num(); ++i) {
-    ModelPartObject* model_part = nanosuit_.mutable_model_part(i);
-    PhongShader(&phong, context, model_part);
-    model_part->OnRender(context);
+  for (const Object& object : object_repo_.GetObjects()) {
+    ShadowSceneShader(param, *this, object);
   }
+  LinesShader({}, *this, CoordinatorMesh());
 
-  forward_pass->End();
+  main_fbo_.Unbind();
 }
 
-void ShadowScene::OnExit(Scene *context)
-{
-  for (int i = 0; i < point_lights_num_; ++i) {
-    point_lights_[i].OnDestory(context);
+glm::mat4 ShadowScene::GetLightViewProject() const {
+  glm::vec3 light_delta = light_target_ - light_position_;
+  if (glm::dot(light_delta, light_delta) < 1e-6f) {
+    light_delta = glm::vec3(-1.0f, -1.0f, -1.0f);
   }
-  coord_.OnDestory(context);
-  plane_.OnDestory(context);
+  glm::vec3 light_direction = glm::normalize(light_delta);
+  glm::vec3 light_focus = light_position_ + light_direction;
+  glm::vec3 up = (glm::abs(glm::dot(light_direction, glm::vec3(0.0f, 1.0f, 0.0f))) > 0.99f)
+                     ? glm::vec3(0.0f, 0.0f, 1.0f)
+                     : glm::vec3(0.0f, 1.0f, 0.0f);
+  glm::mat4 light_view = glm::lookAtRH(light_position_, light_focus, up);
+  float half_width = light_ortho_width_ * 0.5f;
+  float far_clip = std::max(light_far_clip_, 0.02f);
+  float near_clip = std::max(0.01f, std::min(light_near_clip_, far_clip - 0.01f));
+  glm::mat4 light_project =
+      glm::ortho(-half_width, half_width, -half_width, half_width, near_clip, far_clip);
+  return light_project * light_view;
+}
 
-  context->SetCamera(nullptr);
+glm::vec3 ShadowScene::GetLightDirection() const {
+  glm::vec3 light_delta = light_target_ - light_position_;
+  if (glm::dot(light_delta, light_delta) < 1e-6f) {
+    light_delta = glm::vec3(-1.0f, -1.0f, -1.0f);
+  }
+  return glm::normalize(light_delta);
+}
+
+void ShadowScene::OnExit() {
 }

@@ -27,58 +27,58 @@ static const std::unordered_map<std::string, Material::Properties> kDefaultMater
 
 Material::Material(const Properties& properties) {
   if (properties.count(kAlbedo) > 0) {
-    albedo = boost::any_cast<glm::vec4>(properties.at(kAlbedo));
+    albedo = std::any_cast<glm::vec4>(properties.at(kAlbedo));
   }
   if (properties.count(kAmbient) > 0) {
-    ambient = boost::any_cast<glm::vec4>(properties.at(kAmbient));
+    ambient = std::any_cast<glm::vec4>(properties.at(kAmbient));
   }
   if (properties.count(kDiffuse) > 0) {
-    diffuse = boost::any_cast<glm::vec4>(properties.at(kDiffuse));
+    diffuse = std::any_cast<glm::vec4>(properties.at(kDiffuse));
   }
   if (properties.count(kSpecular) > 0) {
-    specular = boost::any_cast<glm::vec4>(properties.at(kSpecular));
+    specular = std::any_cast<glm::vec4>(properties.at(kSpecular));
   }
   if (properties.count(kEmission) > 0) {
-    emission = boost::any_cast<glm::vec4>(properties.at(kEmission));
+    emission = std::any_cast<glm::vec4>(properties.at(kEmission));
   }
   if (properties.count(kRoughness) > 0) {
-    roughness = boost::any_cast<double>(properties.at(kRoughness));
+    roughness = std::any_cast<double>(properties.at(kRoughness));
   }
   if (properties.count(kMetallic) > 0) {
-    metalness = boost::any_cast<double>(properties.at(kMetallic));
+    metalness = std::any_cast<double>(properties.at(kMetallic));
   }
   if (properties.count(kShininess) > 0) {
-    shininess = boost::any_cast<double>(properties.at(kShininess));
+    shininess = std::any_cast<double>(properties.at(kShininess));
   }
   if (properties.count(kTextureNormal) > 0) {
-    texture_normal = boost::any_cast<int>(properties.at(kTextureNormal));
+    texture_normal = std::any_cast<int>(properties.at(kTextureNormal));
   }
   if (properties.count(kTextureSpecular) > 0) {
-    texture_specular = boost::any_cast<int>(properties.at(kTextureSpecular));
+    texture_specular = std::any_cast<int>(properties.at(kTextureSpecular));
   }
   if (properties.count(kTextureAmbient) > 0) {
-    texture_ambient = boost::any_cast<int>(properties.at(kTextureAmbient));
+    texture_ambient = std::any_cast<int>(properties.at(kTextureAmbient));
   }
   if (properties.count(kTextureDiffuse) > 0) {
-    texture_diffuse = boost::any_cast<int>(properties.at(kTextureDiffuse));
+    texture_diffuse = std::any_cast<int>(properties.at(kTextureDiffuse));
   }
   if (properties.count(kTextureBaseColor) > 0) {
-    texture_base_color = boost::any_cast<int>(properties.at(kTextureBaseColor));
+    texture_base_color = std::any_cast<int>(properties.at(kTextureBaseColor));
   }
   if (properties.count(kTextureDiffuseRoughness) > 0) {
-    texture_roughness = boost::any_cast<int>(properties.at(kTextureDiffuseRoughness));
+    texture_roughness = std::any_cast<int>(properties.at(kTextureDiffuseRoughness));
   }
   if (properties.count(kTextureMetalness) > 0) {
-    texture_metalness = boost::any_cast<int>(properties.at(kTextureMetalness));
+    texture_metalness = std::any_cast<int>(properties.at(kTextureMetalness));
   }
   if (properties.count(kTextureAmbientOcclusion) > 0) {
-    texture_ambient_occlusion = boost::any_cast<int>(properties.at(kTextureAmbientOcclusion));
+    texture_ambient_occlusion = std::any_cast<int>(properties.at(kTextureAmbientOcclusion));
   }
   if (properties.count(kTextureHeight) > 0) {
-    texture_height = boost::any_cast<int>(properties.at(kTextureHeight));
+    texture_height = std::any_cast<int>(properties.at(kTextureHeight));
   }
   if (properties.count(kTextureShininess) > 0) {
-    texture_shininess = boost::any_cast<int>(properties.at(kTextureShininess));
+    texture_shininess = std::any_cast<int>(properties.at(kTextureShininess));
   }
 }
 

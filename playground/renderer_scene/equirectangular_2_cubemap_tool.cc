@@ -6,6 +6,7 @@
 #include "imgui.h"
 #include <memory>
 
+#include "rhi/device.h"
 #include "renderer/repo/texture_repo.h"
 #include "renderer/transform.h"
 #include "playground/object/sphere_object.h"
@@ -19,7 +20,7 @@ void Equirectangular2CubemapTool::OnEnter(Scene *context)
 {
   context->SetCamera(camera_.get());
 
-  glEnable_(GL_DEPTH_TEST);
+  cg::rhi::GetDevice().SetDepthTestEnabled(true);
 
   for (int i = 0; i < 6; ++i) {
     cubemap_cameras_[i].SetTransform(transforms_[i]);

@@ -118,7 +118,7 @@ RayTriangleResult RayTriangle(const Ray& ray, const Triangle& triangle);
 struct LineSegment {
   LineSegment(const glm::vec2& in_a, const glm::vec2 in_b) : a(in_a), b(in_b) {}
 
-  void Bresenham(int width, int height, const std::function<void(const glm::vec2&)>& callback);
+  void Bresenham(int width, int height, const std::function<void(const glm::vec2&)>& callback) const;
 
   glm::vec2 a;
   glm::vec2 b;

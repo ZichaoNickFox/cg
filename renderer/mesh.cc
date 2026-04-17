@@ -1,64 +1,132 @@
 #include "renderer/mesh.h"
 
+#include "glm/gtc/type_ptr.hpp"
 #include "glm/gtx/intersect.hpp"
 #include "glm/gtx/string_cast.hpp"
-#include "glm/gtc/type_ptr.hpp"
-#include <limits>
 
 #include "base/debug.h"
-#include "renderer/gl.h"
 #include "renderer/mesh/cube_mesh.h"
 #include "renderer/mesh/lines_mesh.h"
-#include "renderer/mesh/plane_mesh.h"
 #include "renderer/mesh/sphere_mesh.h"
 #include "renderer/object.h"
+#include "renderer/mesh/plane_mesh.h"
+#include "rhi/device.h"
 
 namespace cg {
-Mesh::Mesh() {
-  glGenVertexArrays_(1, &vao_);
+template<typename ElementType>
+void Mesh::UploadVertexAttribute(const VertexAttribute& meta, const std::vector<ElementType>& data) const {
+  if (data.empty()) {
+    return;
+  }
+
+  auto vbo = rhi::GetDevice().CreateBuffer(rhi::BufferType::kVertex);
+  vbo->SetData(util::VectorSizeInByte(data), util::AsVoidPtr(data.data()), rhi::BufferUsage::kStatic);
+
+  vao_->Bind();
+  vbo->Bind();
+  int layout_index_num = meta.attribute_layout_index_to - meta.atrribute_layout_index_from + 1;
+  for (int layout_index = meta.atrribute_layout_index_from, i = 0; layout_index <= meta.attribute_layout_index_to;
+       ++layout_index, ++i) {
+    vao_->EnableAttribute(layout_index);
+    int attribute_size_in_byte = meta.attribute_component_num * sizeof(float);
+    int stride = layout_index_num * attribute_size_in_byte;
+    vao_->SetFloatAttribute(layout_index,
+                            meta.attribute_component_num,
+                            stride,
+                            static_cast<size_t>(i * attribute_size_in_byte));
+    if (meta.divisor > 0) {
+      vao_->SetAttributeDivisor(layout_index, meta.divisor);
+    }
+  }
+
+  vbo->Unbind();
+  vao_->Unbind();
+  vbos_.push_back(std::move(vbo));
 }
 
+template void Mesh::UploadVertexAttribute<glm::vec2>(const VertexAttribute& meta,
+                                                     const std::vector<glm::vec2>& data) const;
+template void Mesh::UploadVertexAttribute<glm::vec3>(const VertexAttribute& meta,
+                                                     const std::vector<glm::vec3>& data) const;
+template void Mesh::UploadVertexAttribute<glm::vec4>(const VertexAttribute& meta,
+                                                     const std::vector<glm::vec4>& data) const;
+
+Mesh::Mesh() = default;
+
 Mesh::~Mesh() {
-  glDeleteVertexArrays_(1, &vao_);
+  if (!rhi::HasDevice()) {
+    vao_.release();
+    ebo_.release();
+    for (auto& vbo : vbos_) {
+      vbo.release();
+    }
+    vbos_.clear();
+    return;
+  }
+  ResetGpuResources();
+}
+
+void Mesh::MarkGpuUploadDirty() const {
+  gpu_upload_dirty_ = true;
 }
 
 void Mesh::Setup() {
-  AddVertexAttribute(kMeshVertexLayout.at(kVertexAttributePosition), positions_);
-  AddVertexAttribute(kMeshVertexLayout.at(kVertexAttributeNormal), normals_);
-  AddVertexAttribute(kMeshVertexLayout.at(kVertexAttributeTexcoord), texcoords_);
-  AddVertexAttribute(kMeshVertexLayout.at(kVertexAttributeTangent), tangents_);
-  AddVertexAttribute(kMeshVertexLayout.at(kVertexAttributeBitangent), bitangents_);
-  AddVertexAttribute(kMeshVertexLayout.at(kVertexAttributeColor), colors_);
+  MarkGpuUploadDirty();
+}
 
-  // ebo
-  if (indices_.size() > 0) {
-    glGenBuffers_(1, &ebo_);
-    glBindBuffer_(GL_ELEMENT_ARRAY_BUFFER, ebo_);
-    glBufferData_(GL_ELEMENT_ARRAY_BUFFER, util::VectorSizeInByte(indices_), indices_.data(), GL_STATIC_DRAW);
+void Mesh::EnsureGpuResourcesReady() const {
+  CGCHECK(rhi::HasDevice()) << "Mesh submission requires an active RHI device.";
+  if (!gpu_upload_dirty_ && vao_ != nullptr) {
+    return;
   }
+
+  ResetGpuResources();
+
+  vao_ = rhi::GetDevice().CreateVertexArray();
+  UploadVertexAttribute(kMeshVertexLayout.at(kVertexAttributePosition), positions_);
+  UploadVertexAttribute(kMeshVertexLayout.at(kVertexAttributeNormal), normals_);
+  UploadVertexAttribute(kMeshVertexLayout.at(kVertexAttributeTexcoord), texcoords_);
+  UploadVertexAttribute(kMeshVertexLayout.at(kVertexAttributeTangent), tangents_);
+  UploadVertexAttribute(kMeshVertexLayout.at(kVertexAttributeBitangent), bitangents_);
+  UploadVertexAttribute(kMeshVertexLayout.at(kVertexAttributeColor), colors_);
+
+  if (!indices_.empty()) {
+    ebo_ = rhi::GetDevice().CreateBuffer(rhi::BufferType::kIndex);
+    ebo_->SetData(util::VectorSizeInByte(indices_), indices_.data(), rhi::BufferUsage::kStatic);
+  }
+  gpu_upload_dirty_ = false;
+}
+
+void Mesh::ResetGpuResources() const {
+  if (!rhi::HasDevice()) {
+    vao_.release();
+    ebo_.release();
+    for (auto& vbo : vbos_) {
+      vbo.release();
+    }
+    vbos_.clear();
+    return;
+  }
+
+  vbos_.clear();
+  ebo_.reset();
+  vao_.reset();
 }
 
 void Mesh::Submit(int instance_num) const {
+  EnsureGpuResourcesReady();
   bool use_ebo = indices_.size() > 0;
-  CGCHECK(vao_ != std::numeric_limits<GLuint>::max()) << " vao not set : " << vao_;
-  glBindVertexArray_(vao_);
+  CGCHECK(vao_ != nullptr) << "vertex array not initialized";
+  vao_->Bind();
   if (use_ebo) {
-    CGCHECK(ebo_ != std::numeric_limits<GLuint>::max()) << " ebo not set : " << ebo_;
-    glBindBuffer_(GL_ELEMENT_ARRAY_BUFFER, ebo_);
-    if (instance_num > 1) {
-      glDrawElementsInstanced_(primitive_mode_, indices_.size(), GL_UNSIGNED_INT, 0, instance_num);
-    } else {
-      glDrawElements_(primitive_mode_, indices_.size(), GL_UNSIGNED_INT, 0);
-    }
-    glBindBuffer_(GL_ELEMENT_ARRAY_BUFFER, 0);
+    CGCHECK(ebo_ != nullptr) << "index buffer not initialized";
+    ebo_->Bind();
+    rhi::GetDevice().DrawElements(primitive_mode_, indices_.size(), instance_num);
+    ebo_->Unbind();
   } else {
-    if (instance_num > 1) {
-      glDrawArraysInstanced_(primitive_mode_, 0, positions_.size(), instance_num);
-    } else {
-      glDrawArrays_(primitive_mode_, 0, positions_.size());
-    }
+    rhi::GetDevice().DrawArrays(primitive_mode_, 0, positions_.size(), instance_num);
   }
-  glBindVertexArray_(0);
+  vao_->Unbind();
 }
 
 bool Mesh::Intersect(const glm::vec3& origin_ls, const glm::vec3& dir_ls,

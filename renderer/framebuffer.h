@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include "glm/glm.hpp"
 #include <memory>
 #include <unordered_map>
@@ -8,6 +9,7 @@
 #include "base/color.h"
 #include "renderer/texture.h"
 #include "renderer/framebuffer_attachment.h"
+#include "rhi/device.h"
 
 namespace cg {
 class Framebuffer {
@@ -25,7 +27,7 @@ public:
   void Clear();
 
   const glm::ivec2& size() { return option_.size; }
-  GLuint fbo() { return fbo_; }
+  uint32_t fbo() { return fbo_; }
 
   Texture GetTexture(const std::string& name);
   void Blit(Framebuffer* framebuffer = nullptr);
@@ -34,13 +36,12 @@ public:
   Texture CreateAttachmentTexture(const FramebufferAttachment& attachment);
 
   Option option_;
-  GLuint fbo_;
+  uint32_t fbo_;
 
   std::unordered_map<std::string, Texture> textures_;
-  std::vector<GLuint> draw_buffers_;
+  std::vector<uint32_t> draw_buffers_;
 
-  GLint resumption_fbo_;
-  GLint resumption_viewport_[4];
+  rhi::FramebufferState resumption_state_;
 
   bool inited_ = false;
 };

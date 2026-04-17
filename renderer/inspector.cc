@@ -1,6 +1,5 @@
 #include "renderer/inspector.h"
 
-#include <format>
 #include "imgui.h"
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -8,10 +7,12 @@
 
 #include "base/color.h"
 #include "base/debug.h"
+#include "base/util.h"
 #include "renderer/io.h"
 #include "renderer/mesh/lines_mesh.h"
 #include "renderer/scene.h"
 #include "renderer/shader.h"
+#include "rhi/device.h"
 
 namespace cg {
 void Inspector::Inspect(const std::string& scene_name, Scene* scene) {
@@ -91,7 +92,7 @@ void Inspector::ShowCoordinators(Scene* scene) {
   ImGui::Checkbox("show view coordinator", &show_view_coordinator_);
   ImGui::Checkbox("show world coordinator", &show_world_coordinator_);
   if (show_view_coordinator_) {
-    glDisable_(GL_DEPTH_TEST);
+    rhi::GetDevice().SetDepthTestEnabled(false);
     glm::vec3 near_pos_ws, far_pos_ws;
     scene->camera().GetPickRay(glm::vec2(0.5, 0.1), &near_pos_ws, &far_pos_ws);
     glm::vec3 direction = glm::normalize(far_pos_ws - near_pos_ws);
@@ -99,7 +100,7 @@ void Inspector::ShowCoordinators(Scene* scene) {
 
     LinesShader({0.3}, *scene, CoordinatorMesh(), {world_coord_pos, glm::quat(), glm::vec3(0.05, 0.05, 0.05)});
 
-    glEnable_(GL_DEPTH_TEST);
+    rhi::GetDevice().SetDepthTestEnabled(true);
   }
   if (show_world_coordinator_) {
     LinesShader({}, *scene, CoordinatorMesh());
@@ -115,7 +116,7 @@ void Inspector::ReloadShaderPrograms(Scene* scene) {
 void Inspector::InspectMesh(Scene* scene, const Object& object) {
   const std::string& mesh_name = scene->mesh_repo().GetName(object.mesh_index);
   const Mesh* mesh = scene->mesh_repo().GetMesh(object.mesh_index);
-  if (ImGui::TreeNode(std::format("mesh : index ~ {} name ~ {}", object.mesh_index, mesh_name).c_str())) {
+  if (ImGui::TreeNode(util::Format("mesh : index ~ {} name ~ {}", object.mesh_index, mesh_name).c_str())) {
     ImGui::PushID(mesh_name.c_str());
     ImGui::Text("Position Num : %lu", mesh->positions().size());
     ImGui::Text("Normal Num : %lu  Maybe all (0,0,0)", mesh->normals().size());
@@ -128,7 +129,7 @@ void Inspector::InspectMesh(Scene* scene, const Object& object) {
 }
 
 void Inspector::InspectMaterial(int material_index, const std::string& material_name, Material* material) {
-  if (ImGui::TreeNode(std::format("material index ~ {} name ~ {}", material_index, material_name).c_str())) {
+  if (ImGui::TreeNode(util::Format("material index ~ {} name ~ {}", material_index, material_name).c_str())) {
     ImGui::PushID(material_name.c_str());
     ImGui::ColorEdit4("albedo", glm::value_ptr(material->albedo));
     ImGui::ColorEdit4("ambient", glm::value_ptr(material->ambient));
@@ -162,6 +163,23 @@ void Inspector::InspectNormal(Scene* scene) {
   ImGui::Checkbox("show TBN", &normal_shader_param_.show_TBN);
   ImGui::SliderFloat("length", &normal_shader_param_.length, 0, 1);
   ImGui::SliderFloat("width", &normal_shader_param_.width, 0, 5);
+
+  const bool wants_normal_overlay = normal_shader_param_.show_triangle ||
+                                    normal_shader_param_.show_face_normal ||
+                                    normal_shader_param_.show_vertex_normal ||
+                                    normal_shader_param_.show_vertex_texture_normal ||
+                                    normal_shader_param_.show_TBN;
+  if (!wants_normal_overlay) {
+    return;
+  }
+
+  const rhi::Capabilities& caps = rhi::GetCapabilities();
+  const bool supports_normal_overlay = caps.supports_glsl_450;
+  if (!supports_normal_overlay) {
+    ImGui::TextDisabled("Normal overlay requires a GLSL 450-capable backend.");
+    return;
+  }
+
   for (const Object& object : scene->object_repo().GetObjects()) {
     NormalShader(normal_shader_param_, *scene, object);
   }
@@ -172,8 +190,8 @@ void Inspector::InspectObjects(Scene* scene) {
     ImGui::PushID("Objects");
     for (const Object& object : scene->object_repo().GetObjects()) {
       std::string object_name = scene->object_repo().GetName(object.object_index);
-      if (ImGui::TreeNode(std::format("Object : index ~ {} name ~ {}",
-                          object.object_index, object_name).c_str())) {
+      if (ImGui::TreeNode(util::Format("Object : index ~ {} name ~ {}",
+                                       object.object_index, object_name).c_str())) {
         InspectMesh(scene, object);
 
         const std::string& material_name = scene->material_repo().GetName(object.material_index);
@@ -193,8 +211,8 @@ void Inspector::InspectLights(Scene* scene) {
     ImGui::PushID("Lights");
     for (int i = 0; i < scene->light_repo().num(); ++i) {
       Light* light = scene->mutable_light_repo()->mutable_light(i);
-      if (ImGui::TreeNode(std::format("Light {}", i).c_str())) {
-        ImGui::PushID(std::format("{}", i).c_str());
+      if (ImGui::TreeNode(util::Format("Light {}", i).c_str())) {
+        ImGui::PushID(util::Format("{}", i).c_str());
         if (ImGui::RadioButton("DirectionalLight", light->type)) { light->type = Light::kDirectionalLight; }
         ImGui::SameLine();
         if (ImGui::RadioButton("PointLight", light->type)) { light->type = Light::kPointLight; }
@@ -239,16 +257,16 @@ RaytracingDebugCommon::RaytracingDebugCommon(const Texture& fullscreen_texture, 
                                              const LightPath& light_path) {
   FullscreenQuadShader({fullscreen_texture}, scene);
 
-  glDisable_(GL_DEPTH_TEST);
+  rhi::GetDevice().SetDepthTestEnabled(false);
 
   std::vector<glm::vec4> colors{kRed, kOrange, kYellow, kGreen,
                                 kCyan, kBlue, kPurple, kWhite,
                                 kWhite, kWhite, kWhite, kWhite,
                                 kWhite, kWhite, kWhite, kWhite,
                                 kWhite, kWhite, kWhite, kWhite};
-  LinesShader({}, scene, LinesMesh{util::AsVector(light_path.light_path), colors, GL_LINE_STRIP});
+  LinesShader({}, scene, LinesMesh{util::AsVector(light_path.light_path), colors, rhi::PrimitiveTopology::kLineStrip});
   LinesShader({}, scene, CoordinatorMesh());
 
-  glEnable_(GL_DEPTH_TEST);
+  rhi::GetDevice().SetDepthTestEnabled(true);
 }
 } // namespace cg

@@ -5,13 +5,17 @@
 
 #include "base/geometry.h"
 #include "renderer/camera.h"
+#include "renderer/light.h"
 #include "renderer/mesh/lines_mesh.h"
 #include "renderer/object.h"
+#include "rhi/device.h"
 #include "renderer/shader.h"
 #include "renderer/shader_program.h"
 #include "renderer/texture.h"
 
 namespace cg {
+
+using TextureAccess = rhi::TextureAccess;
 
 class Scene;
 class ComputeShader {
@@ -19,7 +23,7 @@ class ComputeShader {
   struct TextureBinding {
     Texture texture;
     std::string uniform_name;
-    GLuint read_write_type = GL_READ_ONLY;
+    TextureAccess access = TextureAccess::kReadOnly;
   };
   void Run() const;
 
@@ -53,6 +57,8 @@ class RenderShader {
   void SetModel(const Object& object);
   void SetCamera(const Camera& camera);
   void SetCamera1(const Camera& camera_1);
+  void SetMaterial(const Scene& scene, const Object& object);
+  void SetLight(const Light& light);
   void SetMaterialIndex(int material_index);
   void SetNearFar(const Camera& camera);
   void SetScreenSize(const glm::vec2& screen_size);

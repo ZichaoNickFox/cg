@@ -1,70 +1,85 @@
 #include "renderer/framebuffer.h"
 
-#include "glm/gtc/type_ptr.hpp"
-#include "glm/gtx/string_cast.hpp"
-#include "glog/logging.h"
-#include "assert.h"
-
 #include "base/debug.h"
-#include "renderer/gl.h"
 
 namespace cg {
-Framebuffer::Framebuffer() {
-  glGenFramebuffers_(1, &fbo_);
+namespace {
+
+rhi::AttachmentType ToRhiAttachmentType(FramebufferAttachment::Type type) {
+  switch (type) {
+    case FramebufferAttachment::kColor:
+      return rhi::AttachmentType::kColor;
+    case FramebufferAttachment::kDepth:
+      return rhi::AttachmentType::kDepth;
+    case FramebufferAttachment::kStencil:
+      return rhi::AttachmentType::kStencil;
+    case FramebufferAttachment::AttachmentTypeNum:
+      break;
+  }
+  CGCHECK(false) << "Unsupported framebuffer attachment type";
+  return rhi::AttachmentType::kColor;
 }
 
-// TODO: Press x to close would cause here crash, but ESC not.
+}  // namespace
+
+Framebuffer::Framebuffer()
+    : fbo_(rhi::GetDevice().CreateFramebuffer()) {}
+
 Framebuffer::~Framebuffer() {
-  glDeleteFramebuffers_(1, &fbo_);
+  rhi::GetDevice().DeleteFramebuffer(fbo_);
 }
 
 void Framebuffer::Init(const Option& option) {
   option_ = option;
+  textures_.clear();
+  draw_buffers_.clear();
 
-  glBindFramebuffer_(GL_FRAMEBUFFER, fbo_);
+  rhi::GetDevice().BindFramebuffer(rhi::FramebufferBindPoint::kAll, fbo_);
+
   std::vector<uint32_t> texture_unit_indices(FramebufferAttachment::AttachmentTypeNum, 0);
-  for (int i = 0; i < option_.attachments.size(); ++i) {
-    const FramebufferAttachment& attachment = option_.attachments[i];
+  for (const FramebufferAttachment& attachment : option_.attachments) {
     CGCHECK(textures_.count(attachment.name) == 0) << "Attachments has same name : " << attachment.name;
 
     Texture attachment_texture = CreateAttachmentTexture(attachment);
-
     textures_[attachment.name] = attachment_texture;
-    GLuint attachment_unit = attachment.GetAttachmentBase() + texture_unit_indices[attachment.type]++;
-    glFramebufferTexture2D_(GL_FRAMEBUFFER, attachment_unit, GL_TEXTURE_2D, attachment_texture.id(), 0);
+
+    const uint32_t attachment_index = texture_unit_indices[attachment.type]++;
+    rhi::GetDevice().AttachFramebufferTexture2D(ToRhiAttachmentType(attachment.type), attachment_index,
+                                                attachment_texture);
     if (attachment.type == FramebufferAttachment::kColor) {
-      draw_buffers_.push_back(attachment_unit);
+      draw_buffers_.push_back(attachment_index);
     }
   }
-  GLenum framebuffer_status = glCheckFramebufferStatus_(GL_FRAMEBUFFER);
-  if (framebuffer_status != GL_FRAMEBUFFER_COMPLETE) {
-    CGCHECK(false) << "Framebuffer Status Error : State - " << framebuffer_status;
-  }
-  glBindFramebuffer_(GL_FRAMEBUFFER, 0);
+
+  CGCHECK(rhi::GetDevice().CheckFramebufferComplete()) << "Framebuffer Status Error";
+  rhi::GetDevice().BindFramebuffer(rhi::FramebufferBindPoint::kAll, 0);
 
   inited_ = true;
 }
 
 void Framebuffer::Bind() {
   CGCHECK(inited_);
-  glGetIntegerv_(GL_VIEWPORT, resumption_viewport_);
-  glGetIntegerv_(GL_FRAMEBUFFER_BINDING, &resumption_fbo_);
-  glViewport_(0, 0, option_.size.x, option_.size.y);
-  glBindFramebuffer_(GL_FRAMEBUFFER, fbo_);
-  glClearColor_(option_.clear_color.r, option_.clear_color.g, option_.clear_color.b, option_.clear_color.a);
-  glClear_(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-  for (int i = 0; i < option_.attachments.size(); ++i) {
-    const FramebufferAttachment& attachment = option_.attachments[i];
-    if (attachment.type == FramebufferAttachment::kColor && attachment.clear_type == FramebufferAttachment::kClear) {
-      glClearBufferfv_(GL_COLOR, i, glm::value_ptr(option_.clear_color));
+  resumption_state_ = rhi::GetDevice().CaptureFramebufferState();
+  rhi::GetDevice().SetViewport({0, 0}, option_.size);
+  rhi::GetDevice().BindFramebuffer(rhi::FramebufferBindPoint::kAll, fbo_);
+  rhi::GetDevice().SetClearColor(option_.clear_color);
+  rhi::GetDevice().Clear(rhi::ClearMask::kDepth | rhi::ClearMask::kStencil);
+
+  uint32_t color_attachment_index = 0;
+  for (const FramebufferAttachment& attachment : option_.attachments) {
+    if (attachment.type == FramebufferAttachment::kColor &&
+        attachment.clear_type == FramebufferAttachment::kClear) {
+      rhi::GetDevice().ClearColorAttachment(color_attachment_index, option_.clear_color);
+      ++color_attachment_index;
+    } else if (attachment.type == FramebufferAttachment::kColor) {
+      ++color_attachment_index;
     }
   }
-  glDrawBuffers_(draw_buffers_.size(), draw_buffers_.data());
+  rhi::GetDevice().SetDrawBuffers(draw_buffers_);
 }
 
 void Framebuffer::Unbind() {
-  glBindFramebuffer_(GL_FRAMEBUFFER, resumption_fbo_);
-  glViewport_(resumption_viewport_[0], resumption_viewport_[1], resumption_viewport_[2], resumption_viewport_[3]);
+  rhi::GetDevice().RestoreFramebufferState(resumption_state_);
 }
 
 Texture Framebuffer::GetTexture(const std::string& name) {
@@ -73,35 +88,31 @@ Texture Framebuffer::GetTexture(const std::string& name) {
 }
 
 void Framebuffer::Blit(Framebuffer* framebuffer) {
-  glBindFramebuffer_(GL_READ_FRAMEBUFFER, fbo_);
-  glBindFramebuffer_(GL_DRAW_FRAMEBUFFER, framebuffer ? framebuffer->fbo() : 0);
-  glBlitFramebuffer_(0, 0, option_.size.x, option_.size.y, 0, 0, option_.size.x, option_.size.y,
-                     GL_COLOR_BUFFER_BIT, GL_NEAREST);
+  rhi::GetDevice().BlitFramebuffer(fbo_, framebuffer ? framebuffer->fbo() : 0, option_.size,
+                                   rhi::ClearMask::kColor, rhi::FilterMode::kNearest);
 }
 
 Texture Framebuffer::CreateAttachmentTexture(const FramebufferAttachment& attachment) {
   Texture::Meta texture_meta = attachment.texture_meta;
   texture_meta.width = option_.size.x;
   texture_meta.height = option_.size.y;
-  if (attachment.texture_meta.gl_internal_format == GL_RGBA32F) {
+  if (attachment.texture_meta.format == rhi::TextureFormat::kRGBA32F) {
     std::vector<glm::vec4> data(texture_meta.data_size_in_byte() / sizeof(glm::vec4), kBlack);
     return CreateTexture2D(texture_meta, {(data.data())});
-  } else if (attachment.texture_meta.gl_internal_format == GL_DEPTH_COMPONENT32F) {
+  } else if (attachment.texture_meta.format == rhi::TextureFormat::kDepth32F) {
     std::vector<float> data(texture_meta.data_size_in_byte() / sizeof(float), 0.0);
     return CreateTexture2D(texture_meta, {(data.data())});
-  } else if (attachment.texture_meta.gl_internal_format == GL_RGB32F) {
-    std::vector<glm::vec3> data(texture_meta.data_size_in_byte() / sizeof(glm::vec3), glm::vec3(0, 0, 0));
-    return CreateTexture2D(texture_meta, {(data.data())});
-  } else if (attachment.texture_meta.gl_internal_format == GL_RG32F) {
+  } else if (attachment.texture_meta.format == rhi::TextureFormat::kRG32F) {
     std::vector<glm::vec2> data(texture_meta.data_size_in_byte() / sizeof(glm::vec2), glm::vec2(0, 0));
     return CreateTexture2D(texture_meta, {(data.data())});
-  } else if (attachment.texture_meta.gl_internal_format == GL_R32UI) {
+  } else if (attachment.texture_meta.format == rhi::TextureFormat::kR32UI) {
     std::vector<unsigned int> data(texture_meta.data_size_in_byte() / sizeof(unsigned int), 0);
     return CreateTexture2D(texture_meta, {(data.data())});
   } else {
-    CGCHECK(false) << " Unsupported Internal format"
-                   << std::hex << attachment.texture_meta.gl_internal_format << std::dec;
+    CGCHECK(false) << " Unsupported texture format"
+                   << static_cast<int>(attachment.texture_meta.format);
     return Texture();
   }
 }
-}
+
+}  // namespace cg

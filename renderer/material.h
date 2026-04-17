@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/any.hpp>
+#include <any>
 #include <memory>
 #include <unordered_map>
 #include <vector>
@@ -46,7 +46,7 @@ constexpr char kTextureTransmission[] = "texture_transmission";
 constexpr char kTextureUnknown[] = "texture_unknown";
 
 struct Material {
-  using Properties = std::unordered_map<std::string, boost::any>;
+  using Properties = std::unordered_map<std::string, std::any>;
   Material(const Properties& properties);
   Material() = default;
 

@@ -9,8 +9,12 @@ namespace cg {
 
 bool PlotBegin(const std::string& name, int width) {
   ImGui::SetNextWindowSize(ImVec2(width, 0), ImGuiCond_FirstUseEver);
-  ImGui::Begin(name.c_str());
-  return ImPlot::BeginPlot(name.c_str());
+  const bool open = ImGui::Begin(name.c_str());
+  const bool begin_plot = open && ImPlot::BeginPlot(name.c_str());
+  if (!begin_plot) {
+    ImGui::End();
+  }
+  return begin_plot;
 }
 
 void PlotLine(const std::string& name, const std::vector<float>& xs, const std::vector<float>& ys,

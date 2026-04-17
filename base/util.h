@@ -1,9 +1,14 @@
 #pragma once
 
+#include <algorithm>
+#include <array>
 #include <chrono>
+#include <cstring>
+#include <fmt/format.h>
 #include <glm/glm.hpp>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "base/debug.h"
@@ -21,6 +26,10 @@ std::string FileJoin(const std::string& dir, const std::string& file);
 // string
 bool StartsWith(const std::string& str, const std::string& start_with);
 bool EndsWith(const std::string& str, const std::string& end_with);
+template<typename... Args>
+std::string Format(fmt::format_string<Args...> fmt_string, Args&&... args) {
+  return fmt::format(fmt_string, std::forward<Args>(args)...);
+}
 template<typename PtrType>
 std::string AsString(PtrType* ptr) {
   return Format("{}", uint64_t(ptr));
@@ -86,7 +95,7 @@ void VectorOverride(std::vector<ElemType>* destination, int destination_begin,
   if (destination->size() - destination_begin < len) {
     destination->resize(destination_begin + len);
   }
-  memcpy(destination->data() + destination_begin, source.data() + source_begin, len * sizeof(ElemType));
+  std::copy(source.begin() + source_begin, source.begin() + source_end, destination->begin() + destination_begin);
 }
 
 // time
@@ -97,7 +106,7 @@ float AsFloat(const Time& time);
 int AsInt(const Time& time);
 
 // float
-float FloatEq(float value, float target);
+bool FloatEq(float value, float target);
 
 // glm
 glm::ivec2 operator*(const glm::ivec2& left, double value);

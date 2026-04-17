@@ -23,7 +23,7 @@ void ShaderParser::ParseAFile(const std::string& file_path) {
   if (file_meta_map_.find(file_path) != file_meta_map_.end()) {
     return;
   }
-  const std::string kComment = "\/\/";
+  const std::string kComment = "//";
   const std::string kIncludeIdentifierPrefix = "#include \"";
   const std::string kIncludeIdentifierSuffix = "\"";
   std::ifstream file(file_path);

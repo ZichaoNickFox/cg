@@ -21,10 +21,11 @@ class PathTracingShader : public cg::ComputeShader {
   PathTracingShader(const Param& param, const Scene& scene) 
       : ComputeShader(scene, "path_tracing_scene") {
     SetCamera(scene.camera());
-    SetTextureBinding({param.texture_in_out, "texture_in_out", GL_READ_WRITE});
+    SetTextureBinding({param.texture_in_out, "texture_in_out", TextureAccess::kReadWrite});
     SetFrameNum(scene);
-    SetWorkGroupNum({scene.io().screen_size().x / 32, scene.io().screen_size().y / 32, 1});
-    SetResolution({scene.io().screen_size().x, scene.io().screen_size().y});
+    const glm::ivec2 render_size = scene.io().framebuffer_size();
+    SetWorkGroupNum({(render_size.x + 31) / 32, (render_size.y + 31) / 32, 1});
+    SetResolution(render_size);
     SetDirty(param.dirty);
     Run();
   }
@@ -36,7 +37,7 @@ void PathTracingScene::OnEnter() {
                           glm::quat(0.070520, {-0.005535, -0.994436, -0.078057}), {1, 1, 1}});
 
   // path tracing
-  glm::vec3 canvas_size(3240, 2160, 0);
+  const glm::ivec2 canvas_size = io_->framebuffer_size();
   std::vector<glm::vec4> canvas_data(canvas_size.x * canvas_size.y, kBlack);
   texture_in_out_ = CreateTexture2D(canvas_size.x, canvas_size.y, canvas_data);
 
@@ -44,7 +45,7 @@ void PathTracingScene::OnEnter() {
   object_repo_.BreakIntoPrimitives(mesh_repo_, material_repo_, {}, &primitive_repo_);
   bvh_.Build(primitive_repo_, {100, BVH::Partition::kPos, 64});
 
-  glEnable_(GL_DEPTH_TEST);
+  rhi::GetDevice().SetDepthTestEnabled(true);
 }
 
 void PathTracingScene::OnUpdate() {

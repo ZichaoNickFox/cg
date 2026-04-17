@@ -1,12 +1,12 @@
 #pragma once
 
 #include <optional>
+#include <cstdint>
 #include <string>
 
 #include <glm/glm.hpp>
 
 #include "base/color.h"
-#include "renderer/gl.h"
 #include "renderer/texture.h"
 
 namespace cg {
@@ -26,72 +26,90 @@ struct FramebufferAttachment {
   Texture::Meta texture_meta;
   uint32_t multi_sample_num = 1;
   ClearType clear_type;
-
-  GLuint GetAttachmentBase() const;
 };
 
+inline Texture::Meta MakeFramebufferTextureMeta(
+    int channel_num, rhi::TextureFormat format, rhi::PixelFormat pixel_format, rhi::PixelType pixel_type) {
+  Texture::Meta meta;
+  meta.type = Texture::kTexture2D;
+  meta.width = -1;
+  meta.height = -1;
+  meta.channel_num = channel_num;
+  meta.hdr = true;
+  meta.level_num = 1;
+  meta.depth = 1;
+  meta.format = format;
+  meta.pixel_format = pixel_format;
+  meta.pixel_type = pixel_type;
+  meta.min_filter = rhi::FilterMode::kNearest;
+  meta.mag_filter = rhi::FilterMode::kNearest;
+  meta.wrap_s = rhi::WrapMode::kClampToBorder;
+  meta.wrap_t = rhi::WrapMode::kClampToBorder;
+  return meta;
+}
+
 static const FramebufferAttachment kAttachmentColor = {
-    FramebufferAttachment::kColor, "color", {Texture::kTexture2D, -1, -1, 4, true, 1, 1, GL_RGBA32F,
-    GL_RGBA, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER},
+    FramebufferAttachment::kColor, "color",
+    MakeFramebufferTextureMeta(4, rhi::TextureFormat::kRGBA32F, rhi::PixelFormat::kRGBA, rhi::PixelType::kFloat32),
     1, FramebufferAttachment::kClear};
 static const FramebufferAttachment kAttachmentColor1 = {
-    FramebufferAttachment::kColor, "color_1", {Texture::kTexture2D, -1, -1, 4, true, 1, 1, GL_RGBA32F,
-    GL_RGBA, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER},
+    FramebufferAttachment::kColor, "color_1",
+    MakeFramebufferTextureMeta(4, rhi::TextureFormat::kRGBA32F, rhi::PixelFormat::kRGBA, rhi::PixelType::kFloat32),
     1, FramebufferAttachment::kClear};
 static const FramebufferAttachment kAttachmentColorNoClear = {
-    FramebufferAttachment::kColor, "color_noclear", {Texture::kTexture2D, -1, -1, 4, true, 1, 1, GL_RGBA32F,
-    GL_RGBA, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER},
+    FramebufferAttachment::kColor, "color_noclear",
+    MakeFramebufferTextureMeta(4, rhi::TextureFormat::kRGBA32F, rhi::PixelFormat::kRGBA, rhi::PixelType::kFloat32),
     1, FramebufferAttachment::kNoClear};
 static const FramebufferAttachment kAttachmentColor1NoClear = {
-    FramebufferAttachment::kColor, "color_1_noclear", {Texture::kTexture2D, -1, -1, 4, true, 1, 1, GL_RGBA32F,
-    GL_RGBA, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER},
+    FramebufferAttachment::kColor, "color_1_noclear",
+    MakeFramebufferTextureMeta(4, rhi::TextureFormat::kRGBA32F, rhi::PixelFormat::kRGBA, rhi::PixelType::kFloat32),
     1, FramebufferAttachment::kNoClear};
 static const FramebufferAttachment kAttachmentEmission = {
-    FramebufferAttachment::kColor, "emission", {Texture::kTexture2D, -1, -1, 4, true, 1, 1, GL_RGBA32F,
-    GL_RGBA, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER},
+    FramebufferAttachment::kColor, "emission",
+    MakeFramebufferTextureMeta(4, rhi::TextureFormat::kRGBA32F, rhi::PixelFormat::kRGBA, rhi::PixelType::kFloat32),
     1, FramebufferAttachment::kClear};
 static const FramebufferAttachment kAttachmentPositionWS = {
-    FramebufferAttachment::kColor, "position_ws", {Texture::kTexture2D, -1, -1, 4, true, 1, 1, GL_RGBA32F,
-    GL_RGBA, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER},
+    FramebufferAttachment::kColor, "position_ws",
+    MakeFramebufferTextureMeta(4, rhi::TextureFormat::kRGBA32F, rhi::PixelFormat::kRGBA, rhi::PixelType::kFloat32),
     1, FramebufferAttachment::kClear};
 static const FramebufferAttachment kAttachmentPositionWS1 = {
-    FramebufferAttachment::kColor, "position_ws_1", {Texture::kTexture2D, -1, -1, 4, true, 1, 1, GL_RGBA32F,
-    GL_RGBA, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER},
+    FramebufferAttachment::kColor, "position_ws_1",
+    MakeFramebufferTextureMeta(4, rhi::TextureFormat::kRGBA32F, rhi::PixelFormat::kRGBA, rhi::PixelType::kFloat32),
     1, FramebufferAttachment::kClear};
 static const FramebufferAttachment kAttachmentPositionVS = {
-    FramebufferAttachment::kColor, "position_vs", {Texture::kTexture2D, -1, -1, 4, true, 1, 1, GL_RGBA32F,
-    GL_RGBA, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER},
+    FramebufferAttachment::kColor, "position_vs",
+    MakeFramebufferTextureMeta(4, rhi::TextureFormat::kRGBA32F, rhi::PixelFormat::kRGBA, rhi::PixelType::kFloat32),
     1, FramebufferAttachment::kClear};
 static const FramebufferAttachment kAttachmentNormalVS = {
-    FramebufferAttachment::kColor, "normal_vs", {Texture::kTexture2D, -1, -1, 4, true, 1, 1, GL_RGBA32F,
-    GL_RGBA, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER},
+    FramebufferAttachment::kColor, "normal_vs",
+    MakeFramebufferTextureMeta(4, rhi::TextureFormat::kRGBA32F, rhi::PixelFormat::kRGBA, rhi::PixelType::kFloat32),
     1, FramebufferAttachment::kClear};
 static const FramebufferAttachment kAttachmentNormalWS = {
-    FramebufferAttachment::kColor, "normal_ws",{Texture::kTexture2D, -1, -1, 4, true, 1, 1, GL_RGBA32F,
-    GL_RGBA, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER},
+    FramebufferAttachment::kColor, "normal_ws",
+    MakeFramebufferTextureMeta(4, rhi::TextureFormat::kRGBA32F, rhi::PixelFormat::kRGBA, rhi::PixelType::kFloat32),
     1, FramebufferAttachment::kClear};
 static const FramebufferAttachment kAttachmentSurfaceNormalWS = {
-    FramebufferAttachment::kColor, "surface_normal_ws",{Texture::kTexture2D, -1, -1, 4, true, 1, 1, GL_RGBA32F,
-    GL_RGBA, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER},
+    FramebufferAttachment::kColor, "surface_normal_ws",
+    MakeFramebufferTextureMeta(4, rhi::TextureFormat::kRGBA32F, rhi::PixelFormat::kRGBA, rhi::PixelType::kFloat32),
     1, FramebufferAttachment::kClear};
 static const FramebufferAttachment kAttachmentTexcoord = {
-    FramebufferAttachment::kColor, "texcoord", {Texture::kTexture2D, -1, -1, 2, true, 1, 1, GL_RG32F,
-    GL_RG, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER},
+    FramebufferAttachment::kColor, "texcoord",
+    MakeFramebufferTextureMeta(2, rhi::TextureFormat::kRG32F, rhi::PixelFormat::kRG, rhi::PixelType::kFloat32),
     1, FramebufferAttachment::kClear};
 static const FramebufferAttachment kAttachmentDepth = {
-    FramebufferAttachment::kDepth, "depth", {Texture::kTexture2D, -1, -1, 1, true, 1, 1, GL_DEPTH_COMPONENT32F,
-    GL_DEPTH_COMPONENT, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER},
+    FramebufferAttachment::kDepth, "depth",
+    MakeFramebufferTextureMeta(1, rhi::TextureFormat::kDepth32F, rhi::PixelFormat::kDepthComponent, rhi::PixelType::kFloat32),
     1, FramebufferAttachment::kClear};
 static const FramebufferAttachment kAttachmentStencil = {
-    FramebufferAttachment::kDepth, "stencil", {Texture::kTexture2D, -1, -1, 1, true, 1, 1, GL_DEPTH_COMPONENT32F,
-    GL_DEPTH_COMPONENT, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER},
+    FramebufferAttachment::kDepth, "stencil",
+    MakeFramebufferTextureMeta(1, rhi::TextureFormat::kDepth32F, rhi::PixelFormat::kDepthComponent, rhi::PixelType::kFloat32),
     1, FramebufferAttachment::kClear};
 static const FramebufferAttachment kAttachmentTest = {
-    FramebufferAttachment::kColor, "test", {Texture::kTexture2D, -1, -1, 4, true, 1, 1, GL_RGBA32F,
-    GL_RGBA, GL_FLOAT, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER},
+    FramebufferAttachment::kColor, "test",
+    MakeFramebufferTextureMeta(4, rhi::TextureFormat::kRGBA32F, rhi::PixelFormat::kRGBA, rhi::PixelType::kFloat32),
     1, FramebufferAttachment::kClear};
 static const FramebufferAttachment kAttachmentPrimitiveIndex = {
-    FramebufferAttachment::kColor, "primitive_index", {Texture::kTexture2D, -1, -1, 1, true, 1, 1, GL_R32UI,
-    GL_RED_INTEGER, GL_UNSIGNED_INT, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER},
+    FramebufferAttachment::kColor, "primitive_index",
+    MakeFramebufferTextureMeta(1, rhi::TextureFormat::kR32UI, rhi::PixelFormat::kRedInteger, rhi::PixelType::kUInt32),
     1, FramebufferAttachment::kClear};
 } // namespace cg

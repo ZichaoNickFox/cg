@@ -4,7 +4,7 @@
 #include <stack>
 
 #include "base/debug.h"
-#include "renderer/bvh.h"
+#include "renderer/BVH.h"
 #include "renderer/config.h"
 #include "renderer/camera.h"
 #include "renderer/frame_stat.h"
@@ -51,6 +51,7 @@ class Scene {
 
   const FrameStat& frame_stat() const { return *frame_stat_; }
   const Io& io() const { return *io_; }
+  Texture GetTexture(const std::string& name, bool reload = false);
 
  protected:
   void MoveCamera();

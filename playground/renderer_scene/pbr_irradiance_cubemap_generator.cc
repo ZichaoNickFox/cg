@@ -8,6 +8,7 @@
 
 #include "renderer/repo/texture_repo.h"
 #include "renderer/transform.h"
+#include "rhi/device.h"
 #include "playground/object/sphere_object.h"
 #include "playground/renderer_scene/common.h"
 
@@ -20,7 +21,7 @@ void PbrIrradianceCubemapGenerator::OnEnter(Scene *context) {
   camera_->mutable_transform()->SetRotation(glm::quat(0.89, -0.21, 0.38, 0.09));
   context->SetCamera(camera_.get());
 
-  glEnable_(GL_DEPTH_TEST);
+  cg::rhi::GetDevice().SetDepthTestEnabled(true);
 
   for (int i = 0; i < 6; ++i) {
     cubemap_cameras_[i].SetTransform(transforms_[i]);

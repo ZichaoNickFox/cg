@@ -3,12 +3,11 @@
 #if defined CG_PLATFORM_MACOS
 #include <execinfo.h>
 #include <unistd.h>
-#include <glog/logging.h>
 #elif defined CG_PLATFORM_WINDOWS
-#include <boost/stacktrace.hpp>
 #define GLOG_NO_ABBREVIATED_SEVERITIES
-#include <glog/logging.h>
 #endif
+
+#include <glog/logging.h>
 
 #define CONCATE_(X, Y) X##Y  // Fixed the double '_' from previous code
 #define CONCATE(MACRO, NUMBER) CONCATE_(MACRO, NUMBER)
@@ -23,9 +22,12 @@
   backtrace_symbols_fd(bt_array, bt_size, STDERR_FILENO);
 #elif defined CG_PLATFORM_WINDOWS
 #define BT() \
-  LOG(ERROR) << boost::stacktrace::stacktrace()
+  do { \
+  } while (0)
 #else
-#error Implement BT
+#define BT() \
+  do { \
+  } while (0)
 #endif
 
 #define CGCHECK(condition)  \

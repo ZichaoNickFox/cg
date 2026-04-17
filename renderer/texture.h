@@ -1,15 +1,19 @@
 #pragma once
 
 #include <array>
+#include <cstddef>
+#include <cstdint>
 #include <limits>
+#include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "glm/glm.hpp"
 
 #include "base/debug.h"
 #include "renderer/config.h"
-#include "renderer/gl.h"
+#include "rhi/types.h"
 
 namespace cg {
 /*
@@ -53,13 +57,13 @@ class Texture {
     int level_num = -1;
     int depth = -1; // for texture3d
 
-    int gl_internal_format = -1; // GL_RGBA32F
-    int gl_format = -1;   // GL_RGBA
-    int gl_type = -1;     // GL_FLOAT
-    int gl_min_filter = -1; // GL_LINEAR GL_NEAREST
-    int gl_mag_filter = -1;
-    int gl_wrap_s = -1;  // GL_REPEAT GL_MIRRORED_REPEAT GL_CLAMP_TO_EDGE GL_CLAMP_TO_BORDER
-    int gl_wrap_t = -1;
+    rhi::TextureFormat format = rhi::TextureFormat::kUnknown;
+    rhi::PixelFormat pixel_format = rhi::PixelFormat::kUnknown;
+    rhi::PixelType pixel_type = rhi::PixelType::kUnknown;
+    rhi::FilterMode min_filter = rhi::FilterMode::kNearest;
+    rhi::FilterMode mag_filter = rhi::FilterMode::kNearest;
+    rhi::WrapMode wrap_s = rhi::WrapMode::kRepeat;
+    rhi::WrapMode wrap_t = rhi::WrapMode::kRepeat;
 
     bool Varify() const;
     int data_size_in_byte(int level = 0) const;
@@ -69,43 +73,49 @@ class Texture {
     bool operator==(const Meta& other) const = default;
   };
 
-  Texture() {}
-  Texture(const Texture::Meta& meta) : meta_(meta) {}
-  Texture(const GLuint& id, const Texture::Meta& meta) : id_(id), meta_(meta){}
-  Texture(const GLuint& id, const Texture::Meta& meta, const std::string& info) : id_(id), meta_(meta), info_(info) {}
+  struct Storage {
+    mutable uint32_t id = std::numeric_limits<uint32_t>::max();
+    mutable bool uploaded_to_gl = false;
+    bool owns_gl_texture = true;
+    std::vector<std::vector<uint8_t>> cpu_levels;
+  };
 
-  bool empty() const { return id_ == std::numeric_limits<GLuint>::max(); }
-  const GLuint& id() const;
-  GLuint* mutable_id() { return &id_; }
+  Texture() = default;
+  explicit Texture(const Texture::Meta& meta);
+  Texture(uint32_t id, const Texture::Meta& meta);
+  Texture(uint32_t id, const Texture::Meta& meta, const std::string& info);
+
+  bool empty() const;
+  uint32_t id() const;
   void SetInfo(const std::string& info) { info_ = info; }
   std::string info() const { return info_; }
   template<typename ChannelType>
   std::vector<ChannelType> GetData() const;
   const Meta& meta() const { return meta_; }
-  int data_size_in_byte(int level = 0) const { return meta_.data_size_in_byte(); }
+  const std::shared_ptr<Storage>& storage() const { return storage_; }
+  int data_size_in_byte(int level = 0) const { return meta_.data_size_in_byte(level); }
   bool Varify() const;
+  void ReleaseGpuResources() const;
+  void SetCpuLevelData(int level, const void* data, size_t size_in_bytes);
+  void SetCpuFaceLevelData(int face, int level, const void* data, size_t size_in_bytes);
 
   bool operator==(const Texture& other) const = default;
 
  private:
-  GLuint id_ = std::numeric_limits<GLuint>::max();
+  void EnsureUploadedToActiveBackend() const;
+
+  std::shared_ptr<Storage> storage_;
   Meta meta_;
   std::string info_;
 };
 
-template<typename ChannelType>
-std::vector<ChannelType> Texture::GetData() const {
-  meta_.Varify();
-  std::vector<ChannelType> data;
-  glBindTexture_(GL_TEXTURE_2D, id_);
-  data.resize(data_size_in_byte() / sizeof(ChannelType));
-  glGetTexImage_(GL_TEXTURE_2D, 0, meta_.gl_format, meta_.gl_type, data.data());
-  return data;
-}
-
 Texture CreateTexture2D(const Texture::Meta& meta, const std::vector<void*>& datas);
-Texture CreateTexture2D(int width, int height, const std::vector<glm::vec4>& data, GLuint min_filter = GL_LINEAR,
-                        GLuint mag_filter = GL_LINEAR, GLuint wrap_s = GL_REPEAT, GLuint wrap_t = GL_REPEAT);
+Texture CreateCubemap(const Texture::Meta& meta, const std::vector<void*>& datas);
+Texture CreateTexture2D(int width, int height, const std::vector<glm::vec4>& data,
+                        rhi::FilterMode min_filter = rhi::FilterMode::kLinear,
+                        rhi::FilterMode mag_filter = rhi::FilterMode::kLinear,
+                        rhi::WrapMode wrap_s = rhi::WrapMode::kRepeat,
+                        rhi::WrapMode wrap_t = rhi::WrapMode::kRepeat);
 void SaveTexture(const std::string& file_name, const Texture& texture);
 Texture ReadTexture(const std::string& fullpath);
 
@@ -124,16 +134,22 @@ class TextureRepo {
   int AddUnique(const std::string& name, const Texture& texture);
   bool Has(const std::string& path) const;
   bool Has(int index) const;
+  int GetIndex(const std::string& name) const;
+  const Texture& GetTexture(const std::string& name) const;
+  const Texture& GetTexture(int index) const;
   Texture AsTexture2DArray(int width = 512, int height = 512) const;
   int size() const;
   void MergeIamge() const;
 
  private:
-  std::unordered_map<std::string, int> name_2_index_;
-  std::unordered_map<int, Texture> index_2_texture_;
+  void EnsureTextureLoaded(const std::string& name) const;
+  Texture LoadTextureFromConfig(const TextureConfig& texture_config) const;
+
+  mutable std::unordered_map<std::string, int> name_2_index_;
+  mutable std::unordered_map<int, Texture> index_2_texture_;
   mutable std::unordered_map<int, Texture> dirty_index_2_texture_;
 
-  const Config* config_;
+  const Config* config_ = nullptr;
   mutable Texture texture_2d_array_;
 };
 } // namespace cg

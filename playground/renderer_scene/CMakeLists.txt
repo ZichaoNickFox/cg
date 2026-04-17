@@ -1,0 +1,32 @@
+add_library(
+  cg_renderer_scene
+  STATIC
+    geometry_scene.h
+    geometry_scene.cc
+    model_scene.h
+    model_scene.cc
+    path_tracing_geometry_scene.h
+    path_tracing_geometry_scene.cc
+    path_tracing_scene.h
+    path_tracing_scene.cc
+    ray_tracing_scene.h
+    ray_tracing_scene.cc
+    rtrt_scene.h
+    rtrt_scene.cc
+    sample_scene.h
+    sample_scene.cc
+    shadow_scene.h
+    shadow_scene.cc
+    ssao_scene.h
+    ssao_scene.cc
+)
+target_link_libraries(
+  cg_renderer_scene
+  PUBLIC
+    cg::project_options
+    cg_physics
+    cg_renderer
+    cg::glm
+    cg::imgui
+)
+add_library(cg::renderer_scene ALIAS cg_renderer_scene)

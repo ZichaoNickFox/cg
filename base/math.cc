@@ -55,7 +55,11 @@ std::vector<glm::vec4> Noise(int row_num, int col_num) {
 std::vector<float> Linspace(float from, float to, int num) {
   CGCHECK(num > 0);
   std::vector<float> res(num);
-  float interval = (to - from) / num;
+  if (num == 1) {
+    res[0] = from;
+    return res;
+  }
+  float interval = (to - from) / (num - 1);
   float iter = from;
   for (int i = 0; i < num - 1; ++i) {
     res[i] = iter;

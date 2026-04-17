@@ -14,7 +14,7 @@ LinesMesh::LinesMesh(const std::vector<Triangle>& triangles, const glm::vec4& co
     positions_[index++] = glm::vec4(triangles[i].c, 1.0);
     positions_[index++] = glm::vec4(triangles[i].a, 1.0);
   }
-  primitive_mode_ = GL_LINES;
+  primitive_mode_ = rhi::PrimitiveTopology::kLines;
   Setup();
 }
 
@@ -55,12 +55,12 @@ LinesMesh::LinesMesh(const std::vector<AABB>& aabbs, const glm::vec4& force_colo
     positions_[i++] = g;  positions_[i++] = h;
     positions_[i++] = h;  positions_[i++] = e;
   }
-  primitive_mode_ = GL_LINES;
+  primitive_mode_ = rhi::PrimitiveTopology::kLines;
   Setup();
 }
 
 LinesMesh::LinesMesh(const std::vector<glm::vec3>& positions, const std::vector<glm::vec4>& colors,
-                     GLuint primitive_mode) {
+                     rhi::PrimitiveTopology primitive_mode) {
   SetPositions(positions);
   SetColors(colors);
   primitive_mode_ = primitive_mode;
@@ -68,7 +68,7 @@ LinesMesh::LinesMesh(const std::vector<glm::vec3>& positions, const std::vector<
 }
 
 LinesMesh::LinesMesh(const std::vector<glm::vec4>& positions, const std::vector<glm::vec4>& colors,
-                     GLuint primitive_mode) {
+                     rhi::PrimitiveTopology primitive_mode) {
   for (const glm::vec4& position : positions) {
     positions_.push_back(position);
   }

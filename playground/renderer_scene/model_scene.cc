@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "renderer/gl.h"
+#include "rhi/device.h"
 #include "renderer/shader.h"
 #include "base/util.h"
 
@@ -40,19 +40,19 @@ void ModelScene::OnUpdate() {
 
   ImGui::Checkbox("Cull", &enable_cull_face_);
   if (ImGui::Button("Back")) {
-    call_face_ = GL_BACK;
+    cull_mode_ = rhi::CullMode::kBack;
   }
   if (ImGui::Button("Front")) {
-    call_face_ = GL_FRONT;
+    cull_mode_ = rhi::CullMode::kFront;
   }
   if (ImGui::Button("Front And Back")) {
-    call_face_ = GL_FRONT_AND_BACK;
+    cull_mode_ = rhi::CullMode::kFrontAndBack;
   }
   if (ImGui::Button("CW")) {
-    cw_ = GL_CW;
+    front_face_ = rhi::FrontFace::kClockwise;
   }
   if (ImGui::Button("CCW")) {
-    cw_ = GL_CCW;
+    front_face_ = rhi::FrontFace::kCounterClockwise;
   }
 
   glm::quat rotation = glm::angleAxis(rotate_speed_, glm::vec3(0, 1, 0));
@@ -62,15 +62,11 @@ void ModelScene::OnUpdate() {
 }
 
 void ModelScene::OnRender() {
-  if (enable_cull_face_) {
-    glEnable_(GL_CULL_FACE);
-  } else {
-    glDisable_(GL_CULL_FACE);
-  }
-  glCullFace_(call_face_);
-  glFrontFace_(cw_);
+  rhi::GetDevice().SetCullEnabled(enable_cull_face_);
+  rhi::GetDevice().SetCullMode(cull_mode_);
+  rhi::GetDevice().SetFrontFace(front_face_);
 
-  PhongShader({true}, *this, object_repo_.GetObject("cerberus"));
+  PhongShader({use_blinn_phong_}, *this, object_repo_.GetObject("cerberus"));
   LinesShader({}, *this, CoordinatorMesh());
 }
 

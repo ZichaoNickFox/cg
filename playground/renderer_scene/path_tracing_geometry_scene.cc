@@ -1,8 +1,7 @@
 #include "playground/renderer_scene/path_tracing_geometry_scene.h"
 
-#include <format>
-
 #include "base/math.h"
+#include "base/util.h"
 #include "renderer/filter.h"
 #include "renderer/inspector.h"
 #include "renderer/object.h"
@@ -20,15 +19,16 @@ class PathTracingGeometrySceneShader : public cg::ComputeShader {
   PathTracingGeometrySceneShader(const Param& param, const Scene& scene)
       : ComputeShader(scene, "path_tracing_geometry_scene") {
     SetCamera(scene.camera());
-    SetTextureBinding({param.canvas, "canvas", GL_READ_ONLY});
+    SetTextureBinding({param.canvas, "canvas", TextureAccess::kWriteOnly});
     SetResolution(param.canvas.meta().Resolution());
+    SetWorkGroupNum({(param.canvas.meta().width + 31) / 32, (param.canvas.meta().height + 31) / 32, 1});
     SetFrameNum(scene);
     for (int i = 0; i < param.spheres.size(); ++i) {
       const Sphere& sphere = param.spheres[i];
-      program_.SetInt(std::format("spheres[{}].id", i), sphere.id);
-      program_.SetVec3(std::format("spheres[{}].center_pos", i), sphere.translation);
-      program_.SetVec4(std::format("spheres[{}].color", i), sphere.color);
-      program_.SetFloat(std::format("spheres[{}].radius", i), sphere.radius);
+      program_.SetInt(util::Format("spheres[{}].id", i), sphere.id);
+      program_.SetVec3(util::Format("spheres[{}].center_pos", i), sphere.translation);
+      program_.SetVec4(util::Format("spheres[{}].color", i), sphere.color);
+      program_.SetFloat(util::Format("spheres[{}].radius", i), sphere.radius);
     }
     Run();
   }
@@ -39,11 +39,12 @@ void PathTracingGeometryScene::OnEnter() {
   camera_->SetTransform({{0, 1, 5}, glm::quat(1, -0.02, 0, 0), {1, 1, 1}});
 
   // path tracing
-  glm::ivec2 viewport_size = io_->screen_size();
+  glm::ivec2 viewport_size = io_->framebuffer_size();
   std::vector<glm::vec4> canvas(viewport_size.x * viewport_size.y, kBlack);
-  canvas_ = CreateTexture2D(viewport_size.x, viewport_size.y, canvas, GL_NEAREST, GL_NEAREST);
+  canvas_ = CreateTexture2D(viewport_size.x, viewport_size.y, canvas,
+                            rhi::FilterMode::kNearest, rhi::FilterMode::kNearest);
 
-  glEnable_(GL_DEPTH_TEST);
+  rhi::GetDevice().SetDepthTestEnabled(true);
 }
 
 void PathTracingGeometryScene::OnUpdate() {

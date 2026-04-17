@@ -1,4 +1,4 @@
-#version 430 core
+#version 450 core
 
 uniform samplerCube texture_cubemap;
 uniform vec3 view_pos_ws;

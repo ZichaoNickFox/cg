@@ -19,7 +19,11 @@ std::string Ray::AsString() const {
 glm::vec3 GetFootOfPerpendicular(const glm::vec3& p, const glm::vec3& a, const glm::vec3& b) {
   glm::vec3 ap = p - a;
   glm::vec3 ab = b - a;
-  glm::vec3 foot = a + glm::dot(ap, ab) / glm::length(ab);
+  float ab_length2 = glm::dot(ab, ab);
+  if (ab_length2 <= std::numeric_limits<float>::epsilon()) {
+    return a;
+  }
+  glm::vec3 foot = a + glm::dot(ap, ab) / ab_length2 * ab;
   return foot;
 }
 
@@ -34,7 +38,7 @@ void AABB::Union(const AABB& other) {
 
 float AABB::SurfaceArea() const {
   glm::vec3 delta = maximum - minimum;
-  return 2 * (delta.x * delta.y + delta.y * delta.z * delta.x * delta.z);
+  return 2 * (delta.x * delta.y + delta.y * delta.z + delta.x * delta.z);
 }
 
 glm::vec3 AABB::Center() const {
@@ -136,8 +140,8 @@ AABB Triangle::AsAABB() const {
 }
 
 std::string AABB::AsString() const {
-  return std::format("{},{},{}|{},{},{}",
-                     maximum.x, maximum.y, maximum.z, minimum.x, minimum.y, minimum.z);
+  return util::Format("{},{},{}|{},{},{}",
+                      maximum.x, maximum.y, maximum.z, minimum.x, minimum.y, minimum.z);
 }
 
 #if CGDEBUG
@@ -178,43 +182,33 @@ void AABB::SetColor(int level) {
 #endif
 
 RayAABBResult RayAABB(const Ray& ray, const AABB& aabb) {
-  RayAABBResult res;
+  RayAABBResult res = {.hitted = false};
 
-  float t_enter_x = std::numeric_limits<float>::lowest();
-  float t_enter_y = std::numeric_limits<float>::lowest();
-  float t_enter_z = std::numeric_limits<float>::lowest();
-  float t_exit_x = std::numeric_limits<float>::max();
-  float t_exit_y = std::numeric_limits<float>::max();
-  float t_exit_z = std::numeric_limits<float>::max();
-  if (ray.direction.x > 0) {
-    t_enter_x = (aabb.minimum.x - ray.position.x) / ray.direction.x;
-    t_exit_x = (aabb.maximum.x - ray.position.x) / ray.direction.x;
-  } else if (ray.direction.x < 0) {
-    t_enter_x = (aabb.maximum.x - ray.position.x) / ray.direction.x;
-    t_exit_x = (aabb.minimum.x - ray.position.x) / ray.direction.x;
+  auto update_interval = [](float origin, float direction, float minimum, float maximum, float* t_enter,
+                            float* t_exit) {
+    if (std::abs(direction) <= std::numeric_limits<float>::epsilon()) {
+      return origin >= minimum && origin <= maximum;
+    }
+
+    float axis_enter = (minimum - origin) / direction;
+    float axis_exit = (maximum - origin) / direction;
+    if (axis_enter > axis_exit) {
+      std::swap(axis_enter, axis_exit);
+    }
+    *t_enter = std::max(*t_enter, axis_enter);
+    *t_exit = std::min(*t_exit, axis_exit);
+    return *t_enter <= *t_exit;
+  };
+
+  float t_enter = std::numeric_limits<float>::lowest();
+  float t_exit = std::numeric_limits<float>::max();
+  if (!update_interval(ray.position.x, ray.direction.x, aabb.minimum.x, aabb.maximum.x, &t_enter, &t_exit) ||
+      !update_interval(ray.position.y, ray.direction.y, aabb.minimum.y, aabb.maximum.y, &t_enter, &t_exit) ||
+      !update_interval(ray.position.z, ray.direction.z, aabb.minimum.z, aabb.maximum.z, &t_enter, &t_exit)) {
+    return res;
   }
 
-  if (ray.direction.y > 0) {
-    t_enter_y = (aabb.minimum.y - ray.position.y) / ray.direction.y;
-    t_exit_y = (aabb.maximum.y - ray.position.y) / ray.direction.y;
-  } else if (ray.direction.y < 0) {
-    t_enter_y = (aabb.maximum.y - ray.position.y) / ray.direction.y;
-    t_exit_y = (aabb.minimum.y - ray.position.y) / ray.direction.y;
-  }
-
-  if (ray.direction.z > 0) {
-    t_enter_z = (aabb.minimum.z - ray.position.z) / ray.direction.z;
-    t_exit_z = (aabb.maximum.z - ray.position.z) / ray.direction.z;
-  } else if (ray.direction.z < 0) {
-    t_enter_z = (aabb.maximum.z - ray.position.z) / ray.direction.z;
-    t_exit_z = (aabb.minimum.z - ray.position.z) / ray.direction.z;
-  }
-
-  float t_enter = std::max(std::max(t_enter_x, t_enter_y), t_enter_z);
-  float t_exit = std::min(std::min(t_exit_x, t_exit_y), t_exit_z);
-
-  res.hitted = (t_enter < t_exit && t_exit >= 0);
-
+  res.hitted = (t_enter <= t_exit && t_exit >= 0);
   return res;
 }
 
@@ -233,7 +227,7 @@ glm::vec3 Triangle::Normal() const {
 float Triangle::GetArea() const {
   glm::vec3 e1 = b - a;
   glm::vec3 e2 = c - a;
-  return glm::cross(e1, e2).length() / 2.0;
+  return glm::length(glm::cross(e1, e2)) / 2.0f;
 }
 
 // Mollar Trumbore Algorithm
@@ -281,7 +275,7 @@ TriangleGPU::TriangleGPU(const Triangle& triangle, int material_index) {
   c = glm::vec4(triangle.c, 0.0);
 }
 
-void LineSegment::Bresenham(int width, int height, const std::function<void(const glm::vec2&)>& callback) {
+void LineSegment::Bresenham(int width, int height, const std::function<void(const glm::vec2&)>& callback) const {
   float dx = b.x - a.x;
   float dy = b.y - a.y;
   float xsign = dx > 0 ? 1 : -1;

@@ -1,4 +1,4 @@
-#version 430 core
+#version 450 core
 
 uniform sampler2D texture0;
 uniform int sample_frame_num;

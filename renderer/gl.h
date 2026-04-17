@@ -1,13 +1,13 @@
 #pragma once
 
-#include "GL/glew.h"
+#include <glad/gl.h>
 
 #include "base/debug.h"
 
 #define CGCHECKGL() int error = glGetError(); CGCHECK(error == 0) << std::hex << error << std::dec << " | "
 
-// glew
-GLenum glewInit_();
+// loader
+int InitializeOpenGLLoader(GLADloadfunc load_proc);
 
 // Common
 void glEnable_(GLenum cap);
@@ -83,6 +83,7 @@ void glBlitFramebuffer_(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1,
                         GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
 void glDrawBuffer_(GLenum buf);
 void glReadBuffer_(GLenum buf);
+void glReadPixels_(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, void* data);
 
 // Shader
 GLuint glCreateShader_(GLenum shaderType);
@@ -96,6 +97,7 @@ void glLinkProgram_(GLuint program);
 void glGetProgramiv_(GLuint program, GLenum pname, GLint *params);
 void glGetProgramInfoLog_(GLuint program, GLsizei maxLength, GLsizei *length, GLchar *infoLog);
 void glDeleteShader_(GLuint shader);
+void glDeleteProgram_(GLuint program);
 GLboolean glIsProgram_(GLuint program);
 void glUseProgram_(GLuint program);
 GLint glGetUniformLocation_(GLuint program, const GLchar *name);

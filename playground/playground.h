@@ -3,6 +3,7 @@
 #include <chrono>
 #include <functional>
 #include <memory>
+#include <string>
 #include <unordered_map>
 
 #include "renderer/config.h"
@@ -19,17 +20,28 @@ class Playground {
   void Render();
   void EndFrame();
   void Destoy();
+  void SetPresentationRuntimeName(std::string runtime_name);
 
   cg::Io* mutable_io() { return &io_; }
   const cg::Io& io() { return io_; }
- 
+
  private:
+  void EnsureScene();
+  void SwitchToScene(const std::string& scene_id);
+  void DrawSceneSelector();
+
   cg::Config config_;
   cg::Io io_;
   cg::FrameStat frame_stat_;
 
   std::string current_scene_name_;
-  cg::Scene* current_scene_ = nullptr;
+  std::string pending_scene_name_;
+  bool force_reload_scene_ = false;
+  bool scene_selector_popup_requested_ = false;
+  bool show_unsupported_scenes_ = false;
+  int selected_scene_category_index_ = 0;
+  std::string presentation_runtime_name_;
+  std::unique_ptr<cg::Scene> current_scene_;
 
   util::Time frame_start_time_;
 };

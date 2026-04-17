@@ -6,6 +6,7 @@
 #include "imgui.h"
 #include <memory>
 
+#include "rhi/device.h"
 #include "renderer/transform.h"
 #include "playground/renderer_scene/common.h"
 
@@ -37,7 +38,7 @@ void PbrScene::OnEnter(Scene *context)
     teapot_.mutable_model_part(i)->mutable_transform()->SetScale(glm::vec3(0.2, 0.2, 0.2));
   }
 
-  glEnable_(GL_DEPTH_TEST);
+  cg::rhi::GetDevice().SetDepthTestEnabled(true);
 }
 
 void PbrScene::OnUpdate(Scene *context)

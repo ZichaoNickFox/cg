@@ -1,9 +1,9 @@
 #include "base/util.h"
 
+#include <filesystem>
 #include <fstream>
 #include <limits>
 #include <string>
-#include <sys/stat.h>
 
 #include "base/debug.h"
 
@@ -54,16 +54,16 @@ std::string ReplaceBackslash(const std::string& path) {
 }
 
 std::string FileJoin(const std::string& dir, const std::string& file) {
-  std::string res;
-  if (dir.size() == 0) {
-    res = file;
+  if (dir.empty()) {
+    return ReplaceBackslash(file);
   }
-  if (dir[dir.size() - 1] == '/' || dir[dir.size() - 1] == '\\') {
-    res = dir + file;
-  } else {
-    res = dir + "/" + file;
+  if (file.empty()) {
+    return ReplaceBackslash(dir);
   }
-  return ReplaceBackslash(res);
+  if (dir.back() == '/' || dir.back() == '\\') {
+    return ReplaceBackslash(dir + file);
+  }
+  return ReplaceBackslash(dir + "/" + file);
 }
 
 // S_IRWXU	00700权限，代表该文件所有者拥有读，写和执行操作的权限
@@ -79,18 +79,12 @@ std::string FileJoin(const std::string& dir, const std::string& file) {
 // S_IWOTH	00002权限，代表其他用户拥有可写的权限
 // S_IXOTH	00001权限，代表其他用户拥有执行的权限
 void MakeDir(const std::string& dir) {
-#if defined GL_PLATFORM_MACOS
-  struct stat info;
-  if (stat(dir.c_str(), &info) != 0) {
-    mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
-
-    int result = mkdir(dir.c_str(), mode);
-    if(result != 0) {
-      CGCHECK(false) << result;
-    }
+  if (dir.empty()) {
+    return;
   }
-#endif
-  CGCHECK(false);
+  std::error_code error_code;
+  std::filesystem::create_directories(dir, error_code);
+  CGCHECK(!error_code) << error_code.message();
 }
 
 bool StartsWith(const std::string& str, const std::string& start_with) {
@@ -106,11 +100,19 @@ bool EndsWith(const std::string& str, const std::string& end_with) {
 }
 
 std::string TrimLeft(std::string str) {
-  return str.erase(str.find_last_not_of(' ') + 1);
+  const size_t first = str.find_first_not_of(' ');
+  if (first == std::string::npos) {
+    return "";
+  }
+  return str.substr(first);
 }
 
 std::string TrimRight(std::string str) {
-  return str.erase(str.find_first_not_of(' '));
+  const size_t last = str.find_last_not_of(' ');
+  if (last == std::string::npos) {
+    return "";
+  }
+  return str.substr(0, last + 1);
 }
 
 std::string Trim(std::string str) {
@@ -134,7 +136,7 @@ int AsInt(const Time& time) {
   return time.time_since_epoch().count();
 }
 
-float FloatEq(float value, float target) {
+bool FloatEq(float value, float target) {
   return value < target + std::numeric_limits<float>::epsilon()
       && value > target - std::numeric_limits<float>::epsilon();
 }

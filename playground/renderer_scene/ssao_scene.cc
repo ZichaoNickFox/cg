@@ -1,4 +1,4 @@
-#include "playground/renderer_scene/SSAO_scene.h"
+#include "playground/renderer_scene/ssao_scene.h"
 
 #include <glm/glm.hpp>
 #include <glm/ext/quaternion_trigonometric.hpp>
@@ -36,12 +36,13 @@ class SSAOShader : public ComputeShader {
   SSAOShader(const Param& param, const Scene& scene, const Object& object)
       : ComputeShader(scene, "ssao") {
     SetCamera(scene.camera());
-    SetResolution(scene.io().screen_size());
-    SetTextureBinding({param.texture_position_vs, "texture_position_vs", GL_READ_ONLY});
-    SetTextureBinding({param.texture_normal_vs, "texture_normal_vs", GL_READ_ONLY});
+    const glm::ivec2 render_size = scene.io().framebuffer_size();
+    SetResolution(render_size);
+    SetTextureBinding({param.texture_position_vs, "texture_position_vs", TextureAccess::kReadOnly});
+    SetTextureBinding({param.texture_normal_vs, "texture_normal_vs", TextureAccess::kReadOnly});
     program_.SetTexture("texture_depth", param.texture_depth);
-    SetTextureBinding({param.texture_out, "texture_out", GL_WRITE_ONLY});
-    SetWorkGroupNum({scene.io().screen_size().x / 32 + 1, scene.io().screen_size().y / 32 + 1, 1});
+    SetTextureBinding({param.texture_out, "texture_out", TextureAccess::kWriteOnly});
+    SetWorkGroupNum({(render_size.x + 31) / 32, (render_size.y + 31) / 32, 1});
     SetFrameNum(scene);
     Run();
   }
@@ -51,8 +52,8 @@ void SSAOScene::OnEnter() {
   camera_->mutable_transform()->SetTranslation(glm::vec3(1.78, 0.47, -2.30));
   camera_->mutable_transform()->SetRotation(glm::quat(-0.66, 0.19, -0.70, -0.18));
 
-  Framebuffer::Option option{{3240, 2160}, {kAttachmentPositionVS, kAttachmentNormalVS,
-                                            kAttachmentTest, kAttachmentDepth}};
+  Framebuffer::Option option{io_->framebuffer_size(),
+                             {kAttachmentPositionVS, kAttachmentNormalVS, kAttachmentTest, kAttachmentDepth}};
   fbo_.Init(option);
 
   object_repo_.AddOrReplace(object_metas_);

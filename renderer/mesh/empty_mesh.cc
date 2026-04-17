@@ -2,7 +2,7 @@
 
 namespace cg {
 EmptyMesh::EmptyMesh() {
-  primitive_mode_ = GL_TRIANGLE_STRIP; 
+  primitive_mode_ = rhi::PrimitiveTopology::kTriangleStrip;
   indices_.push_back(0);
   indices_.push_back(1);
   indices_.push_back(2);

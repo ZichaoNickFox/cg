@@ -9,6 +9,7 @@
 #include "renderer/inspector.h"
 #include "renderer/repo/texture_repo.h"
 #include "renderer/transform.h"
+#include "rhi/device.h"
 #include "playground/object/sphere_object.h"
 
 constexpr int kLevel0Size = 512;
@@ -17,7 +18,7 @@ void TextureLodScene::OnEnter(Scene *context) {
   context->SetCamera(camera_.get());
   camera_->mutable_transform()->SetTranslation(glm::vec3(0, 0, 5));
 
-  glEnable_(GL_DEPTH_TEST);
+  cg::rhi::GetDevice().SetDepthTestEnabled(true);
 
   cg::ColorFramebuffer::Option option;
   option.clear_color = context->clear_color();

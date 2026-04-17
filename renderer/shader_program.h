@@ -1,25 +1,27 @@
 #pragma once
 
-#include "glm/glm.hpp"
+#include <cstdint>
 #include <fstream>
+#include <iostream>
+#include <memory>
 #include <sstream>
 #include <string>
-#include <iostream>
+#include <unordered_map>
+
+#include "glm/glm.hpp"
 
 #include "base/debug.h"
 #include "renderer/config.h"
+#include "rhi/device.h"
 #include "renderer/texture.h"
-#include "renderer/gl.h"
 
 namespace cg {
 class ShaderProgram
 {
  public:
-  struct CodePart {
-    std::string glsl_path;
-    std::string code;
-  };
-  ShaderProgram() {}  
+  using CodePart = rhi::ShaderCodePart;
+
+  ShaderProgram() = default;
   // Render Shader
   ShaderProgram(const std::string& name, const std::vector<CodePart>& vs, const std::vector<CodePart>& fs,
          const std::vector<CodePart>& gs, const std::vector<CodePart>& ts);
@@ -35,21 +37,15 @@ class ShaderProgram
   void SetVec4(const std::string &location_name, const glm::vec4& value) const;
   void SetVec3(const std::string &location_name, const glm::vec3& value) const;
   void SetVec2(const std::string &location_name, const glm::vec2& value) const;
-  GLuint id() const { return id_; }
+  uint32_t id() const;
 
-  const std::string& name() { return name_; }
+  const std::string& name() const { return name_; }
 
  private:
-  std::string GetOneLineCompilerError430(const std::vector<ShaderProgram::CodePart>& code_parts, const std::string& gl_log);
-  std::string GetMultipleLineCompileError(const std::vector<ShaderProgram::CodePart>& code_parts, const std::string& gl_log);
-  GLuint Compile(const std::vector<CodePart>& code, GLuint shader_type);
-  void Link(GLuint program, const std::vector<GLuint>& objects);
+  const rhi::Program& ProgramRef() const;
 
-  GLint GetUniformLocation(const std::string& name) const;
-
-  GLuint id_;
+  std::shared_ptr<rhi::Program> program_;
   std::string name_;
-  mutable std::unordered_map<int, int> texture_2_unit_;
 };
 
 class ShaderProgramRepo {

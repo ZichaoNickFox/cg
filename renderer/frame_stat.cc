@@ -6,13 +6,14 @@
 #include "base/debug.h"
 
 namespace cg {
-FrameStat::FrameStat() {
-  frame_intervals_.set_capacity(acc_frame_num_);
-}
+FrameStat::FrameStat() = default;
 
 void FrameStat::OnFrame(int last_frame_interval_ms) {
   last_frame_interval_ms_ = last_frame_interval_ms;
   frame_num_++;
+  if (frame_intervals_.size() == acc_frame_num_) {
+    frame_intervals_.pop_front();
+  }
   frame_intervals_.push_back(last_frame_interval_ms);
 }
 
@@ -32,10 +33,10 @@ void FrameStat::Gui() const {
 }
 
 int FrameStat::avg_frame_interval() const {
-  int size = frame_intervals_.size();
+  int size = static_cast<int>(frame_intervals_.size());
   int sum = 0;
-  for (int i = 0; i < frame_intervals_.size(); ++i) {
-    sum += frame_intervals_[i];
+  for (int frame_interval : frame_intervals_) {
+    sum += frame_interval;
   }
   return sum / (size ? size : 1);
 }

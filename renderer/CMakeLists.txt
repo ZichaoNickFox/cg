@@ -1,0 +1,93 @@
+add_library(
+  cg_renderer_gl
+  STATIC
+    gl.h
+    gl.cc
+)
+target_link_libraries(cg_renderer_gl PUBLIC cg::project_options cg_debug cg::glad)
+add_library(cg::renderer_gl ALIAS cg_renderer_gl)
+
+add_library(
+  cg_renderer
+  STATIC
+    automic_counter.h
+    automic_counter.cc
+    BVH.h
+    BVH.cc
+    camera.h
+    camera.cc
+    config.h
+    config.cc
+    definition.h
+    filter.h
+    filter.cc
+    frame_stat.h
+    frame_stat.cc
+    framebuffer.h
+    framebuffer.cc
+    framebuffer_attachment.h
+    framebuffer_attachment.cc
+    inspector.h
+    inspector.cc
+    io.h
+    io.cc
+    light.h
+    light.cc
+    material.h
+    material.cc
+    mesh.h
+    mesh.cc
+    mesh/cube_mesh.h
+    mesh/cube_mesh.cc
+    mesh/empty_mesh.h
+    mesh/empty_mesh.cc
+    mesh/lines_mesh.h
+    mesh/lines_mesh.cc
+    mesh/mesh_util.h
+    mesh/mesh_util.cc
+    mesh/plane_mesh.h
+    mesh/plane_mesh.cc
+    mesh/sphere_mesh.h
+    mesh/sphere_mesh.cc
+    model_loader.h
+    model_loader.cc
+    object.h
+    object.cc
+    ping_pong.h
+    primitive.h
+    primitive.cc
+    scene.h
+    scene.cc
+    shader.h
+    shader.cc
+    shader_program.h
+    shader_program.cc
+    shader_loader.h
+    shader_loader.cc
+    shadow.h
+    shadow.cc
+    ssbo.h
+    ssbo.cc
+    texture.h
+    texture.cc
+    texture_buffer.h
+    texture_buffer.cc
+    transform.h
+    transform.cc
+)
+target_link_libraries(
+  cg_renderer
+  PUBLIC
+    cg::project_options
+    cg_base
+    cg_rhi
+    cg_renderer_gl
+    cg_proto
+    assimp
+    protobuf::libprotobuf
+    cg::glm
+    cg::imgui
+    cg::ordered_map
+    cg::stb
+)
+add_library(cg::renderer ALIAS cg_renderer)

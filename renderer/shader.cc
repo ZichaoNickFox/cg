@@ -8,13 +8,16 @@
 
 #include "base/debug.h"
 #include "base/geometry.h"
-#include "renderer/bvh.h"
-#include "renderer/mesh/empty_mesh.h"
-#include "renderer/scene.h"
 #include "base/util.h"
+#include "renderer/BVH.h"
+#include "renderer/mesh/empty_mesh.h"
+#include "rhi/device.h"
+#include "renderer/scene.h"
 
 namespace cg {
 namespace {
+constexpr char kPhongMaterialPrefix[] = "phong_material";
+
 void SetCamera(const Camera& camera, ShaderProgram* program) {
   program->SetVec3("camera.pos_ws", camera.transform().translation());
   program->SetVec3("camera.front", camera.front_ws());
@@ -31,6 +34,83 @@ void SetCamera1(const Camera& camera_1, ShaderProgram* program) {
   program->SetFloat("camera_1.near", camera_1.near_clip());
   program->SetFloat("camera_1.far", camera_1.far_clip());
 }
+
+const Texture& WhiteFallbackTexture() {
+  static const Texture texture = CreateTexture2D(1, 1, {glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)});
+  return texture;
+}
+
+const Texture& FlatNormalFallbackTexture() {
+  static const Texture texture = CreateTexture2D(1, 1, {glm::vec4(0.5f, 0.5f, 1.0f, 1.0f)});
+  return texture;
+}
+
+void SetOptionalTexture(const TextureRepo& texture_repo,
+                        int texture_index,
+                        const std::string& use_uniform_name,
+                        const std::string& texture_uniform_name,
+                        const Texture& fallback_texture,
+                        ShaderProgram* program) {
+  const bool has_texture = texture_index != -1 && texture_repo.Has(texture_index);
+  program->SetBool(use_uniform_name, has_texture);
+  if (has_texture) {
+    program->SetTexture(texture_uniform_name, texture_repo.GetTexture(texture_index));
+  } else {
+    program->SetTexture(texture_uniform_name, fallback_texture);
+  }
+}
+
+void SetPhongMaterialUniforms(const Scene& scene, const Object& object, ShaderProgram* program) {
+  const Material& material = scene.material_repo().GetMaterial(object.material_index);
+  const TextureRepo& texture_repo = scene.texture_repo();
+
+  program->SetVec4(util::Format("{}.ambient", kPhongMaterialPrefix), material.ambient);
+  program->SetVec4(util::Format("{}.diffuse", kPhongMaterialPrefix), material.diffuse);
+  program->SetVec4(util::Format("{}.specular", kPhongMaterialPrefix), material.specular);
+  program->SetVec4(util::Format("{}.emission", kPhongMaterialPrefix), material.emission);
+  program->SetFloat(util::Format("{}.shininess", kPhongMaterialPrefix), material.shininess);
+
+  SetOptionalTexture(texture_repo,
+                     material.texture_normal,
+                     util::Format("{}.use_texture_normal", kPhongMaterialPrefix),
+                     util::Format("{}.texture_normal0", kPhongMaterialPrefix),
+                     FlatNormalFallbackTexture(),
+                     program);
+  SetOptionalTexture(texture_repo,
+                     material.texture_specular,
+                     util::Format("{}.use_texture_specular", kPhongMaterialPrefix),
+                     util::Format("{}.texture_specular0", kPhongMaterialPrefix),
+                     WhiteFallbackTexture(),
+                     program);
+  SetOptionalTexture(texture_repo,
+                     material.texture_ambient,
+                     util::Format("{}.use_texture_ambient", kPhongMaterialPrefix),
+                     util::Format("{}.texture_ambient0", kPhongMaterialPrefix),
+                     WhiteFallbackTexture(),
+                     program);
+  const int diffuse_texture_index = material.texture_diffuse != -1 ? material.texture_diffuse : material.texture_base_color;
+  SetOptionalTexture(texture_repo,
+                     diffuse_texture_index,
+                     util::Format("{}.use_texture_diffuse", kPhongMaterialPrefix),
+                     util::Format("{}.texture_diffuse0", kPhongMaterialPrefix),
+                     WhiteFallbackTexture(),
+                     program);
+  SetOptionalTexture(texture_repo,
+                     material.texture_shininess,
+                     util::Format("{}.use_texture_shininess", kPhongMaterialPrefix),
+                     util::Format("{}.texture_shininess0", kPhongMaterialPrefix),
+                     WhiteFallbackTexture(),
+                     program);
+}
+
+void SetLightUniforms(const Light& light, ShaderProgram* program) {
+  program->SetVec3("light.pos", light.position);
+  program->SetVec4("light.color", light.color);
+  program->SetFloat("light.constant", light.attenuation_2_1_0.z);
+  program->SetFloat("light.linear", light.attenuation_2_1_0.y);
+  program->SetFloat("light.quadratic", light.attenuation_2_1_0.x);
+}
+
 void SetShaderCommonParam(const Scene& scene, const std::string& shader_name, ShaderProgram* program) {
   program->Use();
   if (scene.texture_repo().size() > 0) {
@@ -66,6 +146,14 @@ void RenderShader::SetCamera1(const Camera& camera_1) {
   cg::SetCamera1(camera_1, &program_);
 }
 
+void RenderShader::SetMaterial(const Scene& scene, const Object& object) {
+  SetPhongMaterialUniforms(scene, object, &program_);
+}
+
+void RenderShader::SetLight(const Light& light) {
+  SetLightUniforms(light, &program_);
+}
+
 void RenderShader::SetMaterialIndex(int material_index) {
   program_.SetInt("material_index", material_index);
 }
@@ -96,15 +184,18 @@ void ComputeShader::SetTextureBinding(const TextureBinding& binding) {
   CGCHECK(!binding.texture.empty()) << binding.uniform_name;
   CheckTextureBindingInternalFormat(binding.texture);
   int texture_unit = program_.SetTexture(binding.uniform_name, binding.texture);
-  glBindImageTexture_(texture_unit, binding.texture.id(), 0, GL_FALSE, 0,
-                      binding.read_write_type, binding.texture.meta().gl_internal_format);
+  rhi::GetDevice().BindStorageTexture(texture_unit, binding.texture, binding.access);
 }
 
 void ComputeShader::CheckTextureBindingInternalFormat(const cg::Texture& texture) const {
-  GLuint internal_format = texture.meta().gl_internal_format;
-  std::set<GLint> supported_format = { GL_R32UI, GL_RG32F, GL_RGBA32F };
-  if (supported_format.count(internal_format) <= 0) {
-    CGCHECK(false) << "Unsupported Internal Format : " << std::hex << internal_format << std::dec;
+  const rhi::TextureFormat format = texture.meta().format;
+  std::set<rhi::TextureFormat> supported_format = {
+      rhi::TextureFormat::kR32UI,
+      rhi::TextureFormat::kRG32F,
+      rhi::TextureFormat::kRGBA32F,
+  };
+  if (supported_format.count(format) <= 0) {
+    CGCHECK(false) << "Unsupported texture format : " << static_cast<int>(format);
   }
 }
 
@@ -131,8 +222,8 @@ void ComputeShader::SetDirty(bool dirty) {
 void ComputeShader::Run() const {
   program_.Use();
   CGCHECK(work_group_num_ != glm::vec3()) << " Setting work group num";
-  glDispatchCompute_(work_group_num_.x, work_group_num_.y, work_group_num_.z);
-  glMemoryBarrier_(GL_ALL_BARRIER_BITS);
+  rhi::GetDevice().DispatchCompute(glm::uvec3(work_group_num_.x, work_group_num_.y, work_group_num_.z));
+  rhi::GetDevice().MemoryBarrier(rhi::MemoryBarrier::kAll);
 }
 
 PhongShader::PhongShader(const Param& param, const Scene& scene, const Object& object)
@@ -141,7 +232,7 @@ PhongShader::PhongShader(const Param& param, const Scene& scene, const Object& o
   SetModel(object);
   SetCamera(camera);
   SetMaterialIndex(object.material_index);
-  program_.SetInt("use_blinn_phong", param.use_blinn_phong);
+  program_.SetBool("use_blinn_phong", param.use_blinn_phong);
   Run(scene, object);
 }
 
@@ -280,8 +371,8 @@ BlurShader::BlurShader(const Param& param, const Scene& scene, const Object& obj
 
 RandomShader::RandomShader(const Param& param, const Scene& scene)
     : ComputeShader(scene, "random_test") {
-  SetTextureBinding({param.input, "texture_input", GL_WRITE_ONLY});
-  SetTextureBinding({param.output, "texture_output", GL_READ_ONLY});
+  SetTextureBinding({param.input, "texture_input", TextureAccess::kWriteOnly});
+  SetTextureBinding({param.output, "texture_output", TextureAccess::kReadOnly});
   SetFrameNum(scene);
   Run();
 }

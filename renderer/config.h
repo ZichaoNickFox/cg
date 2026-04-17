@@ -12,6 +12,7 @@ class Config {
   const ShaderConfig& shader_config(const std::string& name) const;
   const TextureConfig& texture_config(const std::string& name) const;
   const ModelConfig& model_config(const std::string& name) const;
+  std::string ResolvePath(const std::string& path) const;
   const std::unordered_map<std::string, ShaderConfig>& shader_configs() const { return shader_configs_; }
   const std::unordered_map<std::string, TextureConfig>& texture_configs() const { return texture_configs_; }
   const std::unordered_map<std::string, ModelConfig>& model_configs() const { return model_configs_; }
@@ -20,6 +21,7 @@ class Config {
   std::unordered_map<std::string, ShaderConfig> shader_configs_;
   std::unordered_map<std::string, TextureConfig> texture_configs_;
   std::unordered_map<std::string, ModelConfig> model_configs_;
+  std::string config_dir_;
 };
 
 } // namespace cg

@@ -9,6 +9,7 @@
 #include "renderer/repo/texture_repo.h"
 #include "renderer/transform.h"
 #include "base/util.h"
+#include "rhi/device.h"
 #include "playground/object/sphere_object.h"
 #include "playground/renderer_scene/common.h"
 
@@ -20,7 +21,7 @@ void PbrPrefilteredColorCubemapGenerator::OnEnter(Scene *context)
   camera_->mutable_transform()->SetTranslation(glm::vec3(2.97, 3.95, 6.76));
   context->SetCamera(camera_.get());
 
-  glEnable_(GL_DEPTH_TEST);
+  cg::rhi::GetDevice().SetDepthTestEnabled(true);
 
   for (int face = 0; face < 6; ++face) {
     cubemap_cameras_[face].SetTransform(transforms_[face]);

@@ -1,11 +1,22 @@
 #include "renderer/scene.h"
 
 #include "base/debug.h"
+#include "base/util.h"
 #include "renderer/definition.h"
 #include "renderer/inspector.h"
-#include "base/util.h"
+#include "rhi/device.h"
 
 namespace cg {
+namespace {
+float CameraAspectFromIo(const Io& io) {
+  const glm::ivec2 size = io.framebuffer_size().x > 0 && io.framebuffer_size().y > 0
+                              ? io.framebuffer_size()
+                              : io.screen_size();
+  CGCHECK(size.x > 0 && size.y > 0) << "Invalid viewport size: " << size.x << "x" << size.y;
+  return static_cast<float>(size.x) / static_cast<float>(size.y);
+}
+}  // namespace
+
 void Scene::Enter(const std::string& name, Config* config, Io* io, FrameStat* frame_stat) {
   name_ = name;
 
@@ -14,12 +25,13 @@ void Scene::Enter(const std::string& name, Config* config, Io* io, FrameStat* fr
   frame_stat_ = frame_stat;
 
   shader_program_repo_.Init(*config);
+  texture_repo_.Init(*config);
   object_repo_.Init(config, &mesh_repo_, &material_repo_, &texture_repo_);
 
-  camera_->SetAspect(float(io_->screen_size().x) / io_->screen_size().y);
+  camera_->SetAspect(CameraAspectFromIo(*io_));
   camera_->SetPerspectiveFov(60);
 
-  glEnable_(GL_DEPTH_TEST);
+  rhi::GetDevice().SetDepthTestEnabled(true);
 
   OnEnter();
 
@@ -27,10 +39,23 @@ void Scene::Enter(const std::string& name, Config* config, Io* io, FrameStat* fr
 }
 
 void Scene::Update() {
-  material_repo_.UpdateSSBO();
-  bvh_.UpdateSSBO();
-  primitive_repo_.UpdateSSBO(bvh_.GetPrimitiveSequence());
-  light_repo_.UpdateSSBO();
+  camera_->SetAspect(CameraAspectFromIo(*io_));
+
+  const rhi::Capabilities& gpu_caps = rhi::GetCapabilities();
+  if (gpu_caps.supports_storage_buffers) {
+    material_repo_.UpdateSSBO();
+    bvh_.UpdateSSBO();
+    primitive_repo_.UpdateSSBO(bvh_.GetPrimitiveSequence());
+    light_repo_.UpdateSSBO();
+  } else {
+    static bool warned = false;
+    if (!warned) {
+      CGLOG(ERROR) << "GPU storage buffers are unavailable on this machine (API="
+                   << rhi::GetSceneApiName()
+                   << "). GPU scenes that rely on storage buffers / compute shaders are disabled.";
+      warned = true;
+    }
+  }
 
   MoveCamera();
   OnUpdate();
@@ -49,6 +74,10 @@ void Scene::Exit() {
 const Camera& Scene::camera() const {
   CGCHECK(camera_) << "camera must be nullptr";
   return *camera_.get();
+}
+
+Texture Scene::GetTexture(const std::string& name, bool /*reload*/) {
+  return texture_repo_.GetTexture(name);
 }
 
 Camera* Scene::mutable_camera() {

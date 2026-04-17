@@ -19,8 +19,9 @@ class GeometrySceneShader : public ComputeShader {
   GeometrySceneShader(const Param& param, const Scene& scene)
       : ComputeShader(scene, "geometry_scene") {
     SetCamera(scene.camera());
-    SetTextureBinding({param.canvas, "canvas", GL_READ_WRITE});
+    SetTextureBinding({param.canvas, "canvas", TextureAccess::kWriteOnly});
     SetResolution(param.canvas.meta().Resolution());
+    SetWorkGroupNum({(param.canvas.meta().width + 31) / 32, (param.canvas.meta().height + 31) / 32, 1});
     program_.SetInt("triangle_num", param.triangle_num);
     program_.SetInt("aabb_num", param.aabb_num);
     Run();
@@ -54,9 +55,10 @@ void GeometryScene::OnEnter() {
   ssbo_triangle_.SetData(util::VectorSizeInByte(triangle_gpus), triangle_gpus.data());
   ssbo_aabb_.SetData(util::VectorSizeInByte(aabb_gpus), aabb_gpus.data());
 
-  glm::ivec2 viewport_size = io_->screen_size();
+  glm::ivec2 viewport_size = io_->framebuffer_size();
   std::vector<glm::vec4> canvas(viewport_size.x * viewport_size.y, kBlack);
-  canvas_ = CreateTexture2D(viewport_size.x, viewport_size.y, canvas, GL_NEAREST, GL_NEAREST);
+  canvas_ = CreateTexture2D(viewport_size.x, viewport_size.y, canvas,
+                            rhi::FilterMode::kNearest, rhi::FilterMode::kNearest);
 }
 
 void GeometryScene::OnUpdate() {

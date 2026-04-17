@@ -1,26 +1,28 @@
 #pragma once
 
-#include "renderer/gl.h"
+#include <memory>
+#include <cstdint>
+
+#include "rhi/device.h"
 
 namespace cg {
 
 class TextureBuffer {
  public:
-  TextureBuffer();
-  ~TextureBuffer();
+  TextureBuffer()
+      : buffer_(rhi::GetDevice().CreateBuffer(rhi::BufferType::kTexture)) {}
+  ~TextureBuffer() = default;
 
   template<typename DataType>
   void SetData(int size_in_byte, DataType* data);
 
  private:
-  GLuint buffer_;
+  std::unique_ptr<rhi::Buffer> buffer_;
 };
 
 template<typename DataType>
 void TextureBuffer::SetData(int size_in_byte, DataType* data) {
-  glBindBuffer_(GL_TEXTURE_BUFFER, buffer_);
-  glBufferData_(GL_TEXTURE_BUFFER, size_in_byte, data, GL_STATIC_DRAW);
-  glBindBuffer_(GL_TEXTURE_BUFFER, 0);
+  buffer_->SetData(size_in_byte, data, rhi::BufferUsage::kStatic);
 }
 
 }

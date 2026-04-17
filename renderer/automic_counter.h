@@ -1,7 +1,11 @@
 #pragma once
 
-#include "renderer/gl.h"
+#include <cstdint>
+#include <memory>
+
 #include <glm/glm.hpp>
+
+#include "rhi/device.h"
 
 namespace cg {
 
@@ -15,7 +19,7 @@ class AutomicCounter {
   void Reset(uint32_t value);
 
  private:
-  GLuint automic_counter_buffer_;
+  std::unique_ptr<rhi::Buffer> buffer_;
   int binding_point_;
   bool inited_ = false;
 };

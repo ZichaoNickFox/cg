@@ -1,14 +1,13 @@
 .vs
 .vscode
 examples
-bazel-*
 docs
-~imgui/BUILD
-!thirdparty/glfw
 .DS_Store
 settings.json
 imgui.ini
-bazel.exe
 .cache
 log
 /imgui.ini
+/build
+/cmake-build-*/
+/CMakeUserPresets.json

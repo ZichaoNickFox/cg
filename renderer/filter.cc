@@ -1,5 +1,7 @@
 #include "renderer/filter.h"
 
+#include <algorithm>
+
 namespace cg {
 
 bool Filter::Pass(const std::string& judgement) const {

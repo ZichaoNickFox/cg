@@ -8,11 +8,9 @@
 
 layout (std430, binding = SSBO_LIGHT_PATH) buffer LightPath { vec4 light_path[20]; };
 
-uniform vec2 screen_size;
+uniform vec2 resolution;
 uniform Camera camera;
 uniform Sphere spheres[10];
-uniform mat4 view;
-uniform mat4 project;
 
 struct RayTracingResult {
   struct Sphere sphere;
@@ -34,12 +32,12 @@ RayTracingResult RayTracing(Sphere spheres[10], Ray ray, float limit) {
 }
 
 void main() {
-  vec3 near_pos_ss = vec3(gl_GlobalInvocationID.xy / screen_size, 0.0);
-  vec3 near_pos_ws = PositionSS2WS(near_pos_ss, view, project);
+  vec3 near_pos_ss = vec3(gl_GlobalInvocationID.xy / resolution, 0.0);
+  vec3 near_pos_ws = PositionSS2WS(camera.view, camera.project, near_pos_ss);
   vec3 dir = normalize(near_pos_ws - camera.pos_ws);
   const vec4 clear_color = vec4(0, 0, 1, 1);
 
-  bool is_debug_frag = length(gl_GlobalInvocationID.xy / screen_size- vec2(0.5, 0.5)) < 0.00001;
+  bool is_debug_frag = length(gl_GlobalInvocationID.xy / resolution - vec2(0.5, 0.5)) < 0.00001;
 
   const int depth_num = 4;
   vec4 weights[depth_num] = vec4[depth_num](vec4(0.4, 0.4, 0.4, 1.0),

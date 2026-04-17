@@ -1,9 +1,10 @@
 #include "renderer/gl.h"
 
-GLenum glewInit_() {
-  GLenum res = glewInit();
-  CGCHECKGL();
-  return res;
+int InitializeOpenGLLoader(GLADloadfunc load_proc) {
+  const int version = gladLoadGL(load_proc);
+  CGCHECK(version != 0) << "Failed to initialize OpenGL function loader.";
+  glGetError();
+  return version;
 }
 
 void glEnable_(GLenum cap) {
@@ -379,6 +380,11 @@ void glReadBuffer_(GLenum buf) {
   CGCHECKGL();
 }
 
+void glReadPixels_(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, void* data) {
+  glReadPixels(x, y, width, height, format, type, data);
+  CGCHECKGL();
+}
+
 GLuint glCreateShader_(GLenum shaderType) {
   GLuint res = glCreateShader(shaderType);
   CGCHECKGL();
@@ -433,6 +439,11 @@ void glGetProgramInfoLog_(GLuint program, GLsizei maxLength, GLsizei *length, GL
 
 void glDeleteShader_(GLuint shader) {
   glDeleteShader(shader);
+  CGCHECKGL();
+}
+
+void glDeleteProgram_(GLuint program) {
+  glDeleteProgram(program);
   CGCHECKGL();
 }
 

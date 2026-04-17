@@ -1,7 +1,6 @@
 #pragma once
 
-#include <boost/circular_buffer.hpp>
-#include <queue>
+#include <deque>
 
 namespace cg {
 class FrameStat {
@@ -21,6 +20,6 @@ class FrameStat {
   int frame_num_ = 0;
 
   static constexpr int acc_frame_num_ = 60;
-  boost::circular_buffer<int> frame_intervals_;
+  std::deque<int> frame_intervals_;
 };
 }

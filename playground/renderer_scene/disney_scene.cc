@@ -37,10 +37,10 @@ class SSAOShader : public ComputeShader {
       : ComputeShader(scene, "ssao") {
     SetCamera(scene.camera());
     SetResolution(scene.io().screen_size());
-    SetTextureBinding({param.texture_position_vs, "texture_position_vs", GL_READ_ONLY});
-    SetTextureBinding({param.texture_normal_vs, "texture_normal_vs", GL_READ_ONLY});
+    SetTextureBinding({param.texture_position_vs, "texture_position_vs", TextureAccess::kReadOnly});
+    SetTextureBinding({param.texture_normal_vs, "texture_normal_vs", TextureAccess::kReadOnly});
     program_.SetTexture("texture_depth", param.texture_depth);
-    SetTextureBinding({param.texture_out, "texture_out", GL_WRITE_ONLY});
+    SetTextureBinding({param.texture_out, "texture_out", TextureAccess::kWriteOnly});
     SetWorkGroupNum({scene.io().screen_size().x / 32 + 1, scene.io().screen_size().y / 32 + 1, 1});
     SetFrameNum(scene);
     Run();

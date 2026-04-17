@@ -9,6 +9,7 @@
 #include "base/math.h"
 #include "renderer/shader.h"
 #include "renderer/transform.h"
+#include "rhi/device.h"
 #include "playground/renderer_scene/common.h"
 
 void SkyboxScene::OnEnter(Scene *context)
@@ -20,7 +21,7 @@ void SkyboxScene::OnEnter(Scene *context)
 
   skybox_.mutable_transform()->SetScale(glm::vec3(100, 100, 100));
 
-  glEnable_(GL_DEPTH_TEST);
+  cg::rhi::GetDevice().SetDepthTestEnabled(true);
 }
 
 void SkyboxScene::OnUpdate(Scene *context)

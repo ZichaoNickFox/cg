@@ -152,6 +152,18 @@ shader_config {
 }
 
 shader_config {
+  name : "shadow_scene";
+  vs_path : "playground/shader/shadow_scene/shadow_scene.vs.glsl";
+  fs_path : "playground/shader/shadow_scene/shadow_scene.fs.glsl";
+}
+
+shader_config {
+  name : "shadow_scene_depth";
+  vs_path : "playground/shader/shadow_scene/shadow_scene_depth.vs.glsl";
+  fs_path : "playground/shader/shadow_scene/shadow_scene_depth.fs.glsl";
+}
+
+shader_config {
   name : "pbr_prefiltered_color_cubemap_generator";
   vs_path : "renderer/shader/pbr/pbr_prefiltered_color_cubemap_generator.vs.glsl";
   fs_path : "renderer/shader/pbr/pbr_prefiltered_color_cubemap_generator.fs.glsl";
@@ -401,24 +413,24 @@ texture_config {
   level_num : 3;
   texture_type : Cubemap;
   path : [
-    "playground/resource/texture/cubemap_lod_rgb/level0_px.png",
-    "playground/resource/texture/cubemap_lod_rgb/level0_nx.png",
-    "playground/resource/texture/cubemap_lod_rgb/level0_py.png",
-    "playground/resource/texture/cubemap_lod_rgb/level0_ny.png",
-    "playground/resource/texture/cubemap_lod_rgb/level0_pz.png",
-    "playground/resource/texture/cubemap_lod_rgb/level0_nz.png",
-    "playground/resource/texture/cubemap_lod_rgb/level1_px.png",
-    "playground/resource/texture/cubemap_lod_rgb/level1_nx.png",
-    "playground/resource/texture/cubemap_lod_rgb/level1_py.png",
-    "playground/resource/texture/cubemap_lod_rgb/level1_ny.png",
-    "playground/resource/texture/cubemap_lod_rgb/level1_pz.png",
-    "playground/resource/texture/cubemap_lod_rgb/level1_nz.png",
-    "playground/resource/texture/cubemap_lod_rgb/level2_px.png",
-    "playground/resource/texture/cubemap_lod_rgb/level2_nx.png",
-    "playground/resource/texture/cubemap_lod_rgb/level2_py.png",
-    "playground/resource/texture/cubemap_lod_rgb/level2_ny.png",
-    "playground/resource/texture/cubemap_lod_rgb/level2_pz.png",
-    "playground/resource/texture/cubemap_lod_rgb/level2_nz.png"
+    "playground/resource/texture/cubemap_lod_rgb/level0_right.png",
+    "playground/resource/texture/cubemap_lod_rgb/level0_left.png",
+    "playground/resource/texture/cubemap_lod_rgb/level0_top.png",
+    "playground/resource/texture/cubemap_lod_rgb/level0_bottom.png",
+    "playground/resource/texture/cubemap_lod_rgb/level0_front.png",
+    "playground/resource/texture/cubemap_lod_rgb/level0_back.png",
+    "playground/resource/texture/cubemap_lod_rgb/level1_right.png",
+    "playground/resource/texture/cubemap_lod_rgb/level1_left.png",
+    "playground/resource/texture/cubemap_lod_rgb/level1_top.png",
+    "playground/resource/texture/cubemap_lod_rgb/level1_bottom.png",
+    "playground/resource/texture/cubemap_lod_rgb/level1_front.png",
+    "playground/resource/texture/cubemap_lod_rgb/level1_back.png",
+    "playground/resource/texture/cubemap_lod_rgb/level2_right.png",
+    "playground/resource/texture/cubemap_lod_rgb/level2_left.png",
+    "playground/resource/texture/cubemap_lod_rgb/level2_top.png",
+    "playground/resource/texture/cubemap_lod_rgb/level2_bottom.png",
+    "playground/resource/texture/cubemap_lod_rgb/level2_front.png",
+    "playground/resource/texture/cubemap_lod_rgb/level2_back.png"
   ]
 }
 

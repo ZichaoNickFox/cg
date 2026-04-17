@@ -1,4 +1,4 @@
-#version 430 core
+#version 450 core
 
 uniform sampler2D texture2D0;
 uniform vec3 view_pos_ws;

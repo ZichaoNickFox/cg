@@ -1,1 +1,32 @@
-bazel test --test_output=all //playground:test //renderer:any_test //renderer:oneof_test
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$SCRIPT_DIR"
+
+normalize_proxy_env() {
+  if [[ -n "${HTTP_PROXY:-}" ]]; then
+    export http_proxy="$HTTP_PROXY"
+  elif [[ -n "${http_proxy:-}" ]]; then
+    export HTTP_PROXY="$http_proxy"
+  fi
+
+  if [[ -n "${HTTPS_PROXY:-}" ]]; then
+    export https_proxy="$HTTPS_PROXY"
+  elif [[ -n "${https_proxy:-}" ]]; then
+    export HTTPS_PROXY="$https_proxy"
+  fi
+
+  if [[ -n "${NO_PROXY:-}" ]]; then
+    export no_proxy="$NO_PROXY"
+  elif [[ -n "${no_proxy:-}" ]]; then
+    export NO_PROXY="$no_proxy"
+  fi
+}
+
+normalize_proxy_env
+
+cmake --preset dev
+cmake --build --preset dev
+ctest --preset dev

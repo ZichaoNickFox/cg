@@ -35,9 +35,9 @@ std::unique_ptr<Mesh> ProcessMesh(const aiMesh& ai_mesh) {
       res->mutable_bitangents()->push_back(glm::vec3(0, 0, 0));
     }
   }
-  for(GLuint i = 0; i < ai_mesh.mNumFaces; i++) {
+  for (uint32_t i = 0; i < ai_mesh.mNumFaces; i++) {
     aiFace face = ai_mesh.mFaces[i];
-    for(GLuint j = 0; j < face.mNumIndices; j++) {
+    for (uint32_t j = 0; j < face.mNumIndices; j++) {
       res->mutable_indices()->push_back(face.mIndices[j]);        
     }
   }
@@ -71,7 +71,7 @@ std::vector<int> LoadTextures(const std::string& model_dir, const aiMaterial& ai
 Material ProcessMaterial(const std::string& model_dir, const aiScene& ai_scene, const aiMesh& ai_mesh,
                          TextureRepo* texture_repo) {
   CGCHECK(ai_scene.mNumMaterials > 0) << "scene material == 0";
-  std::unordered_map<std::string, boost::any> material_properties;
+  Material::Properties material_properties;
   const aiMaterial& ai_material = *CGCHECK_NOTNULL(ai_scene.mMaterials[ai_mesh.mMaterialIndex]);
 
   aiColor3D diffuse; ai_material.Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
