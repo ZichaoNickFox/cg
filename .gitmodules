@@ -1,0 +1,39 @@
+[submodule "thirdparty/googletest"]
+	path = thirdparty/googletest
+	url = https://github.com/ZichaoNickFox/googletest.git
+[submodule "thirdparty/glog"]
+	path = thirdparty/glog
+	url = https://github.com/ZichaoNickFox/glog.git
+[submodule "thirdparty/glfw"]
+	path = thirdparty/glfw
+	url = https://github.com/ZichaoNickFox/glfw.git
+[submodule "thirdparty/protobuf"]
+	path = thirdparty/protobuf
+	url = https://github.com/ZichaoNickFox/protobuf.git
+[submodule "thirdparty/fmt"]
+	path = thirdparty/fmt
+	url = https://github.com/ZichaoNickFox/fmt.git
+[submodule "thirdparty/assimp"]
+	path = thirdparty/assimp
+	url = https://github.com/ZichaoNickFox/cg_assimp.git
+[submodule "thirdparty/glm"]
+	path = thirdparty/glm
+	url = https://github.com/ZichaoNickFox/glm.git
+[submodule "thirdparty/imgui"]
+	path = thirdparty/imgui
+	url = https://github.com/ZichaoNickFox/imgui.git
+[submodule "thirdparty/implot"]
+	path = thirdparty/implot
+	url = https://github.com/ZichaoNickFox/implot.git
+[submodule "thirdparty/ordered-map"]
+	path = thirdparty/ordered-map
+	url = https://github.com/ZichaoNickFox/ordered-map.git
+[submodule "thirdparty/eigen"]
+	path = thirdparty/eigen
+	url = https://github.com/ZichaoNickFox/eigen.git
+[submodule "thirdparty/stb"]
+	path = thirdparty/stb
+	url = https://github.com/ZichaoNickFox/stb.git
+[submodule "thirdparty/glad"]
+	path = thirdparty/glad
+	url = https://github.com/ZichaoNickFox/glad.git
