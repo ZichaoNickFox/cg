@@ -32,8 +32,10 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
 if(CG_ENABLE_OSMESA)
   find_package(OSMesa QUIET)
+  find_package(MesaEGL QUIET)
 else()
   set(OSMesa_FOUND FALSE)
+  set(MesaEGL_FOUND FALSE)
 endif()
 if(OSMesa_FOUND)
   set(CG_HAS_OSMESA ON CACHE INTERNAL "")
@@ -41,6 +43,18 @@ if(OSMesa_FOUND)
 else()
   set(CG_HAS_OSMESA OFF CACHE INTERNAL "")
   set(GLFW_USE_OSMESA OFF CACHE BOOL "" FORCE)
+endif()
+if(MesaEGL_FOUND)
+  set(CG_HAS_MESA_EGL ON CACHE INTERNAL "")
+  set(CG_MESA_EGL_LIBRARY_DIRS "${MesaEGL_LIBRARY_DIRS}" CACHE INTERNAL "")
+else()
+  set(CG_HAS_MESA_EGL OFF CACHE INTERNAL "")
+  set(CG_MESA_EGL_LIBRARY_DIRS "" CACHE INTERNAL "")
+endif()
+if(OSMesa_FOUND OR MesaEGL_FOUND)
+  set(CG_HAS_MESA_OFFSCREEN ON CACHE INTERNAL "")
+else()
+  set(CG_HAS_MESA_OFFSCREEN OFF CACHE INTERNAL "")
 endif()
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -160,7 +174,7 @@ add_library(
     ${CG_THIRDPARTY_DIR}/imgui/imstb_truetype.h
     ${CG_THIRDPARTY_DIR}/imgui/backends/imgui_impl_glfw.cpp
     ${CG_THIRDPARTY_DIR}/imgui/backends/imgui_impl_glfw.h
-    ${CG_THIRDPARTY_DIR}/imgui/backends/imgui_impl_opengl3.cpp
+    ${CG_THIRDPARTY_DIR}/generated/imgui_impl_opengl3_glad.cc
     ${CG_THIRDPARTY_DIR}/imgui/backends/imgui_impl_opengl3.h
     ${CG_THIRDPARTY_DIR}/imgui/backends/imgui_impl_opengl3_loader.h
 )
@@ -170,7 +184,7 @@ target_include_directories(
     ${CG_THIRDPARTY_DIR}/imgui
     ${CG_THIRDPARTY_DIR}/imgui/backends
 )
-target_link_libraries(cg_imgui PUBLIC glfw ${CG_OPENGL_TARGET})
+target_link_libraries(cg_imgui PUBLIC cg::glad glfw ${CG_OPENGL_TARGET})
 add_library(cg::imgui ALIAS cg_imgui)
 
 add_library(

@@ -40,8 +40,8 @@ Runtime selection:
 CG_RUNTIME=opengl ./run
 CG_RUNTIME=vulkan ./run
 CG_RUNTIME=opengl CG_GL_RUNTIME=native ./run
-CG_RUNTIME=opengl CG_GL_RUNTIME=mesa ./run    # llvmpipe / OSMesa scene renderer when this build found OSMesa
-CG_RUNTIME=vulkan CG_GL_RUNTIME=mesa ./run    # Vulkan presentation + llvmpipe / OSMesa scene renderer
+CG_RUNTIME=opengl CG_GL_RUNTIME=mesa ./run    # llvmpipe scene renderer via Mesa offscreen (EGL or OSMesa)
+CG_RUNTIME=vulkan CG_GL_RUNTIME=mesa ./run    # Vulkan presentation + llvmpipe scene renderer via Mesa offscreen
 
 # If CMake does not auto-detect Mesa, point it at your install root before configuring:
 cmake --preset dev -DCG_OSMESA_ROOT=/path/to/mesa/prefix

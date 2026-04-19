@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <cstdio>
 #include <cstdlib>
 #include <memory>
 #include <optional>
@@ -21,6 +22,23 @@
 #include "renderer/gl.h"
 #include "renderer/io.h"
 #include "rhi/device.h"
+
+#if defined(CG_HAS_MESA_EGL)
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
+
+#ifndef EGL_CONTEXT_OPENGL_PROFILE_MASK
+#define EGL_CONTEXT_OPENGL_PROFILE_MASK 0x30FD
+#endif
+
+#ifndef EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT
+#define EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT 0x00000001
+#endif
+
+#ifndef EGL_PLATFORM_SURFACELESS_MESA
+#define EGL_PLATFORM_SURFACELESS_MESA 0x31DD
+#endif
+#endif
 
 #if defined(CG_HAS_VULKAN_RHI)
 #include "rhi/vulkan/presenter.h"
@@ -42,6 +60,12 @@ enum class OpenGLRuntime {
   kMesa = 1,
 };
 
+enum class OffscreenBackend {
+  kHiddenNativeOpenGL = 0,
+  kMesaOSMesa = 1,
+  kMesaEGL = 2,
+};
+
 struct WindowConfig {
   int width = kDefaultWindowWidth;
   int height = kDefaultWindowHeight;
@@ -58,13 +82,13 @@ OpenGLRuntime ChooseOpenGLRuntime() {
     return OpenGLRuntime::kNative;
   }
   if (requested_gl_runtime != nullptr && std::string(requested_gl_runtime) == "mesa") {
-#if defined(CG_HAS_OSMESA)
+#if defined(CG_HAS_MESA_OFFSCREEN)
     return OpenGLRuntime::kMesa;
 #else
     return OpenGLRuntime::kNative;
 #endif
   }
-#if defined(CG_HAS_OSMESA)
+#if defined(CG_HAS_MESA_OFFSCREEN)
   return OpenGLRuntime::kMesa;
 #else
   return OpenGLRuntime::kNative;
@@ -82,9 +106,9 @@ bool ShouldUseMesaOpenGLRuntime() {
 
 const char* PresenterGLSLVersion() {
 #if defined(CG_PLATFORM_MACOS)
-  return "#version 410";
+  return "#version 410 core";
 #else
-  return "#version 450";
+  return "#version 450 core";
 #endif
 }
 
@@ -96,6 +120,46 @@ std::string RuntimeRhiApiName() {
   const cg::rhi::Capabilities& caps = cg::rhi::GetCapabilities();
   return caps.graphics_api_name.empty() ? "Unknown" : caps.graphics_api_name;
 }
+
+void LogSceneCapabilitySummary() {
+  const cg::rhi::Capabilities& caps = cg::rhi::GetCapabilities();
+  CGLOG(ERROR) << "Scene Capabilities : GLSL450=" << (caps.supports_glsl_450 ? "yes" : "no")
+               << " Compute=" << (caps.supports_compute ? "yes" : "no")
+               << " StorageBuffers=" << (caps.supports_storage_buffers ? "yes" : "no");
+}
+
+std::string JoinMessages(const std::vector<std::string>& messages) {
+  std::string result;
+  for (size_t i = 0; i < messages.size(); ++i) {
+    if (i > 0) {
+      result += "; ";
+    }
+    result += messages[i];
+  }
+  return result;
+}
+
+void SetEnvIfUnset(const char* name, const char* value) {
+  const char* current = std::getenv(name);
+  if (current == nullptr || current[0] == '\0') {
+    setenv(name, value, 1);
+  }
+}
+
+#if defined(CG_HAS_MESA_EGL)
+void ConfigureMesaLlvmPipeEnvironment() {
+  SetEnvIfUnset("LIBGL_ALWAYS_SOFTWARE", "1");
+  SetEnvIfUnset("GALLIUM_DRIVER", "llvmpipe");
+  SetEnvIfUnset("MESA_LOADER_DRIVER_OVERRIDE", "llvmpipe");
+  SetEnvIfUnset("EGL_PLATFORM", "surfaceless");
+}
+
+std::string FormatEglErrorMessage(const char* step) {
+  char buffer[128] = {};
+  std::snprintf(buffer, sizeof(buffer), "%s failed (EGL error 0x%04x)", step, eglGetError());
+  return buffer;
+}
+#endif
 
 std::optional<int> ReadIntEnv(const char* name) {
   const char* raw = std::getenv(name);
@@ -209,7 +273,7 @@ class OffscreenGlRenderer {
 
   OffscreenGlRenderer(GLFWwindow* input_window, int width, int height, RuntimeMode runtime_mode)
       : input_window_(CGCHECK_NOTNULL(input_window)) {
-    CreateOffscreenWindow(width, height);
+    CreateOffscreenContext(width, height);
 
     MakeCurrent();
 
@@ -230,9 +294,11 @@ class OffscreenGlRenderer {
     CGLOG(ERROR) << "Offscreen GL Runtime : " << runtime_name();
     CGLOG(ERROR) << "RHI Runtime API : " << RuntimeRhiApiName();
     CGLOG(ERROR) << "Scene Renderer API : " << SceneRendererApiName();
+    LogSceneCapabilitySummary();
   }
 
   ~OffscreenGlRenderer() {
+    MakeCurrent();
     ImPlot::DestroyContext();
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
@@ -240,6 +306,9 @@ class OffscreenGlRenderer {
     if (offscreen_window_ != nullptr) {
       glfwDestroyWindow(offscreen_window_);
     }
+#if defined(CG_HAS_MESA_EGL)
+    DestroyMesaEglContext();
+#endif
   }
 
   Frame RenderFrame(Playground* playground) {
@@ -278,7 +347,8 @@ class OffscreenGlRenderer {
     const glm::ivec2 framebuffer_size = playground->io().framebuffer_size();
     pixel_buffer_.resize(static_cast<std::size_t>(framebuffer_size.x) *
                          static_cast<std::size_t>(framebuffer_size.y) * 4);
-    cg::rhi::GetDevice().SetReadBuffer(use_osmesa_ ? cg::rhi::ReadBuffer::kFront : cg::rhi::ReadBuffer::kBack);
+    cg::rhi::GetDevice().SetReadBuffer(UsesSingleBufferedReadback() ? cg::rhi::ReadBuffer::kFront
+                                                                    : cg::rhi::ReadBuffer::kBack);
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
     cg::rhi::GetDevice().ReadPixels({0, 0},
                                     framebuffer_size,
@@ -297,7 +367,15 @@ class OffscreenGlRenderer {
   }
 
   const char* runtime_name() const {
-    return use_osmesa_ ? "Mesa OSMesa" : "Hidden Native OpenGL";
+    switch (offscreen_backend_) {
+      case OffscreenBackend::kHiddenNativeOpenGL:
+        return "Hidden Native OpenGL";
+      case OffscreenBackend::kMesaOSMesa:
+        return "Mesa OSMesa";
+      case OffscreenBackend::kMesaEGL:
+        return "Mesa EGL llvmpipe";
+    }
+    return "Unknown";
   }
 
   void MakeCurrentForCleanup() {
@@ -305,48 +383,230 @@ class OffscreenGlRenderer {
   }
 
  private:
-  void CreateOffscreenWindow(int width, int height) {
+  bool UsesSingleBufferedReadback() const {
+    return offscreen_backend_ != OffscreenBackend::kHiddenNativeOpenGL;
+  }
+
+  void CreateOffscreenContext(int width, int height) {
     const OpenGLRuntime requested_gl_runtime = ChooseOpenGLRuntime();
+    if (requested_gl_runtime == OpenGLRuntime::kMesa) {
+      std::vector<std::string> mesa_failures;
+#if defined(CG_HAS_MESA_EGL)
+      std::string egl_error;
+      if (TryCreateMesaEglContext(width, height, &egl_error)) {
+        return;
+      }
+      if (!egl_error.empty()) {
+        mesa_failures.push_back("Mesa EGL: " + egl_error);
+      }
+#endif
 #if defined(CG_HAS_OSMESA)
-    use_osmesa_ = requested_gl_runtime == OpenGLRuntime::kMesa;
-#else
-    use_osmesa_ = false;
-    if (IsMesaOpenGLRuntimeExplicitlyRequested()) {
-      CGLOG(ERROR) << "CG_GL_RUNTIME=mesa was requested, but this build does not have OSMesa support. "
-                   << "Falling back to hidden native OpenGL.";
-    }
+      std::string osmesa_error;
+      if (TryCreateOsMesaContext(width, height, &osmesa_error)) {
+        return;
+      }
+      if (!osmesa_error.empty()) {
+        mesa_failures.push_back("OSMesa: " + osmesa_error);
+      }
 #endif
 
+      if (IsMesaOpenGLRuntimeExplicitlyRequested()) {
+        if (mesa_failures.empty()) {
+          CGLOG(ERROR) << "CG_GL_RUNTIME=mesa was requested, but this build does not have a Mesa offscreen runtime. "
+                       << "Falling back to hidden native OpenGL.";
+        } else {
+          CGLOG(ERROR) << "CG_GL_RUNTIME=mesa was requested, but Mesa offscreen initialization failed ("
+                       << JoinMessages(mesa_failures) << "). Falling back to hidden native OpenGL.";
+        }
+      }
+    }
+
+    CreateHiddenNativeContext(width, height);
+  }
+
+  void CreateHiddenNativeContext(int width, int height) {
+    offscreen_backend_ = OffscreenBackend::kHiddenNativeOpenGL;
     glfwDefaultWindowHints();
-#if defined(CG_HAS_OSMESA)
-    if (use_osmesa_) {
-      glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_OSMESA_CONTEXT_API);
-      glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-      glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-      glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-      glsl_version_ = "#version 450";
-    } else
-#endif
-    {
-#if defined(CG_PLATFORM_MACOS)
-      glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-      glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-      glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
-      glsl_version_ = "#version 410";
-#else
-      glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-      glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-      glsl_version_ = "#version 450";
-#endif
-      glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    }
 
+#if defined(CG_PLATFORM_MACOS)
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+    glsl_version_ = "#version 410";
+#else
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+    glsl_version_ = "#version 450";
+#endif
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
     offscreen_window_ = glfwCreateWindow(width, height, "CG Offscreen GL", nullptr, nullptr);
     CGCHECK(offscreen_window_ != nullptr) << "Failed to create hidden offscreen OpenGL window.";
   }
 
+#if defined(CG_HAS_OSMESA)
+  bool TryCreateOsMesaContext(int width, int height, std::string* error) {
+    glfwDefaultWindowHints();
+    glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_OSMESA_CONTEXT_API);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+
+    offscreen_window_ = glfwCreateWindow(width, height, "CG Offscreen GL", nullptr, nullptr);
+    if (offscreen_window_ == nullptr) {
+      if (error != nullptr) {
+        *error = "glfwCreateWindow returned null";
+      }
+      return false;
+    }
+
+    offscreen_backend_ = OffscreenBackend::kMesaOSMesa;
+    glsl_version_ = "#version 450";
+    if (error != nullptr) {
+      error->clear();
+    }
+    return true;
+  }
+#endif
+
+#if defined(CG_HAS_MESA_EGL)
+  bool TryCreateMesaEglContext(int width, int height, std::string* error) {
+    ConfigureMesaLlvmPipeEnvironment();
+
+    using GetPlatformDisplayProc = EGLDisplay (*)(EGLenum, void*, const EGLAttrib*);
+    auto get_platform_display =
+        reinterpret_cast<GetPlatformDisplayProc>(eglGetProcAddress("eglGetPlatformDisplay"));
+    if (get_platform_display == nullptr) {
+      get_platform_display =
+          reinterpret_cast<GetPlatformDisplayProc>(eglGetProcAddress("eglGetPlatformDisplayEXT"));
+    }
+    if (get_platform_display == nullptr) {
+      if (error != nullptr) {
+        *error = "eglGetPlatformDisplay{EXT} unavailable";
+      }
+      return false;
+    }
+
+    egl_display_ = get_platform_display(EGL_PLATFORM_SURFACELESS_MESA, nullptr, nullptr);
+    if (egl_display_ == EGL_NO_DISPLAY) {
+      if (error != nullptr) {
+        *error = FormatEglErrorMessage("eglGetPlatformDisplay");
+      }
+      return false;
+    }
+
+    if (!eglInitialize(egl_display_, nullptr, nullptr)) {
+      if (error != nullptr) {
+        *error = FormatEglErrorMessage("eglInitialize");
+      }
+      DestroyMesaEglContext();
+      return false;
+    }
+
+    const EGLint config_attribs[] = {
+        EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
+        EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
+        EGL_RED_SIZE, 8,
+        EGL_GREEN_SIZE, 8,
+        EGL_BLUE_SIZE, 8,
+        EGL_ALPHA_SIZE, 8,
+        EGL_NONE,
+    };
+    EGLConfig config = nullptr;
+    EGLint num_configs = 0;
+    if (!eglChooseConfig(egl_display_, config_attribs, &config, 1, &num_configs) || num_configs < 1) {
+      if (error != nullptr) {
+        *error = FormatEglErrorMessage("eglChooseConfig");
+      }
+      DestroyMesaEglContext();
+      return false;
+    }
+
+    if (!eglBindAPI(EGL_OPENGL_API)) {
+      if (error != nullptr) {
+        *error = FormatEglErrorMessage("eglBindAPI");
+      }
+      DestroyMesaEglContext();
+      return false;
+    }
+
+    const EGLint context_attribs[] = {
+        EGL_CONTEXT_MAJOR_VERSION, 4,
+        EGL_CONTEXT_MINOR_VERSION, 5,
+        EGL_CONTEXT_OPENGL_PROFILE_MASK, EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT,
+        EGL_NONE,
+    };
+    egl_context_ = eglCreateContext(egl_display_, config, EGL_NO_CONTEXT, context_attribs);
+    if (egl_context_ == EGL_NO_CONTEXT) {
+      if (error != nullptr) {
+        *error = FormatEglErrorMessage("eglCreateContext");
+      }
+      DestroyMesaEglContext();
+      return false;
+    }
+
+    const EGLint pbuffer_attribs[] = {
+        EGL_WIDTH, width,
+        EGL_HEIGHT, height,
+        EGL_NONE,
+    };
+    egl_surface_ = eglCreatePbufferSurface(egl_display_, config, pbuffer_attribs);
+    if (egl_surface_ == EGL_NO_SURFACE) {
+      if (error != nullptr) {
+        *error = FormatEglErrorMessage("eglCreatePbufferSurface");
+      }
+      DestroyMesaEglContext();
+      return false;
+    }
+
+    if (!eglMakeCurrent(egl_display_, egl_surface_, egl_surface_, egl_context_)) {
+      if (error != nullptr) {
+        *error = FormatEglErrorMessage("eglMakeCurrent");
+      }
+      DestroyMesaEglContext();
+      return false;
+    }
+
+    InitializeOpenGLLoader(reinterpret_cast<GLADloadfunc>(eglGetProcAddress));
+    offscreen_backend_ = OffscreenBackend::kMesaEGL;
+    glsl_version_ = "#version 450";
+    if (error != nullptr) {
+      error->clear();
+    }
+    return true;
+  }
+
+  void DestroyMesaEglContext() {
+    if (egl_display_ != EGL_NO_DISPLAY) {
+      eglMakeCurrent(egl_display_, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+    }
+    if (egl_surface_ != EGL_NO_SURFACE) {
+      eglDestroySurface(egl_display_, egl_surface_);
+      egl_surface_ = EGL_NO_SURFACE;
+    }
+    if (egl_context_ != EGL_NO_CONTEXT) {
+      eglDestroyContext(egl_display_, egl_context_);
+      egl_context_ = EGL_NO_CONTEXT;
+    }
+    if (egl_display_ != EGL_NO_DISPLAY) {
+      eglTerminate(egl_display_);
+      egl_display_ = EGL_NO_DISPLAY;
+    }
+  }
+#endif
+
   void MakeCurrent() {
+    if (offscreen_backend_ == OffscreenBackend::kMesaEGL) {
+#if defined(CG_HAS_MESA_EGL)
+      CGCHECK(eglMakeCurrent(egl_display_, egl_surface_, egl_surface_, egl_context_));
+      InitializeOpenGLLoader(reinterpret_cast<GLADloadfunc>(eglGetProcAddress));
+      return;
+#else
+      CGCHECK(false) << "Mesa EGL runtime selected without CG_HAS_MESA_EGL support.";
+#endif
+    }
+
     glfwMakeContextCurrent(offscreen_window_);
     InitializeOpenGLLoader(reinterpret_cast<GLADloadfunc>(glfwGetProcAddress));
   }
@@ -354,9 +614,14 @@ class OffscreenGlRenderer {
   GLFWwindow* input_window_ = nullptr;
   GLFWwindow* offscreen_window_ = nullptr;
   ImGuiIO* imgui_io_ = nullptr;
-  bool use_osmesa_ = false;
+  OffscreenBackend offscreen_backend_ = OffscreenBackend::kHiddenNativeOpenGL;
   const char* glsl_version_ = "#version 450";
   std::vector<std::uint8_t> pixel_buffer_;
+#if defined(CG_HAS_MESA_EGL)
+  EGLDisplay egl_display_ = EGL_NO_DISPLAY;
+  EGLContext egl_context_ = EGL_NO_CONTEXT;
+  EGLSurface egl_surface_ = EGL_NO_SURFACE;
+#endif
 };
 
 GLuint CompilePresenterShader(const char* debug_name, GLenum shader_type, const std::string& source) {
@@ -399,7 +664,6 @@ class OpenGLPresenter {
     glfwSwapInterval(1);
 
     const std::string vertex_source = std::string(PresenterGLSLVersion()) + R"(
-      core
       out vec2 uv;
 
       void main() {
@@ -416,7 +680,6 @@ class OpenGLPresenter {
       }
     )";
     const std::string fragment_source = std::string(PresenterGLSLVersion()) + R"(
-      core
       in vec2 uv;
       out vec4 out_color;
       uniform sampler2D frame_texture;
@@ -545,7 +808,7 @@ void FillClipboard(Playground* playground, GLFWwindow* window) {
 
 int RunLegacyOpenGL(const WindowConfig& config) {
   if (IsMesaOpenGLRuntimeExplicitlyRequested() && !ShouldUseMesaOpenGLRuntime()) {
-    CGLOG(ERROR) << "CG_GL_RUNTIME=mesa was requested, but this build does not have OSMesa support. "
+    CGLOG(ERROR) << "CG_GL_RUNTIME=mesa was requested, but this build does not have a Mesa offscreen runtime. "
                  << "Falling back to native OpenGL presentation + rendering.";
   }
   GLFWwindow* window = CreateVisibleOpenGLWindow(config, "CG");
@@ -571,6 +834,7 @@ int RunLegacyOpenGL(const WindowConfig& config) {
   cg::rhi::InitializeOpenGLDevice();
   CGLOG(ERROR) << "RHI Runtime API : " << RuntimeRhiApiName();
   CGLOG(ERROR) << "Scene Renderer API : " << SceneRendererApiName();
+  LogSceneCapabilitySummary();
 
   Playground playground;
   playground.SetPresentationRuntimeName("OpenGL");

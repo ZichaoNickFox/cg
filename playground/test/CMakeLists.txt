@@ -78,7 +78,7 @@ if(TARGET cg_rhi_vulkan)
   set_tests_properties(runtime_smoke_vulkan_native PROPERTIES RUN_SERIAL TRUE)
 endif()
 
-if(CG_HAS_OSMESA)
+if(CG_HAS_MESA_OFFSCREEN)
   add_test(
     NAME runtime_smoke_opengl_mesa
     COMMAND
@@ -91,7 +91,8 @@ if(CG_HAS_OSMESA)
       "Presentation Runtime : OpenGL"
       "RHI Runtime API :"
       "Scene Renderer API :"
-      "Offscreen GL Runtime : Mesa OSMesa"
+      "Scene Capabilities : GLSL450=yes"
+      "Offscreen GL Runtime : Mesa"
   )
   set_tests_properties(runtime_smoke_opengl_mesa PROPERTIES RUN_SERIAL TRUE)
 
@@ -108,7 +109,8 @@ if(CG_HAS_OSMESA)
         "Presentation Runtime : Vulkan"
         "RHI Runtime API : Vulkan"
         "Scene Renderer API :"
-        "Offscreen GL Runtime : Mesa OSMesa"
+        "Scene Capabilities : GLSL450=yes"
+        "Offscreen GL Runtime : Mesa"
     )
     set_tests_properties(runtime_smoke_vulkan_mesa PROPERTIES RUN_SERIAL TRUE)
   endif()
@@ -122,7 +124,7 @@ else()
       ${PROJECT_SOURCE_DIR}
       opengl
       mesa
-      "CG_GL_RUNTIME=mesa was requested, but this build does not have OSMesa support."
+      "CG_GL_RUNTIME=mesa was requested, but this build does not have a Mesa offscreen runtime."
       "RHI Runtime API :"
       "Scene Renderer API :"
   )
@@ -138,7 +140,7 @@ else()
         ${PROJECT_SOURCE_DIR}
         vulkan
         mesa
-        "CG_GL_RUNTIME=mesa was requested, but this build does not have OSMesa support."
+        "CG_GL_RUNTIME=mesa was requested, but this build does not have a Mesa offscreen runtime."
         "Presentation Runtime : Vulkan"
         "RHI Runtime API : Vulkan"
         "Scene Renderer API :"

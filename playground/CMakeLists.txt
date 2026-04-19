@@ -41,6 +41,17 @@ endif()
 if(CG_HAS_OSMESA)
   target_compile_definitions(window PRIVATE CG_HAS_OSMESA)
 endif()
+if(CG_HAS_MESA_EGL)
+  target_compile_definitions(window PRIVATE CG_HAS_MESA_EGL)
+  target_link_libraries(window PRIVATE MesaEGL::MesaEGL)
+endif()
+if(CG_HAS_MESA_OFFSCREEN)
+  target_compile_definitions(window PRIVATE CG_HAS_MESA_OFFSCREEN)
+endif()
+if(CG_MESA_EGL_LIBRARY_DIRS)
+  set_property(TARGET window APPEND PROPERTY BUILD_RPATH "${CG_MESA_EGL_LIBRARY_DIRS}")
+  set_property(TARGET window APPEND PROPERTY INSTALL_RPATH "${CG_MESA_EGL_LIBRARY_DIRS}")
+endif()
 set_target_properties(
   window
   PROPERTIES

@@ -214,39 +214,28 @@ std::string ActiveRuntimeApiLabel(const cg::rhi::Capabilities& caps) {
   return BackendTypeLabel(caps.backend);
 }
 
-std::string ActiveRuntimeLabel(const std::string& presentation_runtime_name,
-                               const cg::rhi::Capabilities& active_caps) {
-  if (!presentation_runtime_name.empty()) {
-    return presentation_runtime_name;
-  }
-  return BackendTypeLabel(active_caps.backend);
-}
-
 bool IsBackendRuntimeActive(SceneBackendOption backend,
-                            const std::string& presentation_runtime_name,
                             const cg::rhi::Capabilities& active_caps) {
-  if (!presentation_runtime_name.empty()) {
-    return presentation_runtime_name == SceneBackendLabel(backend);
-  }
+  const cg::rhi::BackendType active_scene_backend =
+      active_caps.scene_backend == cg::rhi::BackendType::kUnknown ? active_caps.backend : active_caps.scene_backend;
   switch (backend) {
     case SceneBackendOption::kOpenGL:
-      return active_caps.backend == cg::rhi::BackendType::kOpenGL;
+      return active_scene_backend == cg::rhi::BackendType::kOpenGL;
     case SceneBackendOption::kVulkan:
-      return active_caps.backend == cg::rhi::BackendType::kVulkan;
+      return active_scene_backend == cg::rhi::BackendType::kVulkan;
   }
   return false;
 }
 
 SceneBackendAvailability GetSceneBackendAvailability(const SceneDescriptor& descriptor,
                                                      SceneBackendOption backend,
-                                                     const cg::rhi::Capabilities& active_caps,
-                                                     const std::string& presentation_runtime_name) {
+                                                     const cg::rhi::Capabilities& active_caps) {
   SceneBackendAvailability availability;
   switch (backend) {
     case SceneBackendOption::kOpenGL: {
-      if (!IsBackendRuntimeActive(backend, presentation_runtime_name, active_caps)) {
-        availability.reason = util::Format("OpenGL runtime is not active; current runtime is {}",
-                                           ActiveRuntimeLabel(presentation_runtime_name, active_caps));
+      if (!IsBackendRuntimeActive(backend, active_caps)) {
+        availability.reason = util::Format("OpenGL scene backend is not active; current scene renderer is {}",
+                                           ActiveRendererLabel(active_caps));
         return availability;
       }
       availability.available = IsSceneAvailable(descriptor, active_caps, &availability.reason);
@@ -254,9 +243,9 @@ SceneBackendAvailability GetSceneBackendAvailability(const SceneDescriptor& desc
     }
     case SceneBackendOption::kVulkan: {
 #if defined(CG_HAS_VULKAN_RHI)
-      if (!IsBackendRuntimeActive(backend, presentation_runtime_name, active_caps)) {
-        availability.reason = util::Format("Vulkan runtime is not active; current runtime is {}",
-                                           ActiveRuntimeLabel(presentation_runtime_name, active_caps));
+      if (!IsBackendRuntimeActive(backend, active_caps)) {
+        availability.reason = util::Format("Vulkan scene backend is not active; current scene renderer is {}",
+                                           ActiveRendererLabel(active_caps));
         return availability;
       }
       availability.available = IsSceneAvailable(descriptor, active_caps, &availability.reason);
@@ -272,16 +261,13 @@ SceneBackendAvailability GetSceneBackendAvailability(const SceneDescriptor& desc
 }
 
 bool IsSceneAvailableOnAnyBackend(const SceneDescriptor& descriptor,
-                                  const cg::rhi::Capabilities& active_caps,
-                                  const std::string& presentation_runtime_name) {
+                                  const cg::rhi::Capabilities& active_caps) {
   return GetSceneBackendAvailability(descriptor,
                                      SceneBackendOption::kOpenGL,
-                                     active_caps,
-                                     presentation_runtime_name).available ||
+                                     active_caps).available ||
          GetSceneBackendAvailability(descriptor,
                                      SceneBackendOption::kVulkan,
-                                     active_caps,
-                                     presentation_runtime_name).available;
+                                     active_caps).available;
 }
 
 std::string SceneEntryLabel(const SceneDescriptor& descriptor, bool /*is_current_scene*/) {
@@ -290,10 +276,8 @@ std::string SceneEntryLabel(const SceneDescriptor& descriptor, bool /*is_current
 
 bool DrawBackendButton(const SceneDescriptor& descriptor,
                        const cg::rhi::Capabilities& active_caps,
-                       SceneBackendOption backend,
-                       const std::string& presentation_runtime_name) {
-  const SceneBackendAvailability availability =
-      GetSceneBackendAvailability(descriptor, backend, active_caps, presentation_runtime_name);
+                       SceneBackendOption backend) {
+  const SceneBackendAvailability availability = GetSceneBackendAvailability(descriptor, backend, active_caps);
   if (!availability.available) {
     ImGui::BeginDisabled();
   }
@@ -320,10 +304,10 @@ std::string ChooseInitialSceneId() {
   return env_scene;
 }
 
-int ChooseInitialCategoryIndex(const std::string& scene_id, const std::string& presentation_runtime_name) {
+int ChooseInitialCategoryIndex(const std::string& scene_id) {
   const cg::rhi::Capabilities& caps = cg::rhi::GetCapabilities();
   const SceneDescriptor* descriptor = FindSceneDescriptor(scene_id);
-  if (descriptor != nullptr && IsSceneAvailableOnAnyBackend(*descriptor, caps, presentation_runtime_name)) {
+  if (descriptor != nullptr && IsSceneAvailableOnAnyBackend(*descriptor, caps)) {
     return SceneCategoryIndex(descriptor->category);
   }
 
@@ -331,8 +315,7 @@ int ChooseInitialCategoryIndex(const std::string& scene_id, const std::string& p
     for (int i = 0; i < static_cast<int>(std::size(kSceneCategories)); ++i) {
       const SceneCategory category = kSceneCategories[i];
       for (const SceneDescriptor& candidate : GetSceneCatalog()) {
-        if (candidate.category == category &&
-            IsSceneAvailableOnAnyBackend(candidate, caps, presentation_runtime_name)) {
+        if (candidate.category == category && IsSceneAvailableOnAnyBackend(candidate, caps)) {
           return i;
         }
       }
@@ -348,15 +331,14 @@ int ChooseInitialCategoryIndex(const std::string& scene_id, const std::string& p
 Playground::Playground() {
   config_.Init(kConfigPath);
   pending_scene_name_ = ChooseInitialSceneId();
-  selected_scene_category_index_ = ChooseInitialCategoryIndex(pending_scene_name_, presentation_runtime_name_);
+  selected_scene_category_index_ = ChooseInitialCategoryIndex(pending_scene_name_);
   scene_selector_popup_requested_ = true;
 }
 
 void Playground::SetPresentationRuntimeName(std::string runtime_name) {
   presentation_runtime_name_ = std::move(runtime_name);
-  selected_scene_category_index_ = ChooseInitialCategoryIndex(
-      current_scene_name_.empty() ? pending_scene_name_ : current_scene_name_,
-      presentation_runtime_name_);
+  selected_scene_category_index_ =
+      ChooseInitialCategoryIndex(current_scene_name_.empty() ? pending_scene_name_ : current_scene_name_);
 }
 
 void Playground::EnsureScene() {
@@ -405,9 +387,8 @@ void Playground::DrawSceneSelector() {
   ImGui::Text("Current scene: %s", current_descriptor == nullptr ? "None" : current_descriptor->display_name.c_str());
   if (ImGui::Button("Choose Scene")) {
     scene_selector_popup_requested_ = true;
-    selected_scene_category_index_ = ChooseInitialCategoryIndex(
-        current_scene_name_.empty() ? pending_scene_name_ : current_scene_name_,
-        presentation_runtime_name_);
+    selected_scene_category_index_ =
+        ChooseInitialCategoryIndex(current_scene_name_.empty() ? pending_scene_name_ : current_scene_name_);
     show_unsupported_scenes_ = false;
   }
   if (current_descriptor != nullptr) {
@@ -461,7 +442,7 @@ void Playground::DrawSceneSelector() {
     const int total_count = CountScenesInCategory(category);
     for (const SceneDescriptor& descriptor : GetSceneCatalog()) {
       if (descriptor.category == category &&
-          IsSceneAvailableOnAnyBackend(descriptor, caps, presentation_runtime_name_)) {
+          IsSceneAvailableOnAnyBackend(descriptor, caps)) {
         ++available_count;
       }
     }
@@ -486,9 +467,9 @@ void Playground::DrawSceneSelector() {
     }
 
     const SceneBackendAvailability opengl_availability =
-        GetSceneBackendAvailability(descriptor, SceneBackendOption::kOpenGL, caps, presentation_runtime_name_);
+        GetSceneBackendAvailability(descriptor, SceneBackendOption::kOpenGL, caps);
     const SceneBackendAvailability vulkan_availability =
-        GetSceneBackendAvailability(descriptor, SceneBackendOption::kVulkan, caps, presentation_runtime_name_);
+        GetSceneBackendAvailability(descriptor, SceneBackendOption::kVulkan, caps);
     const bool available_on_any_backend = opengl_availability.available || vulkan_availability.available;
     if (!available_on_any_backend && !show_unsupported_scenes_) {
       ++hidden_scene_count;
@@ -518,14 +499,14 @@ void Playground::DrawSceneSelector() {
     }
 
     ImGui::SameLine(0.0f, 12.0f);
-    if (DrawBackendButton(descriptor, caps, SceneBackendOption::kOpenGL, presentation_runtime_name_)) {
+    if (DrawBackendButton(descriptor, caps, SceneBackendOption::kOpenGL)) {
       pending_scene_name_ = descriptor.id;
       force_reload_scene_ = false;
       ImGui::CloseCurrentPopup();
     }
 
     ImGui::SameLine(0.0f, 6.0f);
-    if (DrawBackendButton(descriptor, caps, SceneBackendOption::kVulkan, presentation_runtime_name_)) {
+    if (DrawBackendButton(descriptor, caps, SceneBackendOption::kVulkan)) {
       pending_scene_name_ = descriptor.id;
       force_reload_scene_ = false;
       ImGui::CloseCurrentPopup();

@@ -11,8 +11,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 option(CG_ENABLE_VULKAN "Build the Vulkan RHI backend when a Vulkan SDK is available." ON)
-option(CG_ENABLE_OSMESA "Enable OSMesa/llvmpipe offscreen rendering when Mesa is available." ON)
-set(CG_OSMESA_ROOT "" CACHE PATH "Optional root directory of a Mesa/OSMesa install used for llvmpipe.")
+option(CG_ENABLE_OSMESA "Enable Mesa/llvmpipe offscreen rendering when a compatible Mesa runtime is available." ON)
+set(CG_OSMESA_ROOT "" CACHE PATH "Optional root directory of a Mesa install used for llvmpipe (OSMesa or EGL).")
 
 list(PREPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
