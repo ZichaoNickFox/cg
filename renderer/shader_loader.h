@@ -23,9 +23,11 @@ class ShaderParser {
 
  private:
   void ParseAFile(const std::string& file_path);
+  std::string ResolvePath(const std::string& requested_path, const std::string& including_file_path) const;
   std::vector<std::string> TopologicalSort();
 
   tsl::ordered_map<std::string, FileMeta> file_meta_map_;
+  std::set<std::string> active_parse_stack_;
   std::string name_;
 };
 

@@ -1,15 +1,26 @@
 #include "renderer/shader_loader.h"
 
+#include <filesystem>
+
 #include "base/util.h"
 
 namespace cg {
+namespace {
+
+std::string NormalizePath(const std::filesystem::path& path) {
+  return util::ReplaceBackslash(std::filesystem::weakly_canonical(path).string());
+}
+
+}  // namespace
 
 ShaderParser::ShaderParser(const std::string& name) {
   name_ = name;
 }
 
 std::vector<ShaderProgram::CodePart> ShaderParser::Parse(const std::string& file_path) {
-  ParseAFile(file_path);
+  file_meta_map_.clear();
+  active_parse_stack_.clear();
+  ParseAFile(ResolvePath(file_path, ""));
 
   std::vector<std::string> sorted = TopologicalSort();
   std::vector<ShaderProgram::CodePart> res;
@@ -23,12 +34,16 @@ void ShaderParser::ParseAFile(const std::string& file_path) {
   if (file_meta_map_.find(file_path) != file_meta_map_.end()) {
     return;
   }
+  CGCHECK(active_parse_stack_.count(file_path) == 0) << " Circular include detected : file_path~"
+                                                     << file_path << " compiling_name~" << name_;
+
   const std::string kComment = "//";
   const std::string kIncludeIdentifierPrefix = "#include \"";
   const std::string kIncludeIdentifierSuffix = "\"";
   std::ifstream file(file_path);
-  CGCHECK(file.is_open()) << " Cannot open file (Reason1 FilePath. Reason2 Recursive include) : include_path~"
-                          << file_path << " compiling_name~" << name_;
+  CGCHECK(file.is_open()) << " Cannot open shader file : file_path~" << file_path << " compiling_name~" << name_;
+
+  active_parse_stack_.insert(file_path);
   std::string line;
   int line_num = 0;
   std::string file_content;
@@ -42,7 +57,7 @@ void ShaderParser::ParseAFile(const std::string& file_path) {
       int dependance_end = line.find(kIncludeIdentifierSuffix, dependance_start);
       CGCHECK(dependance_end != std::string::npos) << " No Suffix to finish Prefix : file_path~" << file_path << " name:" << name_;
       int dependance_length = dependance_end - dependance_start;
-      std::string dependance = line.substr(dependance_start, dependance_length);
+      std::string dependance = ResolvePath(line.substr(dependance_start, dependance_length), file_path);
 
       CGCHECK(dependance != file_path) << " Must not include self : file_path~" << file_path;
       ParseAFile(dependance);
@@ -63,6 +78,41 @@ void ShaderParser::ParseAFile(const std::string& file_path) {
   file_meta_map_[file_path].dependances = dependances;
 
   file.close();
+  active_parse_stack_.erase(file_path);
+}
+
+std::string ShaderParser::ResolvePath(const std::string& requested_path, const std::string& including_file_path) const {
+  const std::filesystem::path raw_path(requested_path);
+  std::vector<std::filesystem::path> candidates;
+  if (raw_path.is_absolute()) {
+    candidates.push_back(raw_path);
+  } else {
+    if (!including_file_path.empty()) {
+      candidates.push_back(std::filesystem::path(including_file_path).parent_path() / raw_path);
+    }
+    candidates.push_back(raw_path);
+    candidates.push_back(std::filesystem::path(CG_PROJECT_SOURCE_DIR) / raw_path);
+  }
+
+  for (const std::filesystem::path& candidate : candidates) {
+    std::error_code error;
+    if (std::filesystem::exists(candidate, error) && !error) {
+      return NormalizePath(candidate);
+    }
+  }
+
+  std::string attempted_paths;
+  for (size_t i = 0; i < candidates.size(); ++i) {
+    if (i > 0) {
+      attempted_paths += ", ";
+    }
+    attempted_paths += util::ReplaceBackslash(candidates[i].string());
+  }
+  CGCHECK(false) << " Cannot resolve shader include path : requested_path~" << requested_path
+                 << " including_file~" << including_file_path
+                 << " attempted_paths~[" << attempted_paths << "]"
+                 << " compiling_name~" << name_;
+  return requested_path;
 }
 
 std::vector<std::string> ShaderParser::TopologicalSort() {

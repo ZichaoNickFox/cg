@@ -53,6 +53,7 @@ enum class SceneBackendOption {
 
 struct SceneBackendAvailability {
   bool available = false;
+  bool relaunch_required = false;
   std::string reason;
 };
 
@@ -216,15 +217,23 @@ std::string ActiveRuntimeApiLabel(const cg::rhi::Capabilities& caps) {
 
 bool IsBackendRuntimeActive(SceneBackendOption backend,
                             const cg::rhi::Capabilities& active_caps) {
-  const cg::rhi::BackendType active_scene_backend =
-      active_caps.scene_backend == cg::rhi::BackendType::kUnknown ? active_caps.backend : active_caps.scene_backend;
   switch (backend) {
     case SceneBackendOption::kOpenGL:
-      return active_scene_backend == cg::rhi::BackendType::kOpenGL;
+      return active_caps.backend == cg::rhi::BackendType::kOpenGL;
     case SceneBackendOption::kVulkan:
-      return active_scene_backend == cg::rhi::BackendType::kVulkan;
+      return active_caps.backend == cg::rhi::BackendType::kVulkan;
   }
   return false;
+}
+
+const char* RuntimeEnvValue(SceneBackendOption backend) {
+  switch (backend) {
+    case SceneBackendOption::kOpenGL:
+      return "opengl";
+    case SceneBackendOption::kVulkan:
+      return "vulkan";
+  }
+  return "unknown";
 }
 
 SceneBackendAvailability GetSceneBackendAvailability(const SceneDescriptor& descriptor,
@@ -233,22 +242,14 @@ SceneBackendAvailability GetSceneBackendAvailability(const SceneDescriptor& desc
   SceneBackendAvailability availability;
   switch (backend) {
     case SceneBackendOption::kOpenGL: {
-      if (!IsBackendRuntimeActive(backend, active_caps)) {
-        availability.reason = util::Format("OpenGL scene backend is not active; current scene renderer is {}",
-                                           ActiveRendererLabel(active_caps));
-        return availability;
-      }
       availability.available = IsSceneAvailable(descriptor, active_caps, &availability.reason);
+      availability.relaunch_required = !IsBackendRuntimeActive(backend, active_caps);
       return availability;
     }
     case SceneBackendOption::kVulkan: {
 #if defined(CG_HAS_VULKAN_RHI)
-      if (!IsBackendRuntimeActive(backend, active_caps)) {
-        availability.reason = util::Format("Vulkan scene backend is not active; current scene renderer is {}",
-                                           ActiveRendererLabel(active_caps));
-        return availability;
-      }
       availability.available = IsSceneAvailable(descriptor, active_caps, &availability.reason);
+      availability.relaunch_required = !IsBackendRuntimeActive(backend, active_caps);
       return availability;
 #else
       availability.reason = "Vulkan backend was not built";
@@ -288,7 +289,13 @@ bool DrawBackendButton(const SceneDescriptor& descriptor,
   }
   if (hovered) {
     if (availability.available) {
-      ImGui::SetTooltip("Launch %s with %s", descriptor.display_name.c_str(), SceneBackendLabel(backend));
+      if (availability.relaunch_required) {
+        ImGui::SetTooltip("Launch %s with %s runtime (restarts the app)",
+                          descriptor.display_name.c_str(),
+                          SceneBackendLabel(backend));
+      } else {
+        ImGui::SetTooltip("Launch %s with %s", descriptor.display_name.c_str(), SceneBackendLabel(backend));
+      }
     } else {
       ImGui::SetTooltip("%s unavailable: %s", SceneBackendLabel(backend), availability.reason.c_str());
     }
@@ -335,6 +342,16 @@ Playground::Playground() {
   scene_selector_popup_requested_ = true;
 }
 
+std::optional<Playground::LaunchRequest> Playground::ConsumeLaunchRequest() {
+  std::optional<LaunchRequest> launch_request = std::move(pending_launch_request_);
+  if (launch_request.has_value()) {
+    CGLOG(ERROR) << "Playground ConsumeLaunchRequest: runtime=" << launch_request->runtime_name
+                 << " scene=" << launch_request->scene_id;
+  }
+  pending_launch_request_.reset();
+  return launch_request;
+}
+
 void Playground::SetPresentationRuntimeName(std::string runtime_name) {
   presentation_runtime_name_ = std::move(runtime_name);
   selected_scene_category_index_ =
@@ -350,6 +367,7 @@ void Playground::EnsureScene() {
 }
 
 void Playground::SwitchToScene(const std::string& scene_id) {
+  CGLOG(ERROR) << "Playground SwitchToScene begin: current=" << current_scene_name_ << " requested=" << scene_id;
   const SceneDescriptor* descriptor = FindSceneDescriptor(scene_id);
   if (descriptor == nullptr) {
     CGLOG(ERROR) << "Unknown scene id: " << scene_id;
@@ -369,13 +387,16 @@ void Playground::SwitchToScene(const std::string& scene_id) {
   }
 
   if (current_scene_ != nullptr) {
+    CGLOG(ERROR) << "Playground SwitchToScene exit current scene: " << current_scene_name_;
     current_scene_->Exit();
     current_scene_.reset();
   }
 
   current_scene_name_ = descriptor->id;
   current_scene_ = descriptor->create();
+  CGLOG(ERROR) << "Playground SwitchToScene enter new scene: " << descriptor->id;
   current_scene_->Enter(descriptor->display_name, &config_, &io_, &frame_stat_);
+  CGLOG(ERROR) << "Playground SwitchToScene complete: active=" << current_scene_name_;
 }
 
 void Playground::DrawSceneSelector() {
@@ -421,10 +442,13 @@ void Playground::DrawSceneSelector() {
   if (has_distinct_presentation_runtime) {
     ImGui::Text("Runtime RHI API: %s", ActiveRuntimeApiLabel(caps).c_str());
     ImGui::Text("Presentation runtime: %s", presentation_runtime_name_.c_str());
-    ImGui::TextWrapped("Scene availability is based on the renderer API above. This mode presents with %s but still "
-                       "renders scenes with %s.",
+    ImGui::TextWrapped("This mode presents with %s but renders scenes with %s. Choosing a different runtime button "
+                       "below relaunches the app and keeps the selected scene.",
                        presentation_runtime_name_.c_str(),
                        ActiveRendererLabel(caps).c_str());
+  } else {
+    ImGui::TextWrapped("Choose OpenGL or Vulkan below to launch the selected scene. Switching runtime relaunches the "
+                       "app and preserves the selected scene.");
   }
   if (!caps.shader_language_name.empty()) {
     ImGui::Text("Shader language: %s", caps.shader_language_name.c_str());
@@ -500,15 +524,33 @@ void Playground::DrawSceneSelector() {
 
     ImGui::SameLine(0.0f, 12.0f);
     if (DrawBackendButton(descriptor, caps, SceneBackendOption::kOpenGL)) {
-      pending_scene_name_ = descriptor.id;
-      force_reload_scene_ = false;
+      if (IsBackendRuntimeActive(SceneBackendOption::kOpenGL, caps)) {
+        pending_scene_name_ = descriptor.id;
+        force_reload_scene_ = false;
+      } else {
+        pending_launch_request_ = LaunchRequest{
+            .scene_id = descriptor.id,
+            .runtime_name = RuntimeEnvValue(SceneBackendOption::kOpenGL),
+        };
+        CGLOG(ERROR) << "Playground queued relaunch: runtime=" << pending_launch_request_->runtime_name
+                     << " scene=" << pending_launch_request_->scene_id;
+      }
       ImGui::CloseCurrentPopup();
     }
 
     ImGui::SameLine(0.0f, 6.0f);
     if (DrawBackendButton(descriptor, caps, SceneBackendOption::kVulkan)) {
-      pending_scene_name_ = descriptor.id;
-      force_reload_scene_ = false;
+      if (IsBackendRuntimeActive(SceneBackendOption::kVulkan, caps)) {
+        pending_scene_name_ = descriptor.id;
+        force_reload_scene_ = false;
+      } else {
+        pending_launch_request_ = LaunchRequest{
+            .scene_id = descriptor.id,
+            .runtime_name = RuntimeEnvValue(SceneBackendOption::kVulkan),
+        };
+        CGLOG(ERROR) << "Playground queued relaunch: runtime=" << pending_launch_request_->runtime_name
+                     << " scene=" << pending_launch_request_->scene_id;
+      }
       ImGui::CloseCurrentPopup();
     }
     ImGui::EndGroup();

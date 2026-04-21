@@ -11,6 +11,8 @@ Light::Light(Type in_type, const glm::vec3& in_position, const glm::vec4& in_col
   : type(in_type), position(in_position), color(in_color), attenuation_2_1_0(in_attenuation_2_1_0) {}
 
 void LightRepo::Add(const PrimitiveRepo& primitive_repo, const MaterialRepo& material_repo) {
+  primitive_light_num_ = 0;
+  primitive_light_area_ = 0.0f;
   for (int i = 0; i < primitive_repo.data().size(); ++i) {
     const Primitive& primitive = primitive_repo.data()[i];
     const Material& material = material_repo.GetMaterial(primitive.material_index);

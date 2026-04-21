@@ -63,8 +63,8 @@ struct LightRepo {
   std::vector<Light> lights_;
 
   // Primitive Light
-  int primitive_light_num_;
-  float primitive_light_area_;
+  int primitive_light_num_ = 0;
+  float primitive_light_area_ = 0.0f;
   std::vector<Light> dirty_lights_;
 };
 

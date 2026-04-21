@@ -8,6 +8,8 @@
 #include <GLFW/glfw3.h>
 
 #include <algorithm>
+#include <cerrno>
+#include <cstring>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -15,6 +17,7 @@
 #include <optional>
 #include <string>
 #include <vector>
+#include <unistd.h>
 
 #include "base/color.h"
 #include "base/debug.h"
@@ -70,6 +73,11 @@ struct WindowConfig {
   int width = kDefaultWindowWidth;
   int height = kDefaultWindowHeight;
   bool fullscreen = false;
+};
+
+struct RunResult {
+  int exit_code = 0;
+  std::optional<Playground::LaunchRequest> relaunch_request;
 };
 
 void glfw_error_callback(int error, const char* description) {
@@ -806,7 +814,7 @@ void FillClipboard(Playground* playground, GLFWwindow* window) {
   playground->mutable_io()->SetWriteClipboardFunc(write_clipboard);
 }
 
-int RunLegacyOpenGL(const WindowConfig& config) {
+RunResult RunLegacyOpenGL(const WindowConfig& config) {
   if (IsMesaOpenGLRuntimeExplicitlyRequested() && !ShouldUseMesaOpenGLRuntime()) {
     CGLOG(ERROR) << "CG_GL_RUNTIME=mesa was requested, but this build does not have a Mesa offscreen runtime. "
                  << "Falling back to native OpenGL presentation + rendering.";
@@ -842,6 +850,7 @@ int RunLegacyOpenGL(const WindowConfig& config) {
   UpdateIoSizes(window, &playground);
   ApplyViewportFromIo(playground.io());
 
+  std::optional<Playground::LaunchRequest> relaunch_request;
   while (!glfwWindowShouldClose(window)) {
     glfwPollEvents();
     UpdateIoSizes(window, &playground);
@@ -875,6 +884,10 @@ int RunLegacyOpenGL(const WindowConfig& config) {
     glfwSwapBuffers(window);
 
     playground.EndFrame();
+    relaunch_request = playground.ConsumeLaunchRequest();
+    if (relaunch_request.has_value()) {
+      break;
+    }
   }
 
   glfwMakeContextCurrent(window);
@@ -885,10 +898,13 @@ int RunLegacyOpenGL(const WindowConfig& config) {
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();
   glfwDestroyWindow(window);
-  return 0;
+  return {
+      .exit_code = 0,
+      .relaunch_request = std::move(relaunch_request),
+  };
 }
 
-int RunPresentedOpenGL(const WindowConfig& config) {
+RunResult RunPresentedOpenGL(const WindowConfig& config) {
   OpenGLPresenter presenter(config, "CG");
   int framebuffer_width = 0;
   int framebuffer_height = 0;
@@ -901,20 +917,28 @@ int RunPresentedOpenGL(const WindowConfig& config) {
 
   CGLOG(ERROR) << "Presentation Runtime : " << presenter.runtime_name();
 
+  std::optional<Playground::LaunchRequest> relaunch_request;
   while (!presenter.ShouldClose()) {
     glfwPollEvents();
     const OffscreenGlRenderer::Frame frame = renderer.RenderFrame(&playground);
     presenter.Present(frame);
+    relaunch_request = playground.ConsumeLaunchRequest();
+    if (relaunch_request.has_value()) {
+      break;
+    }
   }
 
   renderer.MakeCurrentForCleanup();
   playground.Destoy();
   cg::rhi::SetDevice(nullptr);
-  return 0;
+  return {
+      .exit_code = 0,
+      .relaunch_request = std::move(relaunch_request),
+  };
 }
 
 #if defined(CG_HAS_VULKAN_RHI)
-int RunVulkan(const WindowConfig& config) {
+RunResult RunVulkan(const WindowConfig& config) {
   cg::rhi::vulkan::Presenter presenter(config.width, config.height, "CG");
   int framebuffer_width = 0;
   int framebuffer_height = 0;
@@ -927,6 +951,7 @@ int RunVulkan(const WindowConfig& config) {
 
   CGLOG(ERROR) << "Presentation Runtime : " << presenter.runtime_name();
 
+  std::optional<Playground::LaunchRequest> relaunch_request;
   while (!presenter.ShouldClose()) {
     glfwPollEvents();
     const OffscreenGlRenderer::Frame frame = renderer.RenderFrame(&playground);
@@ -936,14 +961,39 @@ int RunVulkan(const WindowConfig& config) {
         .rgba_pixels = frame.rgba_pixels,
         .size_in_bytes = frame.size_in_bytes,
     });
+    relaunch_request = playground.ConsumeLaunchRequest();
+    if (relaunch_request.has_value()) {
+      break;
+    }
   }
 
   renderer.MakeCurrentForCleanup();
   playground.Destoy();
   cg::rhi::SetDevice(nullptr);
-  return 0;
+  return {
+      .exit_code = 0,
+      .relaunch_request = std::move(relaunch_request),
+  };
 }
 #endif
+
+int RelaunchSelf(const char* argv0, const Playground::LaunchRequest& launch_request) {
+  CGCHECK(argv0 != nullptr) << "argv[0] is null";
+  CGCHECK(!launch_request.runtime_name.empty()) << "Runtime relaunch request is missing CG_RUNTIME.";
+  CGCHECK(!launch_request.scene_id.empty()) << "Runtime relaunch request is missing CG_SCENE.";
+
+  setenv("CG_RUNTIME", launch_request.runtime_name.c_str(), 1);
+  setenv("CG_SCENE", launch_request.scene_id.c_str(), 1);
+  CGLOG(ERROR) << "Relaunching with runtime=" << launch_request.runtime_name
+               << " scene=" << launch_request.scene_id;
+
+  char* const argv[] = {const_cast<char*>(argv0), nullptr};
+  execvp(argv0, argv);
+  const int error_code = errno;
+  CGLOG(ERROR) << "Failed to relaunch executable " << argv0 << " (errno=" << error_code
+               << ", message=" << std::strerror(error_code) << ")";
+  return 1;
+}
 
 }  // namespace
 
@@ -956,19 +1006,23 @@ int main(int argc, char** argv) {
   const WindowConfig window_config = BuildWindowConfig();
   const RuntimeMode runtime_mode = ChooseRuntimeMode();
 
-  int exit_code = 0;
+  RunResult run_result;
   switch (runtime_mode) {
     case RuntimeMode::kOpenGL:
-      exit_code = ShouldUseMesaOpenGLRuntime() ? RunPresentedOpenGL(window_config) : RunLegacyOpenGL(window_config);
+      run_result = ShouldUseMesaOpenGLRuntime() ? RunPresentedOpenGL(window_config) : RunLegacyOpenGL(window_config);
       break;
 #if defined(CG_HAS_VULKAN_RHI)
     case RuntimeMode::kVulkan:
-      exit_code = RunVulkan(window_config);
+      run_result = RunVulkan(window_config);
       break;
 #endif
   }
 
+  if (run_result.relaunch_request.has_value()) {
+    return RelaunchSelf(argv[0], *run_result.relaunch_request);
+  }
+
   glfwTerminate();
   google::ShutdownGoogleLogging();
-  return exit_code;
+  return run_result.exit_code;
 }

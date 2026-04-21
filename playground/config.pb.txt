@@ -18,8 +18,8 @@ shader_config {
 
 shader_config {
   name : "cubemap_lod";
-  vs_path : "renderer/shader/cubemap_lod.vs.glsl";
-  fs_path : "renderer/shader/cubemap_lod.fs.glsl";
+  vs_path : "playground/shader/cubemap_lod.vs.glsl";
+  fs_path : "playground/shader/cubemap_lod.fs.glsl";
 }
 
 shader_config {
@@ -110,7 +110,7 @@ shader_config {
 
 shader_config {
   name : "pbr";
-  vs_path : "renderer/shader/pbr.vs.glsl";
+  vs_path : "renderer/shader/pbr/pbr.vs.glsl";
   fs_path : "renderer/shader/pbr/pbr.fs.glsl";
 }
 
@@ -129,8 +129,8 @@ shader_config {
 
 shader_config {
   name : "equirectangular_2_cubemap_tool";
-  vs_path : "renderer/shader/equirectangular_2_cubemap_tool.vs.glsl";
-  fs_path : "renderer/shader/equirectangular_2_cubemap_tool.fs.glsl";
+  vs_path : "playground/shader/equirectangular_2_cubemap_tool.vs.glsl";
+  fs_path : "playground/shader/equirectangular_2_cubemap_tool.fs.glsl";
 }
 
 shader_config {
@@ -265,7 +265,7 @@ shader_config {
 shader_config {
   name : "ray_tracing_canvas";
   vs_path : "renderer/shader/fullscreen_quad.vs.glsl";
-  fs_path : "renderer/shader/ray_tracing_canvas.fs.glsl";
+  fs_path : "renderer/shader/ray_tracing/ray_tracing_canvas.fs.glsl";
 }
 
 shader_config {

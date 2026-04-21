@@ -1,6 +1,5 @@
 #include "renderer/shader/version.glsl"
 
-#include "renderer/shader/light_info.glsl"
 #include "renderer/shader/pbr/pbr_fresnel.glsl"
 #include "renderer/shader/pbr/pbr_geometry.glsl"
 #include "renderer/shader/pbr/pbr_material.glsl"

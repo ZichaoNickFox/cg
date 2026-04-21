@@ -64,17 +64,17 @@ uint32_t ShaderProgram::id() const {
 }
 
 void ShaderProgramRepo::Init(const Config& config) {
-  for (const auto& p : config.shader_configs()) {
-    const ShaderConfig& shader_config = p.second;
-    std::string name = shader_config.name();
-    shaders_.insert(std::make_pair(name, ShaderLoadState(shader_config)));
-    CGLOG(ERROR) << "Init shader : " << name;
-  }
+  config_ = &config;
+  shaders_.clear();
 }
 
 ShaderProgram ShaderProgramRepo::GetShader(const std::string& name) const {
-  CGCHECK(shaders_.count(name) > 0) << "No shader name : " << name;
-  ShaderLoadState* shader_load_state = &shaders_.at(name);
+  CGCHECK(config_ != nullptr) << "ShaderProgramRepo::Init must be called before GetShader.";
+  auto iter = shaders_.find(name);
+  if (iter == shaders_.end()) {
+    iter = shaders_.emplace(name, ShaderLoadState(config_->shader_config(name))).first;
+  }
+  ShaderLoadState* shader_load_state = &iter->second;
   if (shader_load_state->loaded == false) {
     CGLOG(ERROR) << "Loading Shading Begin : " << name;
     ShaderLoader shader_loader;

@@ -8,6 +8,16 @@ target_link_libraries(
 )
 add_test(NAME renderer_logic_test COMMAND renderer_logic_test)
 
+add_executable(renderer_shader_test renderer_shader_test.cc)
+target_link_libraries(
+  renderer_shader_test
+  PRIVATE
+    cg::renderer
+    GTest::gtest
+    GTest::gtest_main
+)
+add_test(NAME renderer_shader_test COMMAND renderer_shader_test)
+
 add_executable(renderer_state_test renderer_state_test.cc)
 target_link_libraries(
   renderer_state_test

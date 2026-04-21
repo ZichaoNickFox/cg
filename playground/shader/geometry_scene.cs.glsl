@@ -2,11 +2,11 @@
 
 #include "renderer/shader/camera.glsl"
 #include "renderer/shader/color.glsl"
-#include "renderer/shader/compute_shader.glsl"
 #include "renderer/shader/definition.glsl"
 #include "renderer/shader/geometry.glsl"
 #include "renderer/shader/transform.glsl"
 
+layout (local_size_x = 32, local_size_y = 32) in;
 layout (rgba32f, binding = 0) uniform image2D canvas;
 
 uniform int triangle_num;

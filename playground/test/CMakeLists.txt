@@ -113,6 +113,25 @@ if(CG_HAS_MESA_OFFSCREEN)
         "Offscreen GL Runtime : Mesa"
     )
     set_tests_properties(runtime_smoke_vulkan_mesa PROPERTIES RUN_SERIAL TRUE)
+
+    add_test(
+      NAME runtime_smoke_vulkan_mesa_path_tracing
+      COMMAND
+        ${CMAKE_COMMAND}
+        -E
+        env
+        CG_SCENE=PathTracingScene
+        ${Python3_EXECUTABLE}
+        ${CMAKE_CURRENT_SOURCE_DIR}/runtime_smoke.py
+        $<TARGET_FILE:window>
+        ${PROJECT_SOURCE_DIR}
+        vulkan
+        mesa
+        "Presentation Runtime : Vulkan"
+        "Scene Renderer API :"
+        "Loading Shading End : path_tracing_scene"
+    )
+    set_tests_properties(runtime_smoke_vulkan_mesa_path_tracing PROPERTIES RUN_SERIAL TRUE)
   endif()
 else()
   add_test(

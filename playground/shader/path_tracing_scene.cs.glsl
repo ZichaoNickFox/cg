@@ -1,9 +1,9 @@
 #include "renderer/shader/version.glsl"
 
 #include "renderer/shader/bvh.glsl"
+#include "renderer/shader/bxdf/brdf.glsl"
 #include "renderer/shader/camera.glsl"
 #include "renderer/shader/color.glsl"
-#include "renderer/shader/fr/BRDF.glsl"
 #include "renderer/shader/geometry.glsl"
 #include "renderer/shader/path_tracing.glsl"
 #include "renderer/shader/random.glsl"
@@ -31,7 +31,10 @@ void main() {
     color = kBlack;
   } else {
     Ray ray = Ray(camera.pos_ws, camera_direction_ws);
-    vec4 path_tracing_result = path_tracing_from_camera(ray);
+    FromCamera from_camera;
+    from_camera.ray = ray;
+    from_camera.normal = camera_direction_ws;
+    vec4 path_tracing_result = path_tracing_from_camera(from_camera, false);
     if (color == vec4(0, 0, 0, 1)) {
       color = path_tracing_result;
     } else if (path_tracing_result == vec4(0, 0, 0, 1)) {

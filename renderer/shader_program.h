@@ -56,11 +56,12 @@ class ShaderProgramRepo {
 
  private:
   struct ShaderLoadState {
-    ShaderLoadState(const ShaderConfig& in_config) { config = in_config; }
+    explicit ShaderLoadState(const ShaderConfig& in_config) : config(in_config) {}
     bool loaded = false;
     cg::ShaderProgram shader;
     ShaderConfig config;
   };
+  const Config* config_ = nullptr;
   mutable std::unordered_map<std::string, ShaderLoadState> shaders_;
 };
 }

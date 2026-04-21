@@ -40,7 +40,18 @@ void RayTracingScene::OnEnter() {
     const glm::vec3& translation = sphere.translation;
     const float& r = sphere.radius;
 
-    ObjectMeta object_meta{name, {glm::vec3(), glm::quat(), glm::vec3(r, r, r)}, name, name};
+    if (!material_repo_.Has(name)) {
+      Material material;
+      material.ambient = sphere.color * 0.1f;
+      material.diffuse = sphere.color;
+      material.specular = glm::vec4(0.8f);
+      material.shininess = 32.0f;
+      if (name == "light") {
+        material.emission = sphere.color;
+      }
+      material_repo_.Add(name, material);
+    }
+    ObjectMeta object_meta{name, {translation, glm::quat(), glm::vec3(r, r, r)}, "sphere", name};
     object_repo_.AddOrReplace(object_meta);
   }
 

@@ -1,11 +1,12 @@
 #include "renderer/shader/version.glsl"
 
 #include "renderer/shader/camera.glsl"
-#include "renderer/shader/compute_shader.glsl"
 #include "renderer/shader/definition.glsl"
 #include "renderer/shader/geometry.glsl"
 #include "renderer/shader/transform.glsl"
 
+layout (local_size_x = 32, local_size_y = 32) in;
+layout (rgba32f, binding = 0) uniform image2D canvas;
 layout (std430, binding = SSBO_LIGHT_PATH) buffer LightPath { vec4 light_path[20]; };
 
 uniform vec2 resolution;
