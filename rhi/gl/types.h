@@ -32,6 +32,8 @@ inline GLenum ToGLTextureFormat(TextureFormat format) {
       return GL_R32UI;
     case TextureFormat::kDepth32F:
       return GL_DEPTH_COMPONENT32F;
+    case TextureFormat::kStencil8:
+      return GL_STENCIL_INDEX8;
     case TextureFormat::kUnknown:
       break;
   }
@@ -49,6 +51,8 @@ inline GLenum ToGLPixelFormat(PixelFormat format) {
       return GL_RED_INTEGER;
     case PixelFormat::kDepthComponent:
       return GL_DEPTH_COMPONENT;
+    case PixelFormat::kStencilIndex:
+      return GL_STENCIL_INDEX;
     case PixelFormat::kUnknown:
       break;
   }

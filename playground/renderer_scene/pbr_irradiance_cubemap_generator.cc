@@ -21,8 +21,6 @@ void PbrIrradianceCubemapGenerator::OnEnter(Scene *context) {
   camera_->mutable_transform()->SetRotation(glm::quat(0.89, -0.21, 0.38, 0.09));
   context->SetCamera(camera_.get());
 
-  cg::rhi::GetDevice().SetDepthTestEnabled(true);
-
   for (int i = 0; i < 6; ++i) {
     cubemap_cameras_[i].SetTransform(transforms_[i]);
     cubemap_cameras_[i].SetPerspectiveFov(90.0);
@@ -45,11 +43,10 @@ void PbrIrradianceCubemapGenerator::OnUpdate(Scene *context) {
 void PbrIrradianceCubemapGenerator::OnRender(Scene *context, int instance_num) {
   cg::CubemapData data(3, kLevel0Size * kLevel0Size * 4 * 4);
   for (int face = 0; face < 6; ++face) {
-    color_framebuffer_.Bind();
+    auto cubemap_face_pass = color_framebuffer_.BindScoped();
     PbrIrradianceCubemapGeneratorShader({context->GetTexture(input),
                                         &cubemap_cameras_[face]}, context, &cube_);
     cube_.OnRender(context);
-    color_framebuffer_.Unbind();
 
     data.UpdateData(face, 0, color_framebuffer_.GetColorTextureData(0));
   }

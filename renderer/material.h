@@ -85,6 +85,7 @@ class MaterialRepo {
   int GetIndex(const std::string& material_name) const;
   std::string GetName(int material_index) const;
   int num() const { return index_2_material_.size(); }
+  rhi::BufferBindingDesc binding_desc() const { return ssbo_.binding_desc(); }
 
   void UpdateSSBO();
 

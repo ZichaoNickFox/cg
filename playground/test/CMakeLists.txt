@@ -76,6 +76,27 @@ if(TARGET cg_rhi_vulkan)
       "Offscreen GL Runtime : Hidden Native OpenGL"
   )
   set_tests_properties(runtime_smoke_vulkan_native PROPERTIES RUN_SERIAL TRUE)
+
+  add_test(
+    NAME runtime_smoke_vulkan_standalone
+    COMMAND
+      ${CMAKE_COMMAND}
+      -E
+      env
+      CG_VK_SCENE_MODE=standalone
+      ${Python3_EXECUTABLE}
+      ${CMAKE_CURRENT_SOURCE_DIR}/runtime_smoke.py
+      $<TARGET_FILE:window>
+      ${PROJECT_SOURCE_DIR}
+      vulkan
+      native
+      "Presentation Runtime : Vulkan"
+      "Vulkan Scene Mode : Standalone Vulkan RHI"
+      "RHI Runtime API : Vulkan"
+      "Scene Renderer API : Vulkan Synthetic RHI"
+      "Offscreen GL Runtime : disabled (standalone Vulkan scene mode)"
+  )
+  set_tests_properties(runtime_smoke_vulkan_standalone PROPERTIES RUN_SERIAL TRUE)
 endif()
 
 if(CG_HAS_MESA_OFFSCREEN)

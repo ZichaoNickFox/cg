@@ -20,8 +20,6 @@ void SkyboxScene::OnEnter(Scene *context)
   context->SetCamera(camera_.get());
 
   skybox_.mutable_transform()->SetScale(glm::vec3(100, 100, 100));
-
-  cg::rhi::GetDevice().SetDepthTestEnabled(true);
 }
 
 void SkyboxScene::OnUpdate(Scene *context)

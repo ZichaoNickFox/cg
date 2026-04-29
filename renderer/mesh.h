@@ -85,6 +85,7 @@ class Mesh {
   std::vector<uint32_t>* mutable_indices() { MarkGpuUploadDirty(); return &indices_; }
 
   void Setup();
+  rhi::DrawDesc BuildDrawDesc(int instance_num = 1) const;
   void Submit(int instance_num = 1) const;
 
   bool Intersect(const glm::vec3& origin_ls, const glm::vec3& dir_ls,

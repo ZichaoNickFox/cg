@@ -30,11 +30,10 @@ void PbrBRDFIntegrationMapGenerator::OnUpdate(Scene *context) {
 void PbrBRDFIntegrationMapGenerator::OnRender(Scene *context, int instance_num) {
   cg::Texture2DData data(1, kLevel0Size * kLevel0Size * 4 * 4);
 
-  color_framebuffer_.Bind();
+  auto brdf_integration_pass = color_framebuffer_.BindScoped();
   EmptyObject empty_object;
   PbrBRDFIntegrationMapGeneratorShader({}, context, &empty_object);
   empty_object.OnRender(context);
-  color_framebuffer_.Unbind();
 
   data.UpdateData(0, color_framebuffer_.GetColorTextureData(0));
 

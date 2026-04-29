@@ -62,9 +62,11 @@ void ModelScene::OnUpdate() {
 }
 
 void ModelScene::OnRender() {
-  rhi::GetDevice().SetCullEnabled(enable_cull_face_);
-  rhi::GetDevice().SetCullMode(cull_mode_);
-  rhi::GetDevice().SetFrontFace(front_face_);
+  rhi::GetDevice().ApplyRenderState({
+      .cull_enabled = enable_cull_face_,
+      .cull_mode = cull_mode_,
+      .front_face = front_face_,
+  });
 
   PhongShader({use_blinn_phong_}, *this, object_repo_.GetObject("cerberus"));
   LinesShader({}, *this, CoordinatorMesh());

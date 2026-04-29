@@ -13,11 +13,12 @@ using namespace cg;
 
 class SampleSceneShader : public cg::RenderShader {
  public:
-  SampleSceneShader(const Scene& scene, const Object& object)
+  SampleSceneShader(const Scene& scene, const Object& object, const cg::SSBO& samples_ssbo)
       : RenderShader(scene, "sample_scene") {
-    SetModel(object);
-    SetCamera(scene.camera());
-    Run(scene, object);
+    ShaderProgramBindings bindings;
+    bindings.SetBufferBinding(samples_ssbo.binding_desc());
+    AppendRenderObjectBindings(object, scene.camera(), &bindings);
+    DrawBindings(bindings, scene, object);
   }
 };
 
@@ -40,7 +41,7 @@ void SampleScene::OnUpdate() {
 
 void SampleScene::OnRender()
 {
-  SampleSceneShader(*this, object_repo_.GetObject("sphere"));
+  SampleSceneShader(*this, object_repo_.GetObject("sphere"), samples_ssbo_);
 }
 
 void SampleScene::OnExit()

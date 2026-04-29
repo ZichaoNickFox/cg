@@ -51,7 +51,7 @@ class Scene {
 
   const FrameStat& frame_stat() const { return *frame_stat_; }
   const Io& io() const { return *io_; }
-  Texture GetTexture(const std::string& name, bool reload = false);
+  const Texture& GetTexture(const std::string& name) const;
 
  protected:
   void MoveCamera();

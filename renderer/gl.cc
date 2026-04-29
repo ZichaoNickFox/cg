@@ -22,6 +22,11 @@ void glViewport_(GLint x, GLint y, GLsizei width, GLsizei height) {
   CGCHECKGL();
 }
 
+void glPixelStorei_(GLenum pname, GLint param) {
+  glPixelStorei(pname, param);
+  CGCHECKGL();
+}
+
 void glGetBooleanv_(GLenum pname, GLboolean* data) {
   glGetBooleanv(pname, data);
   CGCHECKGL();
@@ -104,12 +109,13 @@ void glBufferData_(GLenum target, GLsizeiptr size, const void* data, GLenum usag
               << " usage~" << usage << std::dec;
 }
 
-void* glMapBuffer_(GLenum target, GLenum access) {
-  void* res = CGCHECK_NOTNULL(glMapBuffer(target, access));
-  CGCHECKGL() << "glMapBuffer" << std::hex
+void glGetBufferSubData_(GLenum target, GLintptr offset, GLsizeiptr size, void* data) {
+  glGetBufferSubData(target, offset, size, data);
+  CGCHECKGL() << "glGetBufferSubData" << std::hex
               << " target~" << target
-              << " access~" << access << std::dec;
-  return res;
+              << " offset~" << offset
+              << " size~" << size
+              << " data~" << data << std::dec;
 }
 
 void* glMapBufferRange_(GLenum target, GLintptr offset, GLsizeiptr length, GLbitfield access) {
@@ -332,6 +338,16 @@ void glClear_(GLbitfield mask) {
 
 void glClearColor_(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha) {
   glClearColor(red, green, blue, alpha);
+  CGCHECKGL();
+}
+
+void glClearDepth_(GLdouble depth) {
+  glClearDepth(depth);
+  CGCHECKGL();
+}
+
+void glClearStencil_(GLint s) {
+  glClearStencil(s);
   CGCHECKGL();
 }
 

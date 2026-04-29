@@ -137,7 +137,7 @@ class TextureRepo {
   int GetIndex(const std::string& name) const;
   const Texture& GetTexture(const std::string& name) const;
   const Texture& GetTexture(int index) const;
-  Texture AsTexture2DArray(int width = 512, int height = 512) const;
+  const Texture& AsTexture2DArray(int width = 512, int height = 512) const;
   int size() const;
   void MergeIamge() const;
 

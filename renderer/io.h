@@ -33,13 +33,13 @@ class Io {
 
  private:
   std::set<std::string> key_input_;
-  glm::vec2 cursor_pos_;
-  glm::vec2 last_cursor_pos_;
+  glm::vec2 cursor_pos_ = glm::vec2(0.0f);
+  glm::vec2 last_cursor_pos_ = glm::vec2(0.0f);
   bool left_button_pressed_ = false;
   bool right_button_pressed_ = false;
   bool gui_captured_cursor_ = false;
-  glm::ivec2 screen_size_;
-  glm::ivec2 framebuffer_size_;
+  glm::ivec2 screen_size_ = glm::ivec2(0);
+  glm::ivec2 framebuffer_size_ = glm::ivec2(0);
   std::function<void(const std::string&)> write_clipboard_func_;
 };
 } // namespace cg

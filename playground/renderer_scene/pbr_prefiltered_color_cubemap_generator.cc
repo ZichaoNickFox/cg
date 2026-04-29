@@ -21,8 +21,6 @@ void PbrPrefilteredColorCubemapGenerator::OnEnter(Scene *context)
   camera_->mutable_transform()->SetTranslation(glm::vec3(2.97, 3.95, 6.76));
   context->SetCamera(camera_.get());
 
-  cg::rhi::GetDevice().SetDepthTestEnabled(true);
-
   for (int face = 0; face < 6; ++face) {
     cubemap_cameras_[face].SetTransform(transforms_[face]);
     cubemap_cameras_[face].SetPerspectiveFov(90.0);
@@ -54,11 +52,10 @@ void PbrPrefilteredColorCubemapGenerator::OnRender(Scene *context, int instance_
   for (int level = 0; level < kMipmapMaxLevel; ++level) {
     for (int face = 0; face < 6; ++face) {
       float roughness = std::pow(0.5, kMipmapMaxLevel - level - 1);
-      color_framebuffers_[level].Bind();
+      auto cubemap_face_pass = color_framebuffers_[level].BindScoped();
       PbrPrefilteredColorCubemapGeneratorShader({context->GetTexture(input),
                                                 &cubemap_cameras_[face], roughness}, context, &cube_);
       cube_.OnRender(context);
-      color_framebuffers_[level].Unbind();
 
       data.UpdateData(face, level, color_framebuffers_[level].GetColorTextureData(0));
     }

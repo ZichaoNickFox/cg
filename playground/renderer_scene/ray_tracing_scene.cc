@@ -18,18 +18,22 @@ class RayTracingShader : public cg::ComputeShader {
   };
   RayTracingShader(const Param& param, const Scene& scene)
       : ComputeShader(scene, "ray_tracing") {
-    SetCamera(scene.camera());
+    ShaderProgramBindings bindings;
+    AppendCameraBindings(scene.camera(), &bindings);
     for (int i = 0; i < param.spheres.size(); ++i) {
       const Sphere& sphere = param.spheres[i];
-      program_.SetInt(util::Format("spheres[{}].id", i), sphere.id);
-      program_.SetVec3(util::Format("spheres[{}].center_pos", i), sphere.translation);
-      program_.SetVec4(util::Format("spheres[{}].color", i), sphere.color);
-      program_.SetFloat(util::Format("spheres[{}].radius", i), sphere.radius);
+      bindings.SetInt(util::Format("spheres[{}].id", i), sphere.id);
+      bindings.SetVec3(util::Format("spheres[{}].center_pos", i), sphere.translation);
+      bindings.SetVec4(util::Format("spheres[{}].color", i), sphere.color);
+      bindings.SetFloat(util::Format("spheres[{}].radius", i), sphere.radius);
     }
-    SetTextureBinding({param.canvas, "canvas", TextureAccess::kWriteOnly});
-    SetResolution(param.canvas.meta().Resolution());
-    SetWorkGroupNum({(param.canvas.meta().width + 31) / 32, (param.canvas.meta().height + 31) / 32, 1});
-    Run();
+    bindings.SetStorageTexture("canvas", param.canvas, TextureAccess::kWriteOnly);
+    AppendResolutionBindings(param.canvas.meta().Resolution(), &bindings);
+    DispatchBindings(bindings, {
+        .workgroup_count = glm::uvec3((param.canvas.meta().width + 31) / 32,
+                                      (param.canvas.meta().height + 31) / 32,
+                                      1),
+    });
   }
 };
 
@@ -65,8 +69,6 @@ void RayTracingScene::OnEnter() {
                             rhi::FilterMode::kNearest, rhi::FilterMode::kNearest);
 
   RaytracingDebugCommon::LightPath light_path;
-
-  rhi::GetDevice().SetDepthTestEnabled(true);
 }
 
 void RayTracingScene::OnUpdate() {

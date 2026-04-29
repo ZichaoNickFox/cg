@@ -1,15 +1,12 @@
 #pragma once
 
-#include <optional>
 #include <glm/glm.hpp>
 
 #include "base/geometry.h"
 #include "renderer/camera.h"
-#include "renderer/light.h"
 #include "renderer/mesh/lines_mesh.h"
 #include "renderer/object.h"
 #include "rhi/device.h"
-#include "renderer/shader.h"
 #include "renderer/shader_program.h"
 #include "renderer/texture.h"
 
@@ -18,54 +15,64 @@ namespace cg {
 using TextureAccess = rhi::TextureAccess;
 
 class Scene;
-class ComputeShader {
- public:
-  struct TextureBinding {
-    Texture texture;
-    std::string uniform_name;
-    TextureAccess access = TextureAccess::kReadOnly;
-  };
-  void Run() const;
+void AppendCameraBindings(const Camera& camera,
+                          const std::string& prefix,
+                          ShaderProgramBindings* bindings);
+inline void AppendCameraBindings(const Camera& camera, ShaderProgramBindings* bindings) {
+  AppendCameraBindings(camera, "camera", bindings);
+}
+void AppendModelBindings(const glm::mat4& model, ShaderProgramBindings* bindings);
+void AppendViewBindings(const Camera& camera, ShaderProgramBindings* bindings);
+void AppendProjectBindings(const Camera& camera, ShaderProgramBindings* bindings);
+void AppendViewPosBindings(const glm::vec3& view_pos_ws,
+                           ShaderProgramBindings* bindings,
+                           const std::string& uniform_name = "view_pos_ws");
+inline void AppendViewPosBindings(const Camera& camera,
+                                  ShaderProgramBindings* bindings,
+                                  const std::string& uniform_name = "view_pos_ws") {
+  AppendViewPosBindings(camera.transform().translation(), bindings, uniform_name);
+}
+void AppendRenderTransformBindings(const glm::mat4& model,
+                                   const Camera& camera,
+                                   ShaderProgramBindings* bindings);
+void AppendRenderObjectBindings(const Object& object,
+                                const Camera& camera,
+                                ShaderProgramBindings* bindings);
+void AppendLegacyRenderTransformBindings(const glm::mat4& model,
+                                         const Camera& camera,
+                                         ShaderProgramBindings* bindings);
+void AppendLegacyRenderObjectBindings(const Object& object,
+                                      const Camera& camera,
+                                      ShaderProgramBindings* bindings);
+void AppendMaterialIndexBindings(int material_index, ShaderProgramBindings* bindings);
+void AppendPrimitiveStartIndexBindings(int primitive_start_index, ShaderProgramBindings* bindings);
+void AppendResolutionBindings(const glm::vec2& resolution, ShaderProgramBindings* bindings);
+void AppendFrameNumBindings(int frame_num, ShaderProgramBindings* bindings);
+void AppendDirtyBindings(bool dirty, ShaderProgramBindings* bindings);
 
+class ComputeShader {
  protected:
   ComputeShader(const Scene& scene, const std::string& shader_name);
 
-  void SetTextureBinding(const TextureBinding& texture_binding);
+  void DispatchBindings(const ShaderProgramBindings& bindings,
+                        const rhi::ComputeDispatchDesc& desc) const;
 
-  void SetCamera(const Camera& camera);
-  void SetCamera1(const Camera& camera_1);
-  void SetResolution(const glm::vec2& resolution);
-  void SetFrameNum(const Scene& scene);
-  void SetDirty(bool dirty);
-  void SetWorkGroupNum(const glm::vec3& work_group_num);
-
- protected:
-  void CheckTextureBindingInternalFormat(const cg::Texture& texture) const;
-
+  ShaderProgramBindings common_bindings_;
   ShaderProgram program_;
-  glm::vec3 work_group_num_;
 };
 
 class RenderShader {
  protected:
   RenderShader(const Scene& scene, const std::string& shader_name);
-  void Run(const Scene& scene, const Object& object) const;
-  void Run(const Mesh& mesh) const;
-
- public:
-  void SetModel(const glm::mat4& model);
-  void SetModel(const Object& object);
-  void SetCamera(const Camera& camera);
-  void SetCamera1(const Camera& camera_1);
-  void SetMaterial(const Scene& scene, const Object& object);
-  void SetLight(const Light& light);
-  void SetMaterialIndex(int material_index);
-  void SetNearFar(const Camera& camera);
-  void SetScreenSize(const glm::vec2& screen_size);
-  void SetTimeSeed(int frame_num);
-  void SetPrimitiveStartIndex(const Object& object);
+  void ApplyBindings(const ShaderProgramBindings& bindings) const;
+  void DrawBindings(const ShaderProgramBindings& bindings,
+                    const Scene& scene,
+                    const Object& object) const;
+  void DrawBindings(const ShaderProgramBindings& bindings,
+                    const Mesh& mesh) const;
 
  protected:
+  ShaderProgramBindings common_bindings_;
   ShaderProgram program_;
 };
 
@@ -130,6 +137,7 @@ class Texture2DLodShader : public cg::RenderShader {
  public:
   struct Param {
     cg::Texture texture2D0;
+    glm::vec3 view_pos_ws = glm::vec3(0.0f);
   };
   Texture2DLodShader(const Param& param, const Scene& scene, const Object& object);
 };
@@ -199,6 +207,7 @@ class PbrPrefilteredColorCubemapGeneratorShader : public cg::RenderShader {
   struct Param {
     cg::Texture environment_map;
     cg::Camera* camera = nullptr;
+    float roughness = 0.0f;
   };
   PbrPrefilteredColorCubemapGeneratorShader(const Param& param, const Scene& scene, const Object& object);
 };

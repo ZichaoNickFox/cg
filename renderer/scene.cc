@@ -31,7 +31,9 @@ void Scene::Enter(const std::string& name, Config* config, Io* io, FrameStat* fr
   camera_->SetAspect(CameraAspectFromIo(*io_));
   camera_->SetPerspectiveFov(60);
 
-  rhi::GetDevice().SetDepthTestEnabled(true);
+  rhi::GetDevice().ApplyRenderState({
+      .depth_test_enabled = true,
+  });
 
   OnEnter();
 
@@ -76,7 +78,7 @@ const Camera& Scene::camera() const {
   return *camera_.get();
 }
 
-Texture Scene::GetTexture(const std::string& name, bool /*reload*/) {
+const Texture& Scene::GetTexture(const std::string& name) const {
   return texture_repo_.GetTexture(name);
 }
 

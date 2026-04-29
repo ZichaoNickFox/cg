@@ -1,5 +1,7 @@
 #include "renderer/shader.h"
 
+#include <array>
+#include <cstdint>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -15,407 +17,340 @@
 #include "renderer/scene.h"
 
 namespace cg {
+void AppendCameraBindings(const Camera& camera, const std::string& prefix, ShaderProgramBindings* bindings) {
+  CGCHECK_NOTNULL(bindings);
+  bindings->SetVec3(util::Format("{}.pos_ws", prefix), camera.transform().translation());
+  bindings->SetVec3(util::Format("{}.front", prefix), camera.front_ws());
+  bindings->SetMat4(util::Format("{}.view", prefix), camera.GetViewMatrix());
+  bindings->SetMat4(util::Format("{}.project", prefix), camera.GetProjectMatrix());
+  bindings->SetFloat(util::Format("{}.near", prefix), camera.near_clip());
+  bindings->SetFloat(util::Format("{}.far", prefix), camera.far_clip());
+}
+
+void AppendModelBindings(const glm::mat4& model, ShaderProgramBindings* bindings) {
+  CGCHECK_NOTNULL(bindings);
+  bindings->SetMat4("model", model);
+}
+
+void AppendViewBindings(const Camera& camera, ShaderProgramBindings* bindings) {
+  CGCHECK_NOTNULL(bindings);
+  bindings->SetMat4("view", camera.GetViewMatrix());
+}
+
+void AppendProjectBindings(const Camera& camera, ShaderProgramBindings* bindings) {
+  CGCHECK_NOTNULL(bindings);
+  bindings->SetMat4("project", camera.GetProjectMatrix());
+}
+
+void AppendViewPosBindings(const glm::vec3& view_pos_ws,
+                           ShaderProgramBindings* bindings,
+                           const std::string& uniform_name) {
+  CGCHECK_NOTNULL(bindings);
+  bindings->SetVec3(uniform_name, view_pos_ws);
+}
+
+void AppendRenderTransformBindings(const glm::mat4& model,
+                                   const Camera& camera,
+                                   ShaderProgramBindings* bindings) {
+  CGCHECK_NOTNULL(bindings);
+  AppendModelBindings(model, bindings);
+  AppendCameraBindings(camera, bindings);
+}
+
+void AppendRenderObjectBindings(const Object& object,
+                                const Camera& camera,
+                                ShaderProgramBindings* bindings) {
+  CGCHECK_NOTNULL(bindings);
+  AppendRenderTransformBindings(object.transform.GetModelMatrix(), camera, bindings);
+}
+
+void AppendLegacyRenderTransformBindings(const glm::mat4& model,
+                                         const Camera& camera,
+                                         ShaderProgramBindings* bindings) {
+  CGCHECK_NOTNULL(bindings);
+  AppendModelBindings(model, bindings);
+  AppendViewBindings(camera, bindings);
+  AppendProjectBindings(camera, bindings);
+}
+
+void AppendLegacyRenderObjectBindings(const Object& object,
+                                      const Camera& camera,
+                                      ShaderProgramBindings* bindings) {
+  CGCHECK_NOTNULL(bindings);
+  AppendLegacyRenderTransformBindings(object.transform.GetModelMatrix(), camera, bindings);
+}
+
+void AppendMaterialIndexBindings(int material_index, ShaderProgramBindings* bindings) {
+  CGCHECK_NOTNULL(bindings);
+  bindings->SetInt("material_index", material_index);
+}
+
+void AppendPrimitiveStartIndexBindings(int primitive_start_index, ShaderProgramBindings* bindings) {
+  CGCHECK_NOTNULL(bindings);
+  bindings->SetInt("primitive_start_index", primitive_start_index);
+}
+
+void AppendResolutionBindings(const glm::vec2& resolution, ShaderProgramBindings* bindings) {
+  CGCHECK_NOTNULL(bindings);
+  bindings->SetVec2("resolution", resolution);
+}
+
+void AppendFrameNumBindings(int frame_num, ShaderProgramBindings* bindings) {
+  CGCHECK_NOTNULL(bindings);
+  bindings->SetInt("frame_num", frame_num);
+}
+
+void AppendDirtyBindings(bool dirty, ShaderProgramBindings* bindings) {
+  CGCHECK_NOTNULL(bindings);
+  bindings->SetBool("dirty", dirty);
+}
+
 namespace {
-constexpr char kPhongMaterialPrefix[] = "phong_material";
+const Texture& TextureRepoFallbackTextureArray() {
+  static const Texture texture = [] {
+    Texture::Meta meta;
+    meta.type = Texture::kTexture2DArray;
+    meta.width = 1;
+    meta.height = 1;
+    meta.channel_num = 4;
+    meta.hdr = false;
+    meta.level_num = 1;
+    meta.depth = 1;
+    meta.format = rhi::TextureFormat::kRGBA8;
+    meta.pixel_format = rhi::PixelFormat::kRGBA;
+    meta.pixel_type = rhi::PixelType::kUInt8;
+    meta.min_filter = rhi::FilterMode::kNearest;
+    meta.mag_filter = rhi::FilterMode::kNearest;
+    meta.wrap_s = rhi::WrapMode::kClampToEdge;
+    meta.wrap_t = rhi::WrapMode::kClampToEdge;
 
-void SetCamera(const Camera& camera, ShaderProgram* program) {
-  program->SetVec3("camera.pos_ws", camera.transform().translation());
-  program->SetVec3("camera.front", camera.front_ws());
-  program->SetMat4("camera.view", camera.GetViewMatrix());
-  program->SetMat4("camera.project", camera.GetProjectMatrix());
-  program->SetFloat("camera.near", camera.near_clip());
-  program->SetFloat("camera.far", camera.far_clip());
-}
-void SetCamera1(const Camera& camera_1, ShaderProgram* program) {
-  program->SetVec3("camera_1.pos_ws", camera_1.transform().translation());
-  program->SetVec3("camera_1.front", camera_1.front_ws());
-  program->SetMat4("camera_1.view", camera_1.GetViewMatrix());
-  program->SetMat4("camera_1.project", camera_1.GetProjectMatrix());
-  program->SetFloat("camera_1.near", camera_1.near_clip());
-  program->SetFloat("camera_1.far", camera_1.far_clip());
-}
-
-const Texture& WhiteFallbackTexture() {
-  static const Texture texture = CreateTexture2D(1, 1, {glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)});
+    const std::array<uint8_t, 4> white = {255, 255, 255, 255};
+    Texture fallback(meta);
+    fallback.SetCpuLevelData(0, white.data(), white.size());
+    fallback.Varify();
+    return fallback;
+  }();
   return texture;
 }
 
-const Texture& FlatNormalFallbackTexture() {
-  static const Texture texture = CreateTexture2D(1, 1, {glm::vec4(0.5f, 0.5f, 1.0f, 1.0f)});
-  return texture;
-}
-
-void SetOptionalTexture(const TextureRepo& texture_repo,
-                        int texture_index,
-                        const std::string& use_uniform_name,
-                        const std::string& texture_uniform_name,
-                        const Texture& fallback_texture,
-                        ShaderProgram* program) {
-  const bool has_texture = texture_index != -1 && texture_repo.Has(texture_index);
-  program->SetBool(use_uniform_name, has_texture);
-  if (has_texture) {
-    program->SetTexture(texture_uniform_name, texture_repo.GetTexture(texture_index));
-  } else {
-    program->SetTexture(texture_uniform_name, fallback_texture);
-  }
-}
-
-void SetPhongMaterialUniforms(const Scene& scene, const Object& object, ShaderProgram* program) {
-  const Material& material = scene.material_repo().GetMaterial(object.material_index);
-  const TextureRepo& texture_repo = scene.texture_repo();
-
-  program->SetVec4(util::Format("{}.ambient", kPhongMaterialPrefix), material.ambient);
-  program->SetVec4(util::Format("{}.diffuse", kPhongMaterialPrefix), material.diffuse);
-  program->SetVec4(util::Format("{}.specular", kPhongMaterialPrefix), material.specular);
-  program->SetVec4(util::Format("{}.emission", kPhongMaterialPrefix), material.emission);
-  program->SetFloat(util::Format("{}.shininess", kPhongMaterialPrefix), material.shininess);
-
-  SetOptionalTexture(texture_repo,
-                     material.texture_normal,
-                     util::Format("{}.use_texture_normal", kPhongMaterialPrefix),
-                     util::Format("{}.texture_normal0", kPhongMaterialPrefix),
-                     FlatNormalFallbackTexture(),
-                     program);
-  SetOptionalTexture(texture_repo,
-                     material.texture_specular,
-                     util::Format("{}.use_texture_specular", kPhongMaterialPrefix),
-                     util::Format("{}.texture_specular0", kPhongMaterialPrefix),
-                     WhiteFallbackTexture(),
-                     program);
-  SetOptionalTexture(texture_repo,
-                     material.texture_ambient,
-                     util::Format("{}.use_texture_ambient", kPhongMaterialPrefix),
-                     util::Format("{}.texture_ambient0", kPhongMaterialPrefix),
-                     WhiteFallbackTexture(),
-                     program);
-  const int diffuse_texture_index = material.texture_diffuse != -1 ? material.texture_diffuse : material.texture_base_color;
-  SetOptionalTexture(texture_repo,
-                     diffuse_texture_index,
-                     util::Format("{}.use_texture_diffuse", kPhongMaterialPrefix),
-                     util::Format("{}.texture_diffuse0", kPhongMaterialPrefix),
-                     WhiteFallbackTexture(),
-                     program);
-  SetOptionalTexture(texture_repo,
-                     material.texture_shininess,
-                     util::Format("{}.use_texture_shininess", kPhongMaterialPrefix),
-                     util::Format("{}.texture_shininess0", kPhongMaterialPrefix),
-                     WhiteFallbackTexture(),
-                     program);
-}
-
-void SetLightUniforms(const Light& light, ShaderProgram* program) {
-  program->SetVec3("light.pos", light.position);
-  program->SetVec4("light.color", light.color);
-  program->SetFloat("light.constant", light.attenuation_2_1_0.z);
-  program->SetFloat("light.linear", light.attenuation_2_1_0.y);
-  program->SetFloat("light.quadratic", light.attenuation_2_1_0.x);
-}
-
-void SetShaderCommonParam(const Scene& scene, const std::string& shader_name, ShaderProgram* program) {
-  program->Use();
+ShaderProgramBindings BuildShaderCommonBindings(const Scene& scene) {
+  ShaderProgramBindings bindings;
+  bindings.SetBufferBinding(scene.light_repo().binding_desc());
+  bindings.SetBufferBinding(scene.material_repo().binding_desc());
+  bindings.SetBufferBinding(scene.bvh().binding_desc());
+  bindings.SetBufferBinding(scene.primitive_repo().binding_desc());
   if (scene.texture_repo().size() > 0) {
-    program->SetTexture("texture_repo", scene.texture_repo().AsTexture2DArray());
+    bindings.SetTexture("texture_repo", scene.texture_repo().AsTexture2DArray());
+  } else {
+    bindings.SetTexture("texture_repo", TextureRepoFallbackTextureArray());
   }
-  program->SetInt("light_repo_num", scene.light_repo().num());
-  program->SetInt("material_repo_num", scene.material_repo().num());
-  program->SetInt("bvh_num", scene.bvh().num());
-  program->SetInt("primitive_repo_num", scene.primitive_repo().num());
-  program->SetInt("primitive_light_num", scene.light_repo().primitive_light_num());
-  program->SetFloat("primitive_light_area", scene.light_repo().primitive_light_area());
+  bindings.SetInt("light_repo_num", scene.light_repo().num());
+  bindings.SetInt("material_repo_num", scene.material_repo().num());
+  bindings.SetInt("bvh_num", scene.bvh().num());
+  bindings.SetInt("primitive_repo_num", scene.primitive_repo().num());
+  bindings.SetInt("primitive_light_num", scene.light_repo().primitive_light_num());
+  bindings.SetFloat("primitive_light_area", scene.light_repo().primitive_light_area());
+  return bindings;
+}
+
+ShaderProgramBindings BuildMergedBindings(const ShaderProgramBindings& common,
+                                         const ShaderProgramBindings& extra) {
+  ShaderProgramBindings merged = common;
+  merged.Append(extra);
+  return merged;
 }
 }
 
 RenderShader::RenderShader(const Scene& scene, const std::string& shader_name) {
   program_ = scene.shader_program_repo().GetShader(shader_name);
-  SetShaderCommonParam(scene, shader_name, &program_);
+  common_bindings_ = BuildShaderCommonBindings(scene);
 }
 
-void RenderShader::SetModel(const glm::mat4& model) {
-  program_.SetMat4("model", model);
+void RenderShader::ApplyBindings(const ShaderProgramBindings& bindings) const {
+  program_.ApplyBindings(BuildMergedBindings(common_bindings_, bindings));
 }
 
-void RenderShader::SetModel(const Object& object) {
-  program_.SetMat4("model", object.transform.GetModelMatrix());
+void RenderShader::DrawBindings(const ShaderProgramBindings& bindings,
+                                const Scene& scene,
+                                const Object& object) const {
+  DrawBindings(bindings, *scene.mesh_repo().GetMesh(object.mesh_index));
 }
 
-void RenderShader::SetCamera(const Camera& camera) {
-  cg::SetCamera(camera, &program_);
-}
-
-void RenderShader::SetCamera1(const Camera& camera_1) {
-  cg::SetCamera1(camera_1, &program_);
-}
-
-void RenderShader::SetMaterial(const Scene& scene, const Object& object) {
-  SetPhongMaterialUniforms(scene, object, &program_);
-}
-
-void RenderShader::SetLight(const Light& light) {
-  SetLightUniforms(light, &program_);
-}
-
-void RenderShader::SetMaterialIndex(int material_index) {
-  program_.SetInt("material_index", material_index);
-}
-
-void RenderShader::SetPrimitiveStartIndex(const Object& object) {
-  CGCHECK(object.primitive_start_index != -1);
-  program_.SetInt("primitive_start_index", object.primitive_start_index);
-}
-
-void RenderShader::Run(const Scene& scene, const Object& object) const {
-  scene.mesh_repo().GetMesh(object.mesh_index)->Submit();
-}
-
-void RenderShader::Run(const Mesh& mesh) const {
-  mesh.Submit();
+void RenderShader::DrawBindings(const ShaderProgramBindings& bindings,
+                                const Mesh& mesh) const {
+  program_.DrawBindings(BuildMergedBindings(common_bindings_, bindings), mesh.BuildDrawDesc());
 }
 
 ComputeShader::ComputeShader(const Scene& scene, const std::string& shader_name) {
   program_ = scene.shader_program_repo().GetShader(shader_name);
-  SetShaderCommonParam(scene, shader_name, &program_);
+  common_bindings_ = BuildShaderCommonBindings(scene);
 }
 
-void ComputeShader::SetWorkGroupNum(const glm::vec3& work_group_num) {
-  work_group_num_ = work_group_num;
-}
-
-void ComputeShader::SetTextureBinding(const TextureBinding& binding) {
-  CGCHECK(!binding.texture.empty()) << binding.uniform_name;
-  CheckTextureBindingInternalFormat(binding.texture);
-  int texture_unit = program_.SetTexture(binding.uniform_name, binding.texture);
-  rhi::GetDevice().BindStorageTexture(texture_unit, binding.texture, binding.access);
-}
-
-void ComputeShader::CheckTextureBindingInternalFormat(const cg::Texture& texture) const {
-  const rhi::TextureFormat format = texture.meta().format;
-  std::set<rhi::TextureFormat> supported_format = {
-      rhi::TextureFormat::kR32UI,
-      rhi::TextureFormat::kRG32F,
-      rhi::TextureFormat::kRGBA32F,
-  };
-  if (supported_format.count(format) <= 0) {
-    CGCHECK(false) << "Unsupported texture format : " << static_cast<int>(format);
-  }
-}
-
-void ComputeShader::SetCamera(const Camera& camera) {
-  cg::SetCamera(camera, &program_);
-}
-
-void ComputeShader::SetCamera1(const Camera& camera_1) {
-  cg::SetCamera1(camera_1, &program_);
-}
-
-void ComputeShader::SetResolution(const glm::vec2& resolution) {
-  program_.SetVec2("resolution", resolution);
-}
-
-void ComputeShader::SetFrameNum(const Scene& scene) {
-  program_.SetInt("frame_num", scene.frame_stat().frame_num());
-}
-
-void ComputeShader::SetDirty(bool dirty) {
-  program_.SetBool("dirty", dirty);
-}
-
-void ComputeShader::Run() const {
-  program_.Use();
-  CGCHECK(work_group_num_ != glm::vec3()) << " Setting work group num";
-  rhi::GetDevice().DispatchCompute(glm::uvec3(work_group_num_.x, work_group_num_.y, work_group_num_.z));
-  rhi::GetDevice().MemoryBarrier(rhi::MemoryBarrier::kAll);
+void ComputeShader::DispatchBindings(const ShaderProgramBindings& bindings,
+                                     const rhi::ComputeDispatchDesc& desc) const {
+  program_.DispatchComputeBindings(BuildMergedBindings(common_bindings_, bindings), desc);
 }
 
 PhongShader::PhongShader(const Param& param, const Scene& scene, const Object& object)
     : RenderShader(scene, "phong") {
-  const Camera& camera = scene.camera();
-  SetModel(object);
-  SetCamera(camera);
-  SetMaterialIndex(object.material_index);
-  program_.SetBool("use_blinn_phong", param.use_blinn_phong);
-  Run(scene, object);
+  ShaderProgramBindings bindings;
+  AppendRenderObjectBindings(object, scene.camera(), &bindings);
+  AppendMaterialIndexBindings(object.material_index, &bindings);
+  bindings.SetBool("use_blinn_phong", param.use_blinn_phong);
+  DrawBindings(bindings, scene, object);
 }
 
 PbrShader::PbrShader(const Param& pbr, const Scene& scene, const Object& object) 
     : RenderShader(scene, "pbr") {
-  const Camera& camera = scene.camera();
-  SetModel(object);
-  SetCamera(camera);
-
-  program_.SetTexture("texture_irradiance_cubemap", pbr.texture_irradiance_cubemap);
-  program_.SetTexture("texture_prefiltered_color_cubemap", pbr.texture_prefiltered_color_cubemap);
-  program_.SetTexture("texture_BRDF_integration_map", pbr.texture_BRDF_integration_map);
+  ShaderProgramBindings bindings;
+  AppendLegacyRenderObjectBindings(object, scene.camera(), &bindings);
+  AppendViewPosBindings(scene.camera(), &bindings);
+  bindings.SetTexture("texture_irradiance_cubemap", pbr.texture_irradiance_cubemap);
+  bindings.SetTexture("texture_prefiltered_color_cubemap", pbr.texture_prefiltered_color_cubemap);
+  bindings.SetTexture("texture_BRDF_integration_map", pbr.texture_BRDF_integration_map);
+  ApplyBindings(bindings);
 }
 
 NormalShader::NormalShader(const Param& param, const Scene& scene, const Object& object) 
     : RenderShader(scene, "normal") {
-  const Camera& camera = scene.camera();
-  SetModel(object);
-  SetCamera(camera);
-
-  program_.SetFloat("line_length", param.length);
-  program_.SetFloat("line_width", param.width);
-  program_.SetBool("show_triangle", param.show_triangle);
-  program_.SetBool("show_face_normal", param.show_face_normal);
-  program_.SetBool("show_vertex_texture_normal", param.show_vertex_texture_normal);
-  program_.SetBool("show_vertex_normal", param.show_vertex_normal);
-  program_.SetBool("show_TBN", param.show_TBN);
-
-  Run(scene, object);
+  ShaderProgramBindings bindings;
+  AppendRenderObjectBindings(object, scene.camera(), &bindings);
+  bindings.SetFloat("line_length", param.length);
+  bindings.SetFloat("line_width", param.width);
+  bindings.SetBool("show_triangle", param.show_triangle);
+  bindings.SetBool("show_face_normal", param.show_face_normal);
+  bindings.SetBool("show_vertex_texture_normal", param.show_vertex_texture_normal);
+  bindings.SetBool("show_vertex_normal", param.show_vertex_normal);
+  bindings.SetBool("show_TBN", param.show_TBN);
+  DrawBindings(bindings, scene, object);
 }
 
 LinesShader::LinesShader(const Param& param, const Scene& scene, const LinesMesh& lines_mesh,
                          const Transform& transform)
     : RenderShader(scene, "lines") {
-  const Camera& camera = scene.camera();
-  SetModel(transform.GetModelMatrix());
-  SetCamera(camera);
-  program_.SetFloat("line_width", param.line_width);
-  lines_mesh.Submit();
+  ShaderProgramBindings bindings;
+  AppendRenderTransformBindings(transform.GetModelMatrix(), scene.camera(), &bindings);
+  bindings.SetFloat("line_width", param.line_width);
+  DrawBindings(bindings, lines_mesh);
 }
 
 ColorShader::ColorShader(const Param& param, const Scene& scene, const Object& object)
     : RenderShader(scene, "color") {
-  const Camera& camera = scene.camera();
-  SetModel(object);
-  SetCamera(camera);
-  program_.SetVec4("color", param.color);
-  Run(scene, object);
+  ShaderProgramBindings bindings;
+  AppendRenderObjectBindings(object, scene.camera(), &bindings);
+  bindings.SetVec4("color", param.color);
+  DrawBindings(bindings, scene, object);
 }
 
 TextureShader::TextureShader(const Param& param, const Scene& scene, const Object& object) 
     : RenderShader(scene, "texture") {
-  const Camera& camera = scene.camera();
-  SetModel(object);
-  SetCamera(camera);
-  program_.SetTexture("texture0", param.texture0);
+  ShaderProgramBindings bindings;
+  AppendLegacyRenderObjectBindings(object, scene.camera(), &bindings);
+  bindings.SetTexture("texture0", param.texture0);
+  DrawBindings(bindings, scene, object);
 }
 
 Texture2DLodShader::Texture2DLodShader(const Param& param, const Scene& scene, const Object& object)
     : RenderShader(scene, "texture2d_lod") {
-  const Camera& camera = scene.camera();
-  SetModel(object);
-  SetCamera(camera);
   CGCHECK(param.texture2D0.meta().type == Texture::kTexture2D);
-  program_.SetTexture("texture2D0", param.texture2D0);
+  ShaderProgramBindings bindings;
+  AppendLegacyRenderObjectBindings(object, scene.camera(), &bindings);
+  AppendViewPosBindings(param.view_pos_ws, &bindings);
+  bindings.SetTexture("texture2D0", param.texture2D0);
+  DrawBindings(bindings, scene, object);
 }
 
 CubemapLodShader::CubemapLodShader(const Param& param, const Scene& scene, const Object& object)
     : RenderShader(scene, "cubemap_lod") {
-  const Camera& camera = scene.camera();
-  SetModel(object);
-  SetCamera(camera);
   CGCHECK(param.cubemap.meta().type == Texture::kCubemap);
-  program_.SetTexture("texture_cubemap", param.cubemap);
+  ShaderProgramBindings bindings;
+  AppendLegacyRenderObjectBindings(object, scene.camera(), &bindings);
+  AppendViewPosBindings(param.view_pos_ws, &bindings);
+  bindings.SetTexture("texture_cubemap", param.cubemap);
+  DrawBindings(bindings, scene, object);
 }
-
-/*
-DepthBufferShader::DepthBufferShader(const DepthBufferShader::Param& param, const Object& object)
-    : RenderShader(param.depth_buffer_shader) {
-  SetModel(object);
-  SetCamera(camera);
-}
-*/
 
 CubemapShader::CubemapShader(const Param& param, const Scene& scene, const Object& object)
     : RenderShader(scene, "skybox") {
-  SetModel(object);
-  SetCamera(scene.camera());
-  program_.SetTexture("texture0", param.cubemap);
+  ShaderProgramBindings bindings;
+  AppendLegacyRenderObjectBindings(object, scene.camera(), &bindings);
+  bindings.SetTexture("texture0", param.cubemap);
+  DrawBindings(bindings, scene, object);
 }
 
 FullscreenQuadShader::FullscreenQuadShader(const Param& param, const Scene& scene)
     : RenderShader(scene, "fullscreen_quad") {
-  program_.SetTexture("texture0", param.texture0); 
-  Run(EmptyMesh());
+  ShaderProgramBindings bindings;
+  bindings.SetTexture("texture0", param.texture0);
+  DrawBindings(bindings, EmptyMesh());
 }
 
 PbrEnvironmentCubemapGerneratorShader::PbrEnvironmentCubemapGerneratorShader(const Param& param, const Scene& scene,
                                                                              const Object& object)
     : RenderShader(scene, "equirectangular_2_cubemap_tool") {
-  SetModel(object);
-  SetCamera(scene.camera());
-  program_.SetTexture("texture2D0", param.texture2D0); 
+  ShaderProgramBindings bindings;
+  AppendLegacyRenderObjectBindings(object, scene.camera(), &bindings);
+  bindings.SetTexture("texture2D0", param.texture2D0);
+  DrawBindings(bindings, scene, object);
 }
 
 TexcoordShader::TexcoordShader(const Param& param, const Scene& scene, const Object& object)
     : RenderShader(scene, "texcoord") {
-  SetModel(object);
-  SetCamera(scene.camera());
+  (void)param;
+  ShaderProgramBindings bindings;
+  AppendLegacyRenderObjectBindings(object, scene.camera(), &bindings);
+  DrawBindings(bindings, scene, object);
 }
 
 PbrIrradianceCubemapGeneratorShader::PbrIrradianceCubemapGeneratorShader(const Param& param, const Scene& scene, const Object& object)
     : RenderShader(scene, "pbr_irradiance_cubemap_generator") {
-  SetModel(object);
-  SetCamera(scene.camera());
-  program_.SetTexture("cubemap", param.environment_map);
+  ShaderProgramBindings bindings;
+  AppendLegacyRenderObjectBindings(object, scene.camera(), &bindings);
+  bindings.SetTexture("cubemap", param.environment_map);
+  DrawBindings(bindings, scene, object);
 }
 
 PbrPrefilteredColorCubemapGeneratorShader::PbrPrefilteredColorCubemapGeneratorShader(
     const Param& param, const Scene& scene, const Object& object)
     : RenderShader(scene, "pbr_prefiltered_color_cubemap_generator") {
-  const Camera& camera = scene.camera();
-  SetModel(object);
-  SetCamera(camera);
-  program_.SetTexture("environment_map", param.environment_map); 
+  ShaderProgramBindings bindings;
+  AppendLegacyRenderObjectBindings(object, scene.camera(), &bindings);
+  bindings.SetTexture("environment_map", param.environment_map);
+  bindings.SetFloat("roughness", param.roughness);
+  DrawBindings(bindings, scene, object);
 }
 
 PbrBRDFIntegrationMapGeneratorShader::PbrBRDFIntegrationMapGeneratorShader(const Param& param, const Scene& scene)
-    : RenderShader(scene, "pbr_BRDF_integration_map_generator") {}
+    : RenderShader(scene, "pbr_BRDF_integration_map_generator") {
+  (void)param;
+  DrawBindings({}, EmptyMesh());
+}
 
 BlurShader::BlurShader(const Param& param, const Scene& scene, const Object& object)
     : RenderShader(scene, "blur") {
-  program_.SetTexture("u_texture_input", param.texture);
-  program_.SetVec2("u_viewport_size", param.viewport_size);
+  (void)object;
+  ShaderProgramBindings bindings;
+  bindings.SetTexture("u_texture_input", param.texture);
+  bindings.SetVec2("u_viewport_size", param.viewport_size);
+  DrawBindings(bindings, EmptyMesh());
 }
 
 RandomShader::RandomShader(const Param& param, const Scene& scene)
     : ComputeShader(scene, "random_test") {
-  SetTextureBinding({param.input, "texture_input", TextureAccess::kWriteOnly});
-  SetTextureBinding({param.output, "texture_output", TextureAccess::kReadOnly});
-  SetFrameNum(scene);
-  Run();
+  ShaderProgramBindings bindings;
+  bindings.SetStorageTexture("texture_input", param.input, TextureAccess::kWriteOnly);
+  bindings.SetStorageTexture("texture_output", param.output, TextureAccess::kReadOnly);
+  AppendFrameNumBindings(scene.frame_stat().frame_num(), &bindings);
+  DispatchBindings(bindings, {
+      .workgroup_count = glm::uvec3(param.screen_size.x, param.screen_size.y, 1),
+  });
 }
-
-/*
-SimpleModelShader::SimpleModelShader(const Scene& scene, ModelObject* model)
-    : RenderShader(scene, "simple_model") {
-  for (int i = 0; i < model->model_part_num(); ++i) {
-    ModelPartObject* model_part = model->mutable_model_part(i);
-    SetModel(object);
-    SetCamera(camera);
-    for (auto& pair : model_part->model_part_data().uniform_2_texture) {
-      const std::string uniform_name = pair.first;
-      const std::vector<Texture>& textures = pair.second;
-      if (textures.size() > 0) {
-        std::string use_uniform_name = std::format("use_{}", uniform_name);
-      }
-    }
-  }
-}
-*/
-
-/*
-InstanceSceneShader::InstanceSceneShader(const Scene& scene, Object* object)
-    : RenderShader(scene, "instance_scene") {
-  for (int i = 0; i < object->model_part_num(); ++i) {
-    ModelPartObject* model_part = object->mutable_model_part(i);
-    SetModel(object);
-    SetCamera(camera);
-    for (auto& pair : model_part->model_part_data().uniform_2_texture) {
-      const std::string uniform_name = pair.first;
-      const std::vector<Texture>& textures = pair.second;
-      if (textures.size() > 0) {
-        std::string use_uniform_name = std::format("use_{}", uniform_name);
-      }
-    }
-  }
-}
-*/
 
 RayTracingCanvasShader::RayTracingCanvasShader(const Param& param, const Scene& scene)
     : RenderShader(scene, "ray_tracing_canvas") {
-  program_.SetTexture("texture0", param.texture0); 
-  program_.SetInt("sample_frame_num", param.sample_frame_num); 
+  ShaderProgramBindings bindings;
+  bindings.SetTexture("texture0", param.texture0);
+  bindings.SetInt("sample_frame_num", param.sample_frame_num);
+  DrawBindings(bindings, EmptyMesh());
 }
 } // namespace cg

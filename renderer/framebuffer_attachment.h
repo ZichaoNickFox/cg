@@ -35,7 +35,7 @@ inline Texture::Meta MakeFramebufferTextureMeta(
   meta.width = -1;
   meta.height = -1;
   meta.channel_num = channel_num;
-  meta.hdr = true;
+  meta.hdr = pixel_type != rhi::PixelType::kUInt8;
   meta.level_num = 1;
   meta.depth = 1;
   meta.format = format;
@@ -101,8 +101,8 @@ static const FramebufferAttachment kAttachmentDepth = {
     MakeFramebufferTextureMeta(1, rhi::TextureFormat::kDepth32F, rhi::PixelFormat::kDepthComponent, rhi::PixelType::kFloat32),
     1, FramebufferAttachment::kClear};
 static const FramebufferAttachment kAttachmentStencil = {
-    FramebufferAttachment::kDepth, "stencil",
-    MakeFramebufferTextureMeta(1, rhi::TextureFormat::kDepth32F, rhi::PixelFormat::kDepthComponent, rhi::PixelType::kFloat32),
+    FramebufferAttachment::kStencil, "stencil",
+    MakeFramebufferTextureMeta(1, rhi::TextureFormat::kStencil8, rhi::PixelFormat::kStencilIndex, rhi::PixelType::kUInt8),
     1, FramebufferAttachment::kClear};
 static const FramebufferAttachment kAttachmentTest = {
     FramebufferAttachment::kColor, "test",

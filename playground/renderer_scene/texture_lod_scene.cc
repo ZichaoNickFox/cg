@@ -18,8 +18,6 @@ void TextureLodScene::OnEnter(Scene *context) {
   context->SetCamera(camera_.get());
   camera_->mutable_transform()->SetTranslation(glm::vec3(0, 0, 5));
 
-  cg::rhi::GetDevice().SetDepthTestEnabled(true);
-
   cg::ColorFramebuffer::Option option;
   option.clear_color = context->clear_color();
   option.mrt = 1;

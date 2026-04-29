@@ -27,6 +27,35 @@ normalize_proxy_env() {
 
 normalize_proxy_env
 
+if [[ $# -gt 0 ]]; then
+  case "$1" in
+    gl|opengl)
+      export CG_RUNTIME=opengl
+      shift
+      ;;
+    vk|vulkan)
+      export CG_RUNTIME=vulkan
+      shift
+      if [[ $# -gt 0 ]]; then
+        case "$1" in
+          compat|gl)
+            export CG_VK_SCENE_MODE=compat
+            shift
+            ;;
+          standalone|vk-scene)
+            export CG_VK_SCENE_MODE=standalone
+            shift
+            ;;
+        esac
+      fi
+      ;;
+    -h|--help)
+      echo "usage: ./run [gl|vk [compat|standalone]] [window args...]" >&2
+      exit 0
+      ;;
+  esac
+fi
+
 if [[ -e build && ! -d build ]]; then
   echo "error: ./build exists and is not a directory" >&2
   exit 1

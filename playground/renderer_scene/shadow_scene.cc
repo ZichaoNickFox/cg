@@ -26,9 +26,10 @@ class ShadowSceneDepthShader : public RenderShader {
  public:
   ShadowSceneDepthShader(const glm::mat4& light_view_project, const Scene& scene, const Object& object)
       : RenderShader(scene, "shadow_scene_depth") {
-    SetModel(object);
-    program_.SetMat4("light_view_project", light_view_project);
-    Run(scene, object);
+    ShaderProgramBindings bindings;
+    AppendModelBindings(object.transform.GetModelMatrix(), &bindings);
+    bindings.SetMat4("light_view_project", light_view_project);
+    DrawBindings(bindings, scene, object);
   }
 };
 
@@ -55,27 +56,26 @@ class ShadowSceneShader : public RenderShader {
 
   ShadowSceneShader(const Param& param, const Scene& scene, const Object& object)
       : RenderShader(scene, "shadow_scene") {
-    SetModel(object);
-    SetCamera(scene.camera());
-    SetMaterialIndex(object.material_index);
-
-    program_.SetMat4("light_view_project", param.light_view_project);
-    program_.SetTexture("shadow_map", param.shadow_map);
-    program_.SetVec3("light_direction_ws", param.light_direction_ws);
-    program_.SetVec3("light_color", param.light_color);
-    program_.SetFloat("light_intensity", param.light_intensity);
-    program_.SetFloat("ambient_strength", param.ambient_strength);
-    program_.SetFloat("shadow_bias", param.shadow_bias);
-    program_.SetFloat("normal_bias_scale", param.normal_bias_scale);
-    program_.SetInt("shadow_mode", param.shadow_mode);
-    program_.SetFloat("pcf_filter_radius", param.pcf_filter_radius);
-    program_.SetFloat("pcss_light_size_uv", param.pcss_light_size_uv);
-    program_.SetFloat("pcss_blocker_search_scale", param.pcss_blocker_search_scale);
-    program_.SetFloat("pcss_min_filter_radius", param.pcss_min_filter_radius);
-    program_.SetFloat("pcss_max_filter_radius", param.pcss_max_filter_radius);
-    program_.SetBool("disable_shadow", param.disable_shadow);
-    program_.SetBool("debug_show_shadow_factor", param.debug_show_shadow_factor);
-    Run(scene, object);
+    ShaderProgramBindings bindings;
+    AppendRenderObjectBindings(object, scene.camera(), &bindings);
+    AppendMaterialIndexBindings(object.material_index, &bindings);
+    bindings.SetMat4("light_view_project", param.light_view_project);
+    bindings.SetTexture("shadow_map", param.shadow_map);
+    bindings.SetVec3("light_direction_ws", param.light_direction_ws);
+    bindings.SetVec3("light_color", param.light_color);
+    bindings.SetFloat("light_intensity", param.light_intensity);
+    bindings.SetFloat("ambient_strength", param.ambient_strength);
+    bindings.SetFloat("shadow_bias", param.shadow_bias);
+    bindings.SetFloat("normal_bias_scale", param.normal_bias_scale);
+    bindings.SetInt("shadow_mode", param.shadow_mode);
+    bindings.SetFloat("pcf_filter_radius", param.pcf_filter_radius);
+    bindings.SetFloat("pcss_light_size_uv", param.pcss_light_size_uv);
+    bindings.SetFloat("pcss_blocker_search_scale", param.pcss_blocker_search_scale);
+    bindings.SetFloat("pcss_min_filter_radius", param.pcss_min_filter_radius);
+    bindings.SetFloat("pcss_max_filter_radius", param.pcss_max_filter_radius);
+    bindings.SetBool("disable_shadow", param.disable_shadow);
+    bindings.SetBool("debug_show_shadow_factor", param.debug_show_shadow_factor);
+    DrawBindings(bindings, scene, object);
   }
 };
 
@@ -140,18 +140,16 @@ void ShadowScene::OnRender() {
 }
 
 void ShadowScene::RenderShadowMap() {
-  shadow_fbo_.Bind();
+  auto shadow_pass = shadow_fbo_.BindScoped();
 
   const glm::mat4 light_view_project = GetLightViewProject();
   for (const Object& object : object_repo_.GetObjects()) {
     ShadowSceneDepthShader(light_view_project, *this, object);
   }
-
-  shadow_fbo_.Unbind();
 }
 
 void ShadowScene::RenderMainPass() {
-  main_fbo_.Bind();
+  auto main_pass = main_fbo_.BindScoped();
 
   float light_size_uv = 0.0f;
   if (light_ortho_width_ > 1e-6f) {
@@ -182,8 +180,6 @@ void ShadowScene::RenderMainPass() {
     ShadowSceneShader(param, *this, object);
   }
   LinesShader({}, *this, CoordinatorMesh());
-
-  main_fbo_.Unbind();
 }
 
 glm::mat4 ShadowScene::GetLightViewProject() const {

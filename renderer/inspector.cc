@@ -92,15 +92,16 @@ void Inspector::ShowCoordinators(Scene* scene) {
   ImGui::Checkbox("show view coordinator", &show_view_coordinator_);
   ImGui::Checkbox("show world coordinator", &show_world_coordinator_);
   if (show_view_coordinator_) {
-    rhi::GetDevice().SetDepthTestEnabled(false);
+    rhi::ScopedRenderState scoped_render_state(rhi::GetDevice());
+    rhi::GetDevice().ApplyRenderState({
+        .depth_test_enabled = false,
+    });
     glm::vec3 near_pos_ws, far_pos_ws;
     scene->camera().GetPickRay(glm::vec2(0.5, 0.1), &near_pos_ws, &far_pos_ws);
     glm::vec3 direction = glm::normalize(far_pos_ws - near_pos_ws);
     glm::vec3 world_coord_pos = near_pos_ws + direction * glm::vec3(0.5, 0.5, 0.5);
 
     LinesShader({0.3}, *scene, CoordinatorMesh(), {world_coord_pos, glm::quat(), glm::vec3(0.05, 0.05, 0.05)});
-
-    rhi::GetDevice().SetDepthTestEnabled(true);
   }
   if (show_world_coordinator_) {
     LinesShader({}, *scene, CoordinatorMesh());
@@ -257,7 +258,10 @@ RaytracingDebugCommon::RaytracingDebugCommon(const Texture& fullscreen_texture, 
                                              const LightPath& light_path) {
   FullscreenQuadShader({fullscreen_texture}, scene);
 
-  rhi::GetDevice().SetDepthTestEnabled(false);
+  rhi::ScopedRenderState scoped_render_state(rhi::GetDevice());
+  rhi::GetDevice().ApplyRenderState({
+      .depth_test_enabled = false,
+  });
 
   std::vector<glm::vec4> colors{kRed, kOrange, kYellow, kGreen,
                                 kCyan, kBlue, kPurple, kWhite,
@@ -266,7 +270,5 @@ RaytracingDebugCommon::RaytracingDebugCommon(const Texture& fullscreen_texture, 
                                 kWhite, kWhite, kWhite, kWhite};
   LinesShader({}, scene, LinesMesh{util::AsVector(light_path.light_path), colors, rhi::PrimitiveTopology::kLineStrip});
   LinesShader({}, scene, CoordinatorMesh());
-
-  rhi::GetDevice().SetDepthTestEnabled(true);
 }
 } // namespace cg

@@ -26,7 +26,7 @@ struct Payload {
   float scale = 0.0f;
 };
 
-TEST(renderer_buffer_test, SSBOUploadsDataBindsOnceAndCanReadBackMappedBytes) {
+TEST(renderer_buffer_test, SSBOUploadsDataBindsOnceAndCanReadBackThroughExplicitBufferReadback) {
   cg::test::ScopedFakeDevice scoped_device;
 
   cg::SSBO ssbo(7);
@@ -39,19 +39,23 @@ TEST(renderer_buffer_test, SSBOUploadsDataBindsOnceAndCanReadBackMappedBytes) {
   EXPECT_EQ(buffer->last_usage, cg::rhi::BufferUsage::kStreamCopy);
   EXPECT_EQ(buffer->set_data_call_count, 1);
   EXPECT_EQ(buffer->bind_base_call_count, 1);
+  EXPECT_EQ(scoped_device.device().buffer_binding_state().apply_call_count, 1);
+  ASSERT_EQ(scoped_device.device().buffer_binding_state().calls.size(), 1u);
+  EXPECT_EQ(scoped_device.device().buffer_binding_state().calls.front().buffer_type, cg::rhi::BufferType::kStorage);
+  EXPECT_EQ(scoped_device.device().buffer_binding_state().calls.front().binding_point, 7u);
   ASSERT_EQ(buffer->bound_base_points.size(), 1u);
   EXPECT_EQ(buffer->bound_base_points.front(), 7u);
 
   const Payload mapped = ssbo.GetData<Payload>();
   EXPECT_EQ(mapped.count, 42);
   EXPECT_FLOAT_EQ(mapped.scale, 1.5f);
-  EXPECT_EQ(buffer->map_call_count, 1);
-  EXPECT_EQ(buffer->unmap_call_count, 1);
+  EXPECT_EQ(buffer->read_data_call_count, 1);
 
   const Payload second{7, 3.25f};
   ssbo.SetData(sizeof(second), &second);
   EXPECT_EQ(buffer->set_data_call_count, 2);
   EXPECT_EQ(buffer->bind_base_call_count, 1);
+  EXPECT_EQ(scoped_device.device().buffer_binding_state().apply_call_count, 1);
 }
 
 TEST(renderer_buffer_test, TextureBufferUploadsStaticDataThroughTextureBufferBinding) {
@@ -83,6 +87,11 @@ TEST(renderer_buffer_test, AutomicCounterInitializesBindingAndResetsStoredValue)
   EXPECT_EQ(counter.binding_point(), 5);
   EXPECT_EQ(buffer->set_data_call_count, 1);
   EXPECT_EQ(buffer->last_usage, cg::rhi::BufferUsage::kDynamic);
+  EXPECT_EQ(scoped_device.device().buffer_binding_state().apply_call_count, 1);
+  ASSERT_EQ(scoped_device.device().buffer_binding_state().calls.size(), 1u);
+  EXPECT_EQ(scoped_device.device().buffer_binding_state().calls.front().buffer_type,
+            cg::rhi::BufferType::kAtomicCounter);
+  EXPECT_EQ(scoped_device.device().buffer_binding_state().calls.front().binding_point, 5u);
   ASSERT_EQ(buffer->bound_base_points.size(), 1u);
   EXPECT_EQ(buffer->bound_base_points.front(), 5u);
 
@@ -107,6 +116,7 @@ TEST(renderer_buffer_test, MaterialRepoUploadsOnlyWhenDirtyAndMaintainsLookups) 
   repo.UpdateSSBO();
   EXPECT_EQ(buffer->set_data_call_count, 1);
   EXPECT_EQ(buffer->bind_base_call_count, 1);
+  EXPECT_EQ(scoped_device.device().buffer_binding_state().apply_call_count, 1);
   EXPECT_EQ(buffer->last_usage, cg::rhi::BufferUsage::kStreamCopy);
 
   repo.UpdateSSBO();

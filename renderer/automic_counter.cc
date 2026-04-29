@@ -12,7 +12,7 @@ AutomicCounter::~AutomicCounter() = default;
 void AutomicCounter::Init(int binding_point) {
   binding_point_ = binding_point;
   buffer_->SetData(sizeof(uint32_t), nullptr, rhi::BufferUsage::kDynamic);
-  buffer_->BindBase(binding_point_);
+  rhi::GetDevice().ApplyBufferBindings({binding_desc()});
   inited_ = true;
 }
 

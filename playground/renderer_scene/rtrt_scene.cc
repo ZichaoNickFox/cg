@@ -17,11 +17,10 @@ class RTRTGeometryShader : public cg::RenderShader {
  public:
   RTRTGeometryShader(const Scene& scene, const Object& object)
       : RenderShader(scene, "rtrt_geometry") {
-    const Camera& camera = scene.camera();
-    SetModel(object);
-    SetCamera(camera);
-    SetPrimitiveStartIndex(object);
-    Run(scene, object);
+    ShaderProgramBindings bindings;
+    AppendRenderObjectBindings(object, scene.camera(), &bindings);
+    AppendPrimitiveStartIndexBindings(object.primitive_start_index, &bindings);
+    DrawBindings(bindings, scene, object);
   }
 };
 
@@ -36,17 +35,23 @@ class RTRTPathTracingShader : public cg::ComputeShader {
   };
   RTRTPathTracingShader(const Param& param, const Scene& scene) 
       : ComputeShader(scene, "rtrt_path_tracing") {
-    SetCamera(scene.camera());
-
-    SetTextureBinding({param.rasterized_position_ws, "rasterized_position_ws", TextureAccess::kReadOnly});
-    SetTextureBinding({param.rasterized_surface_normal_ws, "rasterized_surface_normal_ws", TextureAccess::kReadOnly});
-    SetTextureBinding({param.rasterized_primitive_index, "rasterized_primitive_index", TextureAccess::kReadOnly});
-    SetTextureBinding({param.current_ping, "current_ping", TextureAccess::kWriteOnly});
-
-    SetFrameNum(scene);
-    SetWorkGroupNum({(param.resolution.x + 31) / 32, (param.resolution.y + 31) / 32, 1});
-    SetResolution(param.resolution);
-    Run();
+    ShaderProgramBindings bindings;
+    AppendCameraBindings(scene.camera(), &bindings);
+    bindings.SetStorageTexture("rasterized_position_ws", param.rasterized_position_ws, TextureAccess::kReadOnly);
+    bindings.SetStorageTexture("rasterized_surface_normal_ws",
+                               param.rasterized_surface_normal_ws,
+                               TextureAccess::kReadOnly);
+    bindings.SetStorageTexture("rasterized_primitive_index",
+                               param.rasterized_primitive_index,
+                               TextureAccess::kReadOnly);
+    bindings.SetStorageTexture("current_ping", param.current_ping, TextureAccess::kWriteOnly);
+    AppendFrameNumBindings(scene.frame_stat().frame_num(), &bindings);
+    AppendResolutionBindings(param.resolution, &bindings);
+    DispatchBindings(bindings, {
+        .workgroup_count = glm::uvec3((param.resolution.x + 31) / 32,
+                                      (param.resolution.y + 31) / 32,
+                                      1),
+    });
   }
 };
 
@@ -59,11 +64,15 @@ class RTRTOutlierClampingShader : public cg::ComputeShader {
   };
   RTRTOutlierClampingShader(const Param& param, const Scene& scene) 
       : ComputeShader(scene, "rtrt_outlier_clamping") {
-    SetTextureBinding({param.ping_color, "texture_in", TextureAccess::kReadOnly});
-    SetTextureBinding({param.pong_color, "texture_out", TextureAccess::kWriteOnly});
-    SetWorkGroupNum({(param.resolution.x + 31) / 32, (param.resolution.y + 31) / 32, 1});
-    SetResolution(param.resolution);
-    Run();
+    ShaderProgramBindings bindings;
+    bindings.SetStorageTexture("texture_in", param.ping_color, TextureAccess::kReadOnly);
+    bindings.SetStorageTexture("texture_out", param.pong_color, TextureAccess::kWriteOnly);
+    AppendResolutionBindings(param.resolution, &bindings);
+    DispatchBindings(bindings, {
+        .workgroup_count = glm::uvec3((param.resolution.x + 31) / 32,
+                                      (param.resolution.y + 31) / 32,
+                                      1),
+    });
   }
 };
 
@@ -77,12 +86,16 @@ class RTRTDenoiseShader : public cg::ComputeShader {
   };
   RTRTDenoiseShader(const Param& param, const Scene& scene) 
       : ComputeShader(scene, "rtrt_denoise") {
-    SetTextureBinding({param.ping_color, "texture_in", TextureAccess::kReadOnly});
-    SetTextureBinding({param.pong_color, "texture_out", TextureAccess::kWriteOnly});
-    SetTextureBinding({param.texture_surface_normal, "texture_surface_normal", TextureAccess::kReadOnly});
-    SetWorkGroupNum({(param.resolution.x + 31) / 32, (param.resolution.y + 31) / 32, 1});
-    SetResolution(param.resolution);
-    Run();
+    ShaderProgramBindings bindings;
+    bindings.SetStorageTexture("texture_in", param.ping_color, TextureAccess::kReadOnly);
+    bindings.SetStorageTexture("texture_out", param.pong_color, TextureAccess::kWriteOnly);
+    bindings.SetStorageTexture("texture_surface_normal", param.texture_surface_normal, TextureAccess::kReadOnly);
+    AppendResolutionBindings(param.resolution, &bindings);
+    DispatchBindings(bindings, {
+        .workgroup_count = glm::uvec3((param.resolution.x + 31) / 32,
+                                      (param.resolution.y + 31) / 32,
+                                      1),
+    });
   }
 };
 
@@ -98,15 +111,19 @@ class RTRTTemproalAccumulationShader : public cg::ComputeShader {
   };
   RTRTTemproalAccumulationShader(const Param& param, const Scene& scene) 
       : ComputeShader(scene, "rtrt_temproal_accumulation") {
-    SetCamera1(param.camera_1);
-    SetTextureBinding({param.texture_position_ws, "texture_position_ws", TextureAccess::kReadOnly});
-    SetTextureBinding({param.current_ping, "current_ping", TextureAccess::kReadOnly});
-    SetTextureBinding({param.last_ping, "last_ping", TextureAccess::kReadOnly});
-    SetTextureBinding({param.last_pong, "last_pong", TextureAccess::kWriteOnly});
-    SetWorkGroupNum({(param.resolution.x + 31) / 32, (param.resolution.y + 31) / 32, 1});
-    SetResolution(param.resolution);
-    SetFrameNum(scene);
-    Run();
+    ShaderProgramBindings bindings;
+    AppendCameraBindings(param.camera_1, "camera_1", &bindings);
+    bindings.SetStorageTexture("texture_position_ws", param.texture_position_ws, TextureAccess::kReadOnly);
+    bindings.SetStorageTexture("current_ping", param.current_ping, TextureAccess::kReadOnly);
+    bindings.SetStorageTexture("last_ping", param.last_ping, TextureAccess::kReadOnly);
+    bindings.SetStorageTexture("last_pong", param.last_pong, TextureAccess::kWriteOnly);
+    AppendResolutionBindings(param.resolution, &bindings);
+    AppendFrameNumBindings(scene.frame_stat().frame_num(), &bindings);
+    DispatchBindings(bindings, {
+        .workgroup_count = glm::uvec3((param.resolution.x + 31) / 32,
+                                      (param.resolution.y + 31) / 32,
+                                      1),
+    });
   }
 };
 
@@ -135,8 +152,6 @@ void RTRTScene::OnEnter() {
   last_frame_.Init(&last_frame1_, &last_frame2_);
 
   camera_1_ = *camera_;
-
-  rhi::GetDevice().SetDepthTestEnabled(true);
 }
 
 void RTRTScene::OnUpdate() {
@@ -152,11 +167,10 @@ void RTRTScene::OnRender() {
 }
 
 void RTRTScene::Rasterization() {
-  fbo_.Bind();
+  auto raster_pass = fbo_.BindScoped();
   for (const Object& object : object_repo_.GetObjects()) {
     RTRTGeometryShader(*this, object);
   }
-  fbo_.Unbind();
 }
 
 void RTRTScene::PathTracing() {

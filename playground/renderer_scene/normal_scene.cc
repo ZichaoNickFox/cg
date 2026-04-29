@@ -40,8 +40,6 @@ void NormalScene::OnEnter(Scene *context)
   LinesObject::Mesh line_data{{kLineFrom, kLineTo},
                         {glm::vec3(1, 0, 0), glm::vec3(1, 0, 0)}, GL_LINES};
   line_.SetMesh(line_data);
-
-  cg::rhi::GetDevice().SetDepthTestEnabled(true);
 }
 
 void NormalScene::OnUpdate(Scene *context)

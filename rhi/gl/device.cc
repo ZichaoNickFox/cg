@@ -14,6 +14,13 @@
 namespace cg::rhi {
 namespace {
 
+template <class... Ts>
+struct Overloaded : Ts... {
+  using Ts::operator()...;
+};
+template <class... Ts>
+Overloaded(Ts...) -> Overloaded<Ts...>;
+
 GLenum ToGLBufferTarget(BufferType type) {
   switch (type) {
     case BufferType::kVertex:
@@ -41,15 +48,6 @@ GLenum ToGLBufferUsage(BufferUsage usage) {
       return GL_STREAM_COPY;
   }
   CGCHECK(false) << "Unsupported buffer usage";
-  return 0;
-}
-
-GLenum ToGLMapAccess(MapAccess access) {
-  switch (access) {
-    case MapAccess::kReadOnly:
-      return GL_READ_ONLY;
-  }
-  CGCHECK(false) << "Unsupported map access";
   return 0;
 }
 
@@ -99,6 +97,10 @@ GLenum ToGLAttachment(AttachmentType attachment_type, uint32_t attachment_index)
   }
   CGCHECK(false) << "Unsupported attachment type";
   return 0;
+}
+
+uint64_t AttachmentKey(AttachmentType attachment_type, uint32_t attachment_index) {
+  return (static_cast<uint64_t>(attachment_index) << 32) | static_cast<uint32_t>(attachment_type);
 }
 
 GLenum ToGLReadBuffer(ReadBuffer buffer) {
@@ -293,28 +295,23 @@ class OpenGLBuffer final : public Buffer {
     glBindBuffer_(target, 0);
   }
 
-  void Bind() override {
-    glBindBuffer_(ToGLBufferTarget(type_), id_);
-  }
-
-  void Unbind() override {
-    glBindBuffer_(ToGLBufferTarget(type_), 0);
-  }
-
   void BindBase(uint32_t binding_point) override {
     glBindBufferBase_(ToGLBufferTarget(type_), binding_point, id_);
   }
 
-  void* Map(MapAccess access) override {
+  void ReadData(const BufferReadDesc& desc, void* data) override {
     const GLenum target = ToGLBufferTarget(type_);
     glBindBuffer_(target, id_);
-    return glMapBuffer_(target, ToGLMapAccess(access));
+    glGetBufferSubData_(target, desc.offset_in_bytes, desc.size_in_bytes, data);
+    glBindBuffer_(target, 0);
   }
 
-  void Unmap() override {
-    const GLenum target = ToGLBufferTarget(type_);
-    glUnmapBuffer_(target);
-    glBindBuffer_(target, 0);
+  GLuint id() const {
+    return id_;
+  }
+
+  GLenum target() const {
+    return ToGLBufferTarget(type_);
   }
 
  private:
@@ -334,22 +331,44 @@ class OpenGLVertexArray final : public VertexArray {
     }
   }
 
-  void Bind() override {
+  void ApplyBinding(const VertexArrayBindingDesc& desc) override {
     glBindVertexArray_(id_);
-  }
-
-  void Unbind() override {
+    if (desc.buffer != nullptr) {
+      auto* gl_buffer = dynamic_cast<OpenGLBuffer*>(desc.buffer);
+      CGCHECK(gl_buffer != nullptr) << "OpenGLVertexArray expected OpenGLBuffer for attribute binding.";
+      glBindBuffer_(gl_buffer->target(), gl_buffer->id());
+    }
+    for (const VertexAttributeDesc& attribute : desc.attributes) {
+      EnableAttribute(attribute.index);
+      SetFloatAttribute(attribute.index,
+                        attribute.component_count,
+                        attribute.stride_in_bytes,
+                        attribute.offset_in_bytes);
+      if (attribute.divisor > 0) {
+        SetAttributeDivisor(attribute.index, attribute.divisor);
+      }
+    }
+    if (desc.buffer != nullptr) {
+      auto* gl_buffer = dynamic_cast<OpenGLBuffer*>(desc.buffer);
+      CGCHECK(gl_buffer != nullptr);
+      glBindBuffer_(gl_buffer->target(), 0);
+    }
     glBindVertexArray_(0);
   }
 
-  void EnableAttribute(uint32_t index) override {
+  GLuint id() const {
+    return id_;
+  }
+
+ private:
+  void EnableAttribute(uint32_t index) {
     glEnableVertexAttribArray_(index);
   }
 
   void SetFloatAttribute(uint32_t index,
                          int component_count,
                          int stride_in_bytes,
-                         size_t offset_in_bytes) override {
+                         size_t offset_in_bytes) {
     glVertexAttribPointer_(index,
                            component_count,
                            GL_FLOAT,
@@ -358,22 +377,23 @@ class OpenGLVertexArray final : public VertexArray {
                            reinterpret_cast<const void*>(offset_in_bytes));
   }
 
-  void SetAttributeDivisor(uint32_t index, uint32_t divisor) override {
+  void SetAttributeDivisor(uint32_t index, uint32_t divisor) {
     glVertexAttribDivisor_(index, divisor);
   }
-
- private:
   GLuint id_ = 0;
 };
 
 class OpenGLProgram final : public Program {
  public:
+  using BufferBindingHandler = std::function<void(const std::vector<BufferBindingDesc>& bindings)>;
+
   OpenGLProgram(const std::string& name,
                 const std::vector<ShaderCodePart>& vs,
                 const std::vector<ShaderCodePart>& fs,
                 const std::vector<ShaderCodePart>& gs,
-                const std::vector<ShaderCodePart>& ts)
-      : name_(name) {
+                const std::vector<ShaderCodePart>& ts,
+                BufferBindingHandler buffer_binding_handler = {})
+      : name_(name), buffer_binding_handler_(std::move(buffer_binding_handler)) {
     const bool has_gs = !gs.empty();
     const bool has_ts = !ts.empty();
     const GLuint vertex_shader_object = CompileShaderObject(name_, vs, GL_VERTEX_SHADER);
@@ -398,8 +418,10 @@ class OpenGLProgram final : public Program {
     LinkProgramObject(name_, id_, objects);
   }
 
-  OpenGLProgram(const std::string& name, const std::vector<ShaderCodePart>& cs)
-      : name_(name) {
+  OpenGLProgram(const std::string& name,
+                const std::vector<ShaderCodePart>& cs,
+                BufferBindingHandler buffer_binding_handler = {})
+      : name_(name), buffer_binding_handler_(std::move(buffer_binding_handler)) {
     id_ = glCreateProgram_();
     const GLuint compute_shader_object = CompileShaderObject(name_, cs, GL_COMPUTE_SHADER);
     LinkProgramObject(name_, id_, {compute_shader_object});
@@ -411,29 +433,61 @@ class OpenGLProgram final : public Program {
     }
   }
 
-  uint32_t id() const override {
-    return id_;
+  void ApplyBindings(const ProgramBindings& bindings) const override {
+    Activate();
+    for (const ProgramUniformBindingDesc& uniform : bindings.uniforms) {
+      std::visit(
+          Overloaded{
+              [&](bool value) { SetBool(uniform.name, value); },
+              [&](float value) { SetFloat(uniform.name, value); },
+              [&](int value) { SetInt(uniform.name, value); },
+              [&](const glm::mat4& value) { SetMat4(uniform.name, value); },
+              [&](const glm::vec4& value) { SetVec4(uniform.name, value); },
+              [&](const glm::vec3& value) { SetVec3(uniform.name, value); },
+              [&](const glm::vec2& value) { SetVec2(uniform.name, value); },
+          },
+          uniform.value);
+    }
+    for (const ProgramTextureBindingDesc& texture_binding : bindings.textures) {
+      CGCHECK(texture_binding.texture != nullptr) << texture_binding.name;
+      BindTexture(texture_binding.name, *texture_binding.texture);
+    }
+    for (const ProgramStorageTextureBindingDesc& storage_texture_binding : bindings.storage_textures) {
+      CGCHECK(storage_texture_binding.texture != nullptr) << storage_texture_binding.name;
+      const int texture_unit = BindTexture(storage_texture_binding.name, *storage_texture_binding.texture);
+      glBindImageTexture_(texture_unit,
+                          storage_texture_binding.texture->id(),
+                          0,
+                          GL_FALSE,
+                          0,
+                          ToGLTextureAccess(storage_texture_binding.access),
+                          ToGLTextureFormat(storage_texture_binding.texture->meta().format));
+    }
+    if (buffer_binding_handler_ != nullptr && !bindings.buffers.empty()) {
+      buffer_binding_handler_(bindings.buffers);
+    }
   }
 
-  void Use() const override {
+ private:
+  void Activate() const {
     CGCHECK(glIsProgram_(id_)) << "glIsProgram failed, glCreateProgram? not glDeleteProgram? id ~ " << id_;
     glUseProgram_(id_);
     texture_2_unit_.clear();
   }
 
-  void SetBool(const std::string& location_name, bool value) const override {
+  void SetBool(const std::string& location_name, bool value) const {
     glUniform1i_(GetUniformLocation(location_name), static_cast<int>(value));
   }
 
-  void SetFloat(const std::string& location_name, float value) const override {
+  void SetFloat(const std::string& location_name, float value) const {
     glUniform1f_(GetUniformLocation(location_name), value);
   }
 
-  void SetInt(const std::string& location_name, int value) const override {
+  void SetInt(const std::string& location_name, int value) const {
     glUniform1i_(GetUniformLocation(location_name), value);
   }
 
-  int BindTexture(const std::string& location_name, const Texture& value) const override {
+  int BindTexture(const std::string& location_name, const Texture& value) const {
     CGCHECK(!value.empty()) << location_name;
     int unit = -1;
     if (texture_2_unit_.count(value.id()) > 0) {
@@ -449,23 +503,22 @@ class OpenGLProgram final : public Program {
     return unit;
   }
 
-  void SetMat4(const std::string& location_name, const glm::mat4& value) const override {
+  void SetMat4(const std::string& location_name, const glm::mat4& value) const {
     glUniformMatrix4fv_(GetUniformLocation(location_name), 1, GL_FALSE, glm::value_ptr(value));
   }
 
-  void SetVec4(const std::string& location_name, const glm::vec4& value) const override {
+  void SetVec4(const std::string& location_name, const glm::vec4& value) const {
     glUniform4fv_(GetUniformLocation(location_name), 1, glm::value_ptr(value));
   }
 
-  void SetVec3(const std::string& location_name, const glm::vec3& value) const override {
+  void SetVec3(const std::string& location_name, const glm::vec3& value) const {
     glUniform3fv_(GetUniformLocation(location_name), 1, glm::value_ptr(value));
   }
 
-  void SetVec2(const std::string& location_name, const glm::vec2& value) const override {
+  void SetVec2(const std::string& location_name, const glm::vec2& value) const {
     glUniform2fv_(GetUniformLocation(location_name), 1, glm::value_ptr(value));
   }
 
- private:
   int32_t GetUniformLocation(const std::string& location_name) const {
     int32_t res = glGetUniformLocation_(id_, location_name.c_str());
     if (res == GL_INVALID_VALUE || res == GL_INVALID_OPERATION) {
@@ -477,6 +530,7 @@ class OpenGLProgram final : public Program {
   std::string name_;
   uint32_t id_ = 0;
   mutable std::unordered_map<uint32_t, int> texture_2_unit_;
+  BufferBindingHandler buffer_binding_handler_;
 };
 
 class OpenGLDevice final : public Device {
@@ -495,17 +549,24 @@ class OpenGLDevice final : public Device {
     return std::make_unique<OpenGLVertexArray>();
   }
 
-  std::shared_ptr<Program> CreateRenderProgram(const std::string& name,
-                                               const std::vector<ShaderCodePart>& vs,
-                                               const std::vector<ShaderCodePart>& fs,
-                                               const std::vector<ShaderCodePart>& gs,
-                                               const std::vector<ShaderCodePart>& ts) override {
-    return std::make_shared<OpenGLProgram>(name, vs, fs, gs, ts);
-  }
-
-  std::shared_ptr<Program> CreateComputeProgram(const std::string& name,
-                                                const std::vector<ShaderCodePart>& cs) override {
-    return std::make_shared<OpenGLProgram>(name, cs);
+  std::shared_ptr<Program> CreateProgram(const ProgramDesc& desc) override {
+    switch (desc.kind) {
+      case ProgramKind::kRender:
+        return std::make_shared<OpenGLProgram>(
+            desc.name,
+            desc.vs,
+            desc.fs,
+            desc.gs,
+            desc.ts,
+            [this](const std::vector<BufferBindingDesc>& bindings) { ApplyBufferBindings(bindings); });
+      case ProgramKind::kCompute:
+        return std::make_shared<OpenGLProgram>(
+            desc.name,
+            desc.cs,
+            [this](const std::vector<BufferBindingDesc>& bindings) { ApplyBufferBindings(bindings); });
+    }
+    CGKILL("Unsupported ProgramKind");
+    return nullptr;
   }
 
   void EnsureTextureUploaded(Texture* texture) override {
@@ -616,137 +677,362 @@ class OpenGLDevice final : public Device {
     storage->uploaded_to_gl = false;
   }
 
-  void ReadTextureData(const Texture& texture, int level, void* data, size_t size_in_bytes) override {
+  void ReadTextureData(const Texture& texture, const TextureReadDesc& desc, void* data) override {
     const GLenum target = ToGLTextureTarget(texture.meta().type);
     glBindTexture_(target, texture.id());
     glGetTexImage_(target,
-                   level,
+                   desc.level,
                    ToGLPixelFormat(texture.meta().pixel_format),
                    ToGLPixelType(texture.meta().pixel_type),
                    data);
     glBindTexture_(target, 0);
   }
 
-  void BindStorageTexture(uint32_t texture_unit, const Texture& texture, TextureAccess access) override {
-    glBindImageTexture_(texture_unit, texture.id(), 0, GL_FALSE, 0, ToGLTextureAccess(access),
-                        ToGLTextureFormat(texture.meta().format));
-  }
-
-  void DispatchCompute(const glm::uvec3& workgroup_count) override {
-    glDispatchCompute_(workgroup_count.x, workgroup_count.y, workgroup_count.z);
-  }
-
-  void MemoryBarrier(rhi::MemoryBarrier barrier) override {
-    glMemoryBarrier_(ToGLMemoryBarrier(barrier));
+  void DispatchCompute(const ComputeDispatchDesc& desc) override {
+    glDispatchCompute_(desc.workgroup_count.x, desc.workgroup_count.y, desc.workgroup_count.z);
+    glMemoryBarrier_(ToGLMemoryBarrier(desc.barrier));
   }
 
   uint32_t CreateFramebuffer() override {
     uint32_t framebuffer = 0;
     glGenFramebuffers_(1, &framebuffer);
+    framebuffer_records_.emplace(framebuffer, FramebufferRecord{});
     return framebuffer;
   }
 
   void DeleteFramebuffer(uint32_t framebuffer) override {
     glDeleteFramebuffers_(1, &framebuffer);
+    framebuffer_records_.erase(framebuffer);
   }
 
-  void BindFramebuffer(FramebufferBindPoint bind_point, uint32_t framebuffer) override {
+  void ApplyFramebufferBinding(FramebufferBindPoint bind_point, uint32_t framebuffer) {
     glBindFramebuffer_(ToGLFramebufferBindPoint(bind_point), framebuffer);
   }
 
-  void AttachFramebufferTexture2D(AttachmentType attachment_type,
-                                  uint32_t attachment_index,
-                                  const Texture& texture) override {
-    glFramebufferTexture2D_(GL_FRAMEBUFFER, ToGLAttachment(attachment_type, attachment_index),
-                            GL_TEXTURE_2D, texture.id(), 0);
-  }
+  bool ConfigureFramebuffer(uint32_t framebuffer, const FramebufferDesc& desc) override {
+    CGCHECK(framebuffer != 0) << "Default framebuffer cannot be configured via FramebufferDesc";
 
-  bool CheckFramebufferComplete() override {
-    return glCheckFramebufferStatus_(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
+    GLint previous_read_framebuffer = 0;
+    GLint previous_draw_framebuffer = 0;
+    glGetIntegerv_(GL_READ_FRAMEBUFFER_BINDING, &previous_read_framebuffer);
+    glGetIntegerv_(GL_DRAW_FRAMEBUFFER_BINDING, &previous_draw_framebuffer);
+    glBindFramebuffer_(GL_FRAMEBUFFER, framebuffer);
+
+    FramebufferRecord& framebuffer_record = framebuffer_records_[framebuffer];
+    for (const auto& attachment : framebuffer_record.attachments) {
+      const AttachmentType attachment_type = static_cast<AttachmentType>(attachment.first & 0xffffffffu);
+      const uint32_t attachment_index = static_cast<uint32_t>(attachment.first >> 32);
+      glFramebufferTexture2D_(GL_FRAMEBUFFER, ToGLAttachment(attachment_type, attachment_index), GL_TEXTURE_2D, 0, 0);
+    }
+    framebuffer_record.attachments.clear();
+
+    std::vector<GLenum> draw_buffers;
+    GLenum read_buffer = GL_NONE;
+    bool has_color_attachment = false;
+    for (const FramebufferAttachmentDesc& attachment : desc.attachments) {
+      CGCHECK(attachment.texture != nullptr) << "Framebuffer attachment texture must not be null";
+      CGCHECK(attachment.texture->meta().type == Texture::kTexture2D)
+          << "FramebufferDesc currently only supports Texture2D attachments";
+
+      const GLenum gl_attachment = ToGLAttachment(attachment.attachment_type, attachment.attachment_index);
+      glFramebufferTexture2D_(GL_FRAMEBUFFER, gl_attachment, GL_TEXTURE_2D, attachment.texture->id(), 0);
+      framebuffer_record.attachments[AttachmentKey(attachment.attachment_type, attachment.attachment_index)] =
+          attachment.texture->id();
+
+      if (attachment.attachment_type == AttachmentType::kColor) {
+        if (draw_buffers.size() <= attachment.attachment_index) {
+          draw_buffers.resize(attachment.attachment_index + 1, GL_NONE);
+        }
+        draw_buffers[attachment.attachment_index] = gl_attachment;
+        if (!has_color_attachment) {
+          read_buffer = gl_attachment;
+          has_color_attachment = true;
+        }
+      }
+    }
+
+    if (has_color_attachment) {
+      glDrawBuffers_(draw_buffers.size(), draw_buffers.data());
+      glReadBuffer_(read_buffer);
+    } else {
+      glDrawBuffer_(GL_NONE);
+      glReadBuffer_(GL_NONE);
+    }
+
+    const bool is_complete = glCheckFramebufferStatus_(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
+    glBindFramebuffer_(GL_READ_FRAMEBUFFER, previous_read_framebuffer);
+    glBindFramebuffer_(GL_DRAW_FRAMEBUFFER, previous_draw_framebuffer);
+    return is_complete;
   }
 
   FramebufferState CaptureFramebufferState() const override {
     FramebufferState state;
     GLint viewport[4] = {};
     glGetIntegerv_(GL_VIEWPORT, viewport);
-    glGetIntegerv_(GL_FRAMEBUFFER_BINDING, &state.framebuffer);
+    glGetIntegerv_(GL_READ_FRAMEBUFFER_BINDING, &state.read_framebuffer);
+    glGetIntegerv_(GL_DRAW_FRAMEBUFFER_BINDING, &state.draw_framebuffer);
+    state.framebuffer = state.draw_framebuffer;
     state.viewport = glm::ivec4(viewport[0], viewport[1], viewport[2], viewport[3]);
     return state;
   }
 
   void RestoreFramebufferState(const FramebufferState& state) override {
-    BindFramebuffer(FramebufferBindPoint::kAll, state.framebuffer);
-    SetViewport({state.viewport.x, state.viewport.y}, {state.viewport.z, state.viewport.w});
+    const bool legacy_state = state.read_framebuffer == 0 && state.draw_framebuffer == 0;
+    const uint32_t read_framebuffer =
+        static_cast<uint32_t>(std::max(legacy_state ? state.framebuffer : state.read_framebuffer, 0));
+    const uint32_t draw_framebuffer =
+        static_cast<uint32_t>(std::max(legacy_state ? state.framebuffer : state.draw_framebuffer, 0));
+    if (read_framebuffer == draw_framebuffer) {
+      ApplyFramebufferBinding(FramebufferBindPoint::kAll, draw_framebuffer);
+    } else {
+      ApplyFramebufferBinding(FramebufferBindPoint::kRead, read_framebuffer);
+      ApplyFramebufferBinding(FramebufferBindPoint::kDraw, draw_framebuffer);
+    }
+    ApplyViewport({state.viewport.x, state.viewport.y}, {state.viewport.z, state.viewport.w});
   }
 
-  void ClearColorAttachment(uint32_t attachment_index, const glm::vec4& color) override {
+  void ApplyColorAttachmentClear(uint32_t attachment_index, const glm::vec4& color) {
+    GLint draw_framebuffer = 0;
+    glGetIntegerv_(GL_DRAW_FRAMEBUFFER_BINDING, &draw_framebuffer);
+    if (draw_framebuffer == 0) {
+      CGCHECK(attachment_index == 0)
+          << "Default framebuffer only supports color attachment 0 for attachment-selective clear in OpenGL scene mode";
+    } else {
+      const auto framebuffer_it = framebuffer_records_.find(static_cast<uint32_t>(draw_framebuffer));
+      CGCHECK(framebuffer_it != framebuffer_records_.end())
+          << "Unknown framebuffer id " << draw_framebuffer << " in OpenGL scene mode";
+      CGCHECK(framebuffer_it->second.attachments.contains(AttachmentKey(AttachmentType::kColor, attachment_index)))
+          << "Attachment-selective clear requires color attachment "
+          << attachment_index
+          << " to exist on framebuffer "
+          << draw_framebuffer
+          << " in OpenGL scene mode";
+    }
     glClearBufferfv_(GL_COLOR, attachment_index, glm::value_ptr(color));
   }
 
-  void SetDrawBuffers(const std::vector<uint32_t>& color_attachment_indices) override {
-    std::vector<GLenum> draw_buffers(color_attachment_indices.size());
-    for (size_t i = 0; i < color_attachment_indices.size(); ++i) {
-      draw_buffers[i] = ToGLAttachment(AttachmentType::kColor, color_attachment_indices[i]);
+  void BeginRenderPass(const RenderPassDesc& desc) override {
+    CGCHECK(desc.viewport_size.x > 0 && desc.viewport_size.y > 0)
+        << "BeginRenderPass() requires a positive viewport size in OpenGL scene mode";
+    ApplyFramebufferBinding(FramebufferBindPoint::kAll, desc.framebuffer);
+    ApplyViewport(desc.viewport_origin, desc.viewport_size);
+
+    const bool is_default_framebuffer = desc.framebuffer == 0;
+    if (!is_default_framebuffer) {
+      std::vector<GLenum> draw_buffers;
+      GLenum read_buffer = GL_NONE;
+      bool has_color_attachment = false;
+      for (const RenderPassColorAttachmentDesc& color_attachment : desc.color_attachments) {
+        if (draw_buffers.size() <= color_attachment.attachment_index) {
+          draw_buffers.resize(color_attachment.attachment_index + 1, GL_NONE);
+        }
+        const GLenum gl_attachment = ToGLAttachment(AttachmentType::kColor, color_attachment.attachment_index);
+        draw_buffers[color_attachment.attachment_index] = gl_attachment;
+        if (!has_color_attachment) {
+          read_buffer = gl_attachment;
+          has_color_attachment = true;
+        }
+      }
+      if (has_color_attachment) {
+        glDrawBuffers_(draw_buffers.size(), draw_buffers.data());
+        glReadBuffer_(read_buffer);
+      } else {
+        glDrawBuffer_(GL_NONE);
+        glReadBuffer_(GL_NONE);
+      }
     }
-    glDrawBuffers_(draw_buffers.size(), draw_buffers.data());
+
+    ClearDesc clear_desc;
+    if (desc.clear_depth) {
+      clear_desc.mask = clear_desc.mask | ClearMask::kDepth;
+      clear_desc.depth_clear_value = desc.depth_clear_value;
+    }
+    if (desc.clear_stencil) {
+      clear_desc.mask = clear_desc.mask | ClearMask::kStencil;
+      clear_desc.stencil_clear_value = desc.stencil_clear_value;
+    }
+    for (const RenderPassColorAttachmentDesc& color_attachment : desc.color_attachments) {
+      if (color_attachment.clear) {
+        if (is_default_framebuffer) {
+          CGCHECK(color_attachment.attachment_index == 0)
+              << "Default framebuffer only supports color attachment 0 in render pass abstraction";
+          clear_desc.mask = clear_desc.mask | ClearMask::kColor;
+          clear_desc.clear_color = color_attachment.clear_color;
+        } else {
+          ApplyColorAttachmentClear(color_attachment.attachment_index, color_attachment.clear_color);
+        }
+      }
+    }
+
+    if (clear_desc.mask != ClearMask::kNone) {
+      Clear(clear_desc);
+    }
   }
 
-  void BlitFramebuffer(uint32_t read_framebuffer,
-                       uint32_t draw_framebuffer,
-                       const glm::ivec2& size,
-                       ClearMask mask,
-                       FilterMode filter) override {
-    BindFramebuffer(FramebufferBindPoint::kRead, read_framebuffer);
-    BindFramebuffer(FramebufferBindPoint::kDraw, draw_framebuffer);
-    glBlitFramebuffer_(0, 0, size.x, size.y, 0, 0, size.x, size.y, ToGLClearMask(mask), ToGLBlitFilter(filter));
+  void EndRenderPass() override {}
+
+  void BlitFramebuffer(const BlitFramebufferDesc& desc) override {
+    ValidateBlitFramebufferDesc(desc);
+    GLint previous_read_framebuffer = 0;
+    GLint previous_draw_framebuffer = 0;
+    glGetIntegerv_(GL_READ_FRAMEBUFFER_BINDING, &previous_read_framebuffer);
+    glGetIntegerv_(GL_DRAW_FRAMEBUFFER_BINDING, &previous_draw_framebuffer);
+    const glm::ivec2 destination_size =
+        (desc.draw_size.x > 0 || desc.draw_size.y > 0) ? desc.draw_size : desc.size;
+
+    GLint source_read_buffer = 0;
+    ApplyFramebufferBinding(FramebufferBindPoint::kRead, desc.read_framebuffer);
+    glGetIntegerv_(GL_READ_BUFFER, &source_read_buffer);
+    if (HasAnyFlag(desc.mask, ClearMask::kColor)) {
+      if (desc.read_framebuffer == 0) {
+        glReadBuffer_(ToGLReadBuffer(desc.read_buffer));
+      } else {
+        glReadBuffer_(ToGLAttachment(AttachmentType::kColor, desc.read_color_attachment_index));
+      }
+    }
+
+    GLint destination_draw_buffer = 0;
+    ApplyFramebufferBinding(FramebufferBindPoint::kDraw, desc.draw_framebuffer);
+    glGetIntegerv_(GL_DRAW_BUFFER, &destination_draw_buffer);
+    if (HasAnyFlag(desc.mask, ClearMask::kColor)) {
+      if (desc.draw_framebuffer == 0) {
+        glDrawBuffer_(ToGLReadBuffer(desc.draw_buffer));
+      } else {
+        glDrawBuffer_(ToGLAttachment(AttachmentType::kColor, desc.draw_color_attachment_index));
+      }
+    }
+
+    glBlitFramebuffer_(desc.read_origin.x,
+                       desc.read_origin.y,
+                       desc.read_origin.x + desc.size.x,
+                       desc.read_origin.y + desc.size.y,
+                       desc.draw_origin.x,
+                       desc.draw_origin.y,
+                       desc.draw_origin.x + destination_size.x,
+                       desc.draw_origin.y + destination_size.y,
+                       ToGLClearMask(desc.mask),
+                       ToGLBlitFilter(desc.filter));
+
+    if (HasAnyFlag(desc.mask, ClearMask::kColor)) {
+      glReadBuffer_(static_cast<GLenum>(source_read_buffer));
+    }
+    if (HasAnyFlag(desc.mask, ClearMask::kColor)) {
+      glDrawBuffer_(static_cast<GLenum>(destination_draw_buffer));
+    }
+    ApplyFramebufferBinding(FramebufferBindPoint::kRead, previous_read_framebuffer);
+    ApplyFramebufferBinding(FramebufferBindPoint::kDraw, previous_draw_framebuffer);
   }
 
-  void DrawArrays(PrimitiveTopology topology,
-                  uint32_t first,
-                  uint32_t count,
-                  uint32_t instance_count) override {
-    if (instance_count > 1) {
-      glDrawArraysInstanced_(ToGLPrimitiveTopology(topology), first, count, instance_count);
+  void Draw(const DrawDesc& desc) override {
+    CGCHECK(desc.vertex_array != nullptr) << "Draw submission requires DrawDesc.vertex_array.";
+    auto* gl_vertex_array = dynamic_cast<OpenGLVertexArray*>(desc.vertex_array);
+    CGCHECK(gl_vertex_array != nullptr) << "OpenGLDevice expected OpenGLVertexArray for draw submission.";
+    glBindVertexArray_(gl_vertex_array->id());
+    if (desc.kind == DrawKind::kElements) {
+      CGCHECK(desc.index_buffer != nullptr) << "Indexed draw submission requires DrawDesc.index_buffer.";
+      auto* gl_index_buffer = dynamic_cast<OpenGLBuffer*>(desc.index_buffer);
+      CGCHECK(gl_index_buffer != nullptr) << "OpenGLDevice expected OpenGLBuffer for indexed draw submission.";
+      glBindBuffer_(gl_index_buffer->target(), gl_index_buffer->id());
+    }
+    const GLenum mode = ToGLPrimitiveTopology(desc.topology);
+    if (desc.kind == DrawKind::kElements) {
+      if (desc.instance_count > 1) {
+        glDrawElementsInstanced_(mode, desc.count, GL_UNSIGNED_INT, nullptr, desc.instance_count);
+      } else {
+        glDrawElements_(mode, desc.count, GL_UNSIGNED_INT, nullptr);
+      }
+      return;
+    }
+    if (desc.instance_count > 1) {
+      glDrawArraysInstanced_(mode, desc.first, desc.count, desc.instance_count);
     } else {
-      glDrawArrays_(ToGLPrimitiveTopology(topology), first, count);
+      glDrawArrays_(mode, desc.first, desc.count);
     }
   }
 
-  void DrawElements(PrimitiveTopology topology,
-                    uint32_t count,
-                    uint32_t instance_count) override {
-    if (instance_count > 1) {
-      glDrawElementsInstanced_(ToGLPrimitiveTopology(topology), count, GL_UNSIGNED_INT, nullptr, instance_count);
-    } else {
-      glDrawElements_(ToGLPrimitiveTopology(topology), count, GL_UNSIGNED_INT, nullptr);
+  void ReadPixels(const ReadPixelsDesc& desc, void* data) override {
+    ValidateReadPixelsDesc(desc);
+    GLint previous_read_framebuffer = 0;
+    GLint previous_read_buffer = 0;
+    GLint previous_pack_alignment = 0;
+    glGetIntegerv_(GL_READ_FRAMEBUFFER_BINDING, &previous_read_framebuffer);
+    glGetIntegerv_(GL_READ_BUFFER, &previous_read_buffer);
+    glGetIntegerv_(GL_PACK_ALIGNMENT, &previous_pack_alignment);
+
+    glBindFramebuffer_(GL_READ_FRAMEBUFFER, desc.framebuffer);
+    if (desc.attachment_type == AttachmentType::kColor) {
+      if (desc.framebuffer == 0) {
+        glReadBuffer_(ToGLReadBuffer(desc.read_buffer));
+      } else {
+        glReadBuffer_(ToGLAttachment(desc.attachment_type, desc.attachment_index));
+      }
     }
+    glPixelStorei_(GL_PACK_ALIGNMENT, 1);
+    glReadPixels_(desc.origin.x,
+                  desc.origin.y,
+                  desc.size.x,
+                  desc.size.y,
+                  ToGLPixelFormat(desc.format),
+                  ToGLPixelType(desc.type),
+                  data);
+
+    glBindFramebuffer_(GL_READ_FRAMEBUFFER, previous_read_framebuffer);
+    glReadBuffer_(static_cast<GLenum>(previous_read_buffer));
+    glPixelStorei_(GL_PACK_ALIGNMENT, previous_pack_alignment);
   }
 
-  void SetReadBuffer(ReadBuffer buffer) override {
-    glReadBuffer_(ToGLReadBuffer(buffer));
-  }
-
-  void ReadPixels(const glm::ivec2& origin,
-                  const glm::ivec2& size,
-                  PixelFormat format,
-                  PixelType type,
-                  void* data) override {
-    glReadPixels_(origin.x, origin.y, size.x, size.y, ToGLPixelFormat(format), ToGLPixelType(type), data);
-  }
-
-  void SetViewport(const glm::ivec2& origin, const glm::ivec2& size) override {
+  void ApplyViewport(const glm::ivec2& origin, const glm::ivec2& size) {
     glViewport_(origin.x, origin.y, size.x, size.y);
   }
 
-  void SetClearColor(const glm::vec4& color) override {
-    glClearColor_(color.r, color.g, color.b, color.a);
+  void Clear(const ClearDesc& desc) override {
+    if (HasAnyFlag(desc.mask, ClearMask::kColor)) {
+      glClearColor_(desc.clear_color.r, desc.clear_color.g, desc.clear_color.b, desc.clear_color.a);
+    }
+    if (HasAnyFlag(desc.mask, ClearMask::kDepth)) {
+      glClearDepth_(desc.depth_clear_value);
+    }
+    if (HasAnyFlag(desc.mask, ClearMask::kStencil)) {
+      glClearStencil_(desc.stencil_clear_value);
+    }
+    if (desc.mask != ClearMask::kNone) {
+      glClear_(ToGLClearMask(desc.mask));
+    }
   }
 
-  void Clear(ClearMask mask) override {
-    glClear_(ToGLClearMask(mask));
+  void ApplyRenderState(const RenderStateDesc& state) override {
+    if (state.depth_test_enabled.has_value()) {
+      ApplyDepthTestEnabled(*state.depth_test_enabled);
+    }
+    if (state.cull_enabled.has_value()) {
+      ApplyCullEnabled(*state.cull_enabled);
+    }
+    if (state.cull_mode.has_value()) {
+      ApplyCullMode(*state.cull_mode);
+    }
+    if (state.front_face.has_value()) {
+      ApplyFrontFace(*state.front_face);
+    }
   }
 
-  void SetDepthTestEnabled(bool enabled) override {
+  RenderState CaptureRenderState() const override {
+    return {
+        .depth_test_enabled = depth_test_enabled_,
+        .cull_enabled = cull_enabled_,
+        .cull_mode = cull_mode_,
+        .front_face = front_face_,
+    };
+  }
+
+  void RestoreRenderState(const RenderState& state) override {
+    ApplyDepthTestEnabled(state.depth_test_enabled);
+    ApplyCullEnabled(state.cull_enabled);
+    ApplyCullMode(state.cull_mode);
+    ApplyFrontFace(state.front_face);
+  }
+
+  void ApplyDepthTestEnabled(bool enabled) {
+    depth_test_enabled_ = enabled;
     if (enabled) {
       glEnable_(GL_DEPTH_TEST);
     } else {
@@ -754,7 +1040,8 @@ class OpenGLDevice final : public Device {
     }
   }
 
-  void SetCullEnabled(bool enabled) override {
+  void ApplyCullEnabled(bool enabled) {
+    cull_enabled_ = enabled;
     if (enabled) {
       glEnable_(GL_CULL_FACE);
     } else {
@@ -762,16 +1049,91 @@ class OpenGLDevice final : public Device {
     }
   }
 
-  void SetCullMode(CullMode mode) override {
+  void ApplyCullMode(CullMode mode) {
+    cull_mode_ = mode;
     glCullFace_(ToGLCullMode(mode));
   }
 
-  void SetFrontFace(FrontFace winding) override {
+  void ApplyFrontFace(FrontFace winding) {
+    front_face_ = winding;
     glFrontFace_(ToGLFrontFace(winding));
   }
 
  private:
+  struct FramebufferRecord {
+    std::unordered_map<uint64_t, uint32_t> attachments;
+  };
+
+  void ValidateReadPixelsDesc(const ReadPixelsDesc& desc) const {
+    ValidateFramebufferAttachmentAccess(
+        desc.framebuffer, desc.attachment_type, desc.attachment_index, "ReadPixels()", "read");
+  }
+
+  void ValidateBlitFramebufferDesc(const BlitFramebufferDesc& desc) const {
+    if (HasAnyFlag(desc.mask, ClearMask::kColor)) {
+      ValidateFramebufferAttachmentAccess(desc.read_framebuffer,
+                                          AttachmentType::kColor,
+                                          desc.read_color_attachment_index,
+                                          "BlitFramebuffer()",
+                                          "source");
+      ValidateFramebufferAttachmentAccess(desc.draw_framebuffer,
+                                          AttachmentType::kColor,
+                                          desc.draw_color_attachment_index,
+                                          "BlitFramebuffer()",
+                                          "destination");
+    }
+    if (HasAnyFlag(desc.mask, ClearMask::kDepth)) {
+      ValidateFramebufferAttachmentAccess(
+          desc.read_framebuffer, AttachmentType::kDepth, 0, "BlitFramebuffer()", "source");
+      ValidateFramebufferAttachmentAccess(
+          desc.draw_framebuffer, AttachmentType::kDepth, 0, "BlitFramebuffer()", "destination");
+    }
+    if (HasAnyFlag(desc.mask, ClearMask::kStencil)) {
+      ValidateFramebufferAttachmentAccess(
+          desc.read_framebuffer, AttachmentType::kStencil, 0, "BlitFramebuffer()", "source");
+      ValidateFramebufferAttachmentAccess(
+          desc.draw_framebuffer, AttachmentType::kStencil, 0, "BlitFramebuffer()", "destination");
+    }
+  }
+
+  void ValidateFramebufferAttachmentAccess(uint32_t framebuffer,
+                                           AttachmentType attachment_type,
+                                           uint32_t attachment_index,
+                                           const char* operation_name,
+                                           const char* attachment_role) const {
+    if (framebuffer == 0) {
+      CGCHECK(attachment_index == 0)
+          << "Default framebuffer only supports " << AttachmentTypeName(attachment_type)
+          << " attachment 0 for " << operation_name << " in OpenGL scene mode";
+      return;
+    }
+    const auto framebuffer_it = framebuffer_records_.find(framebuffer);
+    CGCHECK(framebuffer_it != framebuffer_records_.end()) << "Unknown framebuffer id " << framebuffer
+                                                          << " in OpenGL scene mode";
+    CGCHECK(framebuffer_it->second.attachments.contains(AttachmentKey(attachment_type, attachment_index)))
+        << operation_name << " requires " << attachment_role << " " << AttachmentTypeName(attachment_type)
+        << " attachment " << attachment_index << " to exist on framebuffer " << framebuffer
+        << " in OpenGL scene mode";
+  }
+
+  static const char* AttachmentTypeName(AttachmentType attachment_type) {
+    switch (attachment_type) {
+      case AttachmentType::kColor:
+        return "color";
+      case AttachmentType::kDepth:
+        return "depth";
+      case AttachmentType::kStencil:
+        return "stencil";
+    }
+    return "unknown";
+  }
+
   Capabilities capabilities_;
+  std::unordered_map<uint32_t, FramebufferRecord> framebuffer_records_;
+  bool depth_test_enabled_ = false;
+  bool cull_enabled_ = false;
+  CullMode cull_mode_ = CullMode::kBack;
+  FrontFace front_face_ = FrontFace::kCounterClockwise;
 };
 
 }  // namespace

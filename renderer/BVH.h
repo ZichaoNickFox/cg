@@ -38,6 +38,7 @@ class BVH {
   std::vector<AABB> GetAABBs(int filter_level = -1) const;
   int num() const { return nodes_.size(); }
   std::vector<int> GetPrimitiveSequence() const { return primitive_sequence_; };
+  rhi::BufferBindingDesc binding_desc() const { return ssbo_.binding_desc(); }
 
  private:
   int NewNode(int begin, int end, const AABB& union_aabb);

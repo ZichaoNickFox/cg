@@ -46,6 +46,7 @@ struct LightRepo {
   int num() const { return lights_.size(); }
   Light* mutable_light(int index) { return &lights_[index]; }
   const Light& light(int index) const { return lights_[index]; }
+  rhi::BufferBindingDesc binding_desc() const { return ssbo_.binding_desc(); }
 
   int primitive_light_num() const { return primitive_light_num_; }
   float primitive_light_area() const { return primitive_light_area_; }

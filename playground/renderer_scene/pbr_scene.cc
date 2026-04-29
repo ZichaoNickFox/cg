@@ -37,8 +37,6 @@ void PbrScene::OnEnter(Scene *context)
   for (int i = 0; i < teapot_.model_part_num(); ++i) {
     teapot_.mutable_model_part(i)->mutable_transform()->SetScale(glm::vec3(0.2, 0.2, 0.2));
   }
-
-  cg::rhi::GetDevice().SetDepthTestEnabled(true);
 }
 
 void PbrScene::OnUpdate(Scene *context)

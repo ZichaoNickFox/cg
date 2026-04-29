@@ -452,7 +452,8 @@ void ComputeShader::Run(Context* context) {
   glBindImageTexture_(0, param_.input_texture.id(), 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
   glBindImageTexture_(1, param_.output_texture.id(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 
-  context->GetShader(param_.shader_name).Use();
+  cg::ShaderProgramBindings bindings;
+  context->GetShader(param_.shader_name).ApplyBindings(bindings);
   glDispatchCompute_(param_.work_group_x, param_.work_group_y, param_.work_group_z);
   glMemoryBarrier_(GL_ALL_BARRIER_BITS);
 }

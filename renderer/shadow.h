@@ -21,6 +21,7 @@ struct ShadowRepo {
   void UpdateSSBO();
 
   int length() const { return shadows_.size(); }
+  rhi::BufferBindingDesc binding_desc() const { return ssbo_.binding_desc(); }
 
   std::vector<Shadow> shadows_;
   std::vector<Shadow> dirty_shadows_;

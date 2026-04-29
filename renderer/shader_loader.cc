@@ -1,6 +1,7 @@
 #include "renderer/shader_loader.h"
 
 #include <filesystem>
+#include <utility>
 
 #include "base/util.h"
 
@@ -17,13 +18,13 @@ ShaderParser::ShaderParser(const std::string& name) {
   name_ = name;
 }
 
-std::vector<ShaderProgram::CodePart> ShaderParser::Parse(const std::string& file_path) {
+std::vector<ShaderCodePart> ShaderParser::Parse(const std::string& file_path) {
   file_meta_map_.clear();
   active_parse_stack_.clear();
   ParseAFile(ResolvePath(file_path, ""));
 
   std::vector<std::string> sorted = TopologicalSort();
-  std::vector<ShaderProgram::CodePart> res;
+  std::vector<ShaderCodePart> res;
   for (const std::string& path : sorted) {
     res.push_back({path, file_meta_map_[path].content});
   }
@@ -139,30 +140,46 @@ std::vector<std::string> ShaderParser::TopologicalSort() {
   return res;
 }
 
-ShaderProgram ShaderLoader::Load(const std::string& name, const std::unordered_map<FileType, std::string>& file_paths) {
+ShaderProgramDesc ShaderLoader::LoadProgramDesc(const std::string& name,
+                                                const std::unordered_map<FileType, std::string>& file_paths) {
   bool is_render_shader = (file_paths.at(kVS) != "" && file_paths.at(kFS) != "");
   bool is_compute_shader = (file_paths.at(kCS) != "");
   CGCHECK(is_render_shader || is_compute_shader) << " Must render shader or compute shader : " << name;
   CGCHECK(!(is_render_shader && is_compute_shader)) << " Must not render shader && compute shader : " << name;
 
-  std::vector<ShaderProgram::CodePart> vs, fs, gs, ts, cs;
-  std::unordered_map<FileType, std::vector<ShaderProgram::CodePart>*> type_storage_map =
+  std::vector<ShaderCodePart> vs, fs, gs, ts, cs;
+  std::unordered_map<FileType, std::vector<ShaderCodePart>*> type_storage_map =
       {{kVS, &vs}, {kFS, &fs}, {kGS, &gs}, {kTS, &ts}, {kCS, &cs}};
   for (auto& p : type_storage_map) {
     if (file_paths.at(p.first) != "") {
       ShaderParser parser(name);
-      std::vector<ShaderProgram::CodePart> code_parts = parser.Parse(file_paths.at(p.first));
+      std::vector<ShaderCodePart> code_parts = parser.Parse(file_paths.at(p.first));
       *p.second = code_parts;
     }
   }
   if (is_render_shader) {
-    return ShaderProgram(name, vs, fs, gs, ts);
-  } else if (is_compute_shader) {
-    return ShaderProgram(name, cs);
-  } else {
-    CGCHECK(false) << "What shader ?";
-    return ShaderProgram();
+    return {
+        .name = name,
+        .kind = rhi::ProgramKind::kRender,
+        .vs = std::move(vs),
+        .fs = std::move(fs),
+        .gs = std::move(gs),
+        .ts = std::move(ts),
+    };
   }
+  if (is_compute_shader) {
+    return {
+        .name = name,
+        .kind = rhi::ProgramKind::kCompute,
+        .cs = std::move(cs),
+    };
+  }
+  CGCHECK(false) << "What shader ?";
+  return {};
+}
+
+ShaderProgram ShaderLoader::Load(const std::string& name, const std::unordered_map<FileType, std::string>& file_paths) {
+  return ShaderProgram(LoadProgramDesc(name, file_paths));
 }
 
 } // namespace cg

@@ -321,7 +321,12 @@ std::vector<ChannelType> Texture::GetData() const {
   if (rhi::HasDevice() && storage_ != nullptr && storage_->uploaded_to_gl) {
     std::vector<ChannelType> data;
     data.resize(data_size_in_byte() / sizeof(ChannelType));
-    rhi::GetDevice().ReadTextureData(*this, 0, data.data(), data_size_in_byte());
+    rhi::GetDevice().ReadTextureData(*this,
+                                     {
+                                         .level = 0,
+                                         .size_in_bytes = static_cast<size_t>(data_size_in_byte()),
+                                     },
+                                     data.data());
     return data;
   }
 
@@ -701,7 +706,7 @@ int TextureRepo::size() const {
   return compatible_texture_num;
 }
 
-Texture TextureRepo::AsTexture2DArray(int width, int height) const {
+const Texture& TextureRepo::AsTexture2DArray(int width, int height) const {
   bool dirty = (dirty_index_2_texture_ != index_2_texture_);
   if (dirty) {
     std::vector<Texture> textures;

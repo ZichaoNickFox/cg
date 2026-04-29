@@ -7,60 +7,100 @@
 
 namespace cg {
 
-ShaderProgram::ShaderProgram(const std::string& name,
-                             const std::vector<CodePart>& vs,
-                             const std::vector<CodePart>& fs,
-                             const std::vector<CodePart>& gs,
-                             const std::vector<CodePart>& ts)
-    : program_(rhi::GetDevice().CreateRenderProgram(name, vs, fs, gs, ts)),
-      name_(name) {}
+void ShaderProgramBindings::Append(const ShaderProgramBindings& other) {
+  bindings_.uniforms.insert(bindings_.uniforms.end(), other.bindings_.uniforms.begin(), other.bindings_.uniforms.end());
+  bindings_.textures.insert(bindings_.textures.end(), other.bindings_.textures.begin(), other.bindings_.textures.end());
+  bindings_.storage_textures.insert(bindings_.storage_textures.end(),
+                                    other.bindings_.storage_textures.begin(),
+                                    other.bindings_.storage_textures.end());
+  bindings_.buffers.insert(bindings_.buffers.end(), other.bindings_.buffers.begin(), other.bindings_.buffers.end());
+}
 
-ShaderProgram::ShaderProgram(const std::string& name, const std::vector<CodePart>& cs)
-    : program_(rhi::GetDevice().CreateComputeProgram(name, cs)),
-      name_(name) {}
+void ShaderProgramBindings::SetBool(const std::string& location_name, bool value) {
+  bindings_.uniforms.push_back({location_name, value});
+}
+
+void ShaderProgramBindings::SetFloat(const std::string& location_name, float value) {
+  bindings_.uniforms.push_back({location_name, value});
+}
+
+void ShaderProgramBindings::SetInt(const std::string& location_name, int value) {
+  bindings_.uniforms.push_back({location_name, value});
+}
+
+void ShaderProgramBindings::SetMat4(const std::string& location_name, const glm::mat4& value) {
+  bindings_.uniforms.push_back({location_name, value});
+}
+
+void ShaderProgramBindings::SetVec4(const std::string& location_name, const glm::vec4& value) {
+  bindings_.uniforms.push_back({location_name, value});
+}
+
+void ShaderProgramBindings::SetVec3(const std::string& location_name, const glm::vec3& value) {
+  bindings_.uniforms.push_back({location_name, value});
+}
+
+void ShaderProgramBindings::SetVec2(const std::string& location_name, const glm::vec2& value) {
+  bindings_.uniforms.push_back({location_name, value});
+}
+
+void ShaderProgramBindings::SetTexture(const std::string& location_name, const Texture& value) {
+  bindings_.textures.push_back({location_name, &value});
+}
+
+void ShaderProgramBindings::SetBufferBinding(const rhi::BufferBindingDesc& binding) {
+  bindings_.buffers.push_back(binding);
+}
+
+void ShaderProgramBindings::SetStorageTexture(const std::string& location_name,
+                                              const Texture& value,
+                                              rhi::TextureAccess access) {
+  bindings_.storage_textures.push_back({location_name, &value, access});
+}
+
+ShaderProgram::ShaderProgram(const ShaderProgramDesc& desc)
+    : program_(rhi::GetDevice().CreateProgram({
+          .name = desc.name,
+          .kind = desc.kind,
+          .vs = desc.vs,
+          .fs = desc.fs,
+          .gs = desc.gs,
+          .ts = desc.ts,
+          .cs = desc.cs,
+      })),
+      name_(desc.name) {}
 
 const rhi::Program& ShaderProgram::ProgramRef() const {
   return *CGCHECK_NOTNULL(program_.get());
 }
 
-void ShaderProgram::Use() const {
-  ProgramRef().Use();
+void ShaderProgram::ApplyBindings(const ShaderProgramBindings& bindings) const {
+  ProgramRef().ApplyBindings(bindings.rhi_bindings());
 }
 
-void ShaderProgram::SetBool(const std::string& location_name, bool value) const {
-  ProgramRef().SetBool(location_name, value);
+void ShaderProgram::DrawBindings(const ShaderProgramBindings& bindings,
+                                 const rhi::DrawDesc& desc) const {
+  rhi::GetDevice().DrawBindings(ProgramRef(), bindings.rhi_bindings(), desc);
 }
 
-void ShaderProgram::SetInt(const std::string& location_name, int value) const {
-  ProgramRef().SetInt(location_name, value);
+namespace {
+
+void ValidateDispatchDesc(const rhi::ComputeDispatchDesc& desc) {
+  CGCHECK(desc.workgroup_count.x > 0 && desc.workgroup_count.y > 0 && desc.workgroup_count.z > 0)
+      << "Compute dispatch requires non-zero workgroup counts.";
 }
 
-void ShaderProgram::SetFloat(const std::string& location_name, float value) const {
-  ProgramRef().SetFloat(location_name, value);
+}  // namespace
+
+void ShaderProgram::DispatchComputeBindings(const ShaderProgramBindings& bindings,
+                                            const rhi::ComputeDispatchDesc& desc) const {
+  ValidateDispatchDesc(desc);
+  rhi::GetDevice().DispatchComputeBindings(ProgramRef(), bindings.rhi_bindings(), desc);
 }
 
-int ShaderProgram::SetTexture(const std::string& location_name, const Texture& value) const {
-  return ProgramRef().BindTexture(location_name, value);
-}
-
-void ShaderProgram::SetMat4(const std::string& location_name, const glm::mat4& value) const {
-  ProgramRef().SetMat4(location_name, value);
-}
-
-void ShaderProgram::SetVec4(const std::string& location_name, const glm::vec4& value) const {
-  ProgramRef().SetVec4(location_name, value);
-}
-
-void ShaderProgram::SetVec3(const std::string& location_name, const glm::vec3& value) const {
-  ProgramRef().SetVec3(location_name, value);
-}
-
-void ShaderProgram::SetVec2(const std::string& location_name, const glm::vec2& value) const {
-  ProgramRef().SetVec2(location_name, value);
-}
-
-uint32_t ShaderProgram::id() const {
-  return program_ == nullptr ? 0 : program_->id();
+void ShaderProgram::DispatchCompute(const rhi::ComputeDispatchDesc& desc) const {
+  ValidateDispatchDesc(desc);
+  rhi::GetDevice().DispatchComputeBindings(ProgramRef(), {}, desc);
 }
 
 void ShaderProgramRepo::Init(const Config& config) {

@@ -1,7 +1,6 @@
 #include "rhi/device.h"
 
 #include "base/debug.h"
-#include "base/util.h"
 
 namespace cg::rhi {
 namespace {

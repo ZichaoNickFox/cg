@@ -36,19 +36,20 @@ class FakeRendererDevice final : public FakeDevice {
     storage->uploaded_to_gl = false;
   }
 
-  void ReadTextureData(const Texture& texture, int level, void* data, size_t size_in_bytes) override {
+  void ReadTextureData(const Texture& texture, const rhi::TextureReadDesc& desc, void* data) override {
     std::shared_ptr<Texture::Storage> storage = texture.storage();
-    if (storage == nullptr || data == nullptr || level < 0 ||
-        storage->cpu_levels.size() <= static_cast<size_t>(level)) {
+    RecordTextureRead(desc);
+    if (storage == nullptr || data == nullptr || desc.level < 0 ||
+        storage->cpu_levels.size() <= static_cast<size_t>(desc.level)) {
       return;
     }
-    const std::vector<uint8_t>& source = storage->cpu_levels[static_cast<size_t>(level)];
-    const size_t bytes_to_copy = std::min(size_in_bytes, source.size());
+    const std::vector<uint8_t>& source = storage->cpu_levels[static_cast<size_t>(desc.level)];
+    const size_t bytes_to_copy = std::min(desc.size_in_bytes, source.size());
     if (bytes_to_copy > 0) {
       std::memcpy(data, source.data(), bytes_to_copy);
     }
-    if (size_in_bytes > bytes_to_copy) {
-      std::memset(static_cast<uint8_t*>(data) + bytes_to_copy, 0, size_in_bytes - bytes_to_copy);
+    if (desc.size_in_bytes > bytes_to_copy) {
+      std::memset(static_cast<uint8_t*>(data) + bytes_to_copy, 0, desc.size_in_bytes - bytes_to_copy);
     }
   }
 

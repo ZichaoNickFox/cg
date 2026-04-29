@@ -22,25 +22,22 @@ void Mesh::UploadVertexAttribute(const VertexAttribute& meta, const std::vector<
   auto vbo = rhi::GetDevice().CreateBuffer(rhi::BufferType::kVertex);
   vbo->SetData(util::VectorSizeInByte(data), util::AsVoidPtr(data.data()), rhi::BufferUsage::kStatic);
 
-  vao_->Bind();
-  vbo->Bind();
+  rhi::VertexArrayBindingDesc binding_desc;
+  binding_desc.buffer = vbo.get();
   int layout_index_num = meta.attribute_layout_index_to - meta.atrribute_layout_index_from + 1;
   for (int layout_index = meta.atrribute_layout_index_from, i = 0; layout_index <= meta.attribute_layout_index_to;
        ++layout_index, ++i) {
-    vao_->EnableAttribute(layout_index);
     int attribute_size_in_byte = meta.attribute_component_num * sizeof(float);
     int stride = layout_index_num * attribute_size_in_byte;
-    vao_->SetFloatAttribute(layout_index,
-                            meta.attribute_component_num,
-                            stride,
-                            static_cast<size_t>(i * attribute_size_in_byte));
-    if (meta.divisor > 0) {
-      vao_->SetAttributeDivisor(layout_index, meta.divisor);
-    }
+    binding_desc.attributes.push_back({
+        .index = static_cast<uint32_t>(layout_index),
+        .component_count = meta.attribute_component_num,
+        .stride_in_bytes = stride,
+        .offset_in_bytes = static_cast<size_t>(i * attribute_size_in_byte),
+        .divisor = static_cast<uint32_t>(meta.divisor),
+    });
   }
-
-  vbo->Unbind();
-  vao_->Unbind();
+  vao_->ApplyBinding(binding_desc);
   vbos_.push_back(std::move(vbo));
 }
 
@@ -113,20 +110,33 @@ void Mesh::ResetGpuResources() const {
   vao_.reset();
 }
 
-void Mesh::Submit(int instance_num) const {
+rhi::DrawDesc Mesh::BuildDrawDesc(int instance_num) const {
   EnsureGpuResourcesReady();
   bool use_ebo = indices_.size() > 0;
   CGCHECK(vao_ != nullptr) << "vertex array not initialized";
-  vao_->Bind();
   if (use_ebo) {
     CGCHECK(ebo_ != nullptr) << "index buffer not initialized";
-    ebo_->Bind();
-    rhi::GetDevice().DrawElements(primitive_mode_, indices_.size(), instance_num);
-    ebo_->Unbind();
-  } else {
-    rhi::GetDevice().DrawArrays(primitive_mode_, 0, positions_.size(), instance_num);
+    return {
+        .kind = rhi::DrawKind::kElements,
+        .topology = primitive_mode_,
+        .vertex_array = vao_.get(),
+        .index_buffer = ebo_.get(),
+        .count = static_cast<uint32_t>(indices_.size()),
+        .instance_count = static_cast<uint32_t>(instance_num),
+    };
   }
-  vao_->Unbind();
+  return {
+      .kind = rhi::DrawKind::kArrays,
+      .topology = primitive_mode_,
+      .vertex_array = vao_.get(),
+      .first = 0,
+      .count = static_cast<uint32_t>(positions_.size()),
+      .instance_count = static_cast<uint32_t>(instance_num),
+  };
+}
+
+void Mesh::Submit(int instance_num) const {
+  rhi::GetDevice().Draw(BuildDrawDesc(instance_num));
 }
 
 bool Mesh::Intersect(const glm::vec3& origin_ls, const glm::vec3& dir_ls,

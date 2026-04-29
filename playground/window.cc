@@ -8,8 +8,6 @@
 #include <GLFW/glfw3.h>
 
 #include <algorithm>
-#include <cerrno>
-#include <cstring>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -17,7 +15,6 @@
 #include <optional>
 #include <string>
 #include <vector>
-#include <unistd.h>
 
 #include "base/color.h"
 #include "base/debug.h"
@@ -69,6 +66,11 @@ enum class OffscreenBackend {
   kMesaEGL = 2,
 };
 
+enum class VulkanSceneMode {
+  kOpenGLCompatibility = 0,
+  kStandalone = 1,
+};
+
 struct WindowConfig {
   int width = kDefaultWindowWidth;
   int height = kDefaultWindowHeight;
@@ -77,7 +79,6 @@ struct WindowConfig {
 
 struct RunResult {
   int exit_code = 0;
-  std::optional<Playground::LaunchRequest> relaunch_request;
 };
 
 void glfw_error_callback(int error, const char* description) {
@@ -110,6 +111,28 @@ bool IsMesaOpenGLRuntimeExplicitlyRequested() {
 
 bool ShouldUseMesaOpenGLRuntime() {
   return ChooseOpenGLRuntime() == OpenGLRuntime::kMesa;
+}
+
+VulkanSceneMode ChooseVulkanSceneMode() {
+  const char* requested_mode = std::getenv("CG_VK_SCENE_MODE");
+  if (requested_mode == nullptr) {
+    return VulkanSceneMode::kOpenGLCompatibility;
+  }
+  const std::string mode = requested_mode;
+  if (mode == "standalone" || mode == "vk") {
+    return VulkanSceneMode::kStandalone;
+  }
+  return VulkanSceneMode::kOpenGLCompatibility;
+}
+
+const char* VulkanSceneModeName(VulkanSceneMode mode) {
+  switch (mode) {
+    case VulkanSceneMode::kOpenGLCompatibility:
+      return "OpenGL compatibility";
+    case VulkanSceneMode::kStandalone:
+      return "Standalone Vulkan RHI";
+  }
+  return "Unknown";
 }
 
 const char* PresenterGLSLVersion() {
@@ -226,22 +249,47 @@ void UpdateIoSizes(GLFWwindow* window, Playground* playground) {
   playground->mutable_io()->SetScreenSize(screen_size);
 }
 
-void ApplyViewportFromIo(const cg::Io& io) {
+std::optional<cg::rhi::RenderPassDesc> BuildMainRenderPassDesc(const cg::Io& io) {
   const glm::ivec2 framebuffer_size = io.framebuffer_size();
-  if (framebuffer_size.x > 0 && framebuffer_size.y > 0) {
-    cg::rhi::GetDevice().SetViewport({0, 0}, framebuffer_size);
+  if (framebuffer_size.x <= 0 || framebuffer_size.y <= 0) {
+    return std::nullopt;
   }
+
+  return cg::rhi::RenderPassDesc{
+      .framebuffer = 0,
+      .viewport_origin = {0, 0},
+      .viewport_size = framebuffer_size,
+      .clear_depth = true,
+      .clear_stencil = false,
+      .color_attachments =
+          {{
+              .attachment_index = 0,
+              .clear = true,
+              .clear_color = {cg::kClearColor.x * cg::kClearColor.w,
+                              cg::kClearColor.y * cg::kClearColor.w,
+                              cg::kClearColor.z * cg::kClearColor.w,
+                              cg::kClearColor.w},
+          }},
+  };
+}
+
+std::optional<cg::rhi::ScopedRenderPass> BeginMainRenderPass(const cg::Io& io) {
+  const std::optional<cg::rhi::RenderPassDesc> render_pass_desc = BuildMainRenderPassDesc(io);
+  if (!render_pass_desc.has_value()) {
+    return std::nullopt;
+  }
+  return cg::rhi::ScopedRenderPass(cg::rhi::GetDevice(), *render_pass_desc);
 }
 
 RuntimeMode ChooseRuntimeMode() {
   const char* requested_runtime = std::getenv("CG_RUNTIME");
   if (requested_runtime != nullptr) {
     const std::string runtime_value = requested_runtime;
-    if (runtime_value == "opengl" || runtime_value == "mesa") {
+    if (runtime_value == "gl" || runtime_value == "opengl" || runtime_value == "mesa") {
       return RuntimeMode::kOpenGL;
     }
 #if defined(CG_HAS_VULKAN_RHI)
-    if (runtime_value == "vulkan") {
+    if (runtime_value == "vk" || runtime_value == "vulkan") {
       return RuntimeMode::kVulkan;
     }
   }
@@ -279,7 +327,11 @@ class OffscreenGlRenderer {
     std::size_t size_in_bytes = 0;
   };
 
-  OffscreenGlRenderer(GLFWwindow* input_window, int width, int height, RuntimeMode runtime_mode)
+  OffscreenGlRenderer(GLFWwindow* input_window,
+                      int width,
+                      int height,
+                      RuntimeMode runtime_mode,
+                      VulkanSceneMode vulkan_scene_mode = VulkanSceneMode::kOpenGLCompatibility)
       : input_window_(CGCHECK_NOTNULL(input_window)) {
     CreateOffscreenContext(width, height);
 
@@ -295,7 +347,11 @@ class OffscreenGlRenderer {
     ImGui_ImplOpenGL3_Init(glsl_version_);
 
     if (runtime_mode == RuntimeMode::kVulkan) {
-      cg::rhi::InitializeVulkanDevice(true);
+      cg::rhi::InitializeVulkanDevice(vulkan_scene_mode == VulkanSceneMode::kOpenGLCompatibility);
+      if (vulkan_scene_mode == VulkanSceneMode::kStandalone) {
+        CGLOG(ERROR) << "Vulkan Scene Mode : " << VulkanSceneModeName(vulkan_scene_mode)
+                     << " (experimental synthetic backend)";
+      }
     } else {
       cg::rhi::InitializeOpenGLDevice();
     }
@@ -323,14 +379,9 @@ class OffscreenGlRenderer {
     MakeCurrent();
 
     UpdateIoSizes(input_window_, playground);
-    ApplyViewportFromIo(playground->io());
 
     playground->BeginFrame();
-    cg::rhi::GetDevice().SetClearColor({cg::kClearColor.x * cg::kClearColor.w,
-                                        cg::kClearColor.y * cg::kClearColor.w,
-                                        cg::kClearColor.z * cg::kClearColor.w,
-                                        cg::kClearColor.w});
-    cg::rhi::GetDevice().Clear(cg::rhi::ClearMask::kDepth | cg::rhi::ClearMask::kColor);
+    std::optional<cg::rhi::ScopedRenderPass> main_render_pass = BeginMainRenderPass(playground->io());
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -351,18 +402,21 @@ class OffscreenGlRenderer {
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    main_render_pass.reset();
 
     const glm::ivec2 framebuffer_size = playground->io().framebuffer_size();
     pixel_buffer_.resize(static_cast<std::size_t>(framebuffer_size.x) *
                          static_cast<std::size_t>(framebuffer_size.y) * 4);
-    cg::rhi::GetDevice().SetReadBuffer(UsesSingleBufferedReadback() ? cg::rhi::ReadBuffer::kFront
-                                                                    : cg::rhi::ReadBuffer::kBack);
-    glPixelStorei(GL_PACK_ALIGNMENT, 1);
-    cg::rhi::GetDevice().ReadPixels({0, 0},
-                                    framebuffer_size,
-                                    cg::rhi::PixelFormat::kRGBA,
-                                    cg::rhi::PixelType::kUInt8,
-                                    pixel_buffer_.data());
+    cg::rhi::ReadPixelsDesc read_pixels_desc;
+    read_pixels_desc.framebuffer = 0;
+    read_pixels_desc.attachment_type = cg::rhi::AttachmentType::kColor;
+    read_pixels_desc.read_buffer =
+        UsesSingleBufferedReadback() ? cg::rhi::ReadBuffer::kFront : cg::rhi::ReadBuffer::kBack;
+    read_pixels_desc.origin = {0, 0};
+    read_pixels_desc.size = framebuffer_size;
+    read_pixels_desc.format = cg::rhi::PixelFormat::kRGBA;
+    read_pixels_desc.type = cg::rhi::PixelType::kUInt8;
+    cg::rhi::GetDevice().ReadPixels(read_pixels_desc, pixel_buffer_.data());
 
     playground->EndFrame();
 
@@ -632,6 +686,96 @@ class OffscreenGlRenderer {
 #endif
 };
 
+class StandaloneVulkanRenderer {
+ public:
+  using Frame = OffscreenGlRenderer::Frame;
+
+  explicit StandaloneVulkanRenderer(GLFWwindow* input_window) : input_window_(CGCHECK_NOTNULL(input_window)) {
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+    imgui_io_ = &ImGui::GetIO();
+    if (imgui_io_->Fonts->Fonts.empty()) {
+      imgui_io_->Fonts->AddFontDefault();
+    }
+    CGCHECK(imgui_io_->Fonts->Build());
+    unsigned char* font_pixels = nullptr;
+    int font_width = 0;
+    int font_height = 0;
+    imgui_io_->Fonts->GetTexDataAsRGBA32(&font_pixels, &font_width, &font_height);
+    (void)font_pixels;
+    (void)font_width;
+    (void)font_height;
+    ImPlot::CreateContext();
+
+    ImGui_ImplGlfw_InitForOther(input_window_, true);
+    cg::rhi::InitializeVulkanDevice(false);
+
+    CGLOG(ERROR) << "Offscreen GL Runtime : disabled (standalone Vulkan scene mode)";
+    CGLOG(ERROR) << "RHI Runtime API : " << RuntimeRhiApiName();
+    CGLOG(ERROR) << "Scene Renderer API : " << SceneRendererApiName();
+    LogSceneCapabilitySummary();
+  }
+
+  ~StandaloneVulkanRenderer() {
+    ImPlot::DestroyContext();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+  }
+
+  Frame RenderFrame(Playground* playground) {
+    UpdateIoSizes(input_window_, playground);
+
+    playground->BeginFrame();
+    std::optional<cg::rhi::ScopedRenderPass> main_render_pass = BeginMainRenderPass(playground->io());
+
+    ImGui_ImplGlfw_NewFrame();
+    imgui_io_->FontGlobalScale = kImGuiScale;
+    ImGui::NewFrame();
+
+    FillIoInput(input_window_, imgui_io_, playground->mutable_io());
+
+    const cg::Io io = playground->io();
+    if (playground->io().gui_captured_cursor()) {
+      glfwSetInputMode(input_window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    } else {
+      glfwSetInputMode(input_window_, GLFW_CURSOR, io.left_button_pressed() ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+    }
+
+    playground->Update();
+    playground->Render();
+    ImGui::Render();
+    main_render_pass.reset();
+
+    const glm::ivec2 framebuffer_size = playground->io().framebuffer_size();
+    pixel_buffer_.resize(static_cast<std::size_t>(framebuffer_size.x) *
+                         static_cast<std::size_t>(framebuffer_size.y) * 4);
+    cg::rhi::ReadPixelsDesc read_pixels_desc;
+    read_pixels_desc.framebuffer = 0;
+    read_pixels_desc.attachment_type = cg::rhi::AttachmentType::kColor;
+    read_pixels_desc.read_buffer = cg::rhi::ReadBuffer::kBack;
+    read_pixels_desc.origin = {0, 0};
+    read_pixels_desc.size = framebuffer_size;
+    read_pixels_desc.format = cg::rhi::PixelFormat::kRGBA;
+    read_pixels_desc.type = cg::rhi::PixelType::kUInt8;
+    cg::rhi::GetDevice().ReadPixels(read_pixels_desc, pixel_buffer_.data());
+
+    playground->EndFrame();
+
+    return {
+        .width = framebuffer_size.x,
+        .height = framebuffer_size.y,
+        .rgba_pixels = pixel_buffer_.data(),
+        .size_in_bytes = pixel_buffer_.size(),
+    };
+  }
+
+ private:
+  GLFWwindow* input_window_ = nullptr;
+  ImGuiIO* imgui_io_ = nullptr;
+  std::vector<std::uint8_t> pixel_buffer_;
+};
+
 GLuint CompilePresenterShader(const char* debug_name, GLenum shader_type, const std::string& source) {
   const GLuint shader = glCreateShader_(shader_type);
   const char* source_ptr = source.c_str();
@@ -684,7 +828,7 @@ class OpenGLPresenter {
             vec2(2.0, 0.0),
             vec2(0.0, 2.0));
         gl_Position = vec4(positions[gl_VertexID], 0.0, 1.0);
-        uv = vec2(texcoords[gl_VertexID].x, 1.0 - texcoords[gl_VertexID].y);
+        uv = texcoords[gl_VertexID];
       }
     )";
     const std::string fragment_source = std::string(PresenterGLSLVersion()) + R"(
@@ -848,20 +992,13 @@ RunResult RunLegacyOpenGL(const WindowConfig& config) {
   playground.SetPresentationRuntimeName("OpenGL");
   FillClipboard(&playground, window);
   UpdateIoSizes(window, &playground);
-  ApplyViewportFromIo(playground.io());
 
-  std::optional<Playground::LaunchRequest> relaunch_request;
   while (!glfwWindowShouldClose(window)) {
     glfwPollEvents();
     UpdateIoSizes(window, &playground);
-    ApplyViewportFromIo(playground.io());
 
     playground.BeginFrame();
-    cg::rhi::GetDevice().SetClearColor({cg::kClearColor.x * cg::kClearColor.w,
-                                        cg::kClearColor.y * cg::kClearColor.w,
-                                        cg::kClearColor.z * cg::kClearColor.w,
-                                        cg::kClearColor.w});
-    cg::rhi::GetDevice().Clear(cg::rhi::ClearMask::kDepth | cg::rhi::ClearMask::kColor);
+    std::optional<cg::rhi::ScopedRenderPass> main_render_pass = BeginMainRenderPass(playground.io());
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -881,13 +1018,10 @@ RunResult RunLegacyOpenGL(const WindowConfig& config) {
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    main_render_pass.reset();
     glfwSwapBuffers(window);
 
     playground.EndFrame();
-    relaunch_request = playground.ConsumeLaunchRequest();
-    if (relaunch_request.has_value()) {
-      break;
-    }
   }
 
   glfwMakeContextCurrent(window);
@@ -900,7 +1034,6 @@ RunResult RunLegacyOpenGL(const WindowConfig& config) {
   glfwDestroyWindow(window);
   return {
       .exit_code = 0,
-      .relaunch_request = std::move(relaunch_request),
   };
 }
 
@@ -917,15 +1050,10 @@ RunResult RunPresentedOpenGL(const WindowConfig& config) {
 
   CGLOG(ERROR) << "Presentation Runtime : " << presenter.runtime_name();
 
-  std::optional<Playground::LaunchRequest> relaunch_request;
   while (!presenter.ShouldClose()) {
     glfwPollEvents();
     const OffscreenGlRenderer::Frame frame = renderer.RenderFrame(&playground);
     presenter.Present(frame);
-    relaunch_request = playground.ConsumeLaunchRequest();
-    if (relaunch_request.has_value()) {
-      break;
-    }
   }
 
   renderer.MakeCurrentForCleanup();
@@ -933,25 +1061,50 @@ RunResult RunPresentedOpenGL(const WindowConfig& config) {
   cg::rhi::SetDevice(nullptr);
   return {
       .exit_code = 0,
-      .relaunch_request = std::move(relaunch_request),
   };
 }
 
 #if defined(CG_HAS_VULKAN_RHI)
 RunResult RunVulkan(const WindowConfig& config) {
+  const VulkanSceneMode vulkan_scene_mode = ChooseVulkanSceneMode();
   cg::rhi::vulkan::Presenter presenter(config.width, config.height, "CG");
+
+  CGLOG(ERROR) << "Presentation Runtime : " << presenter.runtime_name();
+  CGLOG(ERROR) << "Vulkan Scene Mode : " << VulkanSceneModeName(vulkan_scene_mode);
+
+  if (vulkan_scene_mode == VulkanSceneMode::kStandalone) {
+    StandaloneVulkanRenderer renderer(presenter.window());
+    Playground playground;
+    playground.SetPresentationRuntimeName(presenter.runtime_name());
+    FillClipboard(&playground, presenter.window());
+    UpdateIoSizes(presenter.window(), &playground);
+    while (!presenter.ShouldClose()) {
+      glfwPollEvents();
+      const StandaloneVulkanRenderer::Frame frame = renderer.RenderFrame(&playground);
+      presenter.Present({
+          .width = frame.width,
+          .height = frame.height,
+          .rgba_pixels = frame.rgba_pixels,
+          .size_in_bytes = frame.size_in_bytes,
+      });
+    }
+
+    playground.Destoy();
+    cg::rhi::SetDevice(nullptr);
+    return {
+        .exit_code = 0,
+    };
+  }
+
   int framebuffer_width = 0;
   int framebuffer_height = 0;
   glfwGetFramebufferSize(presenter.window(), &framebuffer_width, &framebuffer_height);
-  OffscreenGlRenderer renderer(presenter.window(), framebuffer_width, framebuffer_height, RuntimeMode::kVulkan);
+  OffscreenGlRenderer renderer(
+      presenter.window(), framebuffer_width, framebuffer_height, RuntimeMode::kVulkan, vulkan_scene_mode);
   Playground playground;
   playground.SetPresentationRuntimeName(presenter.runtime_name());
   FillClipboard(&playground, presenter.window());
   UpdateIoSizes(presenter.window(), &playground);
-
-  CGLOG(ERROR) << "Presentation Runtime : " << presenter.runtime_name();
-
-  std::optional<Playground::LaunchRequest> relaunch_request;
   while (!presenter.ShouldClose()) {
     glfwPollEvents();
     const OffscreenGlRenderer::Frame frame = renderer.RenderFrame(&playground);
@@ -961,10 +1114,6 @@ RunResult RunVulkan(const WindowConfig& config) {
         .rgba_pixels = frame.rgba_pixels,
         .size_in_bytes = frame.size_in_bytes,
     });
-    relaunch_request = playground.ConsumeLaunchRequest();
-    if (relaunch_request.has_value()) {
-      break;
-    }
   }
 
   renderer.MakeCurrentForCleanup();
@@ -972,28 +1121,9 @@ RunResult RunVulkan(const WindowConfig& config) {
   cg::rhi::SetDevice(nullptr);
   return {
       .exit_code = 0,
-      .relaunch_request = std::move(relaunch_request),
   };
 }
 #endif
-
-int RelaunchSelf(const char* argv0, const Playground::LaunchRequest& launch_request) {
-  CGCHECK(argv0 != nullptr) << "argv[0] is null";
-  CGCHECK(!launch_request.runtime_name.empty()) << "Runtime relaunch request is missing CG_RUNTIME.";
-  CGCHECK(!launch_request.scene_id.empty()) << "Runtime relaunch request is missing CG_SCENE.";
-
-  setenv("CG_RUNTIME", launch_request.runtime_name.c_str(), 1);
-  setenv("CG_SCENE", launch_request.scene_id.c_str(), 1);
-  CGLOG(ERROR) << "Relaunching with runtime=" << launch_request.runtime_name
-               << " scene=" << launch_request.scene_id;
-
-  char* const argv[] = {const_cast<char*>(argv0), nullptr};
-  execvp(argv0, argv);
-  const int error_code = errno;
-  CGLOG(ERROR) << "Failed to relaunch executable " << argv0 << " (errno=" << error_code
-               << ", message=" << std::strerror(error_code) << ")";
-  return 1;
-}
 
 }  // namespace
 
@@ -1016,10 +1146,6 @@ int main(int argc, char** argv) {
       run_result = RunVulkan(window_config);
       break;
 #endif
-  }
-
-  if (run_result.relaunch_request.has_value()) {
-    return RelaunchSelf(argv[0], *run_result.relaunch_request);
   }
 
   glfwTerminate();

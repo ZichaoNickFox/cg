@@ -13,18 +13,26 @@ class GeometrySceneShader : public ComputeShader {
  public:
   struct Param {
     cg::Texture canvas;
+    const cg::SSBO& triangle_ssbo;
+    const cg::SSBO& aabb_ssbo;
     size_t triangle_num;
     size_t aabb_num;
   };
   GeometrySceneShader(const Param& param, const Scene& scene)
       : ComputeShader(scene, "geometry_scene") {
-    SetCamera(scene.camera());
-    SetTextureBinding({param.canvas, "canvas", TextureAccess::kWriteOnly});
-    SetResolution(param.canvas.meta().Resolution());
-    SetWorkGroupNum({(param.canvas.meta().width + 31) / 32, (param.canvas.meta().height + 31) / 32, 1});
-    program_.SetInt("triangle_num", param.triangle_num);
-    program_.SetInt("aabb_num", param.aabb_num);
-    Run();
+    ShaderProgramBindings bindings;
+    AppendCameraBindings(scene.camera(), &bindings);
+    bindings.SetBufferBinding(param.triangle_ssbo.binding_desc());
+    bindings.SetBufferBinding(param.aabb_ssbo.binding_desc());
+    bindings.SetStorageTexture("canvas", param.canvas, TextureAccess::kWriteOnly);
+    AppendResolutionBindings(param.canvas.meta().Resolution(), &bindings);
+    bindings.SetInt("triangle_num", param.triangle_num);
+    bindings.SetInt("aabb_num", param.aabb_num);
+    DispatchBindings(bindings, {
+        .workgroup_count = glm::uvec3((param.canvas.meta().width + 31) / 32,
+                                      (param.canvas.meta().height + 31) / 32,
+                                      1),
+    });
   }
 };
 
@@ -86,7 +94,7 @@ void GeometryScene::Rasterization() {
 }
 
 void GeometryScene::Raytracing() {
-  GeometrySceneShader({canvas_, triangles_.size(), aabbs_.size()}, *this);
+  GeometrySceneShader({canvas_, ssbo_triangle_, ssbo_aabb_, triangles_.size(), aabbs_.size()}, *this);
   FullscreenQuadShader({canvas_}, *this);
 }
 

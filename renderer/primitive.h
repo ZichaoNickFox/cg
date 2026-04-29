@@ -23,6 +23,7 @@ class PrimitiveRepo {
 
   int num() const { return primitives_.size(); }
   const std::vector<Primitive>& data() const { return primitives_; }
+  rhi::BufferBindingDesc binding_desc() const { return ssbo_primitive_.binding_desc(); }
 
   const Triangle& GetTriangle(int index) const;
   const AABB& GetAABB(int index) const;

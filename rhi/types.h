@@ -18,6 +18,7 @@ enum class TextureFormat {
   kRG32F = 3,
   kR32UI = 4,
   kDepth32F = 5,
+  kStencil8 = 6,
 };
 
 enum class PixelFormat {
@@ -26,6 +27,7 @@ enum class PixelFormat {
   kRG = 2,
   kRedInteger = 3,
   kDepthComponent = 4,
+  kStencilIndex = 5,
 };
 
 enum class PixelType {
